@@ -11,8 +11,8 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { HISContext } from '../../contextApi/HISContext'
 import { ToastAlert } from '../../utils/commonFunction'
 import GlobalDataTable from '../../components/commons/GlobalDataTable'
-import { fetchPostData } from '../../utils/ApiHooks'
 import { Link } from 'react-router-dom'
+import { fetchPostData } from '../../../../utils/ApiHooks'
 
 const DashboardMaster = () => {
 
@@ -582,7 +582,7 @@ const DashboardMaster = () => {
       name: 'Group Name',
       selector: row => row?.jsonData?.groupName || "---",
       cell: row => <a
-        href={`/hisUtils/dashboard?groupId=${row.id}&dashboardFor=${row?.dashboardFor}`}
+        href={`/dvdms/HIS_dashboard/dashboard?groupId=${row.id}&dashboardFor=${row?.dashboardFor}`}
         target="_blank"
         rel="noopener noreferrer"
         className='text-decoration-none'

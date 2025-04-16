@@ -17,7 +17,7 @@ const KpiDash = ({ widgetData }) => {
             try {
                 const data = await fetchProcedureData(widget?.procedureMode);
                 setKpiData(
-                    data.map((item) => ({
+                    data?.length > 0 && data?.map((item) => ({
                         name: item.column_1,
                         y: item.column_2,
                     })));
@@ -29,7 +29,7 @@ const KpiDash = ({ widgetData }) => {
             try {
                 const data = await fetchQueryData(widget?.queryVO);
                 setKpiData(
-                    data.map((item) => ({
+                    data?.length > 0 && data?.map((item) => ({
                         name: item.column_1,
                         y: item.column_2,
                     })));

@@ -3,8 +3,8 @@ import DashSidebar from "../../components/sidebar/Sidebar";
 import { HISContext } from "../../contextApi/HISContext";
 import TabDash from "../../components/sidebar/TabDash";
 import { useSearchParams } from "react-router-dom";
-import { fetchData } from "../../utils/ApiHooks";
 import TopBar from "../../components/sidebar/TopBar";
+import { fetchData } from "../../../../utils/ApiHooks";
 
 const DashboardMst = () => {
     const { getAllTabsData, getAllWidgetData, allTabsData, activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData} = useContext(HISContext);

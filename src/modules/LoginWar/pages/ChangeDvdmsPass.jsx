@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import DashHeader from '../component/dashboard/DashHeader'
-import { fetchPostData } from '../utils/ApiHooks'
+import { fetchPostData } from '../../../utils/ApiHooks'
 
 const ChangeDvdmsPass = () => {
 

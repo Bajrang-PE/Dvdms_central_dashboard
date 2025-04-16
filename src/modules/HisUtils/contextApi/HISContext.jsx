@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react'
-import { fetchData } from '../utils/ApiHooks';
 import { DrpDataValLab } from '../utils/commonFunction';
+import { fetchData } from '../../../utils/ApiHooks';
 
 export const HISContext = createContext();
 

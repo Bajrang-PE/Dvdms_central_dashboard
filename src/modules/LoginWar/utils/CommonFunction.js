@@ -1,6 +1,6 @@
-import { fetchPostData } from "./ApiHooks";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { fetchPostData } from '../../../utils/ApiHooks';
 
 export const fetchQueryData = async (queryVO = []) => {
     if (!Array.isArray(queryVO) || queryVO.length === 0) {

@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import GlobalButtons from '../../GlobalButtons'
 import InputField from '../../../InputField'
 import { LoginContext } from '../../../../context/LoginContext';
-import { fetchData, fetchPostData, fetchUpdateData } from '../../../../utils/ApiHooks';
 import { ToastAlert } from '../../../../utils/CommonFunction';
+import { fetchData, fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 
 const ZoneMasterForm = () => {
     const { openPage, selectedOption, setOpenPage, setSelectedOption, getZoneListData } = useContext(LoginContext);
@@ -79,7 +79,6 @@ const ZoneMasterForm = () => {
         setZoneName('');
         setRecordStatus('1')
     }
-    console.log(selectedOption, 'sele')
     return (
         <div>
             <GlobalButtons onSave={openPage === "add" ? saveZoneData : updateZoneData} onClear={reset} />

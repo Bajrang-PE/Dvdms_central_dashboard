@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { fetchData, fetchUpdateData } from '../../../utils/ApiHooks';
 import { LoginContext } from '../../../context/LoginContext';
 import InputSelect from '../../InputSelect';
 import GlobalTable from '../../GlobalTable';
 import SupplierMasterForm from '../forms/admin/SupplierMasterForm';
 import { Modal } from 'react-bootstrap';
 import { ToastAlert } from '../../../utils/CommonFunction';
+import { fetchData,fetchUpdateData } from '../../../../../utils/ApiHooks';
 
 
 const SupplierMaster = () => {

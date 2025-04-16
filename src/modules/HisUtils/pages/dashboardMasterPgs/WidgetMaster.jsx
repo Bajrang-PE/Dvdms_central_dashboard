@@ -20,7 +20,7 @@ import { graphOptions, highchartGraphOptions, parameterType } from '../../localD
 import ParamsDetail from '../../components/dashboardMasters/tabMaster/ParamsDetail'
 import InputSelect from '../../components/commons/InputSelect'
 import { ToastAlert } from '../../utils/commonFunction'
-import { fetchPostData, fetchUpdateData } from '../../utils/ApiHooks'
+import { fetchPostData,fetchUpdateData } from '../../../../utils/ApiHooks'
 
 const WidgetMaster = () => {
 

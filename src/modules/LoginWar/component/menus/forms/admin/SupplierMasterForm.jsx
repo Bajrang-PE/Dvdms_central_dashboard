@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import GlobalButtons from '../../GlobalButtons'
 import InputSelect from '../../../InputSelect'
 import { LoginContext } from '../../../../context/LoginContext';
-import { fetchUpdatePostData } from '../../../../utils/ApiHooks';
 import { ToastAlert } from '../../../../utils/CommonFunction';
+import { fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
 
 const SupplierMasterForm = () => {
 

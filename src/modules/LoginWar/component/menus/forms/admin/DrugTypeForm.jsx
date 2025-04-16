@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import InputField from '../../../InputField'
 import GlobalButtons from '../../GlobalButtons'
 import { LoginContext } from '../../../../context/LoginContext';
-import { fetchUpdateData, fetchUpdatePostData } from '../../../../utils/ApiHooks';
 import { ToastAlert } from '../../../../utils/CommonFunction';
+import { fetchUpdateData,fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
 
 const DrugTypeForm = () => {
 

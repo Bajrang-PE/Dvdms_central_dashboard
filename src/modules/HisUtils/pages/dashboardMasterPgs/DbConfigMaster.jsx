@@ -5,9 +5,9 @@ import InputSelect from '../../components/commons/InputSelect'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAdd, faDatabase, faEdit, faFile, faRefresh, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { serverName } from '../../localData/DropDownData'
-import { fetchData, fetchUpdateData } from '../../utils/ApiHooks'
 import { ToastAlert } from '../../utils/commonFunction'
 import { HISContext } from '../../contextApi/HISContext'
+import { fetchData, fetchUpdateData } from '../../../../utils/ApiHooks'
 
 const DbConfigMaster = () => {
     const { dashboardForDt, getDashboardForDrpData, setSelectedOption, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, singleConfigData, getDashConfigData, } = useContext(HISContext);

@@ -2,48 +2,99 @@ import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../../context/LoginContext';
 import GlobalButtons from '../../GlobalButtons';
 import InputField from '../../../InputField';
+import { ToastAlert } from '../../../../utils/CommonFunction';
+import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
+import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
 const FacilityTypeMasterForm = () => {
-    const { openPage, selectedOption, setOpenPage, setSelectedOption } = useContext(LoginContext);
+    const { openPage, selectedOption, setOpenPage, setSelectedOption, getFacilityTypeListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [facilityName, setFacilityName] = useState('');
-    const [recordStatus, setRecordStatus] = useState('1');
-    const [singleData, setSingleData] = useState([]);
+    const [recordStatus, setRecordStatus] = useState('Active');
+    const [errors, setErrors] = useState({
+        "facilityNameErr": ""
+    })
 
-    // const getSingleData = (id) => {
-    //     fetchData(`api/v1/zones/${id}`).then(data => {
-    //         if (data) {
-    //             setSingleData([data]);
-    //         } else {
-    //             ToastAlert('Error while fetching data!', 'error')
-    //         }
-    //     })
-    // }
-
-    // useEffect(() => {
-    //     if (selectedOption?.length > 0 && openPage === 'modify') {
-    //         getSingleData(selectedOption[0]?.cwhnumZoneId)
-    //     }
-    // }, [selectedOption, openPage])
-
-
-    const saveZoneData = () => {
-
+    const saveFacilityTypeData = () => {
+        const val = {
+            "seatId": getAuthUserData('userSeatId'),
+            "facilityTypeName": facilityName,
+            "status": "Active"
+        }
+        fetchPostData(`api/v1/Facility/create`, val).then(data => {
+            if (data) {
+                ToastAlert('Record created successfully', 'success');
+                getFacilityTypeListData();
+                setOpenPage('home');
+                reset();
+                setConfirmSave(false);
+            } else {
+                ToastAlert('error while creating record!', "error");
+            }
+        })
     }
 
-    const updateZoneData = () => {
+    const updateFacilityTypeData = () => {
+        const val = {
+            "seatId": getAuthUserData('userSeatId'),
+            "facilityTypeName": facilityName,
+            "status": recordStatus,
+            "facilityTypeId": selectedOption[0]?.facilityTypeId,
+            "facilityTypeShortName": "",
+            "ninFacilityTypeId": 0,
+            "order": 0,
+        }
+        fetchUpdateData(`api/v1/Facility/${selectedOption[0]?.facilityTypeId}`, val).then(data => {
+            if (data) {
+                ToastAlert('Record Updated Successfully', 'success');
+                getFacilityTypeListData();
+                setOpenPage('home');
+                reset();
+                setSelectedOption([]);
+                setConfirmSave(false);
+            } else {
+                ToastAlert('error while updating record!', error)
+            }
+        })
+    }
 
+    const handleValidation = () => {
+        let isValid = true;
+        if (!facilityName?.trim()) {
+            setErrors(prev => ({ ...prev, "facilityNameErr": "Facility Name is required" }));
+            isValid = false;
+        }
+
+        if (isValid) {
+            setShowConfirmSave(true)
+        }
     }
 
     useEffect(() => {
-        if (singleData?.length > 0) {
-            setFacilityName(singleData[0]?.cwhstrZoneName)
-            setRecordStatus(singleData[0]?.status === "Active" ? '1' : '0')
+        if (confirmSave) {
+            if (openPage === 'modify') {
+                updateFacilityTypeData();
+            } else {
+                saveFacilityTypeData();
+            }
         }
-    }, [singleData])
+    }, [confirmSave])
+
+    useEffect(() => {
+        if (selectedOption?.length > 0) {
+            setFacilityName(selectedOption[0]?.facilityTypeName)
+            setRecordStatus(selectedOption[0]?.status)
+        }
+    }, [selectedOption])
+
+    const reset = () => {
+        setFacilityName('');
+        setRecordStatus('Active');
+        setConfirmSave(false);
+    }
 
     return (
         <div>
-            <GlobalButtons onSave={null} onClear={null} />
+            <GlobalButtons onSave={handleValidation} onClear={reset} />
             <hr className='my-2' />
             <div className='row pt-2'>
                 <div className='col-sm-6'>
@@ -57,7 +108,8 @@ const FacilityTypeMasterForm = () => {
                                 placeholder="Enter facilityName"
                                 className="aliceblue-bg border-dark-subtle"
                                 value={facilityName}
-                                onChange={(e) => setFacilityName(e.target?.value)}
+                                onChange={(e) => { setFacilityName(e.target?.value); setErrors({ ...errors, "facilityNameErr": "" }) }}
+                                errorMessage={errors?.facilityNameErr}
                             />
                         </div>
                     </div>
@@ -75,9 +127,9 @@ const FacilityTypeMasterForm = () => {
                                         type="radio"
                                         name="recordStatus"
                                         id="recordStatus1"
-                                        value={'1'}
+                                        value={'Active'}
                                         onChange={(e) => setRecordStatus(e.target.value)}
-                                        checked={recordStatus === "1"}
+                                        checked={recordStatus === "Active"}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
                                         Active
@@ -89,9 +141,9 @@ const FacilityTypeMasterForm = () => {
                                         type="radio"
                                         name="recordStatus"
                                         id="recordStatus0"
-                                        value={'0'}
-                                        onChange={() => setRecordStatus(e.target.value)}
-                                        checked={recordStatus === '0'}
+                                        value={'InActive'}
+                                        onChange={(e) => setRecordStatus(e.target.value)}
+                                        checked={recordStatus === 'InActive'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
                                         InActive
