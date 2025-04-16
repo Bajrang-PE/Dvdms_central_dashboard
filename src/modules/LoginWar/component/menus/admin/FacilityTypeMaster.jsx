@@ -49,6 +49,7 @@ const FacilityTypeMaster = () => {
                 getFacilityTypeListData();
                 setSelectedOption([]);
                 setConfirmSave(false);
+                onClose();
             } else {
                 ToastAlert('Error while deleting record!', 'error')
             }
@@ -57,6 +58,7 @@ const FacilityTypeMaster = () => {
 
     const handleDeleteRecord = () => {
         if (selectedOption?.length > 0) {
+            setOpenPage('delete');
             setShowConfirmSave(true);
         } else {
             ToastAlert("Please select a record", "warning");
@@ -64,7 +66,7 @@ const FacilityTypeMaster = () => {
     }
 
     useEffect(() => {
-        if (confirmSave) {
+        if (confirmSave && openPage === 'delete') {
             deleteRecord();
         }
     }, [confirmSave])
@@ -115,7 +117,7 @@ const FacilityTypeMaster = () => {
                     {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
 
                 </div>
-                {(openPage === "home" || openPage === 'view') && (<>
+                {(openPage === "home" || openPage === 'view' || openPage === 'delete') && (<>
                     <div className='row pt-2'>
                         <div className='col-sm-6'>
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
