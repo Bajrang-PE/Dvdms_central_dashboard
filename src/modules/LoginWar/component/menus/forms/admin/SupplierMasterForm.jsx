@@ -87,7 +87,12 @@ const SupplierMasterForm = () => {
 
     return (
         <div>
+            { openPage === "add" &&
             <div className='text-left w-100 fw-bold p-1 heading-text' >Supplier Master &gt;&gt; Add</div>
+            }
+            { openPage === "modify" &&
+            <div className='text-left w-100 fw-bold p-1 heading-text' >Supplier Master &gt;&gt; Modify</div>
+            }
             <GlobalButtons onSave={save} onClear={reset}/>
             <hr className='my-2' />
 

@@ -7,11 +7,12 @@ import { ToastAlert } from '../../../../utils/CommonFunction';
 
 const DrugTypeForm = () => {
 
-    const { openPage, selectedOption } = useContext(LoginContext);
+    const { openPage,setOpenPage, selectedOption } = useContext(LoginContext);
     const [drugTypeName, setDrugTypeName] = useState("");
     const [recordStatus, setRecordStatus] = useState("");
     const [drugTypeNameErr, setDrugTypeNameErr] = useState("");
     const [cwhnumDrugTypeId, setCwhnumDrugTypeId] = useState("");
+
 
 
     const save = async (e) => {
@@ -21,6 +22,7 @@ const DrugTypeForm = () => {
             let isValid = true
             if (!drugTypeName.trim()) {
                 alert("Please enter Drug Type Name")
+                  ToastAlert('Please enter drug type name', 'warning')
                 isValid = false;
             }
             if (isValid) {
@@ -30,7 +32,7 @@ const DrugTypeForm = () => {
                 }
                 const response = fetchUpdatePostData("/drugtype/addDrug", data);
                 ToastAlert('Drug Type Added successfully', 'success')
-                reset();
+                setOpenPage("home")
 
             }
         }

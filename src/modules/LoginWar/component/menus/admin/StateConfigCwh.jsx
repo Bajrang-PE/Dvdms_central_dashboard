@@ -151,7 +151,8 @@ const StateConfigCwh = () => {
     }
 
     return (
-        <div>
+        <div className="masters mx-3 my-2">
+
             <div className='text-left w-100 fw-bold p-1 heading-text' >State Configuration Master</div>
 
             <div className="row mt-3">
