@@ -79,7 +79,6 @@ const ZoneMasterForm = () => {
         setZoneName('');
         setRecordStatus('1')
     }
-    console.log(selectedOption, 'sele')
     return (
         <div>
             <GlobalButtons onSave={openPage === "add" ? saveZoneData : updateZoneData} onClear={reset} />

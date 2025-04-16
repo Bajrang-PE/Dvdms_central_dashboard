@@ -12,6 +12,7 @@ const ZoneMaster = () => {
     const { selectedOption, setSelectedOption, openPage, setOpenPage, getZoneListData, zoneListData } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active')
+    const [filterData, setFilterData] = useState(zoneListData);
 
     useEffect(() => {
         getZoneListData(recordStatus === "Active" ? '1' : '0')
@@ -32,6 +33,20 @@ const ZoneMaster = () => {
             return [row];
         });
     };
+
+    useEffect(() => {
+        if (!searchInput) {
+            setFilterData(zoneListData);
+        } else {
+            const lowercasedText = searchInput.toLowerCase();
+            const newFilteredData = zoneListData.filter(row => {
+                const paramName = row?.cwhstrZoneName?.toLowerCase() || "";
+
+                return paramName.includes(lowercasedText);
+            });
+            setFilterData(newFilteredData);
+        }
+    }, [searchInput, zoneListData]);
 
     const deleteRecord = () => {
         if (selectedOption?.length > 0) {
@@ -92,7 +107,7 @@ const ZoneMaster = () => {
             <div className='masters mx-3 my-2'>
                 <div className='masters-header row'>
                     <span className='col-6'><b>{`Zone Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {zoneListData?.length}</span>}
+                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
 
                 </div>
                 {(openPage === "home" || openPage === 'view') && (<>
@@ -116,7 +131,7 @@ const ZoneMaster = () => {
                     </div>
 
                     <hr className='my-2' />
-                    <GlobalTable column={column} data={zoneListData} onDelete={deleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                    <GlobalTable column={column} data={filterData} onDelete={deleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
 
                     {openPage === 'view' &&
                         <ViewPage data={[{ value: selectedOption[0]?.cwhstrZoneName, label: "Zone Name" }]} onClose={onClose} title={"Zone Master"} />

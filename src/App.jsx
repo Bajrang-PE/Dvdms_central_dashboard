@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import ConfirmBox from './modules/HisUtils/components/commons/ConfirmBox';
 import Loader from './modules/HisUtils/components/commons/Loader';
 import HomePage from './modules/LoginWar/pages/HomePage';
+import ConfirmBoxLogin from './modules/LoginWar/component/ConfirmBoxLogin';
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
         </Routes>
         <ToastContainer />
         <ConfirmBox message={"Do you want to save this data?"} />
+        <ConfirmBoxLogin />
         <Loader />
       </Router>
     </>

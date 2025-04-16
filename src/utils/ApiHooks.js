@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const BaseUrl = 'http://10.226.25.164:8024'; //pritee
-const BaseUrl = 'http://10.226.17.6:8024';  //BG
+const BaseUrl = 'http://10.226.25.164:8025'; //pritee
+// const BaseUrl = 'http://10.226.17.6:8025';  //BG
 // const BaseUrl = 'http://10.226.29.211:8025/';  //Disha
 // const BaseUrl = 'http://10.226.29.102:8025/';  
 // const BaseUrl = 'http://10.226.30.45:8025/';  //pradeep
@@ -15,21 +15,21 @@ const getCsrfToken = () => {
     return Cookies.get('csrfToken');
 };
 
-// // Set the Authorization header globally using an interceptor
-// axios.interceptors.request.use(
-//     (config) => {
-//         const accessToken = getAccessToken();
-//         // const CsrfToken = getCsrfToken();
-//         if (accessToken) {
-//             config.headers['Authorization'] = `Bearer ${accessToken}`;
-//             // config.headers['X-CSRF-TOKEN'] = CsrfToken;
-//         }
-//         return config;
-//     },
-//     (error) => {
-//         return Promise.reject(error);
-//     }
-// );
+// Set the Authorization header globally using an interceptor
+axios.interceptors.request.use(
+    (config) => {
+        const accessToken = getAccessToken();
+        // const CsrfToken = getCsrfToken();
+        if (accessToken) {
+            config.headers['Authorization'] = `Bearer ${accessToken}`;
+            // config.headers['X-CSRF-TOKEN'] = CsrfToken;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 // axios.interceptors.response.use(
 //     async (response) => {
