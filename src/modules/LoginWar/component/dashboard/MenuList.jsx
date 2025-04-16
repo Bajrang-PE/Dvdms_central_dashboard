@@ -35,6 +35,7 @@ const MenuList = (props) => {
                         { dataVal: 'editUser', menuName: 'Drug Type Master', icon: 'fa-gear', link: "/menus/drug-type-master" },
                         { dataVal: 'editUser', menuName: 'Supplier Master', icon: 'fa-gear', link: "/menus/supplier-master" },
                         { dataVal: 'editUser', menuName: 'Supplier Mapping Master', icon: 'fa-gear', link: "/menus/supplier-mapping-master" },
+                        { dataVal: 'editUser', menuName: 'Nin Facility Mapping Master', icon: 'fa-gear', link: "/menus/nin-facility-mapping-master" },
                         { dataVal: 'editUser', menuName: 'Drug Type Master', icon: 'fa-gear' },
 
                         { dataVal: 'editUser', menuName: 'Generic Drug Master', icon: 'fa-gear', link: "/menus/generic-drug-master" },

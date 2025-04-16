@@ -18,6 +18,8 @@ const LoginContextApi = ({ children }) => {
     const [hintQuestionDrpDt, setHintQuestionDrpDt] = useState([]);
     const [stateNameDrpDt, setStateNameDrpDt] = useState([]);
     const [supplierNameDrpDt, setSupplierNameDrpDt] = useState([]);
+    const [districtNameDrpDt, setDistrictNameDrpDt] = useState([]);
+
 
 
     const getWidgetData = () => {
@@ -71,6 +73,27 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+    const getDistrictNameDrpData = (id) => {
+        fetchData('/state/getstate').then((data) => {
+            if (data) {
+
+                const drpData = data?.map((dt) => {
+                    const val = {
+                        value: dt?.cwhnumStateId,
+                        label: dt?.cwhstrStateName
+                    }
+
+                    return val;
+                })
+
+                setDistrictNameDrpDt(drpData)
+
+            } else {
+                setDistrictNameDrpDt([])
+            }
+        })
+    }
+
     const getSupplierNameDrpData = () => {
         fetchData('/state/getstate').then((data) => {
             if (data) {
@@ -100,6 +123,7 @@ const LoginContextApi = ({ children }) => {
             getHintQuestionDrpData, hintQuestionDrpDt,
             getSteteNameDrpData, stateNameDrpDt,
             getSupplierNameDrpData, supplierNameDrpDt,
+            getDistrictNameDrpData, districtNameDrpDt,
             selectedOption, setSelectedOption,
             openPage, setOpenPage,
             getZoneListData, zoneListData
