@@ -36,10 +36,6 @@ export const DrugTypeMaster = () => {
             fetchListData(values?.recordStatus);
         }
 
-        if (openPage === "delete") {
-            handleDelete();
-        }
-
         // if (openPage === "view") {
         //     if (selectedOption?.length == 0) {
         //         ToastAlert('Please select a record', 'warning')
@@ -90,16 +86,28 @@ export const DrugTypeMaster = () => {
     };
 
     const handleDelete = async () => {
+
+        const confirmed = window.confirm("Are you sure you want to delete this drug type?");
+        
         if (selectedOption?.length > 0) {
+            if(confirmed){
             const drugTypeId = String(selectedOption[0]?.cwhnumDrugTypeId)
             const response = await fetchUpdateData(`/drugtype/delete/${drugTypeId}`);
             ToastAlert('Drug Type Deleted Successfully', 'success')
-            setOpenPage("home");
+            setOpenPage("home")
+          
+            }
         } else {
             ToastAlert('Please select a record', 'warning')
-            setOpenPage("home");
+            setOpenPage("home")
+           
         }
     };
+
+
+    const reset = () => {
+        setDrugTypeName("");
+    }
 
     // const handleView = async () => {
 
@@ -167,7 +175,7 @@ export const DrugTypeMaster = () => {
                 </div>
 
                 <div>
-                    <GlobalTable column={columns} data={drugs} onAdd={null} onModify={null} onDelete={null} onView={null}
+                    <GlobalTable column={columns} data={drugs} onAdd={null} onModify={null} onDelete={handleDelete} onView={null}
                         onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
                 </div>
 
