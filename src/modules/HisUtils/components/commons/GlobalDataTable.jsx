@@ -30,7 +30,7 @@ const GlobalDataTable = (props) => {
             <Modal show={showDataTable} onHide={handleClose} size='xl'>
                 <Modal.Header closeButton className='p-2'></Modal.Header>
                 <b><h4 className='datatable-header mx-3 py-1 mt-1 px-1'>{title}</h4></b>
-                <div className='datatable-btns row mx-3 my-1 '>
+                <div className='datatable-btns-his row mx-3 my-1 '>
                     <div className='col-6 m-0 p-0 align-content-center'>
                         {isShowBtn &&
                             <>

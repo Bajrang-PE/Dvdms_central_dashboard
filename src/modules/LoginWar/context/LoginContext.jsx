@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { fetchData } from "../utils/ApiHooks";
+import { fetchData } from "../../../utils/ApiHooks";
 
 export const LoginContext = createContext();
 

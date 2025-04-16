@@ -4,8 +4,8 @@ import { LoginContext } from '../../../context/LoginContext'
 import InputSelect from '../../InputSelect';
 import ZoneMasterForm from '../forms/admin/ZoneMasterForm';
 import ViewPage from '../ViewPage';
-import { fetchDeleteData } from '../../../utils/ApiHooks';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
+import { fetchDeleteData } from '../../../../../utils/ApiHooks';
 
 const ZoneMaster = () => {
 

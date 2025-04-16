@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import GlobalButtons from '../GlobalButtons';
 import InputSelect from '../../InputSelect';
 import { LoginContext } from '../../../context/LoginContext';
-import { fetchData, fetchUpdateData } from '../../../utils/ApiHooks';
+import { fetchData,fetchUpdateData } from '../../../../../utils/ApiHooks';
 
 const SupplierMappingMaster = () => {
     const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, getSupplierNameDrpData, supplierNameDrpDt } = useContext(LoginContext);

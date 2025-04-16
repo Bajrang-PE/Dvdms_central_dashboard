@@ -8,7 +8,7 @@ import InputSelect from '../../components/commons/InputSelect'
 import { HISContext } from '../../contextApi/HISContext'
 import { ToastAlert } from '../../utils/commonFunction'
 import GlobalDataTable from '../../components/commons/GlobalDataTable'
-import { fetchPostData } from '../../utils/ApiHooks'
+import { fetchPostData } from '../../../../utils/ApiHooks'
 
 const ServiceUserMaster = () => {
   const { setShowDataTable, getAllServiceData, dataServiceDrpData, selectedOption, setSelectedOption, setActionMode, actionMode, getUserServiceData, userServiceData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, } = useContext(HISContext);

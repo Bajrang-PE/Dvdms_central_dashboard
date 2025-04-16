@@ -5,7 +5,7 @@ import GlobalButtonGroup from '../../components/commons/GlobalButtonGroup'
 import { HISContext } from '../../contextApi/HISContext'
 import GlobalDataTable from '../../components/commons/GlobalDataTable'
 import { ToastAlert } from '../../utils/commonFunction'
-import { fetchPostData } from '../../utils/ApiHooks'
+import { fetchPostData } from '../../../../utils/ApiHooks'
 
 const DbSubmenuMaster = () => {
   const { setShowDataTable, selectedOption, setSelectedOption, setActionMode, actionMode, dashboardSubmenuData, getDashboardSubmenuData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(HISContext);

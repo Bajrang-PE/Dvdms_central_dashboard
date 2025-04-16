@@ -16,7 +16,7 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route path="/hisUtils/*" element={<HisRoutes />} />
+          <Route path="/dvdms/HIS_dashboard/*" element={<HisRoutes />} />
           <Route path="/dvdms/*" element={<LoginWarRoutes />} />
           <Route index element={<HomePage />} />
           {/* <Route path index element={<NotFound />} /> */}

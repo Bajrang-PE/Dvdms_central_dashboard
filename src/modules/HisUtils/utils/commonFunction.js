@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { fetchPostData } from './ApiHooks';
+import { fetchPostData } from '../../../utils/ApiHooks';
 
 //FUNCTION TO MANAGE GLOBAL ALERTS
 export const ToastAlert = (message, type) => {

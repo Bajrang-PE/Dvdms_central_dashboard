@@ -3,10 +3,10 @@ import { HISContext } from "../../contextApi/HISContext";
 import InputField from "../commons/InputField";
 import Select from "react-select";
 import { convertToISODate } from "../../utils/commonFunction";
-import { fetchPostData } from "../../utils/ApiHooks";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEyeSlash, faReply, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useSearchParams } from "react-router-dom";
+import { fetchPostData } from "../../../../utils/ApiHooks";
 
 const Parameters = ({ params, setParamsValues }) => {
     const { parameterData, getAllParameterData, theme } = useContext(HISContext);

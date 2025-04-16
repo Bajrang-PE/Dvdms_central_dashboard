@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
 import DashHeader from '../../dashboard/DashHeader'
 import InputSelect from "../../InputSelect";
-import { fetchData, fetchUpdateData } from "../../../utils/ApiHooks";
 import axios from 'axios';
 import { LoginContext } from '../../../context/LoginContext';
+import { fetchData,fetchUpdateData } from '../../../../../utils/ApiHooks';
 
 const StateConfigCwh = () => {
     const { getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext)

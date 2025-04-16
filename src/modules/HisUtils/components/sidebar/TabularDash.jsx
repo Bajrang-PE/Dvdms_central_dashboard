@@ -100,7 +100,7 @@ const TabularDash = ({ widgetData }) => {
       try {
         const data = await fetchProcedureData(widget?.procedureMode);
         setTableData(
-          data.map((item) => ({
+          data?.length > 0 && data.map((item) => ({
             name: item.column_1,
             y: item.column_2,
           })));
@@ -112,7 +112,7 @@ const TabularDash = ({ widgetData }) => {
       try {
         const data = await fetchQueryData(widget?.queryVO);
         setTableData(
-          data.map((item) => ({
+          data?.length > 0 && data.map((item) => ({
             name: item.column_1,
             y: item.column_2,
           })));
@@ -206,10 +206,10 @@ const TabularDash = ({ widgetData }) => {
               <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }}>
                 <FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-2" />Refresh Data
               </li>
-              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generatePDF(widgetData, currentData,singleConfigData?.databaseConfigVO)} title="pdf">
+              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generatePDF(widgetData, currentData, singleConfigData?.databaseConfigVO)} title="pdf">
                 <FontAwesomeIcon icon={faFilePdf} className="dropdown-gear-icon me-2" />Download PDF
               </li>
-              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generateCSV(widgetData, currentData,singleConfigData?.databaseConfigVO)}>
+              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generateCSV(widgetData, currentData, singleConfigData?.databaseConfigVO)}>
                 <FontAwesomeIcon icon={faFileExcel} className="dropdown-gear-icon me-2" />Download CSV
               </li>
               <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }}>
@@ -217,10 +217,10 @@ const TabularDash = ({ widgetData }) => {
               </li>
             </ul>
 
-            <button className="small-box-btn-dwn" onClick={() => generatePDF(widgetData, currentData,singleConfigData?.databaseConfigVO)} title="PDF">
+            <button className="small-box-btn-dwn" onClick={() => generatePDF(widgetData, currentData, singleConfigData?.databaseConfigVO)} title="PDF">
               <FontAwesomeIcon icon={faFilePdf} />
             </button>
-            <button className="small-box-btn-dwn" onClick={() => generateCSV(widgetData, currentData,singleConfigData?.databaseConfigVO)}>
+            <button className="small-box-btn-dwn" onClick={() => generateCSV(widgetData, currentData, singleConfigData?.databaseConfigVO)}>
               <FontAwesomeIcon icon={faFileExcel} />
             </button>
             {currentLevel !== "state" && (
