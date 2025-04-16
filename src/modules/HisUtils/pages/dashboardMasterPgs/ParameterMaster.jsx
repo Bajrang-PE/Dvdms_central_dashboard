@@ -11,7 +11,7 @@ import { HISContext } from '../../contextApi/HISContext'
 import GlobalDataTable from '../../components/commons/GlobalDataTable'
 import { ToastAlert } from '../../utils/commonFunction'
 import DataServiceTable from '../../components/webServiceMasters/dataService/DataServiceTable'
-import { fetchPostData } from '../../utils/ApiHooks'
+import { fetchPostData } from '../../../../utils/ApiHooks'
 
 const ParameterMaster = () => {
 

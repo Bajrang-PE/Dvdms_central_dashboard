@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import ConfirmBox from './modules/HisUtils/components/commons/ConfirmBox';
 import Loader from './modules/HisUtils/components/commons/Loader';
 import HomePage from './modules/LoginWar/pages/HomePage';
+import ConfirmBoxLogin from './modules/LoginWar/component/ConfirmBoxLogin';
 
 function App() {
 
@@ -16,7 +17,7 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route path="/hisUtils/*" element={<HisRoutes />} />
+          <Route path="/dvdms/HIS_dashboard/*" element={<HisRoutes />} />
           <Route path="/dvdms/*" element={<LoginWarRoutes />} />
           <Route index element={<HomePage />} />
           {/* <Route path index element={<NotFound />} /> */}
@@ -24,6 +25,7 @@ function App() {
         </Routes>
         <ToastContainer />
         <ConfirmBox message={"Do you want to save this data?"} />
+        <ConfirmBoxLogin />
         <Loader />
       </Router>
     </>

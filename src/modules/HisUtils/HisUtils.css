@@ -216,7 +216,7 @@ label {
   padding: 2px 5px;
 }
 
-.datatable-btns button {
+.datatable-btns-his button {
   border: 1px solid #FBC02D;
   border-radius: 5px;
   background-color: #005b88;
@@ -224,7 +224,7 @@ label {
   padding: 2px 5px;
 }
 
-.datatable-btns button:hover {
+.datatable-btns-his button:hover {
   border: 1px solid #005b88;
   background-color: #FBC02D;
 }
@@ -291,7 +291,7 @@ label {
 
 
 .global-button-group button:hover .dropdown-gear-icon,
-.datatable-btns button:hover .dropdown-gear-icon {
+.datatable-btns-his button:hover .dropdown-gear-icon {
   color: #2C2C2C;
   transform: rotate(360deg);
 }

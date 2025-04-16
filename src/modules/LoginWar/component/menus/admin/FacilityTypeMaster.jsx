@@ -2,16 +2,20 @@ import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext';
 import InputSelect from '../../InputSelect';
 import GlobalTable from '../../GlobalTable';
-import { capitalizeFirstLetter } from '../../../utils/CommonFunction';
+import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import FacilityTypeMasterForm from '../forms/admin/FacilityTypeMasterForm';
+import { fetchDeleteData } from '../../../../../utils/ApiHooks';
+import ViewPage from '../ViewPage';
 
 const FacilityTypeMaster = () => {
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, getZoneListData, zoneListData } = useContext(LoginContext);
+
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, getFacilityTypeListData, facilityTypeListData, setConfirmSave, confirmSave, setShowConfirmSave } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
-    const [recordStatus, setRecordStatus] = useState('1')
+    const [recordStatus, setRecordStatus] = useState('Active')
+    const [filterData, setFilterData] = useState(facilityTypeListData);
 
     useEffect(() => {
-
+        getFacilityTypeListData(recordStatus === "InActive" ? '0' : '1')
     }, [recordStatus])
 
     const handleRowSelect = (row) => {
@@ -22,6 +26,50 @@ const FacilityTypeMaster = () => {
             return [row];
         });
     };
+
+    useEffect(() => {
+        if (!searchInput) {
+            setFilterData(facilityTypeListData);
+        } else {
+            const lowercasedText = searchInput.toLowerCase();
+            const newFilteredData = facilityTypeListData.filter(row => {
+                const paramName = row?.facilityTypeName?.toLowerCase() || "";
+
+                return paramName.includes(lowercasedText);
+            });
+            setFilterData(newFilteredData);
+        }
+    }, [searchInput, facilityTypeListData]);
+
+
+    const deleteRecord = () => {
+        fetchDeleteData(`api/v1/Facility/${selectedOption[0]?.facilityTypeId}`).then(data => {
+            if (data) {
+                ToastAlert("Record Deleted Successfully", "success")
+                getFacilityTypeListData();
+                setSelectedOption([]);
+                setConfirmSave(false);
+                onClose();
+            } else {
+                ToastAlert('Error while deleting record!', 'error')
+            }
+        })
+    }
+
+    const handleDeleteRecord = () => {
+        if (selectedOption?.length > 0) {
+            setOpenPage('delete');
+            setShowConfirmSave(true);
+        } else {
+            ToastAlert("Please select a record", "warning");
+        }
+    }
+
+    useEffect(() => {
+        if (confirmSave && openPage === 'delete') {
+            deleteRecord();
+        }
+    }, [confirmSave])
 
     const column = [
         {
@@ -37,7 +85,7 @@ const FacilityTypeMaster = () => {
                     <span className="btn btn-sm text-white px-1 py-0 mr-1" >
                         <input
                             type="checkbox"
-                            checked={selectedOption.length > 0 && selectedOption[0]?.cwhnumZoneId === row?.cwhnumZoneId}
+                            checked={selectedOption.length > 0 && selectedOption[0]?.facilityTypeId === row?.facilityTypeId}
                             onChange={(e) => { handleRowSelect(row) }}
                         />
                     </span>
@@ -46,25 +94,30 @@ const FacilityTypeMaster = () => {
         },
         {
             name: 'Facility Name',
-            selector: row => row.cwhstrZoneName,
+            selector: row => row.facilityTypeName,
             sortable: true,
         },
-        //  {
-        //      name: 'Short Name',
-        //      selector: row => row.cwhstrZoneShortName || "---",
-        //      sortable: true,
-        //  },
+        {
+            name: 'Short Name',
+            selector: row => row.facilityTypeShortName || "---",
+            sortable: true,
+        },
     ]
+
+    const onClose = () => {
+        setOpenPage('home');
+        setSelectedOption([]);
+    }
 
     return (
         <>
             <div className='masters mx-3 my-2'>
                 <div className='masters-header row'>
                     <span className='col-6'><b>{`Facility Type Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {zoneListData?.length}</span>}
+                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
 
                 </div>
-                {openPage === "home" && (<>
+                {(openPage === "home" || openPage === 'view' || openPage === 'delete') && (<>
                     <div className='row pt-2'>
                         <div className='col-sm-6'>
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
@@ -74,7 +127,7 @@ const FacilityTypeMaster = () => {
                                         id="recordStatus"
                                         name="recordStatus"
                                         placeholder="Select Status"
-                                        options={[{ value: 1, label: 'Active' }, { value: 0, label: 'InActive' }]}
+                                        options={[{ value: "Active", label: 'Active' }, { value: "InActive", label: 'InActive' }]}
                                         className="aliceblue-bg border-dark-subtle"
                                         value={recordStatus}
                                         onChange={(e) => { setRecordStatus(e.target.value) }}
@@ -85,12 +138,16 @@ const FacilityTypeMaster = () => {
                     </div>
 
                     <hr className='my-2' />
-                    <GlobalTable column={column} data={zoneListData} onDelete={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+
+                    {openPage === 'view' &&
+                        <ViewPage data={[{ value: selectedOption[0]?.facilityTypeName, label: "Facility Type Name" }]} onClose={onClose} title={"Facility Type Master"} />
+                    }
                 </>)}
 
                 {(openPage === "add" || openPage === 'modify') && (<>
-                     <FacilityTypeMasterForm />
-                 </>)}
+                    <FacilityTypeMasterForm />
+                </>)}
             </div>
         </>
     )

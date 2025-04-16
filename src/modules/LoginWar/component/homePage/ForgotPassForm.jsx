@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import InputSelect from '../InputSelect'
-import { fetchData } from '../../utils/ApiHooks';
 import { LoginContext } from '../../context/LoginContext';
+import { fetchData } from '../../../../utils/ApiHooks';
 
 const ForgotPassForm = ({ isShow, onClose }) => {
 

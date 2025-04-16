@@ -4,10 +4,13 @@ import FeedbackForm from './FeedbackForm';
 import { stateData } from '../../localData/HomeData';
 import MenuList from './MenuList';
 import Cookies from 'js-cookie';
+import { decryptData } from '../../utils/SecurityConfig';
 
 const DashHeader = () => {
     const [showFeedback, setShowFeedback] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null);
+        const sessionData = sessionStorage.getItem('data');
+        const userData = sessionData ? decryptData(sessionData) : '';
 
     const navigate = useNavigate();
 
@@ -73,16 +76,16 @@ const DashHeader = () => {
                                 <i className="fa fa-user-circle" style={{ fontSize: "large" }} ></i>
                             </a>
                             <ul className="dropdown-menu dropdown-menu-end">
-                                <li className='dropdown-item text-center' style={{ textDecoration: "underline" }}> <b> Welcome User</b></li>
+                                <li className='dropdown-item text-center' style={{ textDecoration: "underline" }}> <b> Welcome - {userData?.username}</b></li>
                                 <li><hr className="dropdown-divider" /></li>
                                 <li>
-                                    <Link className="dropdown-item" to="/dvdms-change-password">
+                                    <Link className="dropdown-item" to="/dvdms/change-password">
                                         <i className="fa fa-lock me-2"></i>
                                         Change Password
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link className="dropdown-item" to="/dvdms-change-user">
+                                    <Link className="dropdown-item" to="/dvdms/change-user">
                                         <i className="fa fa-edit me-2"></i>
                                         Change User Details
                                     </Link>
@@ -94,10 +97,10 @@ const DashHeader = () => {
                                     </a>
                                 </li>
                                 <li>
-                                    <a className="dropdown-item" href="#" onClick={logOut}>
+                                    <Link className="dropdown-item" onClick={logOut}>
                                         <i className="fa fa-right-from-bracket me-2"></i>
                                         Sign Out
-                                    </a>
+                                    </Link>
                                 </li>
                             </ul>
                         </li>

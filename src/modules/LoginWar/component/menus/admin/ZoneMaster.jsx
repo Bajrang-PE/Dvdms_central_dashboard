@@ -4,14 +4,15 @@ import { LoginContext } from '../../../context/LoginContext'
 import InputSelect from '../../InputSelect';
 import ZoneMasterForm from '../forms/admin/ZoneMasterForm';
 import ViewPage from '../ViewPage';
-import { fetchDeleteData } from '../../../utils/ApiHooks';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
+import { fetchDeleteData } from '../../../../../utils/ApiHooks';
 
 const ZoneMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, getZoneListData, zoneListData } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, getZoneListData, zoneListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active')
+    const [filterData, setFilterData] = useState(zoneListData);
 
     useEffect(() => {
         getZoneListData(recordStatus === "Active" ? '1' : '0')
@@ -33,21 +34,48 @@ const ZoneMaster = () => {
         });
     };
 
+    useEffect(() => {
+        if (!searchInput) {
+            setFilterData(zoneListData);
+        } else {
+            const lowercasedText = searchInput.toLowerCase();
+            const newFilteredData = zoneListData.filter(row => {
+                const paramName = row?.cwhstrZoneName?.toLowerCase() || "";
+
+                return paramName.includes(lowercasedText);
+            });
+            setFilterData(newFilteredData);
+        }
+    }, [searchInput, zoneListData]);
+
     const deleteRecord = () => {
+        fetchDeleteData(`api/v1/zones/${selectedOption[0]?.cwhnumZoneId}`).then(data => {
+            if (data) {
+                ToastAlert("Record Deleted Successfully", "success")
+                getZoneListData(recordStatus);
+                setSelectedOption([]);
+                setConfirmSave(false);
+                onClose();
+            } else {
+                ToastAlert('Error while deleting record!', 'error')
+            }
+        })
+    }
+
+    const handleDeleteRecord = () => {
         if (selectedOption?.length > 0) {
-            fetchDeleteData(`api/v1/zones/${selectedOption[0]?.cwhnumZoneId}`).then(data => {
-                if (data) {
-                    ToastAlert("Record Deleted Successfully", "success")
-                    getZoneListData(recordStatus);
-                    setSelectedOption([]);
-                } else {
-                    ToastAlert('Error while deleting record!', 'error')
-                }
-            })
+            setOpenPage('delete');
+            setShowConfirmSave(true);
         } else {
             ToastAlert("Please select a record", "warning");
         }
     }
+
+    useEffect(() => {
+        if (confirmSave && openPage === 'delete') {
+            deleteRecord();
+        }
+    }, [confirmSave])
 
     const column = [
         {
@@ -92,10 +120,10 @@ const ZoneMaster = () => {
             <div className='masters mx-3 my-2'>
                 <div className='masters-header row'>
                     <span className='col-6'><b>{`Zone Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {zoneListData?.length}</span>}
+                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
 
                 </div>
-                {(openPage === "home" || openPage === 'view') && (<>
+                {(openPage === "home" || openPage === 'view' || openPage === 'delete') && (<>
                     <div className='row pt-2'>
                         <div className='col-sm-6'>
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
@@ -116,7 +144,7 @@ const ZoneMaster = () => {
                     </div>
 
                     <hr className='my-2' />
-                    <GlobalTable column={column} data={zoneListData} onDelete={deleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
 
                     {openPage === 'view' &&
                         <ViewPage data={[{ value: selectedOption[0]?.cwhstrZoneName, label: "Zone Name" }]} onClose={onClose} title={"Zone Master"} />

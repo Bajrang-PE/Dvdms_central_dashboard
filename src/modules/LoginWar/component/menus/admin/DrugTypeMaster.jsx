@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import DashHeader from '../../dashboard/DashHeader'
 import InputSelect from "../../InputSelect";
-import { fetchData, fetchUpdateData } from "../../../utils/ApiHooks";
 import GlobalTable from '../../GlobalTable';
 import { LoginContext } from '../../../context/LoginContext';
 import DrugTypeForm from '../forms/admin/DrugTypeForm';
 import { ToastAlert } from '../../../utils/CommonFunction';
 import { Modal } from 'react-bootstrap';
+import { fetchData,fetchUpdateData } from '../../../../../utils/ApiHooks';
 
 export const DrugTypeMaster = () => {
 

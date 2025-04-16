@@ -2,14 +2,17 @@ import React, { useContext, useEffect, useState } from 'react'
 import GlobalButtons from '../../GlobalButtons'
 import InputField from '../../../InputField'
 import { LoginContext } from '../../../../context/LoginContext';
-import { fetchData, fetchPostData, fetchUpdateData } from '../../../../utils/ApiHooks';
 import { ToastAlert } from '../../../../utils/CommonFunction';
+import { fetchData, fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 
 const ZoneMasterForm = () => {
-    const { openPage, selectedOption, setOpenPage, setSelectedOption, getZoneListData } = useContext(LoginContext);
+    const { openPage, selectedOption, setOpenPage, setSelectedOption, getZoneListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [zoneName, setZoneName] = useState('');
-    const [recordStatus, setRecordStatus] = useState('1');
+    const [recordStatus, setRecordStatus] = useState('Active');
     const [singleData, setSingleData] = useState([]);
+    const [errors, setErrors] = useState({
+        "zoneNameErr": ""
+    })
 
     const getSingleData = (id) => {
         fetchData(`api/v1/zones/${id}`).then(data => {
@@ -40,6 +43,7 @@ const ZoneMasterForm = () => {
                 getZoneListData();
                 setOpenPage('home');
                 reset();
+                setConfirmSave(false);
             } else {
                 ToastAlert('error while creating record!', "error");
             }
@@ -62,11 +66,35 @@ const ZoneMasterForm = () => {
                 setOpenPage('home');
                 reset();
                 setSelectedOption([]);
+                setConfirmSave(false);
             } else {
                 ToastAlert('error while updating record!', error)
             }
         })
     }
+
+    const handleValidation = () => {
+        let isValid = true;
+        if (!zoneName?.trim()) {
+            setErrors(prev => ({ ...prev, "zoneNameErr": "Zone name is required" }));
+            isValid = false;
+        }
+
+        if (isValid) {
+            setShowConfirmSave(true)
+        }
+    }
+
+    useEffect(() => {
+        if (confirmSave) {
+            if (openPage === 'modify') {
+                updateZoneData();
+            } else {
+                saveZoneData();
+            }
+        }
+    }, [confirmSave])
+
 
     useEffect(() => {
         if (singleData?.length > 0) {
@@ -77,12 +105,12 @@ const ZoneMasterForm = () => {
 
     const reset = () => {
         setZoneName('');
-        setRecordStatus('1')
+        setRecordStatus('Active');
+        setConfirmSave(false);
     }
-    console.log(selectedOption, 'sele')
     return (
         <div>
-            <GlobalButtons onSave={openPage === "add" ? saveZoneData : updateZoneData} onClear={reset} />
+            <GlobalButtons onSave={handleValidation} onClear={reset} />
             <hr className='my-2' />
             <div className='row pt-2'>
                 <div className='col-sm-6'>
@@ -96,7 +124,8 @@ const ZoneMasterForm = () => {
                                 placeholder="Enter ZoneName"
                                 className="aliceblue-bg border-dark-subtle"
                                 value={zoneName}
-                                onChange={(e) => setZoneName(e.target?.value)}
+                                onChange={(e) => { setZoneName(e.target?.value); setErrors({ ...errors, "zoneNameErr": "" }) }}
+                                errorMessage={errors?.zoneNameErr}
                             />
                         </div>
                     </div>

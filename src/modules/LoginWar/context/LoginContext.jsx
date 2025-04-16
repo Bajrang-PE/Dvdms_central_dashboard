@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { fetchData } from "../utils/ApiHooks";
+import { fetchData } from "../../../utils/ApiHooks";
 
 export const LoginContext = createContext();
 
@@ -10,9 +10,13 @@ const LoginContextApi = ({ children }) => {
     const [showForgotPass, setShowForgotPass] = useState(false);
     const [selectedOption, setSelectedOption] = useState([]);
     const [openPage, setOpenPage] = useState('home')
+
     //API Data
     const [widgetData, setWidgetData] = useState([]);
+
+    //masters
     const [zoneListData, setZoneListData] = useState([]);
+    const [facilityTypeListData, setFacilityTypeListData] = useState([]);
 
     //dropdowns
     const [hintQuestionDrpDt, setHintQuestionDrpDt] = useState([]);
@@ -20,6 +24,10 @@ const LoginContextApi = ({ children }) => {
     const [supplierNameDrpDt, setSupplierNameDrpDt] = useState([]);
     const [districtNameDrpDt, setDistrictNameDrpDt] = useState([]);
 
+
+    //confirm alert
+    const [confirmSave, setConfirmSave] = useState(false);
+    const [showConfirmSave, setShowConfirmSave] = useState(false);
 
 
     const getWidgetData = () => {
@@ -32,6 +40,8 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+
+    //-----------------------------------------------MASTERS----------------------------------------------
     const getZoneListData = (status) => {
         fetchData(`api/v1/zones/status?status=${status ? status : "1"}`).then((data) => {
             if (data) {
@@ -41,6 +51,18 @@ const LoginContextApi = ({ children }) => {
             }
         })
     }
+    const getFacilityTypeListData = (status) => {
+        fetchData(`api/v1/Facility/status?status=${status ? status : "1"}`).then((data) => {
+            if (data) {
+                setFacilityTypeListData(data)
+            } else {
+                setFacilityTypeListData([])
+            }
+        })
+    }
+
+    //-----------------------------------------------MASTERS----------------------------------------------
+
 
     const getHintQuestionDrpData = () => {
         fetchData('/login/hntQueDropDown').then((data) => {
@@ -126,7 +148,14 @@ const LoginContextApi = ({ children }) => {
             getDistrictNameDrpData, districtNameDrpDt,
             selectedOption, setSelectedOption,
             openPage, setOpenPage,
-            getZoneListData, zoneListData
+
+            //confirm box
+            showConfirmSave, setShowConfirmSave, confirmSave, setConfirmSave,
+
+
+            //-----------masters----------
+            getZoneListData, zoneListData,
+            getFacilityTypeListData, facilityTypeListData
         }}>
             {children}
         </LoginContext.Provider>

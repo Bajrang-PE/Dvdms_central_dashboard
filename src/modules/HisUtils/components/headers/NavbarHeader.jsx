@@ -4,21 +4,22 @@ import { faGear } from '@fortawesome/free-solid-svg-icons';
 import './NavbarHeader.css';
 import { Link } from 'react-router-dom';
 import { HISContext } from '../../contextApi/HISContext';
-import { fetchPostData } from '../../utils/ApiHooks';
+import DashHeader from '../../../LoginWar/component/dashboard/DashHeader';
+import { fetchPostData } from '../../../../utils/ApiHooks';
 
 const NavbarHeader = () => {
     const { setActionMode, setSelectedOption } = useContext(HISContext)
     const dashboardMasterDt = [
-        { label: 'Widget Master', link: "/hisUtils/widget-master" },
-        { label: 'Tab Master', link: "/hisUtils/tab-master" },
-        { label: 'Dashboard Master', link: "/hisUtils/dashboard-master" },
-        { label: 'Parameter Master', link: "/hisUtils/parameter-master" },
-        { label: 'Dashboard Configuration Master', link: "/hisUtils/dashboard-configuration-master" }
+        { label: 'Widget Master', link: "/dvdms/HIS_dashboard/widget-master" },
+        { label: 'Tab Master', link: "/dvdms/HIS_dashboard/tab-master" },
+        { label: 'Dashboard Master', link: "/dvdms/HIS_dashboard/dashboard-master" },
+        { label: 'Parameter Master', link: "/dvdms/HIS_dashboard/parameter-master" },
+        { label: 'Dashboard Configuration Master', link: "/dvdms/HIS_dashboard/dashboard-configuration-master" }
     ]
     const webServiceMaster = [
-        { label: 'Data Service Master', link: "/hisUtils/data-service-master" },
-        { label: 'Service User Master', link: "/hisUtils/service-user-master" },
-        { label: 'Dashboard SubMenu Master', link: "/hisUtils/dashboard-submenu-master" }
+        { label: 'Data Service Master', link: "/dvdms/HIS_dashboard/data-service-master" },
+        { label: 'Service User Master', link: "/dvdms/HIS_dashboard/service-user-master" },
+        { label: 'Dashboard SubMenu Master', link: "/dvdms/HIS_dashboard/dashboard-submenu-master" }
     ]
     const reset = () => {
         localStorage.removeItem('values');
@@ -78,9 +79,11 @@ const NavbarHeader = () => {
 
 
     return (
+        <>
+        {/* <DashHeader/> */}
         <nav className="navbar navbar-expand-lg navbar-dark navbar-header-his">
             <div className="container-fluid his-brand">
-                <a className="navbar-brand logo" href="/">HIS Utility</a>
+                <a className="navbar-brand logo" href="/dvdms/user-dashboard">HIS Utility</a>
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -151,6 +154,7 @@ const NavbarHeader = () => {
                 </div>
             </div>
         </nav>
+        </>
     );
 };
 

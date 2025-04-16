@@ -15,8 +15,8 @@ import HelpDocs from '../../components/dashboardMasters/tabMaster/HelpDocs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import GlobalDataTable from '../../components/commons/GlobalDataTable';
-import { fetchPostData } from '../../utils/ApiHooks';
 import { ToastAlert } from '../../utils/commonFunction';
+import { fetchPostData } from '../../../../utils/ApiHooks';
 
 const TabMaster = () => {
 

@@ -7,8 +7,8 @@ import { parameterType, serviceCategories, timeOutOptions } from '../../localDat
 import DataServiceTable from '../../components/webServiceMasters/dataService/DataServiceTable'
 import { HISContext } from '../../contextApi/HISContext'
 import { ToastAlert } from '../../utils/commonFunction'
-import { fetchPostData } from '../../utils/ApiHooks'
 import GlobalDataTable from '../../components/commons/GlobalDataTable'
+import { fetchPostData } from '../../../../utils/ApiHooks'
 
 const DataServiceMaster = () => {
   const { setShowDataTable, getAllServiceData, dataServiceData, selectedOption, setSelectedOption, setActionMode, actionMode, parameterData, getAllParameterData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, } = useContext(HISContext);

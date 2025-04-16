@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
-import { fetchData, fetchPostData } from '../../utils/ApiHooks';
 import { ToastAlert } from '../../utils/CommonFunction';
 import { encryptData } from '../../utils/SecurityConfig';
 import Cookies from 'js-cookie';
+import { fetchData,fetchPostData } from '../../../../utils/ApiHooks';
 
 
 const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
@@ -92,7 +92,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                         Cookies.set('csrfToken', csrfToken);
                         sessionStorage.setItem('accessToken', accessToken);
                         sessionStorage.setItem('refreshToken', refreshToken);
-                        navigate('dvdms/dvdms-central-dashboard');
+                        navigate('dvdms/user-dashboard');
                     } else {
                         ToastAlert(data?.message, 'error');
                     }
