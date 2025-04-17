@@ -17,12 +17,15 @@ const LoginContextApi = ({ children }) => {
     //masters
     const [zoneListData, setZoneListData] = useState([]);
     const [facilityTypeListData, setFacilityTypeListData] = useState([]);
+    const [genericDrugListData, setGenericDrugListData] = useState([]);
 
     //dropdowns
     const [hintQuestionDrpDt, setHintQuestionDrpDt] = useState([]);
     const [stateNameDrpDt, setStateNameDrpDt] = useState([]);
     const [supplierNameDrpDt, setSupplierNameDrpDt] = useState([]);
     const [districtNameDrpDt, setDistrictNameDrpDt] = useState([]);
+    const [groupDrpData, setGroupDrpData] = useState([]);
+    const [subGroupDrpData, setSubGroupDrpData] = useState([]);
 
 
     //confirm alert
@@ -57,6 +60,20 @@ const LoginContextApi = ({ children }) => {
                 setFacilityTypeListData(data)
             } else {
                 setFacilityTypeListData([])
+            }
+        })
+    }
+    const getGenericDrugListData = (grpId, sbGrpId, status) => {
+        const params = {
+            groupId: grpId ? grpId : '0',
+            subgroupId: sbGrpId ? sbGrpId : "0",
+            isValid: status ? status : "1"
+        }
+        fetchData(`api/v1/drugs`,params).then((data) => {
+            if (data) {
+                setGenericDrugListData(data)
+            } else {
+                setGenericDrugListData([])
             }
         })
     }
@@ -137,6 +154,41 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+    const getGroupDrpData = () => {
+        fetchData('/api/v1/GrpDrpdwn').then((data) => {
+            if (data) {
+                const drpData = data?.map((dt) => {
+                    const val = {
+                        value: dt?.id,
+                        label: dt?.name
+                    }
+
+                    return val;
+                })
+                setGroupDrpData(drpData)
+
+            } else {
+                setGroupDrpData([])
+            }
+        })
+    }
+    const getSubGroupDrpData = (grpId) => {
+        fetchData(`/api/v1/SubGrpDrpDwn/${grpId}`).then((data) => {
+            if (data) {
+                const drpData = data?.map((dt) => {
+                    const val = {
+                        value: dt?.subgroupId,
+                        label: dt?.subgroupName
+                    }
+                    return val;
+                })
+                setSubGroupDrpData(drpData)
+            } else {
+                setSubGroupDrpData([])
+            }
+        })
+    }
+
     return (
         <LoginContext.Provider value={{
             widgetData, getWidgetData,
@@ -148,6 +200,7 @@ const LoginContextApi = ({ children }) => {
             getDistrictNameDrpData, districtNameDrpDt,
             selectedOption, setSelectedOption,
             openPage, setOpenPage,
+            getGroupDrpData, groupDrpData, getSubGroupDrpData, subGroupDrpData,
 
             //confirm box
             showConfirmSave, setShowConfirmSave, confirmSave, setConfirmSave,
@@ -155,7 +208,8 @@ const LoginContextApi = ({ children }) => {
 
             //-----------masters----------
             getZoneListData, zoneListData,
-            getFacilityTypeListData, facilityTypeListData
+            getFacilityTypeListData, facilityTypeListData,
+            getGenericDrugListData, genericDrugListData
         }}>
             {children}
         </LoginContext.Provider>

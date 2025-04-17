@@ -7,7 +7,7 @@ import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
 const FacilityTypeMasterForm = () => {
-    const { openPage, selectedOption, setOpenPage, setSelectedOption, getFacilityTypeListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const { openPage, selectedOption, setOpenPage, setSelectedOption, getFacilityTypeListData, setShowConfirmSave, confirmSave,setConfirmSave } = useContext(LoginContext);
     const [facilityName, setFacilityName] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active');
     const [errors, setErrors] = useState({
@@ -88,7 +88,7 @@ const FacilityTypeMasterForm = () => {
 
     const reset = () => {
         setFacilityName('');
-        setRecordStatus('Active');
+        setRecordStatus('Active')
         setConfirmSave(false);
     }
 

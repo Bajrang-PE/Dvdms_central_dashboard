@@ -10,7 +10,7 @@ const Auth = (props) => {
     const { comp } = props;
 
     const navigate = useNavigate();
-    const sessionData = sessionStorage.getItem('data');
+    const sessionData = localStorage.getItem('data');
     const userData = sessionData ? decryptData(sessionData) : '';
 
     const Component = comp;
@@ -49,7 +49,7 @@ const Auth = (props) => {
     const logout = () => {
         localStorage.clear();
         window.location.href = '/'
-        sessionStorage.clear();
+        localStorage.clear();
         Cookies.remove('csrfToken');
         navigate('/');
 

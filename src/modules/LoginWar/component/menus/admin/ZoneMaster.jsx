@@ -52,7 +52,7 @@ const ZoneMaster = () => {
         fetchDeleteData(`api/v1/zones/${selectedOption[0]?.cwhnumZoneId}`).then(data => {
             if (data) {
                 ToastAlert("Record Deleted Successfully", "success")
-                getZoneListData(recordStatus);
+                getZoneListData();
                 setSelectedOption([]);
                 setConfirmSave(false);
                 onClose();

@@ -6,9 +6,8 @@ import PdfDownload from '../commons/PdfDownload';
 import MapDash from './MapDash';
 
 const TabDash = React.memo(({ tabData }) => {
-    const { allWidgetData, setLoading, loading, activeTab } = useContext(HISContext);
+    const { allWidgetData, setLoading, loading, activeTab, setParamsValues } = useContext(HISContext);
     const [presentWidgets, setPresentWidgets] = useState([]);
-    const [paramsValues, setParamsValues] = useState();
     const [presentTabs, setPresentTabs] = useState([]);
 
     const handleSetParamsValues = useCallback((values) => {
@@ -55,6 +54,8 @@ const TabDash = React.memo(({ tabData }) => {
             setPresentTabs(sortedWidgets)
         }
     }, [tabData, allWidgetData]);
+
+
 
     return (
         <>

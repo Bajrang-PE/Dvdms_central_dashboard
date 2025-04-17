@@ -9,27 +9,27 @@ const BaseUrl = 'http://10.226.25.164:8025'; //pritee
 axios.defaults.baseURL = BaseUrl;
 
 const getAccessToken = () => {
-    return sessionStorage.getItem('accessToken');
+    return localStorage.getItem('accessToken');
 };
 const getCsrfToken = () => {
     return Cookies.get('csrfToken');
 };
 
 // Set the Authorization header globally using an interceptor
-axios.interceptors.request.use(
-    (config) => {
-        const accessToken = getAccessToken();
-        // const CsrfToken = getCsrfToken();
-        if (accessToken) {
-            config.headers['Authorization'] = `Bearer ${accessToken}`;
-            // config.headers['X-CSRF-TOKEN'] = CsrfToken;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+// axios.interceptors.request.use(
+//     (config) => {
+//         const accessToken = getAccessToken();
+//         // const CsrfToken = getCsrfToken();
+//         if (accessToken) {
+//             config.headers['Authorization'] = `Bearer ${accessToken}`;
+//             // config.headers['X-CSRF-TOKEN'] = CsrfToken;
+//         }
+//         return config;
+//     },
+//     (error) => {
+//         return Promise.reject(error);
+//     }
+// );
 
 // axios.interceptors.response.use(
 //     async (response) => {

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import InputSelect from '../../InputSelect'
 import { LoginContext } from '../../../context/LoginContext';
-import { fetchData } from '../../../utils/ApiHooks';
+import { fetchData } from '../../../../../utils/ApiHooks';
 
 const NinFacilityMappingMaster = () => {
 

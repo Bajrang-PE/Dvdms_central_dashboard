@@ -9,7 +9,7 @@ import { decryptData } from '../../utils/SecurityConfig';
 const DashHeader = () => {
     const [showFeedback, setShowFeedback] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null);
-        const sessionData = sessionStorage.getItem('data');
+        const sessionData = localStorage.getItem('data');
         const userData = sessionData ? decryptData(sessionData) : '';
 
     const navigate = useNavigate();
@@ -39,7 +39,7 @@ const DashHeader = () => {
 
     const logOut = () => {
         navigate('/')
-        sessionStorage.clear();
+        localStorage.clear();
         Cookies.remove('csrfToken');
     }
 

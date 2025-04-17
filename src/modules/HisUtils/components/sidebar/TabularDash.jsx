@@ -7,6 +7,7 @@ import { HISContext } from "../../contextApi/HISContext";
 import InputField from "../commons/InputField";
 import { generateCSV, generatePDF } from "../commons/advancedPdf";
 import Parameters from "./Parameters";
+import { getAuthUserData } from "../../../../utils/CommonFunction";
 
 const initialStates = [
   { id: 1, name: "Rajasthan" },
@@ -43,22 +44,24 @@ const hospitalData = {
 
 const TabularDash = ({ widgetData }) => {
 
-  const { theme, mainDashData, singleConfigData } = useContext(HISContext);
+  const { theme, mainDashData, singleConfigData,paramsValues } = useContext(HISContext);
   const [tableData, setTableData] = useState([]);
   const [currentLevel, setCurrentLevel] = useState("state");
   const [currentData, setCurrentData] = useState(initialStates);
   const [previousData, setPreviousData] = useState([]);
-  const [paramsValues, setParamsValues] = useState();
+   const [widParamsValues, setWidParamsValues] = useState();
   const [searchInput, setSearchInput] = useState('');
-  const [filterData, setFilterData] = useState(initialStates)
+  const [filterData, setFilterData] = useState(tableData)
+
+  const [columns, setColumns] = useState([]);
 
   //parameter search
   useEffect(() => {
     if (!searchInput) {
-      setFilterData(currentData);
+      setFilterData(tableData);
     } else {
       const lowercasedText = searchInput.toLowerCase();
-      const newFilteredData = currentData.filter(row => {
+      const newFilteredData = tableData.filter(row => {
         const paramId = row?.id?.toString() || "";
         const paramName = row?.name?.toLowerCase() || "";
 
@@ -66,7 +69,7 @@ const TabularDash = ({ widgetData }) => {
       });
       setFilterData(newFilteredData);
     }
-  }, [searchInput, currentData]);
+  }, [searchInput, tableData]);
 
 
   const handleStateClick = useCallback((stateId) => {
@@ -94,16 +97,66 @@ const TabularDash = ({ widgetData }) => {
     }
   }, [previousData]);
 
+  const formatData = (rawData = []) => {
+    return rawData.map((item) => {
+      const formattedItem = {};
+      Object.entries(item).forEach(([key, value]) => {
+
+        const formattedKey = key.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+        formattedItem[formattedKey] = formattedKey.includes("State") ? value?.split('##')[0] : value;
+      });
+      return formattedItem;
+    });
+  };
+
+  const generateColumns = (data) => {
+    if (!data || data.length === 0) return [];
+    return Object.keys(data[0]).map((key) => ({
+      name: key,
+      selector: row => row[key],
+      sortable: true,
+      wrap: true,
+    }));
+  };
+  const formatParams = (paramsObj) => {
+    if (typeof paramsObj !== 'object' || paramsObj === null || Array.isArray(paramsObj)) {
+      return {
+        paramsId: "",
+        paramsValue: ""
+      };
+    }
+  
+    return {
+      paramsId: Object.keys(paramsObj).join(','),
+      paramsValue: Object.values(paramsObj).join(',')
+    };
+  };
   const fetchData = async (widget) => {
     if (widget?.modeOfQuery === "Procedure") {
       if (!widget?.procedureMode) return;
       try {
-        const data = await fetchProcedureData(widget?.procedureMode);
-        setTableData(
-          data?.length > 0 && data.map((item) => ({
-            name: item.column_1,
-            y: item.column_2,
-          })));
+        const paramVal = formatParams(paramsValues ? paramsValues : null);
+
+        const params = [
+          getAuthUserData('hospitalCode')?.toString(), //hospital code===
+          "10001", //user id===
+          "", //primary key
+          paramVal.paramsId || "", //parameter ids
+          paramVal.paramsValue || "", //parameter values
+          isPaginationReq?.toString(), //is pagination required===
+          initialRecord?.toString(), //initial record no.===
+          finalRecord?.toString(), //final record no.===
+          "", //date options
+          "16-Apr-2025",//from values
+          "16-Apr-2025" // to values
+        ]
+        const response = await fetchProcedureData(widget?.procedureMode,params);
+        const formattedData = formatData(response.data || []);
+        const generatedColumns = generateColumns(formattedData);
+        setColumns(generatedColumns);
+        setTableData(formattedData);
+
       } catch (error) {
         console.error("Error loading query data:", error);
       }
@@ -127,7 +180,7 @@ const TabularDash = ({ widgetData }) => {
       // alert('bgbg')
       fetchData(widgetData);
     }
-  }, []);
+  }, [paramsValues]);
 
 
   const headingAlign = widgetData?.tableHeadingAlignment === '1' ? 'center' : 'left';
@@ -145,46 +198,49 @@ const TabularDash = ({ widgetData }) => {
   const paramsData = widgetData.selFilterIds || "";
   const footerText = widgetData.footerText || "";
   const widgetTopMargin = widgetData.widgetTopMargin || "";
+  const initialRecord = widgetData?.initialRecordNo ;
+  const finalRecord = widgetData?.finalRecordNo ;
 
-  const columns = useMemo(() => {
-    const srNoColumn = isIndexNoReq
-      ? [{ name: 'Sr.No.', selector: (row, index) => index + 1 }]
-      : [];
-    if (currentLevel === "state") {
-      return [
+  // const columns = useMemo(() => {
+  //   const srNoColumn = isIndexNoReq
+  //     ? [{ name: 'Sr.No.', selector: (row, index) => index + 1 }]
+  //     : [];
+  //   if (currentLevel === "state") {
+  //     return [
 
-        ...srNoColumn,
-        {
-          name: "Action",
-          cell: (row) => (
-            <button className="rounded-4 border-1" onClick={() => handleStateClick(row.id)}>
-              <FontAwesomeIcon icon={faSortAmountDesc} />
-            </button>
-          ),
-        },
-        { name: "State Name", selector: (row) => row.name, sortable: true },
-      ];
-    } else if (currentLevel === "district") {
-      return [
-        ...srNoColumn,
-        {
-          name: "Action",
-          cell: (row) => (
-            <button className="rounded-4 border-1" onClick={() => handleDistrictClick(row.id)}>
-              <FontAwesomeIcon icon={faSortAmountDesc} />
-            </button>
-          ),
-        },
-        { name: "District Name", selector: (row) => row.name, sortable: true },
-      ];
-    } else {
-      return [
-        ...srNoColumn,
-        { name: "Hospital Name", selector: (row) => row.name, sortable: true }
-      ];
-    }
-  }, [currentLevel, handleStateClick, handleDistrictClick]);
+  //       ...srNoColumn,
+  //       {
+  //         name: "Action",
+  //         cell: (row) => (
+  //           <button className="rounded-4 border-1" onClick={() => handleStateClick(row.id)}>
+  //             <FontAwesomeIcon icon={faSortAmountDesc} />
+  //           </button>
+  //         ),
+  //       },
+  //       { name: "State Name", selector: (row) => row.name, sortable: true },
+  //     ];
+  //   } else if (currentLevel === "district") {
+  //     return [
+  //       ...srNoColumn,
+  //       {
+  //         name: "Action",
+  //         cell: (row) => (
+  //           <button className="rounded-4 border-1" onClick={() => handleDistrictClick(row.id)}>
+  //             <FontAwesomeIcon icon={faSortAmountDesc} />
+  //           </button>
+  //         ),
+  //       },
+  //       { name: "District Name", selector: (row) => row.name, sortable: true },
+  //     ];
+  //   } else {
+  //     return [
+  //       ...srNoColumn,
+  //       { name: "Hospital Name", selector: (row) => row.name, sortable: true }
+  //     ];
+  //   }
+  // }, [currentLevel, handleStateClick, handleDistrictClick]);
 
+console.log(widgetData,"bb")
   return (
     <div className={`tabular-box ${theme === 'Dark' ? 'dark-theme' : ''} tabular-box-border ${borderReq === 'No' ? '' : 'tabular-box-border'}`} style={{ border: `1px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
 
@@ -254,7 +310,7 @@ const TabularDash = ({ widgetData }) => {
 
       {paramsData && (
         <div className='parameter-box'>
-          <Parameters params={paramsData} setParamsValues={setParamsValues} />
+          <Parameters params={paramsData} setParamsValues={setWidParamsValues} />
         </div>
       )}
 
