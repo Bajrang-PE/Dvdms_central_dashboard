@@ -1,11 +1,49 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext';
 import { capitalizeFirstLetter } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
 
 const FacilityTypeMappingMaster = () => {
-    const { selectedOption, setSelectedOption, openPage, setOpenPage } = useContext(LoginContext);
+    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext);
 
+    const [suppId, setSuppId] = useState("");
+    const [stateId, setStateId] = useState("");
+    const [availableOptions, setAvailableOptions] = useState([]);
+    const [selectedOptions, setSelectedOptions] = useState([]);
+    const [selectedAvailable, setSelectedAvailable] = useState([]);
+    const [selectedSelected, setSelectedSelected] = useState([]);
+
+    useEffect(() => {
+        if (supplierNameDrpDt?.length === 0) getSupplierNameDrpData();
+        if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
+        setOpenPage("add");
+    }, []);
+
+    useEffect(() => {
+        if (stateId) {
+            getStateSuppList();
+            setSelectedOptions([]);
+        }
+        setSelectedAvailable([]);
+        setSelectedSelected([]);
+    }, [stateId]);
+
+    const moveToSelected = () => {
+        const itemsToMove = availableOptions.filter(opt => selectedAvailable.includes(opt.value));
+        const newSelected = itemsToMove.filter(item =>
+            !selectedOptions.some(selected => selected.value === item.value)
+        );
+        setSelectedOptions(prev => [...prev, ...newSelected]);
+        setAvailableOptions(prev => prev.filter(opt => !selectedAvailable.includes(opt.value)));
+        setSelectedAvailable([]);
+    };
+
+    const moveToAvailable = () => {
+        const itemsToMove = selectedOptions.filter(opt => selectedSelected.includes(opt.value));
+        setAvailableOptions(prev => [...prev, ...itemsToMove]);
+        setSelectedOptions(prev => prev.filter(opt => !selectedSelected.includes(opt.value)));
+        setSelectedSelected([]);
+    };
 
     return (
         <>
@@ -53,49 +91,77 @@ const FacilityTypeMappingMaster = () => {
                 </div>
 
                 <div className="d-flex align-items-center my-3">
-                    <div className="flex-grow-1" style={{border:"1px solid #193fe6"}}></div>
+                    <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
                     <div className="px-1 text-primary fw-bold fs-13">
                         <span className="text-danger">*</span> State Facility Type
                     </div>
-                    <div className="flex-grow-1" style={{border:"1px solid #193fe6"}}></div>
+                    <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
                 </div>
 
                 <div className='d-flex justify-content-center mt-1 mb-2'>
                     <div className='' style={{ width: "30%" }}>
-                        <select className="form-select form-select-sm aliceblue-bg border-dark-subtle" id='leftRightSelect' size="8" aria-label="size 4 select example" onChange={null}>
-                            {/* {availableOptions?.map((opt, index) => (
-                                <option value={opt.value} key={index}>{opt.label}</option>
-                            ))} */}
+                        <select
+                            className="form-select form-select-sm aliceblue-bg border-dark-subtle"
+                            size="8"
+                            multiple
+                            value={selectedAvailable}
+                            onChange={(e) => {
+                                const selected = Array.from(e.target.selectedOptions, option => option.value);
+                                setSelectedAvailable(selected);
+                            }}
+                        >
+                            {availableOptions.map(opt => (
+                                <option key={`${opt.value}-${opt.label}`} value={opt.value}>{opt.label}</option>
+                            ))}
                         </select>
                     </div>
 
                     <div className='align-self-center' style={{ marginLeft: "2%", marginRight: "2%" }}>
                         <div className='d-flex justify-content-center'>
-                            <button type='button' className='btn btn-outline-secondary btn-sm m-1'>
+                            <button
+                                type='button'
+                                className='btn btn-outline-secondary btn-sm m-1'
+                                onClick={moveToSelected}
+                                disabled={selectedAvailable.length === 0}
+                            >
                                 <i className="fa fa-caret-right"></i>
                             </button>
 
                         </div>
 
                         <div className='d-flex justify-content-center'>
-                            <button type='button' className='btn btn-outline-secondary btn-sm m-1' >
+                            <button
+                                type='button'
+                                className='btn btn-outline-secondary btn-sm m-1'
+                                onClick={moveToAvailable}
+                                disabled={selectedSelected.length === 0}
+                            >
                                 <i className="fa fa-caret-left"></i>
                             </button>
                         </div>
                     </div>
 
                     <div className='' style={{ width: "30%" }}>
-                        <select className="form-select form-select-sm aliceblue-bg border-dark-subtle" id='leftRightSelect1' size="8" aria-label="size 4 select example" onChange={null}>
-                            {/* {selectedOptions?.map((opt, index) => (
-                                <option value={opt.value} key={index}>{opt.label}</option>
-                            ))} */}
+                        <select
+                            className="form-select form-select-sm aliceblue-bg border-dark-subtle"
+                            size="8"
+                            multiple
+                            value={selectedSelected}
+                            onChange={(e) => {
+                                const selected = Array.from(e.target.selectedOptions, option => option.value);
+                                setSelectedSelected(selected);
+                            }}
+                        >
+                            {selectedOptions.map(opt => (
+                                <option key={`${opt.value}-${opt.label}`} value={opt.value}>{opt.label}</option>
+                            ))}
                         </select>
                     </div>
                 </div>
 
                 {/* <hr className='my-2' /> */}
                 <div className='w-100 py-1 my-2 opacity-75 rounded-3' style={{ backgroundColor: "#000e4e" }}>
-                    </div>
+                </div>
 
                 <div className='text-center'>
                     <button className='btn btn-sm datatable-btns py-0' >

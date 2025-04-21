@@ -44,12 +44,12 @@ const hospitalData = {
 
 const TabularDash = ({ widgetData }) => {
 
-  const { theme, mainDashData, singleConfigData,paramsValues } = useContext(HISContext);
+  const { theme, mainDashData, singleConfigData, paramsValues, setLoading } = useContext(HISContext);
   const [tableData, setTableData] = useState([]);
   const [currentLevel, setCurrentLevel] = useState("state");
   const [currentData, setCurrentData] = useState(initialStates);
   const [previousData, setPreviousData] = useState([]);
-   const [widParamsValues, setWidParamsValues] = useState();
+  const [widParamsValues, setWidParamsValues] = useState();
   const [searchInput, setSearchInput] = useState('');
   const [filterData, setFilterData] = useState(tableData)
 
@@ -61,12 +61,13 @@ const TabularDash = ({ widgetData }) => {
       setFilterData(tableData);
     } else {
       const lowercasedText = searchInput.toLowerCase();
-      const newFilteredData = tableData.filter(row => {
-        const paramId = row?.id?.toString() || "";
-        const paramName = row?.name?.toLowerCase() || "";
 
-        return paramName.includes(lowercasedText);
+      const newFilteredData = tableData?.length > 0 && tableData?.filter(row => {
+        return Object.values(row)?.some(val =>
+          val?.toString()?.toLowerCase()?.includes(lowercasedText)
+        );
       });
+
       setFilterData(newFilteredData);
     }
   }, [searchInput, tableData]);
@@ -104,7 +105,7 @@ const TabularDash = ({ widgetData }) => {
 
         const formattedKey = key.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 
-        formattedItem[formattedKey] = formattedKey.includes("State") ? value?.split('##')[0] : value;
+        formattedItem[formattedKey] = formattedKey.includes("State") ? value : value;
       });
       return formattedItem;
     });
@@ -112,13 +113,26 @@ const TabularDash = ({ widgetData }) => {
 
   const generateColumns = (data) => {
     if (!data || data.length === 0) return [];
-    return Object.keys(data[0]).map((key) => ({
+
+    const keys = Object.keys(data[0]);
+
+    // Reorder keys so "State" is first
+    const reorderedKeys = [
+      ...keys.filter(k => /state/i.test(k)), // Match "State", "State / UT" etc.
+      ...keys.filter(k => !/state/i.test(k))
+    ];
+
+    return reorderedKeys.map((key) => ({
       name: key,
       selector: row => row[key],
       sortable: true,
       wrap: true,
+      cell: key.toLowerCase().includes("state")
+        ? row => <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => console.log(row)}>{row[key]?.split('##')[0]}</span>
+        : undefined
     }));
   };
+
   const formatParams = (paramsObj) => {
     if (typeof paramsObj !== 'object' || paramsObj === null || Array.isArray(paramsObj)) {
       return {
@@ -126,16 +140,18 @@ const TabularDash = ({ widgetData }) => {
         paramsValue: ""
       };
     }
-  
+
     return {
       paramsId: Object.keys(paramsObj).join(','),
       paramsValue: Object.values(paramsObj).join(',')
     };
   };
   const fetchData = async (widget) => {
+   
     if (widget?.modeOfQuery === "Procedure") {
       if (!widget?.procedureMode) return;
       try {
+        
         const paramVal = formatParams(paramsValues ? paramsValues : null);
 
         const params = [
@@ -151,14 +167,16 @@ const TabularDash = ({ widgetData }) => {
           "16-Apr-2025",//from values
           "16-Apr-2025" // to values
         ]
-        const response = await fetchProcedureData(widget?.procedureMode,params);
+        const response = await fetchProcedureData(widget?.procedureMode, params);
         const formattedData = formatData(response.data || []);
         const generatedColumns = generateColumns(formattedData);
         setColumns(generatedColumns);
         setTableData(formattedData);
+        setLoading(false)
 
       } catch (error) {
         console.error("Error loading query data:", error);
+        setLoading(false)
       }
     } else {
       if (!widget?.queryVO?.length > 0) return;
@@ -176,7 +194,7 @@ const TabularDash = ({ widgetData }) => {
   }
 
   useEffect(() => {
-    if (widgetData) {
+    if (widgetData && paramsValues) {
       // alert('bgbg')
       fetchData(widgetData);
     }
@@ -198,8 +216,8 @@ const TabularDash = ({ widgetData }) => {
   const paramsData = widgetData.selFilterIds || "";
   const footerText = widgetData.footerText || "";
   const widgetTopMargin = widgetData.widgetTopMargin || "";
-  const initialRecord = widgetData?.initialRecordNo ;
-  const finalRecord = widgetData?.finalRecordNo ;
+  const initialRecord = widgetData?.initialRecordNo;
+  const finalRecord = widgetData?.finalRecordNo;
 
   // const columns = useMemo(() => {
   //   const srNoColumn = isIndexNoReq
@@ -240,7 +258,6 @@ const TabularDash = ({ widgetData }) => {
   //   }
   // }, [currentLevel, handleStateClick, handleDistrictClick]);
 
-console.log(widgetData,"bb")
   return (
     <div className={`tabular-box ${theme === 'Dark' ? 'dark-theme' : ''} tabular-box-border ${borderReq === 'No' ? '' : 'tabular-box-border'}`} style={{ border: `1px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
 
@@ -262,10 +279,10 @@ console.log(widgetData,"bb")
               <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }}>
                 <FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-2" />Refresh Data
               </li>
-              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generatePDF(widgetData, currentData, singleConfigData?.databaseConfigVO)} title="pdf">
+              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generatePDF(widgetData, filterData, singleConfigData?.databaseConfigVO)} title="pdf">
                 <FontAwesomeIcon icon={faFilePdf} className="dropdown-gear-icon me-2" />Download PDF
               </li>
-              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generateCSV(widgetData, currentData, singleConfigData?.databaseConfigVO)}>
+              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generateCSV(widgetData, filterData, singleConfigData?.databaseConfigVO)}>
                 <FontAwesomeIcon icon={faFileExcel} className="dropdown-gear-icon me-2" />Download CSV
               </li>
               <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }}>

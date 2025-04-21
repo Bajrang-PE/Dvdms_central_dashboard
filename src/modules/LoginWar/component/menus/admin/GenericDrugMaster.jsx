@@ -189,7 +189,7 @@ const GenericDrugMaster = () => {
                     <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={groupId ? true : false} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
 
                     {openPage === 'view' &&
-                        <ViewPage data={[{ value: selectedOption[0]?.facilityTypeName, label: "Drug Name" }]} onClose={onClose} title={"Generic Drug Master"} />
+                        <ViewPage data={[{ value: selectedOption[0]?.drugName, label: "Drug Name" }, { value: selectedOption[0]?.drugTypeId, label: "Drug Type" }, { value: selectedOption[0]?.drugCatCode, label: "Category Name" }]} onClose={onClose} title={"Generic Drug Master"} />
                     }
                 </>)}
 

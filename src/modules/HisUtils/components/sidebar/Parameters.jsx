@@ -23,6 +23,7 @@ const Parameters = ({ params, setParamsValues }) => {
     useEffect(() => {
         if (dashFor && parameterData?.length === 0) {
             getAllParameterData(dashFor);
+
         }
     }, [dashFor]);
 
@@ -43,7 +44,7 @@ const Parameters = ({ params, setParamsValues }) => {
         }));
     };
 
-    const handleInputChange = (parameterName, value,id) => {
+    const handleInputChange = (parameterName, value, id) => {
         setSelectedValues((prev) => ({
             ...prev,
             [parameterName]: value,
@@ -56,14 +57,13 @@ const Parameters = ({ params, setParamsValues }) => {
     };
 
 
-    console.log(proParamsVal,'bbbb')
-
-
     useEffect(() => {
         if (parameterData?.length > 0 && params) {
+            setProParamsVal({})
             const dashboardIdsArray = params.split(",")?.map(Number);
             const matchedParams = dashboardIdsArray?.map((id) => parameterData?.find((p) => p.id === id)).filter(Boolean);
             setPresentParams(matchedParams);
+
         }
     }, [parameterData, params]);
 
@@ -97,8 +97,6 @@ const Parameters = ({ params, setParamsValues }) => {
         });
     }, [presentParams]);
 
-    console.log(dropdownData,'params')
-
     const resetParams = () => {
         setSelectedValues({});
     }
@@ -109,18 +107,22 @@ const Parameters = ({ params, setParamsValues }) => {
     useEffect(() => {
         if (presentParams.length > 0) {
             const initialSelectedValues = {};
+            const defOpt = {};
 
             presentParams.forEach((param) => {
-                const { parameterName, lstOption } = param?.jsonData || {};
+                const { parameterName, lstOption, defaultOption } = param?.jsonData || {};
                 const defaultOptions = lstOption?.filter(option => option.optionValue.includes("#DEFAULT"));
                 if (defaultOptions?.length > 0) {
                     initialSelectedValues[parameterName] = defaultOptions;
                 }
+                defOpt[param?.id] = defaultOption?.optionValue
             });
-
+           
+            setParamsValues(defOpt)
             setSelectedValues(initialSelectedValues);
         }
     }, [presentParams]);
+
 
     const renderInputField = (param) => {
         const {
@@ -130,6 +132,7 @@ const Parameters = ({ params, setParamsValues }) => {
             parameterControlWidth, controlAlignment, isMultipleSelectionRequired, defaultValueIfEmpty, parameterId, shouldBeLessThanField, shouldBeGreaterThanField
         } = param?.jsonData || {};
         const options = dropdownData[parameterName] || lstOption || [];
+
 
         return (
             <div
@@ -259,7 +262,9 @@ const Parameters = ({ params, setParamsValues }) => {
             </div>
             {!hideParams &&
                 <div className="row">
-                    {presentParams?.length > 0 && presentParams?.map((param, index) => renderInputField(param))}
+                    {presentParams?.length > 0 && presentParams?.map((param, index) =>
+                        renderInputField(param))
+                    }
                 </div>
             }
         </div>

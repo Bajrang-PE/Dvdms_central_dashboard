@@ -18,6 +18,7 @@ const LoginContextApi = ({ children }) => {
     const [zoneListData, setZoneListData] = useState([]);
     const [facilityTypeListData, setFacilityTypeListData] = useState([]);
     const [genericDrugListData, setGenericDrugListData] = useState([]);
+    const [stateListData, setStateListData] = useState([]);
 
     //dropdowns
     const [hintQuestionDrpDt, setHintQuestionDrpDt] = useState([]);
@@ -69,11 +70,21 @@ const LoginContextApi = ({ children }) => {
             subgroupId: sbGrpId ? sbGrpId : "0",
             isValid: status ? status : "1"
         }
-        fetchData(`api/v1/drugs`,params).then((data) => {
+        fetchData(`api/v1/drugs`, params).then((data) => {
             if (data) {
                 setGenericDrugListData(data)
             } else {
                 setGenericDrugListData([])
+            }
+        })
+    }
+
+    const getStateListData = (status) => {
+        fetchData(`api/v1/State/${status ? status : "1"}`).then((data) => {
+            if (data) {
+                setStateListData(data)
+            } else {
+                setStateListData([])
             }
         })
     }
@@ -209,7 +220,8 @@ const LoginContextApi = ({ children }) => {
             //-----------masters----------
             getZoneListData, zoneListData,
             getFacilityTypeListData, facilityTypeListData,
-            getGenericDrugListData, genericDrugListData
+            getGenericDrugListData, genericDrugListData,
+            getStateListData, stateListData
         }}>
             {children}
         </LoginContext.Provider>
