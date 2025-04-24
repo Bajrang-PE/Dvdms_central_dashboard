@@ -11,6 +11,7 @@ axios.defaults.baseURL = BaseUrl;
 const getAccessToken = () => {
     return localStorage.getItem('accessToken');
 };
+
 const getCsrfToken = () => {
     return Cookies.get('csrfToken');
 };
@@ -110,7 +111,6 @@ export const fetchUpdatePostData = async (url, data) => {
 export const fetchDeleteData = async (url, data) => {
     try {
         const response = await axios.delete(url);
-        console.log(response,'nn')
         return response.data;
     } catch (error) {
         console.log('API Error:', error);

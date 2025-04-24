@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext';
-import { capitalizeFirstLetter } from '../../../utils/CommonFunction';
+import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
+import { fetchData } from '../../../../../utils/ApiHooks';
 
 const FacilityTypeMappingMaster = () => {
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext);
+    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt,getFacilityTypeDrpData } = useContext(LoginContext);
 
-    const [suppId, setSuppId] = useState("");
+    const [facilityTypeId, setFacilityTypeId] = useState("");
     const [stateId, setStateId] = useState("");
     const [availableOptions, setAvailableOptions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState([]);
@@ -14,36 +15,80 @@ const FacilityTypeMappingMaster = () => {
     const [selectedSelected, setSelectedSelected] = useState([]);
 
     useEffect(() => {
-        if (supplierNameDrpDt?.length === 0) getSupplierNameDrpData();
         if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
         setOpenPage("add");
+        getFacilityTypeDrpData();
     }, []);
 
     useEffect(() => {
         if (stateId) {
-            getStateSuppList();
             setSelectedOptions([]);
+            getUnmappedList();
         }
         setSelectedAvailable([]);
         setSelectedSelected([]);
     }, [stateId]);
 
+    useEffect(() => {
+        if (stateId && facilityTypeId) {
+            getMappedList();
+        }
+    }, [stateId, facilityTypeId])
+
+    const getUnmappedList = () => {
+        fetchData(`api/v1/unmappedFclty/${stateId}`).then(data => {
+            if (data) {
+                setAvailableOptions(data)
+            } else {
+                ToastAlert('Error while fetching record!', 'error')
+            }
+        })
+    }
+
+    const getMappedList = () => {
+        fetchData(`api/v1/mapped/${facilityTypeId}/${stateId}`).then(data => {
+            if (data.status === 1) {
+                setSelectedOptions(data)
+            } else {
+                ToastAlert('Error while fetching record!', 'error')
+                setSelectedOptions([])
+            }
+        })
+    }
+
     const moveToSelected = () => {
-        const itemsToMove = availableOptions.filter(opt => selectedAvailable.includes(opt.value));
-        const newSelected = itemsToMove.filter(item =>
-            !selectedOptions.some(selected => selected.value === item.value)
-        );
-        setSelectedOptions(prev => [...prev, ...newSelected]);
-        setAvailableOptions(prev => prev.filter(opt => !selectedAvailable.includes(opt.value)));
-        setSelectedAvailable([]);
+        if (facilityTypeId) {
+            const itemsToMove = availableOptions.filter(opt =>
+                selectedAvailable.includes(String(opt.facilityTypeId))
+            );
+            const newSelected = itemsToMove.filter(item =>
+                !selectedOptions.some(selected => selected.facilityTypeId === item.facilityTypeId)
+            );
+            setSelectedOptions(prev => [...prev, ...newSelected]);
+            setAvailableOptions(prev => prev.filter(opt =>
+                !selectedAvailable.includes(String(opt.facilityTypeId))
+            ));
+            setSelectedAvailable([]);
+        } else {
+            ToastAlert('Please select facility type!', 'warning')
+        }
     };
 
     const moveToAvailable = () => {
-        const itemsToMove = selectedOptions.filter(opt => selectedSelected.includes(opt.value));
-        setAvailableOptions(prev => [...prev, ...itemsToMove]);
-        setSelectedOptions(prev => prev.filter(opt => !selectedSelected.includes(opt.value)));
-        setSelectedSelected([]);
+        if (facilityTypeId) {
+            const itemsToMove = selectedOptions.filter(opt =>
+                selectedSelected.includes(String(opt.facilityTypeId))
+            );
+            setAvailableOptions(prev => [...prev, ...itemsToMove]);
+            setSelectedOptions(prev => prev.filter(opt =>
+                !selectedSelected.includes(String(opt.facilityTypeId))
+            ));
+            setSelectedSelected([]);
+        } else {
+            ToastAlert('Please select facility type!', 'warning')
+        }
     };
+
 
     return (
         <>
@@ -63,10 +108,10 @@ const FacilityTypeMappingMaster = () => {
                                     id="hintquestion"
                                     name="hintquestion"
                                     placeholder="Select Value"
-                                    options={[{ value: 1, label: 'District Hospital' }]}
+                                    options={[{ value: '44', label: 'District Hospital' }]}
                                     className="aliceblue-bg border-dark-subtle"
-                                // value={values?.hintquestion}
-                                // onChange={handleValueChange}
+                                    value={facilityTypeId}
+                                    onChange={(e) => setFacilityTypeId(e.target.value)}
                                 />
 
                             </div>
@@ -80,10 +125,10 @@ const FacilityTypeMappingMaster = () => {
                                     id="hintquestion"
                                     name="hintquestion"
                                     placeholder="Select value"
-                                    options={[{ value: 1, label: 'Rajasthan' }]}
+                                    options={stateNameDrpDt}
                                     className="aliceblue-bg border-dark-subtle"
-                                // value={values?.hintquestion}
-                                // onChange={handleValueChange}
+                                    value={stateId}
+                                    onChange={(e) => setStateId(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -111,9 +156,12 @@ const FacilityTypeMappingMaster = () => {
                             }}
                         >
                             {availableOptions.map(opt => (
-                                <option key={`${opt.value}-${opt.label}`} value={opt.value}>{opt.label}</option>
+                                <option key={opt.facilityTypeId} value={opt.facilityTypeId}>
+                                    {opt.facilityTypeName}
+                                </option>
                             ))}
                         </select>
+
                     </div>
 
                     <div className='align-self-center' style={{ marginLeft: "2%", marginRight: "2%" }}>
@@ -153,9 +201,12 @@ const FacilityTypeMappingMaster = () => {
                             }}
                         >
                             {selectedOptions.map(opt => (
-                                <option key={`${opt.value}-${opt.label}`} value={opt.value}>{opt.label}</option>
+                                <option key={opt.facilityTypeId} value={opt.facilityTypeId}>
+                                    {opt.facilityTypeName}
+                                </option>
                             ))}
                         </select>
+
                     </div>
                 </div>
 

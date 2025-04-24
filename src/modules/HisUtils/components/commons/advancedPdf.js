@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import Papa from 'papaparse';
-import { fetchLocalLogoAsBase64, fetchLogoAsBase64 } from '../../utils/commonFunction';
+import { fetchLocalLogoAsBase64, fetchLogoAsBase64, ToastAlert } from '../../utils/commonFunction';
 
 export const generatePDF = async (widgetData, tableData, config, filters = []) => {
   if (!widgetData) return;
@@ -25,7 +25,7 @@ export const generatePDF = async (widgetData, tableData, config, filters = []) =
   const pdf = new jsPDF(orientation, 'mm', 'a4');
 
   const pageWidth = pdf.internal.pageSize.getWidth();
-  const logoBase64 = await fetchLocalLogoAsBase64("/pdfIcon.jpeg");
+  // const logoBase64 = await fetchLocalLogoAsBase64("/pdfIcon.jpeg");
 
   // Function to draw the header
   const drawHeader = (doc, title) => {
@@ -132,7 +132,7 @@ export const generatePDF = async (widgetData, tableData, config, filters = []) =
 
 export const generateCSV = (widgetData, tableData, config) => {
   if (!Array.isArray(tableData) || tableData.length === 0) {
-    console.warn('No data available to download.');
+    ToastAlert('No data available to download.','warning');
     return;
   }
 

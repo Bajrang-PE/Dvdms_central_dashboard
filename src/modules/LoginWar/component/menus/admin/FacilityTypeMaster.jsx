@@ -44,14 +44,14 @@ const FacilityTypeMaster = () => {
 
     const deleteRecord = () => {
         fetchDeleteData(`api/v1/Facility/${selectedOption[0]?.facilityTypeId}`).then(data => {
-            if (data) {
+            if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getFacilityTypeListData();
                 setSelectedOption([]);
                 setConfirmSave(false);
                 onClose();
             } else {
-                ToastAlert('Error while deleting record!', 'error')
+                ToastAlert(data?.message, 'error')
             }
         })
     }

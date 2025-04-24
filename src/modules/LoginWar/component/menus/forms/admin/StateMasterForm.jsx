@@ -36,14 +36,14 @@ const StateMasterForm = () => {
             "zoneId": zoneName,
         }
         fetchPostData(`api/v1/State`, val).then(data => {
-            if (data) {
+            if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
                 getStateListData();
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
             } else {
-                ToastAlert('error while creating record!', "error");
+                ToastAlert(data?.message, "error");
                 setConfirmSave(false);
             }
         })
@@ -72,9 +72,8 @@ const StateMasterForm = () => {
             "lgdCode": ''
 
         }
-        alert('a')
         fetchUpdateData(`api/v1/State/${selectedOption[0]?.stateId}`, val).then(data => {
-            if (data) {
+            if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
                 getStateListData();
                 setOpenPage('home');
@@ -82,7 +81,7 @@ const StateMasterForm = () => {
                 setConfirmSave(false);
                 setSelectedOption([])
             } else {
-                ToastAlert('error while updating record!', "error");
+                ToastAlert(data?.message, "error");
                 setConfirmSave(false);
             }
         })
@@ -131,14 +130,13 @@ const StateMasterForm = () => {
         }
     }, [selectedOption])
 
-    console.log(values)
 
     const reset = () => {
         setValues({ stateName: "", stShortName: "", zoneName: "", recStatus: "1" });
         setErrors({ stateNameErr: "", stShortNameErr: "", zoneNameErr: "", recStatusErr: "" })
         setConfirmSave(false);
     }
-
+console.log(values)
     return (
         <div>
             <GlobalButtons onSave={handleValidation} onClear={reset} />
@@ -203,7 +201,7 @@ const StateMasterForm = () => {
                                         <input
                                             className="border-dark-subtle form-check-input"
                                             type="radio"
-                                            name="recordStatus"
+                                            name="recStatus"
                                             id="recordStatus1"
                                             value={'1'}
                                             onChange={handleValueChange}
@@ -217,7 +215,7 @@ const StateMasterForm = () => {
                                         <input
                                             className="border-dark-subtle form-check-input"
                                             type="radio"
-                                            name="recordStatus"
+                                            name="recStatus"
                                             id="recordStatus0"
                                             value={'0'}
                                             onChange={handleValueChange}

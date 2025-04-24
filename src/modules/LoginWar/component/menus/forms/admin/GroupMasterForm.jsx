@@ -1,29 +1,29 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../../context/LoginContext';
+import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
+import { ToastAlert } from '../../../../utils/CommonFunction';
 import GlobalButtons from '../../GlobalButtons';
 import InputField from '../../../InputField';
-import { ToastAlert } from '../../../../utils/CommonFunction';
-import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
-const FacilityTypeMasterForm = () => {
-    const { openPage, selectedOption, setOpenPage, setSelectedOption, getFacilityTypeListData, setShowConfirmSave, confirmSave,setConfirmSave } = useContext(LoginContext);
-    const [facilityName, setFacilityName] = useState('');
+const GroupMasterForm = () => {
+    const { openPage, selectedOption, setOpenPage, setSelectedOption, getGroupListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const [groupName, setGroupName] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active');
     const [errors, setErrors] = useState({
-        "facilityNameErr": ""
+        "groupNameErr": ""
     })
 
-    const saveFacilityTypeData = () => {
+    const saveGroupData = () => {
         const val = {
             "seatId": getAuthUserData('userSeatId'),
-            "facilityTypeName": facilityName,
+            "groupName": groupName,
             "status": "Active"
         }
-        fetchPostData(`api/v1/Facility/create`, val).then(data => {
+        fetchPostData(`api/v1/Group`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
-                getFacilityTypeListData();
+                getGroupListData();
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
@@ -33,20 +33,18 @@ const FacilityTypeMasterForm = () => {
         })
     }
 
-    const updateFacilityTypeData = () => {
+    const updateGroupData = () => {
         const val = {
             "seatId": getAuthUserData('userSeatId'),
-            "facilityTypeName": facilityName,
+            "groupName": groupName,
             "status": recordStatus,
-            "facilityTypeId": selectedOption[0]?.facilityTypeId,
-            "facilityTypeShortName": "",
-            "ninFacilityTypeId": 0,
-            "order": 0,
+            "groupId":selectedOption[0]?.groupId,
+            "isValid": 1,
         }
-        fetchUpdateData(`api/v1/Facility/${selectedOption[0]?.facilityTypeId}`, val).then(data => {
+        fetchUpdateData(`api/v1/Group/${selectedOption[0]?.groupId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record Updated Successfully', 'success');
-                getFacilityTypeListData();
+                getGroupListData();
                 setOpenPage('home');
                 reset();
                 setSelectedOption([]);
@@ -59,8 +57,8 @@ const FacilityTypeMasterForm = () => {
 
     const handleValidation = () => {
         let isValid = true;
-        if (!facilityName?.trim()) {
-            setErrors(prev => ({ ...prev, "facilityNameErr": "Facility Name is required" }));
+        if (!groupName?.trim()) {
+            setErrors(prev => ({ ...prev, "groupNameErr": "Group name is required" }));
             isValid = false;
         }
 
@@ -72,26 +70,26 @@ const FacilityTypeMasterForm = () => {
     useEffect(() => {
         if (confirmSave) {
             if (openPage === 'modify') {
-                updateFacilityTypeData();
+                updateGroupData();
             } else {
-                saveFacilityTypeData();
+                saveGroupData();
             }
         }
     }, [confirmSave])
 
+
     useEffect(() => {
         if (selectedOption?.length > 0) {
-            setFacilityName(selectedOption[0]?.facilityTypeName)
+            setGroupName(selectedOption[0]?.groupName)
             setRecordStatus(selectedOption[0]?.status)
         }
     }, [selectedOption])
 
     const reset = () => {
-        setFacilityName('');
-        setRecordStatus('Active')
+        setGroupName('');
+        setRecordStatus('Active');
         setConfirmSave(false);
     }
-
     return (
         <div>
             <GlobalButtons onSave={handleValidation} onClear={reset} />
@@ -99,17 +97,17 @@ const FacilityTypeMasterForm = () => {
             <div className='row pt-2'>
                 <div className='col-sm-6'>
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label fix-label required-label">Facility Name : </label>
+                        <label className="col-sm-5 col-form-label fix-label required-label">Group Name : </label>
                         <div className="col-sm-7 align-content-center">
                             <InputField
                                 type={'text'}
-                                id="facilityName"
-                                name="facilityName"
-                                placeholder="Enter facilityName"
+                                id="groupName"
+                                name="groupName"
+                                placeholder="Enter value"
                                 className="aliceblue-bg border-dark-subtle"
-                                value={facilityName}
-                                onChange={(e) => { setFacilityName(e.target?.value); setErrors({ ...errors, "facilityNameErr": "" }) }}
-                                errorMessage={errors?.facilityNameErr}
+                                value={groupName}
+                                onChange={(e) => { setGroupName(e.target?.value); setErrors({ ...errors, "groupNameErr": "" }) }}
+                                errorMessage={errors?.groupNameErr}
                             />
                         </div>
                     </div>
@@ -158,4 +156,4 @@ const FacilityTypeMasterForm = () => {
     )
 }
 
-export default FacilityTypeMasterForm
+export default GroupMasterForm

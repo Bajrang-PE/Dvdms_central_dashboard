@@ -1,33 +1,25 @@
 import React, { useContext, useEffect, useState } from 'react'
-import GlobalTable from '../../GlobalTable'
-import { LoginContext } from '../../../context/LoginContext'
-import InputSelect from '../../InputSelect';
-import ZoneMasterForm from '../forms/admin/ZoneMasterForm';
-import ViewPage from '../ViewPage';
-import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
+import { LoginContext } from '../../../context/LoginContext';
 import { fetchDeleteData } from '../../../../../utils/ApiHooks';
+import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
+import InputSelect from '../../InputSelect';
+import GlobalTable from '../../GlobalTable';
+import ViewPage from '../ViewPage';
+import GroupMasterForm from '../forms/admin/GroupMasterForm';
 
-const ZoneMaster = () => {
-
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, getZoneListData, zoneListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+const GroupMaster = () => {
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, getGroupListData,groupListData } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active')
-    const [filterData, setFilterData] = useState(zoneListData);
+    const [filterData, setFilterData] = useState(groupListData);
 
     useEffect(() => {
-        getZoneListData(recordStatus === "Active" ? '1' : '0')
+        getGroupListData(recordStatus === "Active" ? '1' : '0')
     }, [recordStatus])
 
     const handleRowSelect = (row) => {
-        // setSelectedOption((prev) => {
-        //     if (prev.includes(row?.cwhnumZoneId)) {
-        //         return prev.filter(dt => dt?.cwhnumZoneId !== row?.cwhnumZoneId);
-        //     }
-        //     return [row];
-        // });
-
         setSelectedOption((prev) => {
-            if (prev.length > 0 && prev[0]?.cwhnumZoneId === row?.cwhnumZoneId) {
+            if (prev.length > 0 && prev[0]?.groupId === row?.groupId) {
                 return [];
             }
             return [row];
@@ -36,29 +28,28 @@ const ZoneMaster = () => {
 
     useEffect(() => {
         if (!searchInput) {
-            setFilterData(zoneListData);
+            setFilterData(groupListData);
         } else {
             const lowercasedText = searchInput.toLowerCase();
-            const newFilteredData = zoneListData.filter(row => {
-                const paramName = row?.cwhstrZoneName?.toLowerCase() || "";
+            const newFilteredData = groupListData.filter(row => {
+                const paramName = row?.groupName?.toLowerCase() || "";
 
                 return paramName.includes(lowercasedText);
             });
             setFilterData(newFilteredData);
         }
-    }, [searchInput, zoneListData]);
+    }, [searchInput, groupListData]);
 
     const deleteRecord = () => {
-        fetchDeleteData(`api/v1/zones/${selectedOption[0]?.cwhnumZoneId}`).then(data => {
-            if (data?.status ===1) {
+        fetchDeleteData(`api/v1/Group/${selectedOption[0]?.groupId}`).then(data => {
+            if (data) {
                 ToastAlert("Record Deleted Successfully", "success")
-                getZoneListData();
+                getGroupListData();
                 setSelectedOption([]);
                 setConfirmSave(false);
                 onClose();
             } else {
-                ToastAlert(data?.message, 'error')
-                setConfirmSave(false);
+                ToastAlert('Error while deleting record!', 'error')
             }
         })
     }
@@ -92,7 +83,7 @@ const ZoneMaster = () => {
                     <span className="btn btn-sm text-white px-1 py-0 mr-1" >
                         <input
                             type="checkbox"
-                            checked={selectedOption.length > 0 && selectedOption[0]?.cwhnumZoneId === row?.cwhnumZoneId}
+                            checked={selectedOption.length > 0 && selectedOption[0]?.groupId === row?.groupId}
                             onChange={(e) => { handleRowSelect(row) }}
                         />
                     </span>
@@ -100,15 +91,10 @@ const ZoneMaster = () => {
             width: "8%"
         },
         {
-            name: 'Zone Name',
-            selector: row => row.cwhstrZoneName,
+            name: 'Group Name',
+            selector: row => row.groupName,
             sortable: true,
-        },
-        {
-            name: 'Short Name',
-            selector: row => row.cwhstrZoneShortName || "---",
-            sortable: true,
-        },
+        }
     ]
 
     const onClose = () => {
@@ -120,7 +106,7 @@ const ZoneMaster = () => {
         <>
             <div className='masters mx-3 my-2'>
                 <div className='masters-header row'>
-                    <span className='col-6'><b>{`Zone Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                    <span className='col-6'><b>{`Group Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
                     {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
 
                 </div>
@@ -148,16 +134,16 @@ const ZoneMaster = () => {
                     <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
 
                     {openPage === 'view' &&
-                        <ViewPage data={[{ value: selectedOption[0]?.cwhstrZoneName, label: "Zone Name" }]} onClose={onClose} title={"Zone Master"} />
+                        <ViewPage data={[{ value: selectedOption[0]?.groupName, label: "Group Name" }]} onClose={onClose} title={"Group Master"} />
                     }
                 </>)}
 
                 {(openPage === "add" || openPage === 'modify') && (<>
-                    <ZoneMasterForm />
+                    <GroupMasterForm />
                 </>)}
             </div>
         </>
     )
 }
 
-export default ZoneMaster
+export default GroupMaster

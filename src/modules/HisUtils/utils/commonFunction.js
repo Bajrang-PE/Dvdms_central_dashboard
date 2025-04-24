@@ -72,7 +72,7 @@ export const fetchQueryData = async (queryVO = []) => {
     const requestBody = { query, params: {} };
     const response = await fetchPostData("/hisutils/GenericApiQry", requestBody);
 
-    return response || [];
+    return response  || [];
   } catch (error) {
     console.error("Error fetching query data:", error);
     return [];
@@ -97,8 +97,6 @@ export const fetchProcedureData = async (procedure,params) => {
     return [];
   }
 };
-
-
 
 export const fetchLogoAsBase64 = async (url) => {
   const response = await fetch(url);

@@ -56,14 +56,14 @@ const GenericDrugMaster = () => {
 
     const deleteRecord = () => {
         fetchDeleteData(`api/v1/drugs/${selectedOption[0]?.centralDrugId}`).then(data => {
-            if (data) {
+            if (data?.status ===1 ) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getGenericDrugListData(groupId, subGroupId, recordStatus);
                 setSelectedOption([]);
                 setConfirmSave(false);
                 onClose();
             } else {
-                ToastAlert('Error while deleting record!', 'error')
+                ToastAlert(data?.message, 'error')
             }
         })
     }

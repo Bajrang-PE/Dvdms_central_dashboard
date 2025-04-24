@@ -55,6 +55,8 @@ const TabularDash = ({ widgetData }) => {
 
   const [columns, setColumns] = useState([]);
 
+  console.log(widgetData, 'widgetData')
+
   //parameter search
   useEffect(() => {
     if (!searchInput) {
@@ -146,12 +148,11 @@ const TabularDash = ({ widgetData }) => {
       paramsValue: Object.values(paramsObj).join(',')
     };
   };
+
   const fetchData = async (widget) => {
-   
     if (widget?.modeOfQuery === "Procedure") {
       if (!widget?.procedureMode) return;
       try {
-        
         const paramVal = formatParams(paramsValues ? paramsValues : null);
 
         const params = [
@@ -179,14 +180,19 @@ const TabularDash = ({ widgetData }) => {
         setLoading(false)
       }
     } else {
-      if (!widget?.queryVO?.length > 0) return;
+      // if (!widget?.queryVO?.length > 0) return;
       try {
-        const data = await fetchQueryData(widget?.queryVO);
-        setTableData(
-          data?.length > 0 && data.map((item) => ({
-            name: item.column_1,
-            y: item.column_2,
-          })));
+        const data = await fetchQueryData(widget?.query);
+        console.log(data, 'data')
+        if (data?.length > 0) {
+          setTableData(
+            data?.length > 0 && data.map((item) => ({
+              name: item.column_1,
+              y: item.column_2,
+            })));
+        } else {
+          setTableData([])
+        }
       } catch (error) {
         console.error("Error loading query data:", error);
       }
@@ -194,12 +200,14 @@ const TabularDash = ({ widgetData }) => {
   }
 
   useEffect(() => {
-    if (widgetData && paramsValues) {
+    if (widgetData) {
       // alert('bgbg')
       fetchData(widgetData);
     }
-  }, [paramsValues]);
+  }, [paramsValues, widgetData]);
 
+  console.log(filterData, 'data')
+  console.log(tableData, 'datatt')
 
   const headingAlign = widgetData?.tableHeadingAlignment === '1' ? 'center' : 'left';
   const borderReq = widgetData?.isTableBorderRequired || '';
@@ -290,10 +298,10 @@ const TabularDash = ({ widgetData }) => {
               </li>
             </ul>
 
-            <button className="small-box-btn-dwn" onClick={() => generatePDF(widgetData, currentData, singleConfigData?.databaseConfigVO)} title="PDF">
+            <button className="small-box-btn-dwn" onClick={() => generatePDF(widgetData, filterData, singleConfigData?.databaseConfigVO)} title="PDF">
               <FontAwesomeIcon icon={faFilePdf} />
             </button>
-            <button className="small-box-btn-dwn" onClick={() => generateCSV(widgetData, currentData, singleConfigData?.databaseConfigVO)}>
+            <button className="small-box-btn-dwn" onClick={() => generateCSV(widgetData, filterData, singleConfigData?.databaseConfigVO)}>
               <FontAwesomeIcon icon={faFileExcel} />
             </button>
             {currentLevel !== "state" && (

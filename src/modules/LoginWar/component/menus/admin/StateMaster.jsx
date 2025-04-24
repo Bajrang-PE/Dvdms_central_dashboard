@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext';
 import InputSelect from '../../InputSelect';
 import GlobalTable from '../../GlobalTable';
-import { functionalityData } from '../../../localData/HomeData';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import StateMasterForm from '../forms/admin/StateMasterForm';
 import { fetchDeleteData } from '../../../../../utils/ApiHooks';
@@ -46,7 +45,7 @@ const StateMaster = () => {
 
     const deleteRecord = () => {
         fetchDeleteData(`api/v1/State/${selectedOption[0]?.stateId}`).then(data => {
-            if (data) {
+            if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getStateListData();
                 setSelectedOption([]);
@@ -54,7 +53,7 @@ const StateMaster = () => {
                 onClose();
                 setRecordStatus('1');
             } else {
-                ToastAlert('Error while deleting record!', 'error')
+                ToastAlert(data?.message, 'error')
             }
         })
     }

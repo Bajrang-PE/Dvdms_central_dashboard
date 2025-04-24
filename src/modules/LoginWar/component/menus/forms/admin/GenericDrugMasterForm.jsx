@@ -41,14 +41,14 @@ const GenericDrugMasterForm = (props) => {
             "isMotherHealth": 0
         }
         fetchPostData(`api/v1/drugs`, val).then(data => {
-            if (data) {
+            if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
                 getGenericDrugListData();
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
             } else {
-                ToastAlert('error while creating record!', "error");
+                ToastAlert(data?.message, "error");
             }
         })
     }
@@ -67,14 +67,14 @@ const GenericDrugMasterForm = (props) => {
             "isMotherHealth": 0
         }
         fetchUpdateData(`api/v1/drugs/${selectedOption[0]?.centralDrugId}`, val).then(data => {
-            if (data) {
+            if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
                 getGenericDrugListData();
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
             } else {
-                ToastAlert('error while creating record!', "error");
+                ToastAlert(data?.message, "error");
             }
         })
     }
