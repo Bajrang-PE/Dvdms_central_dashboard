@@ -15,8 +15,12 @@ const ViewPage = (props) => {
             </Modal.Header>
             <Modal.Body className='px-2 py-1'>
                 {data?.length > 0 && data?.map((dt, index) => (
-                    <div className="form-group text-center" key={index}>
-                        <label className="fix-label"> <span className='me-1' style={{ color: "#013157", fontWeight: "bold" }}>{dt?.label}</span> : <span className='ms-1'>{dt?.value}</span> </label>
+                    <div className="form-group row" key={index}>
+                        <label className="fix-label col-sm-6 text-end">
+                            <span className='me-2' style={{ color: "#013157", fontWeight: "bold" }}>{dt?.label}</span> : </label>
+                        <div className='fix-label col-sm-6 text-start'>
+                            <span className=''>{dt?.value}</span>
+                        </div>
                     </div>
                 ))}
                 <hr className='my-2' />

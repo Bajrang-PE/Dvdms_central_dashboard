@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ToastAlert } from '../../utils/CommonFunction';
 import { encryptData } from '../../utils/SecurityConfig';
 import Cookies from 'js-cookie';
-import { fetchData,fetchPostData } from '../../../../utils/ApiHooks';
+import { fetchData, fetchPostData } from '../../../../utils/ApiHooks';
 
 
 const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
@@ -88,10 +88,10 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                             //   'hospitalName': gstrHospitalName,
                             'hospitalCode': gnumHospitalCode
                         }
-                        sessionStorage.setItem('data', encryptData(JSON.stringify(auth)));
+                        localStorage.setItem('data', encryptData(JSON.stringify(auth)));
                         Cookies.set('csrfToken', csrfToken);
-                        sessionStorage.setItem('accessToken', accessToken);
-                        sessionStorage.setItem('refreshToken', refreshToken);
+                        localStorage.setItem('accessToken', accessToken);
+                        localStorage.setItem('refreshToken', refreshToken);
                         navigate('dvdms/user-dashboard');
                     } else {
                         ToastAlert(data?.message, 'error');

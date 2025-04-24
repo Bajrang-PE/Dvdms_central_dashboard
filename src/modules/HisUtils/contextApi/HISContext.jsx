@@ -18,6 +18,8 @@ const HISContextData = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [singleConfigData, setSingleConfigData] = useState();
 
+    const [paramsValues, setParamsValues] = useState();
+
   // ALL DATA
   const [parameterData, setParameterData] = useState([]);
   const [allWidgetData, setAllWidgetData] = useState([]);
@@ -166,6 +168,8 @@ const HISContextData = ({ children }) => {
       theme, setTheme,
       mainDashData, setMainDashData,
       singleConfigData, getDashConfigData,
+
+      paramsValues, setParamsValues,
 
       // DROP DOWNS-------------------------------
       // DASHBOARD FOR

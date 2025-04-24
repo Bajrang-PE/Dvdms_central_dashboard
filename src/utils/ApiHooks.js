@@ -9,13 +9,14 @@ import axios from 'axios';
 axios.defaults.baseURL = BaseUrl;
 
 const getAccessToken = () => {
-    return sessionStorage.getItem('accessToken');
+    return localStorage.getItem('accessToken');
 };
+
 const getCsrfToken = () => {
     return Cookies.get('csrfToken');
 };
 
-//Set the Authorization header globally using an interceptor
+// Set the Authorization header globally using an interceptor
 // axios.interceptors.request.use(
 //     (config) => {
 //         const accessToken = getAccessToken();
@@ -74,7 +75,7 @@ export const fetchPostData = async (url, data) => {
         return response.data;
     } catch (error) {
         console.log('API Error:', error);
-        return error?.response?.data;
+        // return error?.response?.data;
     }
 };
 
@@ -88,7 +89,7 @@ export const fetchUpdateData = async (url, data) => {
         return response.data;
     } catch (error) {
         console.log('API Error:', error);
-        return error?.response?.data;
+        // return error?.response?.data;
     }
 
 };
@@ -103,7 +104,7 @@ export const fetchUpdatePostData = async (url, data) => {
         return response.data;
     } catch (error) {
         console.log('API Error:', error);
-        return error?.response?.data;
+        // return error?.response?.data;
     }
 };
 
@@ -113,6 +114,6 @@ export const fetchDeleteData = async (url, data) => {
         return response.data;
     } catch (error) {
         console.log('API Error:', error);
-        return error?.response?.data;
+        // return error?.response?.data;
     }
 };

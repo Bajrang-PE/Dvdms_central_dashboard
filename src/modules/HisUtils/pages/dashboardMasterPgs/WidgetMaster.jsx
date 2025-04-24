@@ -786,7 +786,7 @@ const WidgetMaster = () => {
         isSSOUrl: isSsoUrl
       }
     };
-    fetchPostData("http://10.226.29.211:8025/hisutils/createWidget", val).then((data) => {
+    fetchPostData("/hisutils/createWidget", val).then((data) => {
       if (data) {
         ToastAlert("Data Saved Successfully", "success");
         getAllWidgetData(values?.widgetFor)
@@ -1036,7 +1036,7 @@ const WidgetMaster = () => {
     if (selectedOption?.length > 0) {
       setLoading(true)
       const val = { "id": selectedOption[0]?.rptId, "dashboardFor": values?.widgetFor, "masterName": "DashboardWidgetMst" };
-      fetchPostData("http://10.226.29.211:8025/hisutils/widgetDelete", val).then((data) => {
+      fetchPostData("/hisutils/widgetDelete", val).then((data) => {
         if (data) {
           ToastAlert('Deleted Successfully!', 'success');
           getAllWidgetData(values?.widgetFor)

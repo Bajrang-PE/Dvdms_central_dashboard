@@ -17,12 +17,18 @@ const LoginContextApi = ({ children }) => {
     //masters
     const [zoneListData, setZoneListData] = useState([]);
     const [facilityTypeListData, setFacilityTypeListData] = useState([]);
+    const [genericDrugListData, setGenericDrugListData] = useState([]);
+    const [stateListData, setStateListData] = useState([]);
+    const [groupListData, setGroupListData] = useState([]);
 
     //dropdowns
     const [hintQuestionDrpDt, setHintQuestionDrpDt] = useState([]);
     const [stateNameDrpDt, setStateNameDrpDt] = useState([]);
     const [supplierNameDrpDt, setSupplierNameDrpDt] = useState([]);
     const [districtNameDrpDt, setDistrictNameDrpDt] = useState([]);
+    const [groupDrpData, setGroupDrpData] = useState([]);
+    const [subGroupDrpData, setSubGroupDrpData] = useState([]);
+    const [facilityTypeDrpDt, setFacilityTypeDrpDt] = useState([]);
 
 
     //confirm alert
@@ -44,30 +50,66 @@ const LoginContextApi = ({ children }) => {
     //-----------------------------------------------MASTERS----------------------------------------------
     const getZoneListData = (status) => {
         fetchData(`api/v1/zones/status?status=${status ? status : "1"}`).then((data) => {
-            if (data) {
-                setZoneListData(data)
+            if (data?.status === 1) {
+                setZoneListData(data?.data)
             } else {
                 setZoneListData([])
             }
         })
     }
+
     const getFacilityTypeListData = (status) => {
         fetchData(`api/v1/Facility/status?status=${status ? status : "1"}`).then((data) => {
-            if (data) {
-                setFacilityTypeListData(data)
+            if (data.status == 1) {
+                setFacilityTypeListData(data?.data)
             } else {
                 setFacilityTypeListData([])
             }
         })
     }
 
+    const getGenericDrugListData = (grpId, sbGrpId, status) => {
+        const params = {
+            groupId: grpId ? grpId : '0',
+            subgroupId: sbGrpId ? sbGrpId : "0",
+            isValid: status ? status : "1"
+        }
+
+        fetchData(`api/v1/drugs`, params).then((data) => {
+            if (data?.status === 1) {
+                setGenericDrugListData(data?.data)
+            } else {
+                setGenericDrugListData([])
+            }
+        })
+    }
+
+    const getStateListData = (status) => {
+        fetchData(`api/v1/State/${status ? status : "1"}`).then((data) => {
+            if (data?.status === 1) {
+                setStateListData(data?.data)
+            } else {
+                setStateListData([])
+            }
+        })
+    }
+    const getGroupListData = (status) => {
+        fetchData(`api/v1/Group/status?status=${status ? status : "1"}`).then((data) => {
+            if (data?.status === 1) {
+                setGroupListData(data?.data)
+            } else {
+                setGroupListData([])
+            }
+        })
+    }
+
     //-----------------------------------------------MASTERS----------------------------------------------
 
-
+    //----------------------------------Dropdowns
     const getHintQuestionDrpData = () => {
         fetchData('/login/hntQueDropDown').then((data) => {
-            if (data) {
-                setHintQuestionDrpDt(data)
+            if (data?.status === 1) {
+                setHintQuestionDrpDt(data?.data)
             } else {
                 setHintQuestionDrpDt([])
             }
@@ -137,6 +179,59 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+    const getGroupDrpData = () => {
+        fetchData('/api/v1/GrpDrpdwn').then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.id,
+                        label: dt?.name
+                    }
+
+                    return val;
+                })
+                setGroupDrpData(drpData)
+
+            } else {
+                setGroupDrpData([])
+            }
+        })
+    }
+
+    const getSubGroupDrpData = (grpId) => {
+        fetchData(`/api/v1/SubGrpDrpDwn/${grpId}`).then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.subgroupId,
+                        label: dt?.subgroupName
+                    }
+                    return val;
+                })
+                setSubGroupDrpData(drpData)
+            } else {
+                setSubGroupDrpData([])
+            }
+        })
+    }
+
+    const getFacilityTypeDrpData = () => {
+        fetchData('/api/v1/drpDwnFcltyTypMapMst').then((data) => {
+            if (data) {
+                const drpData = data?.map((dt) => {
+                    const val = {
+                        value: dt?.id,
+                        label: dt?.name
+                    }
+                    return val;
+                })
+                setFacilityTypeDrpDt(drpData)
+            } else {
+                setFacilityTypeDrpDt([])
+            }
+        })
+    }
+
     return (
         <LoginContext.Provider value={{
             widgetData, getWidgetData,
@@ -148,6 +243,8 @@ const LoginContextApi = ({ children }) => {
             getDistrictNameDrpData, districtNameDrpDt,
             selectedOption, setSelectedOption,
             openPage, setOpenPage,
+            getGroupDrpData, groupDrpData, getSubGroupDrpData, subGroupDrpData,
+            facilityTypeDrpDt, getFacilityTypeDrpData,
 
             //confirm box
             showConfirmSave, setShowConfirmSave, confirmSave, setConfirmSave,
@@ -155,7 +252,10 @@ const LoginContextApi = ({ children }) => {
 
             //-----------masters----------
             getZoneListData, zoneListData,
-            getFacilityTypeListData, facilityTypeListData
+            getFacilityTypeListData, facilityTypeListData,
+            getGenericDrugListData, genericDrugListData,
+            getStateListData, stateListData,
+            getGroupListData, groupListData
         }}>
             {children}
         </LoginContext.Provider>

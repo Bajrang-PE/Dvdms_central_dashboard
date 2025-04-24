@@ -9,7 +9,7 @@ import { decryptData } from '../../utils/SecurityConfig';
 const DashHeader = () => {
     const [showFeedback, setShowFeedback] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null);
-        const sessionData = sessionStorage.getItem('data');
+        const sessionData = localStorage.getItem('data');
         const userData = sessionData ? decryptData(sessionData) : '';
 
     const navigate = useNavigate();
@@ -38,19 +38,19 @@ const DashHeader = () => {
     }, []);
 
     const logOut = () => {
-        navigate('/')
-        sessionStorage.clear();
+        localStorage.clear();
         Cookies.remove('csrfToken');
+        navigate('/');
     }
 
     return (
         <div className='dashboard-header-nav'>
             <nav className="navbar navbar-expand-lg dash-header p-1">
 
-                <a className='navbar-brand ps-4 py-0 text-white' href="/">
+                <Link className='navbar-brand ps-4 py-0 text-white' to="/">
                     <div style={{ fontSize: "27px" }} className='fs-3 fs-md-2 fs-sm-5'>DVDMS CENTRAL DASHBOARD</div>
                     <div style={{ fontSize: "15px" }} className="fs-6 fs-md-5 fs-sm-6">Ministry of Health and Family Welfare (Govt. of India)</div>
-                </a>
+                </Link>
 
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span className="navbar-toggler-icon"></span>
@@ -97,10 +97,10 @@ const DashHeader = () => {
                                     </a>
                                 </li>
                                 <li>
-                                    <Link className="dropdown-item" onClick={logOut}>
+                                    <a className="dropdown-item pointer" onClick={()=>logOut()}>
                                         <i className="fa fa-right-from-bracket me-2"></i>
                                         Sign Out
-                                    </Link>
+                                    </a>
                                 </li>
                             </ul>
                         </li>

@@ -15,11 +15,15 @@ const Parameters = ({ params, setParamsValues }) => {
     const [dropdownData, setDropdownData] = useState({});
     const [hideParams, setHideParams] = useState(false)
     const [queryParams] = useSearchParams();
+
+    const [proParamsVal, setProParamsVal] = useState({});
+
     const dashFor = queryParams.get('dashboardFor');
 
     useEffect(() => {
         if (dashFor && parameterData?.length === 0) {
             getAllParameterData(dashFor);
+
         }
     }, [dashFor]);
 
@@ -40,19 +44,26 @@ const Parameters = ({ params, setParamsValues }) => {
         }));
     };
 
-    const handleInputChange = (parameterName, value) => {
+    const handleInputChange = (parameterName, value, id) => {
         setSelectedValues((prev) => ({
             ...prev,
             [parameterName]: value,
+        }));
+
+        setProParamsVal((prev) => ({
+            ...prev,
+            [id]: value,
         }));
     };
 
 
     useEffect(() => {
         if (parameterData?.length > 0 && params) {
-            const dashboardIdsArray = params.split(",").map(Number);
-            const matchedParams = dashboardIdsArray.map((id) => parameterData.find((p) => p.id === id)).filter(Boolean);
+            setProParamsVal({})
+            const dashboardIdsArray = params.split(",")?.map(Number);
+            const matchedParams = dashboardIdsArray?.map((id) => parameterData?.find((p) => p.id === id)).filter(Boolean);
             setPresentParams(matchedParams);
+
         }
     }, [parameterData, params]);
 
@@ -69,7 +80,7 @@ const Parameters = ({ params, setParamsValues }) => {
         if (!query) return;
         try {
             const val = { query, params: {} };
-            const data = await fetchPostData('/hisutils/GenericApi', val);
+            const data = await fetchPostData('/hisutils/GenericApiQry', val);
             setDropdownData((prev) => ({ ...prev, [parameterName]: data || [] }));
         } catch (error) {
             console.error("Error fetching query data:", error);
@@ -90,24 +101,28 @@ const Parameters = ({ params, setParamsValues }) => {
         setSelectedValues({});
     }
     const searchParams = () => {
-        setParamsValues(selectedValues)
+        setParamsValues(proParamsVal)
     }
 
     useEffect(() => {
         if (presentParams.length > 0) {
             const initialSelectedValues = {};
-    
+            const defOpt = {};
+
             presentParams.forEach((param) => {
-                const { parameterName, lstOption } = param?.jsonData || {};
+                const { parameterName, lstOption, defaultOption } = param?.jsonData || {};
                 const defaultOptions = lstOption?.filter(option => option.optionValue.includes("#DEFAULT"));
                 if (defaultOptions?.length > 0) {
                     initialSelectedValues[parameterName] = defaultOptions;
                 }
+                defOpt[param?.id] = defaultOption?.optionValue
             });
-    
+           
+            setParamsValues(defOpt)
             setSelectedValues(initialSelectedValues);
         }
     }, [presentParams]);
+
 
     const renderInputField = (param) => {
         const {
@@ -117,6 +132,7 @@ const Parameters = ({ params, setParamsValues }) => {
             parameterControlWidth, controlAlignment, isMultipleSelectionRequired, defaultValueIfEmpty, parameterId, shouldBeLessThanField, shouldBeGreaterThanField
         } = param?.jsonData || {};
         const options = dropdownData[parameterName] || lstOption || [];
+
 
         return (
             <div
@@ -148,17 +164,17 @@ const Parameters = ({ params, setParamsValues }) => {
 
                     {(parameterType === "1" && isMultipleSelectionRequired !== 'Yes') &&
                         <select
-                            id={parameterName}
+                            id={parameterId}
                             name={parameterName}
                             className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-select form-select-sm`}
                             value={selectedValues[parameterName] || ''}
-                            onChange={(e) => handleInputChange(parameterName, e.target.value)}
+                            onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
                         >
                             <option value=''>Select Value</option>
                             {defaultOption?.optionText !== '' &&
                                 <option value={defaultOption?.optionValue ? defaultOption?.optionValue : ''}>{defaultOption?.optionText ? defaultOption?.optionText : 'Select Value'}</option>
                             }
-                            {options.map((option, index) => (
+                            {options?.length > 0 && options.map((option, index) => (
                                 <option key={index} value={option.column_1}>
                                     {option.column_2}
                                 </option>
@@ -174,7 +190,7 @@ const Parameters = ({ params, setParamsValues }) => {
                             name={parameterName}
                             id={parameterId}
                             value={selectedValues[parameterName] || ""}
-                            onChange={(e) => handleInputChange(parameterName, e.target.value)}
+                            onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
                         />
                     )}
 
@@ -188,7 +204,7 @@ const Parameters = ({ params, setParamsValues }) => {
                             min={getDateConstraint(shouldBeGreaterThanField)}
                             max={getDateConstraint(shouldBeLessThanField)}
                             value={selectedValues[parameterName]}
-                            onChange={(e) => handleInputChange(parameterName, e.target.value)}
+                            onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
                         // onChange={}
 
                         />
@@ -203,7 +219,7 @@ const Parameters = ({ params, setParamsValues }) => {
                                 name={parameterName}
                                 className="form-check-input"
                                 checked={selectedValues[parameterName] || false}
-                                onChange={(e) => handleInputChange(parameterName, e.target.checked)}
+                                onChange={(e) => handleInputChange(parameterName, e.target.checked, parameterId)}
                             />
                             <label className="form-check-label" htmlFor={parameterName}>
                                 {defaultOption.optionText}
@@ -234,7 +250,7 @@ const Parameters = ({ params, setParamsValues }) => {
     return (
         <div className="container">
             <div className='help-docs'>
-                <button type="button" className="small-box-btn-dwn m-1">
+                <button type="button" className="small-box-btn-dwn m-1" onClick={() => searchParams()}>
                     <FontAwesomeIcon icon={faSearch} size="xs" className="dropdown-gear-icon" />
                 </button>
                 <button type="button" className="small-box-btn-dwn m-1" onClick={() => resetParams()}>
@@ -244,11 +260,13 @@ const Parameters = ({ params, setParamsValues }) => {
                     <FontAwesomeIcon icon={faEyeSlash} size="xs" className="dropdown-gear-icon" />
                 </button>
             </div>
-             {!hideParams && 
-            <div className="row">
-                {presentParams?.length > 0 && presentParams.map((param, index) => renderInputField(param))}
-            </div>
-           }
+            {!hideParams &&
+                <div className="row">
+                    {presentParams?.length > 0 && presentParams?.map((param, index) =>
+                        renderInputField(param))
+                    }
+                </div>
+            }
         </div>
     );
 };

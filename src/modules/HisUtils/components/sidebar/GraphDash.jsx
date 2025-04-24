@@ -9,11 +9,12 @@ import Parameters from "./Parameters";
 import { fetchProcedureData, fetchQueryData } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import { highchartGraphOptions } from "../../localData/DropDownData";
+import { getAuthUserData } from "../../../../utils/CommonFunction";
 
 
 const GraphDash = ({ widgetData }) => {
-  const { theme } = useContext(HISContext);
-  const [paramsValues, setParamsValues] = useState();
+  const { theme, paramsValues } = useContext(HISContext);
+  const [widParamsValues, setWidParamsValues] = useState();
   const [filteredGraphOptions, setFilteredGraphOptions] = useState([]);
   const [chartType, setChartType] = useState('BAR_GRAPH');
   const [graphData, setGraphData] = useState([]);
@@ -43,6 +44,11 @@ const GraphDash = ({ widgetData }) => {
   const footerText = widgetData.footerText || "";
   const widgetTopMargin = widgetData.widgetTopMargin || "";
   const isDarkTheme = theme === 'Dark';
+
+  //procedure
+  const initialRecord = widgetData?.initialRecordNo ;
+  const finalRecord = widgetData?.finalRecordNo ;
+  const isPaginationReq = widgetData?.isPaginationReq || "";
 
 
   useEffect(() => {
@@ -158,17 +164,64 @@ const GraphDash = ({ widgetData }) => {
     }
   };
 
+  // utils/graphFormatter.js
+  const formatProcedureDataForGraph = (data) => {
+    if (!data || data.length === 0) return { categories: [], seriesData: [] };
+
+    const [firstItem] = data;
+    const keys = Object.keys(firstItem);
+
+    const nameKey = keys[0];  // e.g. "State / UT"
+    const valueKey = keys[1]; // e.g. "Base Rate(In INR)"
+
+    const categories = data.map(item => item[nameKey]);
+    const values = data.map(item => parseFloat(item[valueKey]) || 0);
+
+    const seriesData = [{
+      name: valueKey,
+      data: values,
+      colorByPoint: true
+    }];
+
+    return { categories, seriesData };
+  };
+
+  const formatParams = (paramsObj) => {
+    if (typeof paramsObj !== 'object' || paramsObj === null || Array.isArray(paramsObj)) {
+      return {
+        paramsId: "",
+        paramsValue: ""
+      };
+    }
+  
+    return {
+      paramsId: Object.keys(paramsObj).join(','),
+      paramsValue: Object.values(paramsObj).join(',')
+    };
+  };
+
   const fetchProcedure = async (widget) => {
     if (widget?.modeOfQuery === "Procedure") {
       if (!widget?.procedureMode) return;
       try {
-        const data = await fetchProcedureData(widget?.procedureMode);
-        console.log(data, 'bajrang1')
-        setGraphData(
-          data.map((item) => ({
-            name: item.column_1,
-            y: item.column_2,
-          })));
+        const paramVal = formatParams(paramsValues ? paramsValues : null);
+        
+        const params = [
+          getAuthUserData('hospitalCode')?.toString(), //hospital code===
+          "10001", //user id===
+          "", //primary key
+          paramVal.paramsId || "", //parameter ids
+          paramVal.paramsValue || "", //parameter values
+          isPaginationReq?.toString(), //is pagination required===
+          initialRecord?.toString(), //initial record no.===
+          finalRecord?.toString(), //final record no.===
+          "", //date options
+          "16-Apr-2025",//from values
+          "16-Apr-2025" // to values
+        ]
+        const data = await fetchProcedureData(widget?.procedureMode, params);
+        const formattedData = formatProcedureDataForGraph(data?.data);
+        setGraphData(formattedData);
       } catch (error) {
         console.error("Error loading query data:", error);
       }
@@ -182,7 +235,7 @@ const GraphDash = ({ widgetData }) => {
     } else {
       fetchDataQry(widgetData?.queryVO);
     }
-  }, []);
+  }, [paramsValues]);
 
 
   const exportingOptions = {
@@ -363,175 +416,6 @@ const GraphDash = ({ widgetData }) => {
     },
   };
 
-  // const options = {
-  //   chart: {
-  //     type: chartTypeMapping[chartType],
-  //     height: parseInt(widgetData.graphHeight, 10) || 350,
-  //     backgroundColor: isDarkTheme ? "#1f1f1f" : "#ffffff",
-  //     options3d: {
-  //       enabled: is3D,
-  //       alpha: alpha,
-  //       beta: beta,
-  //       depth: 50,
-  //     },
-  //   },
-  //   title: {
-  //     text: widgetData.rptName || "",
-  //     style: { color: isDarkTheme ? "#ffffff" : "#000000" }
-  //   },
-  //   xAxis: {
-  //     type: "category",
-  //     title: {
-  //       text: xAxisLabel,
-  //       style: {
-  //         fontSize: `${xAxisFontSize}px`,
-  //         color: isDarkTheme ? "#ffffff" : "#000000"
-  //       },
-  //     },
-  //     labels: {
-  //       rotation: labelRotation ? parseInt(labelRotation, 10) : -45,
-  //       style: {
-  //         fontSize: "10px",
-  //         color: isDarkTheme ? "#ffffff" : "#000000"
-  //       },
-  //       step: 1,
-  //     },
-  //     scrollbar: {
-  //       enabled: isScrollbarRequired,
-  //     },
-  //     gridLineColor: isDarkTheme ? "#444444" : "#e6e6e6",
-  //   },
-  //   yAxis: {
-  //     title: {
-  //       text: yAxisLabel,
-  //       style: {
-  //         fontSize: `${yAxisFontSize}px`,
-  //         color: isDarkTheme ? "#ffffff" : "#000000"
-  //       },
-  //     },
-  //     labels: {
-  //       style: {
-  //         color: isDarkTheme ? "#ffffff" : "#000000"
-  //       }
-  //     },
-  //     gridLineColor: isDarkTheme ? "#444444" : "#e6e6e6",
-  //   },
-  //   annotations: [{
-  //     labels: [{
-  //       point: { x: 0, y: 0 },
-  //       text: "Annotation",
-  //       style: {
-  //         fontSize: `${annotationFontSize}px`,
-  //         color: isDarkTheme ? "#ffffff" : "#000000"
-  //       }
-  //     }]
-  //   }],
-  //   legend: {
-  //     enabled: showLegend,
-  //     itemStyle: {
-  //       color: isDarkTheme ? "#ffffff" : "#000000"
-  //     }
-  //   },
-  //   plotOptions: {
-  //     series: {
-  //       dataLabels: {
-  //         enabled: dataLabelsEnabled,
-  //         style: {
-  //           color: isDarkTheme ? "#ffffff" : "#000000"
-  //         }
-  //       },
-  //       colorByPoint: chartType === "PIE_CHART" || chartType === "BAR_GRAPH",
-  //     },
-  //     pie: {
-  //       allowPointSelect: true,
-  //       cursor: "pointer",
-  //       colors: colorList,
-  //       dataLabels: {
-  //         enabled: true,
-  //         format: "<b>{point.name}</b>: {point.y}",
-  //         style: { color: isDarkTheme ? "#ffffff" : "#000000" }
-  //       },
-  //       innerSize: chartType === "DONUT_CHART" ? "50%" : "0%",
-  //     },
-  //     bar: {
-  //       colors: colorList,
-  //     },
-  //     column: {
-  //       colors: colorList,
-  //       stacking: chartType === "STACKED_BAR_GRAPH" || chartType === "STACKED_GRAPH" ? "normal" : undefined,
-  //     },
-  //     line: {
-  //       marker: {
-  //         enabled: true,
-  //         fillColor: "red",
-  //         lineColor: "black",
-  //         lineWidth: 2,
-  //         radius: 4,
-  //       },
-  //     },
-  //     area: {
-  //       stacking: chartType === "AREA_STACKED_GRAPH" ? "normal" : undefined,
-  //     }
-  //   },
-  //   tooltip: {
-  //     shared: true,
-  //     valueSuffix: " units",
-  //     backgroundColor: isDarkTheme ? "rgba(0, 0, 0, 0.85)" : "#ffffff",
-  //     style: {
-  //       color: isDarkTheme ? "#ffffff" : "#000000"
-  //     },
-  //   },
-  //   exporting: exportingOptions,
-  //   // series: graphData.length > 0
-  //   //   ? [
-  //   //     {
-  //   //       type: chartTypeMapping[chartType],
-  //   //       name: yAxisLabel || "Value",
-  //   //       data: graphData[0]?.data,
-  //   //       colorByPoint: true,
-  //   //     },
-  //   //   ]
-  //   //   : [],
-  //   series: graphData,
-  //   lang: {
-  //     noData: "No data available for this graph",
-  //   },
-  //   noData: {
-  //     position: {
-  //       align: "center",
-  //       verticalAlign: "middle",
-  //       x: 0,
-  //       y: 0,
-  //     },
-  //     style: {
-  //       fontSize: "14px",
-  //       fontWeight: "bold",
-  //       color: isDarkTheme ? "#ff6666" : "#ff0000",
-  //       textAlign: "center"
-  //     },
-  //   },
-  //   drilldown: {
-  //     series: [],
-  //     activeDataLabelStyle: {
-  //       color: "#0022ff",
-  //       cursor: "pointer",
-  //       fontWeight: "bold",
-  //       textDecoration: "none"
-  //     },
-  //     breadcrumbs: {
-  //       position: {
-  //         align: "right",
-  //       },
-  //       buttonTheme: {
-  //         style: {
-  //           color: "#006400",
-  //         },
-  //       },
-  //     },
-  //   },
-  // };
-
-
   return (
     <div className={`high-chart-main ${theme === 'Dark' ? 'dark-theme' : ""}`} style={{ border: `7px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
 
@@ -573,7 +457,7 @@ const GraphDash = ({ widgetData }) => {
       </div>
       {paramsData && (
         <div className='parameter-box'>
-          <Parameters params={paramsData} setParamsValues={setParamsValues} />
+          <Parameters params={paramsData} setParamsValues={setWidParamsValues} />
         </div>
       )}
       <div className="high-chart-box">

@@ -16,8 +16,8 @@ const ZoneMasterForm = () => {
 
     const getSingleData = (id) => {
         fetchData(`api/v1/zones/${id}`).then(data => {
-            if (data) {
-                setSingleData([data]);
+            if (data?.status ===1 ) {
+                setSingleData([data?.data]);
             } else {
                 ToastAlert('Error while fetching data!', 'error')
             }
@@ -38,14 +38,14 @@ const ZoneMasterForm = () => {
             "status": "Active"
         }
         fetchPostData(`api/v1/zones`, val).then(data => {
-            if (data) {
+            if (data?.status ===1) {
                 ToastAlert('Record added successfully', 'success');
                 getZoneListData();
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
             } else {
-                ToastAlert('error while creating record!', "error");
+                ToastAlert(data?.message, "error");
             }
         })
     }
@@ -60,7 +60,7 @@ const ZoneMasterForm = () => {
             "cwhnumFlagForNhm": 0,
         }
         fetchUpdateData(`api/v1/zones/${selectedOption[0]?.cwhnumZoneId}`, val).then(data => {
-            if (data) {
+            if (data?.status ===1) {
                 ToastAlert('Record Updated Successfully', 'success');
                 getZoneListData();
                 setOpenPage('home');
@@ -68,7 +68,7 @@ const ZoneMasterForm = () => {
                 setSelectedOption([]);
                 setConfirmSave(false);
             } else {
-                ToastAlert('error while updating record!', error)
+                ToastAlert(data?.message, "error")
             }
         })
     }
@@ -157,9 +157,9 @@ const ZoneMasterForm = () => {
                                         type="radio"
                                         name="recordStatus"
                                         id="recordStatus0"
-                                        value={'InActive'}
+                                        value={'Inactive'}
                                         onChange={(e) => setRecordStatus(e.target.value)}
-                                        checked={recordStatus === 'InActive'}
+                                        checked={recordStatus === 'Inactive'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
                                         InActive

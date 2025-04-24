@@ -3,6 +3,7 @@ import './HisUtils.css'
 import { lazy } from "react";
 import DashboardMst from "./pages/dashboard/DashboardMst";
 import Tabular from "./components/sidebar/Tabular";
+import Auth from "../../Auth";
 
 const DbConfigMaster = lazy(() => import('./pages/dashboardMasterPgs/DbConfigMaster'));
 const ParameterMaster = lazy(() => import('./pages/dashboardMasterPgs/ParameterMaster'));
@@ -28,7 +29,7 @@ const HisRoutes = () => {
             <Route exact path="/widget-master" name="login" element={<WidgetMaster />} />
             <Route exact path="/tab-master" name="Tab Master" element={<TabMaster />} />
             <Route exact path="/dashboard-master" name="Dashboard Master" element={<DashboardMaster />} />
-            <Route exact path="/dashboard" name="Dashboard Master" element={<DashboardMst />} />
+            <Route exact path="/dashboard" name="Dashboard Master" element={<Auth comp={DashboardMst} />} />
             <Route exact path="/widget" name="Dashboard Master" element={<Tabular />} />
         </Routes>
     )

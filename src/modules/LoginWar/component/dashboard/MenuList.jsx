@@ -30,7 +30,7 @@ const MenuList = (props) => {
                         { dataVal: 'editUser', menuName: 'District Master', icon: 'fa-gear',link: "/dvdms/menus/district-master" },
                         { dataVal: 'editUser', menuName: 'State Config Cwh', icon: 'fa-gear', link: "/dvdms/menus/state-config-cwh" },
                         { dataVal: 'editUser', menuName: 'Facility Type Master', icon: 'fa-gear', link: "/dvdms/menus/facility-type-master" },
-                        { dataVal: 'editUser', menuName: 'Group Master', icon: 'fa-gear' },
+                        { dataVal: 'editUser', menuName: 'Group Master', icon: 'fa-gear' ,link: "/dvdms/menus/group-master" },
                         { dataVal: 'editUser', menuName: 'Sub Group Master', icon: 'fa-gear' },
                         { dataVal: 'editUser', menuName: 'Drug Type Master', icon: 'fa-gear', link: "/dvdms/menus/drug-type-master" },
                         { dataVal: 'editUser', menuName: 'Supplier Master', icon: 'fa-gear', link: "/dvdms/menus/supplier-master" },

@@ -3,23 +3,13 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import RajasthanMap from '../../localData/mapJson/rajasthan.json';
 import UpMap from '../../localData/mapJson/uttarpradesh.json';
+import { fetchQueryData } from "../../utils/commonFunction";
 
 
 const MapDash = ({ widgetData }) => {
     const [mapData, setMapData] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false)
-
-    useEffect(() => {
-        fetch("https://code.highcharts.com/mapdata/countries/in/in-all.geo.json")
-            .then((res) => res.json())
-            .then((data) => {
-                setMapData(data);
-            })
-            .catch((err) => {
-                console.error("Failed to load India map", err);
-            });
-
-    }, []);
+    const [graphData, setGraphData] = useState([]);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -62,6 +52,63 @@ const MapDash = ({ widgetData }) => {
             clearTimeout(timeout);
         };
     }, []);
+
+    console.log(graphData, 'mapdatamap')
+
+    const fetchDataQry = async (query) => {
+        if (!query) return;
+        try {
+            const data = await fetchQueryData(query);
+            const seriesData = [];
+
+            if (data[0]?.column_3) {
+                // Three-column data
+                const categories = [...new Set(data.map(item => item.column_1))];
+                const seriesNames = ['column_2', 'column_3'];
+
+                seriesNames.forEach(seriesName => {
+                    seriesData.push({
+                        name: seriesName,
+                        data: categories.map(category => {
+                            const item = data.find(d => d.column_1 === category);
+                            return item ? item[seriesName] : null;
+                        }),
+                        colorByPoint: true,
+                    });
+                });
+
+                setGraphData({ categories, seriesData });
+            } else {
+                // Two-column data
+                const categories = data.map(item => item.column_1);
+                seriesData.push({
+                    name: 'column_2',
+                    data: data.map(item => item.column_2),
+                    colorByPoint: true,
+                });
+
+                setGraphData({ categories, seriesData });
+            }
+        } catch (error) {
+            console.error("Error loading query data:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetch("https://code.highcharts.com/mapdata/countries/in/in-all.geo.json")
+            .then((res) => res.json())
+            .then((data) => {
+                setMapData(data);
+            })
+            .catch((err) => {
+                console.error("Failed to load India map", err);
+            });
+
+    }, []);
+
+      useEffect(() => {
+          fetchDataQry(widgetData?.queryVO);
+      }, [widgetData]);
 
 
     if (!isLoaded) {

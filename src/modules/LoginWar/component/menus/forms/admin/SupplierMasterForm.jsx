@@ -189,7 +189,7 @@ const SupplierMasterForm = (props) => {
 
     const reset = () => {
         setValues({
-            "suppName": "", "suppName": "", "suppType": "10", "contactNo": "", "emailId": "admin_disha", "address": "",
+            "suppName": "", "suppType": "10", "contactNo": "", "emailId": "admin_disha", "address": "",
             "pinCode": "", "countryName": "101", "stateId": "", "corporateGst": "", "lstNo": "", "cstNo": "",
             "panNo": "D@shboard_2024", "showPan": "","suppId":"",
         });

@@ -6,9 +6,8 @@ import PdfDownload from '../commons/PdfDownload';
 import MapDash from './MapDash';
 
 const TabDash = React.memo(({ tabData }) => {
-    const { allWidgetData, setLoading, loading, activeTab } = useContext(HISContext);
+    const { allWidgetData, setLoading, loading, activeTab, setParamsValues } = useContext(HISContext);
     const [presentWidgets, setPresentWidgets] = useState([]);
-    const [paramsValues, setParamsValues] = useState();
     const [presentTabs, setPresentTabs] = useState([]);
 
     const handleSetParamsValues = useCallback((values) => {
@@ -19,6 +18,7 @@ const TabDash = React.memo(({ tabData }) => {
     useEffect(() => {
         if (tabData?.jsonData?.lstDashboardWidgetMapping?.length > 0) {
             const widgetIds = tabData?.jsonData?.lstDashboardWidgetMapping;
+
             const sortedWidgets = [...widgetIds].sort((a, b) => parseInt(a.displayOrder) - parseInt(b.displayOrder));
             const availableWidgets = sortedWidgets
                 .map(wid => allWidgetData.find(widget => widget?.rptId == wid?.rptId))
@@ -27,13 +27,13 @@ const TabDash = React.memo(({ tabData }) => {
             let finalWidgets = [];
 
             sortedWidgets.forEach(wid => {
-                const parentWidget = availableWidgets?.find(widget => widget?.rptId === wid?.rptId);
+                const parentWidget = availableWidgets?.find(widget => widget?.rptId == wid?.rptId);
                 if (parentWidget) {
                     finalWidgets.push(parentWidget);
                     if (parentWidget?.linkedWidgetRptId) {
                         const linkedWidgetIds = parentWidget.linkedWidgetRptId.split(',');
                         linkedWidgetIds.forEach(linkedId => {
-                            const linkedWidget = availableWidgets?.find(widget => widget?.rptId === linkedId);
+                            const linkedWidget = availableWidgets?.find(widget => widget?.rptId == linkedId);
                             if (linkedWidget) {
                                 finalWidgets.push(linkedWidget);
                             }
@@ -55,6 +55,8 @@ const TabDash = React.memo(({ tabData }) => {
             setPresentTabs(sortedWidgets)
         }
     }, [tabData, allWidgetData]);
+
+
 
     return (
         <>

@@ -7,6 +7,7 @@ import { HISContext } from "../../contextApi/HISContext";
 import InputField from "../commons/InputField";
 import { generateCSV, generatePDF } from "../commons/advancedPdf";
 import Parameters from "./Parameters";
+import { getAuthUserData } from "../../../../utils/CommonFunction";
 
 const initialStates = [
   { id: 1, name: "Rajasthan" },
@@ -43,30 +44,35 @@ const hospitalData = {
 
 const TabularDash = ({ widgetData }) => {
 
-  const { theme, mainDashData, singleConfigData } = useContext(HISContext);
+  const { theme, mainDashData, singleConfigData, paramsValues, setLoading } = useContext(HISContext);
   const [tableData, setTableData] = useState([]);
   const [currentLevel, setCurrentLevel] = useState("state");
   const [currentData, setCurrentData] = useState(initialStates);
   const [previousData, setPreviousData] = useState([]);
-  const [paramsValues, setParamsValues] = useState();
+  const [widParamsValues, setWidParamsValues] = useState();
   const [searchInput, setSearchInput] = useState('');
-  const [filterData, setFilterData] = useState(initialStates)
+  const [filterData, setFilterData] = useState(tableData)
+
+  const [columns, setColumns] = useState([]);
+
+  console.log(widgetData, 'widgetData')
 
   //parameter search
   useEffect(() => {
     if (!searchInput) {
-      setFilterData(currentData);
+      setFilterData(tableData);
     } else {
       const lowercasedText = searchInput.toLowerCase();
-      const newFilteredData = currentData.filter(row => {
-        const paramId = row?.id?.toString() || "";
-        const paramName = row?.name?.toLowerCase() || "";
 
-        return paramName.includes(lowercasedText);
+      const newFilteredData = tableData?.length > 0 && tableData?.filter(row => {
+        return Object.values(row)?.some(val =>
+          val?.toString()?.toLowerCase()?.includes(lowercasedText)
+        );
       });
+
       setFilterData(newFilteredData);
     }
-  }, [searchInput, currentData]);
+  }, [searchInput, tableData]);
 
 
   const handleStateClick = useCallback((stateId) => {
@@ -94,28 +100,99 @@ const TabularDash = ({ widgetData }) => {
     }
   }, [previousData]);
 
+  const formatData = (rawData = []) => {
+    return rawData.map((item) => {
+      const formattedItem = {};
+      Object.entries(item).forEach(([key, value]) => {
+
+        const formattedKey = key.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+        formattedItem[formattedKey] = formattedKey.includes("State") ? value : value;
+      });
+      return formattedItem;
+    });
+  };
+
+  const generateColumns = (data) => {
+    if (!data || data.length === 0) return [];
+
+    const keys = Object.keys(data[0]);
+
+    // Reorder keys so "State" is first
+    const reorderedKeys = [
+      ...keys.filter(k => /state/i.test(k)), // Match "State", "State / UT" etc.
+      ...keys.filter(k => !/state/i.test(k))
+    ];
+
+    return reorderedKeys.map((key) => ({
+      name: key,
+      selector: row => row[key],
+      sortable: true,
+      wrap: true,
+      cell: key.toLowerCase().includes("state")
+        ? row => <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => console.log(row)}>{row[key]?.split('##')[0]}</span>
+        : undefined
+    }));
+  };
+
+  const formatParams = (paramsObj) => {
+    if (typeof paramsObj !== 'object' || paramsObj === null || Array.isArray(paramsObj)) {
+      return {
+        paramsId: "",
+        paramsValue: ""
+      };
+    }
+
+    return {
+      paramsId: Object.keys(paramsObj).join(','),
+      paramsValue: Object.values(paramsObj).join(',')
+    };
+  };
+
   const fetchData = async (widget) => {
     if (widget?.modeOfQuery === "Procedure") {
       if (!widget?.procedureMode) return;
       try {
-        const data = await fetchProcedureData(widget?.procedureMode);
-        setTableData(
-          data?.length > 0 && data.map((item) => ({
-            name: item.column_1,
-            y: item.column_2,
-          })));
+        const paramVal = formatParams(paramsValues ? paramsValues : null);
+
+        const params = [
+          getAuthUserData('hospitalCode')?.toString(), //hospital code===
+          "10001", //user id===
+          "", //primary key
+          paramVal.paramsId || "", //parameter ids
+          paramVal.paramsValue || "", //parameter values
+          isPaginationReq?.toString(), //is pagination required===
+          initialRecord?.toString(), //initial record no.===
+          finalRecord?.toString(), //final record no.===
+          "", //date options
+          "16-Apr-2025",//from values
+          "16-Apr-2025" // to values
+        ]
+        const response = await fetchProcedureData(widget?.procedureMode, params);
+        const formattedData = formatData(response.data || []);
+        const generatedColumns = generateColumns(formattedData);
+        setColumns(generatedColumns);
+        setTableData(formattedData);
+        setLoading(false)
+
       } catch (error) {
         console.error("Error loading query data:", error);
+        setLoading(false)
       }
     } else {
-      if (!widget?.queryVO?.length > 0) return;
+      // if (!widget?.queryVO?.length > 0) return;
       try {
-        const data = await fetchQueryData(widget?.queryVO);
-        setTableData(
-          data?.length > 0 && data.map((item) => ({
-            name: item.column_1,
-            y: item.column_2,
-          })));
+        const data = await fetchQueryData(widget?.query);
+        console.log(data, 'data')
+        if (data?.length > 0) {
+          setTableData(
+            data?.length > 0 && data.map((item) => ({
+              name: item.column_1,
+              y: item.column_2,
+            })));
+        } else {
+          setTableData([])
+        }
       } catch (error) {
         console.error("Error loading query data:", error);
       }
@@ -127,8 +204,10 @@ const TabularDash = ({ widgetData }) => {
       // alert('bgbg')
       fetchData(widgetData);
     }
-  }, []);
+  }, [paramsValues, widgetData]);
 
+  console.log(filterData, 'data')
+  console.log(tableData, 'datatt')
 
   const headingAlign = widgetData?.tableHeadingAlignment === '1' ? 'center' : 'left';
   const borderReq = widgetData?.isTableBorderRequired || '';
@@ -145,45 +224,47 @@ const TabularDash = ({ widgetData }) => {
   const paramsData = widgetData.selFilterIds || "";
   const footerText = widgetData.footerText || "";
   const widgetTopMargin = widgetData.widgetTopMargin || "";
+  const initialRecord = widgetData?.initialRecordNo;
+  const finalRecord = widgetData?.finalRecordNo;
 
-  const columns = useMemo(() => {
-    const srNoColumn = isIndexNoReq
-      ? [{ name: 'Sr.No.', selector: (row, index) => index + 1 }]
-      : [];
-    if (currentLevel === "state") {
-      return [
+  // const columns = useMemo(() => {
+  //   const srNoColumn = isIndexNoReq
+  //     ? [{ name: 'Sr.No.', selector: (row, index) => index + 1 }]
+  //     : [];
+  //   if (currentLevel === "state") {
+  //     return [
 
-        ...srNoColumn,
-        {
-          name: "Action",
-          cell: (row) => (
-            <button className="rounded-4 border-1" onClick={() => handleStateClick(row.id)}>
-              <FontAwesomeIcon icon={faSortAmountDesc} />
-            </button>
-          ),
-        },
-        { name: "State Name", selector: (row) => row.name, sortable: true },
-      ];
-    } else if (currentLevel === "district") {
-      return [
-        ...srNoColumn,
-        {
-          name: "Action",
-          cell: (row) => (
-            <button className="rounded-4 border-1" onClick={() => handleDistrictClick(row.id)}>
-              <FontAwesomeIcon icon={faSortAmountDesc} />
-            </button>
-          ),
-        },
-        { name: "District Name", selector: (row) => row.name, sortable: true },
-      ];
-    } else {
-      return [
-        ...srNoColumn,
-        { name: "Hospital Name", selector: (row) => row.name, sortable: true }
-      ];
-    }
-  }, [currentLevel, handleStateClick, handleDistrictClick]);
+  //       ...srNoColumn,
+  //       {
+  //         name: "Action",
+  //         cell: (row) => (
+  //           <button className="rounded-4 border-1" onClick={() => handleStateClick(row.id)}>
+  //             <FontAwesomeIcon icon={faSortAmountDesc} />
+  //           </button>
+  //         ),
+  //       },
+  //       { name: "State Name", selector: (row) => row.name, sortable: true },
+  //     ];
+  //   } else if (currentLevel === "district") {
+  //     return [
+  //       ...srNoColumn,
+  //       {
+  //         name: "Action",
+  //         cell: (row) => (
+  //           <button className="rounded-4 border-1" onClick={() => handleDistrictClick(row.id)}>
+  //             <FontAwesomeIcon icon={faSortAmountDesc} />
+  //           </button>
+  //         ),
+  //       },
+  //       { name: "District Name", selector: (row) => row.name, sortable: true },
+  //     ];
+  //   } else {
+  //     return [
+  //       ...srNoColumn,
+  //       { name: "Hospital Name", selector: (row) => row.name, sortable: true }
+  //     ];
+  //   }
+  // }, [currentLevel, handleStateClick, handleDistrictClick]);
 
   return (
     <div className={`tabular-box ${theme === 'Dark' ? 'dark-theme' : ''} tabular-box-border ${borderReq === 'No' ? '' : 'tabular-box-border'}`} style={{ border: `1px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
@@ -206,10 +287,10 @@ const TabularDash = ({ widgetData }) => {
               <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }}>
                 <FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-2" />Refresh Data
               </li>
-              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generatePDF(widgetData, currentData, singleConfigData?.databaseConfigVO)} title="pdf">
+              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generatePDF(widgetData, filterData, singleConfigData?.databaseConfigVO)} title="pdf">
                 <FontAwesomeIcon icon={faFilePdf} className="dropdown-gear-icon me-2" />Download PDF
               </li>
-              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generateCSV(widgetData, currentData, singleConfigData?.databaseConfigVO)}>
+              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generateCSV(widgetData, filterData, singleConfigData?.databaseConfigVO)}>
                 <FontAwesomeIcon icon={faFileExcel} className="dropdown-gear-icon me-2" />Download CSV
               </li>
               <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }}>
@@ -217,10 +298,10 @@ const TabularDash = ({ widgetData }) => {
               </li>
             </ul>
 
-            <button className="small-box-btn-dwn" onClick={() => generatePDF(widgetData, currentData, singleConfigData?.databaseConfigVO)} title="PDF">
+            <button className="small-box-btn-dwn" onClick={() => generatePDF(widgetData, filterData, singleConfigData?.databaseConfigVO)} title="PDF">
               <FontAwesomeIcon icon={faFilePdf} />
             </button>
-            <button className="small-box-btn-dwn" onClick={() => generateCSV(widgetData, currentData, singleConfigData?.databaseConfigVO)}>
+            <button className="small-box-btn-dwn" onClick={() => generateCSV(widgetData, filterData, singleConfigData?.databaseConfigVO)}>
               <FontAwesomeIcon icon={faFileExcel} />
             </button>
             {currentLevel !== "state" && (
@@ -254,7 +335,7 @@ const TabularDash = ({ widgetData }) => {
 
       {paramsData && (
         <div className='parameter-box'>
-          <Parameters params={paramsData} setParamsValues={setParamsValues} />
+          <Parameters params={paramsData} setParamsValues={setWidParamsValues} />
         </div>
       )}
 
