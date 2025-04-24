@@ -13,6 +13,8 @@ import FacilityTypeMappingMaster from '../component/menus/admin/FacilityTypeMapp
 import JobOrderMaster from '../component/menus/admin/JobOrderMaster'
 import StateCdbSyncMaster from '../component/menus/admin/StateCdbSyncMaster'
 import NinFacilityMappingMaster from '../component/menus/admin/NinFacilityMappingMaster'
+import DistrictMaster from '../component/menus/admin/DistrictMaster'
+import SubGroupMaster from '../component/menus/admin/SubGroupMaster'
 
 const Menus = () => {
     return (
@@ -25,6 +27,8 @@ const Menus = () => {
                 <Route path="supplier-master" element={<SupplierMaster />} />
                 <Route path="supplier-mapping-master" element={<SupplierMappingMaster />} />
                 <Route path="nin-facility-mapping-master" element={<NinFacilityMappingMaster />} />
+                <Route path="district-master" element={<DistrictMaster />} />
+                <Route path="sub-group-master" element={<SubGroupMaster />}/>
 
                 {/* created by BG */}
                 <Route path="generic-drug-master" element={<GenericDrugMaster />} />

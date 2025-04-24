@@ -75,7 +75,7 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getSteteNameDrpData = () => {
-        fetchData('/state/getstate').then((data) => {
+        fetchData('http://10.226.29.102:8025/state/getstate').then((data) => {
             if (data) {
 
                 const drpData = data?.map((dt) => {

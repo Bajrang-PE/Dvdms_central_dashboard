@@ -5,24 +5,19 @@ import GlobalTable from '../../GlobalTable';
 import SupplierMasterForm from '../forms/admin/SupplierMasterForm';
 import { Modal } from 'react-bootstrap';
 import { ToastAlert } from '../../../utils/CommonFunction';
-import { fetchData,fetchUpdateData } from '../../../../../utils/ApiHooks';
+import { fetchUpdateData, fetchData } from '../../../../../utils/ApiHooks';
 
 
 const SupplierMaster = () => {
 
     const [recordStatus, setRecordStatus] = useState("1");
     const [suppliers, setSuppliers] = useState([]);
-    const { selectedOption, setSelectedOption, openPage, setOpenPage } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [selectAll, setSelectAll] = useState(false);
 
     useEffect(() => {
         getListData(recordStatus);
-
-        if (openPage === "delete") {
-            handleDelete();
-        }
-
-    }, [recordStatus,openPage])
+    }, [recordStatus])
 
     const handleSelectAll = (isChecked) => {
         setSelectAll(isChecked);
@@ -41,17 +36,37 @@ const SupplierMaster = () => {
 
     }
 
-       const handleDelete = async () => {
-            if (selectedOption?.length > 0) {
-                const suppId = String(selectedOption[0]?.cwhnumSupplierId)
-                const response = await fetchUpdateData(`/suppliers/delete/${suppId}`);
-                ToastAlert('Supplier Deleted Successfully', 'success')
-                setOpenPage("home");
+    const handleDeleteRecord = () => {
+        alert("Handle Delete Record")
+        if (selectedOption?.length > 0) {
+            setOpenPage('delete');
+            setShowConfirmSave(true);
+        } else {
+            ToastAlert("Please select a record", "warning");
+        }
+    }
+
+    useEffect(() => {
+        if (confirmSave && openPage === 'delete') {
+            handleDelete();
+        }
+    }, [confirmSave])
+
+    const handleDelete = () => {
+        const suppId = String(selectedOption[0]?.cwhnumSupplierId)
+        fetchUpdateData(`/suppliers/delete/${suppId}`).then(data => {
+            if (data) {
+                ToastAlert("Record Deleted Successfully", "success")
+                setSelectedOption([]);
+                setConfirmSave(false);
+                setOpenPage("home")
+                setRecordStatus(1)
             } else {
-                ToastAlert('Please select a record', 'warning')
-                setOpenPage("home");
+                ToastAlert('Error while deleting record!', 'error')
+                setOpenPage("home")
             }
-        };
+        })
+    }
 
     const columns = [
         {
@@ -111,10 +126,10 @@ const SupplierMaster = () => {
             sortable: true,
         },
     ];
-console.log(selectedOption,'selectedOption')
+    console.log(selectedOption, 'selectedOption')
     return (
         <div className="masters mx-3 my-2">
-            {(openPage === "home" || openPage === "view") && (<>
+            {(openPage === "home" || openPage === "view" || openPage === "delete") && (<>
                 <div className='text-left w-100 fw-bold p-1 heading-text' >Supplier Master</div>
 
                 <div className="row mt-3">
@@ -142,7 +157,7 @@ console.log(selectedOption,'selectedOption')
                 </div>
 
                 <div>
-                    <GlobalTable column={columns} data={suppliers} onAdd={null} onModify={null} onDelete={null} onView={null}
+                    <GlobalTable column={columns} data={suppliers} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null}
                         onReport={null} setSearchInput={true} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
                 </div>
 
@@ -153,23 +168,21 @@ console.log(selectedOption,'selectedOption')
                         </Modal.Header>
                         <Modal.Body className='px-2 py-1'>
 
-                            <div className="grid grid-cols-[200px_1fr] gap-y-2 text-left max-w-xl mx-auto">
-                                <div><b>Supplier Name:</b></div><div>{selectedOption[0]?.cwhstrSupplierName}</div>
-                                <div><b>Supplier Type:</b></div><div>{selectedOption[0]?.cwhnumSupplierType}</div>
-                                <div><b>Address:</b></div><div>{selectedOption[0]?.cwhstrAddress}</div>
-                                <div><b>Email Id:</b></div><div>{selectedOption[0]?.cwhstrEmailId}</div>
-                                <div><b>Contact No.:</b></div><div>{selectedOption[0]?.cwhstrContactNo}</div>
-                                <div><b>Corporate GST No.:</b></div><div>{selectedOption[0]?.cwhstrCorporateMainGstno}</div>
-                                <div><b>LST No.:</b></div><div>{selectedOption[0]?.cwhstrLstNo}</div>
-                                <div><b>CST No.:</b></div><div>{selectedOption[0]?.cwhstrCstNo}</div>
-                                <div><b>PAN No.:</b></div><div>{selectedOption[0]?.cwhstrPanNo}</div>
-                                <div><b>Record Status:</b></div><div>{selectedOption[0]?.gnumIsvalid}</div>
+                            <div className='text-left'>
+                                <label><b>Supplier Type : </b></label>&nbsp;{selectedOption[0]?.cwhnumSupplierType}<br />
+                                <label><b>Address : </b></label>&nbsp;{selectedOption[0]?.cwhstrAddress}<br />
+                                <label><b>Email Id : </b></label>&nbsp;{selectedOption[0]?.cwhstrEmailId}<br />
+                                <label><b>Contact No. : </b></label>&nbsp;{selectedOption[0]?.cwhstrContactNo}<br />
+                                <label><b>Corporate GST No. : </b></label>&nbsp;{selectedOption[0]?.cwhstrCorporateMainGstno}<br />
+                                <label><b>LST No. : </b></label>&nbsp;{selectedOption[0]?.cwhstrLstNo}<br />
+                                <label><b>CST No.: </b></label>&nbsp;{selectedOption[0]?.cwhstrCstNo}<br />
+                                <label><b>PAN No. : </b></label>&nbsp;{selectedOption[0]?.cwhstrPanNo}<br />
+                                <label><b>Record Status : </b></label>&nbsp;{selectedOption[0]?.gnumIsvalid ? "Active" : "Inactive"}
                             </div>
 
-                           
                             <div className='text-center'>
 
-                                <button className='btn cms-login-btn m-1 btn-sm' onClick={()=>setOpenPage('home')}>
+                                <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
                                     <i className="fa fa-broom me-1"></i> Close
                                 </button>
                             </div>
@@ -181,7 +194,7 @@ console.log(selectedOption,'selectedOption')
             }
 
             {(openPage === "add" || openPage === "modify") &&
-                <SupplierMasterForm />
+                <SupplierMasterForm getData={getListData} recStatus={recordStatus} setRecStatus={setRecordStatus}/>
             }
 
         </div>
