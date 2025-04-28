@@ -217,15 +217,8 @@ const LoginContextApi = ({ children }) => {
 
     const getFacilityTypeDrpData = () => {
         fetchData('/api/v1/drpDwnFcltyTypMapMst').then((data) => {
-            if (data) {
-                const drpData = data?.map((dt) => {
-                    const val = {
-                        value: dt?.id,
-                        label: dt?.name
-                    }
-                    return val;
-                })
-                setFacilityTypeDrpDt(drpData)
+            if (data?.status === 1) {
+                setFacilityTypeDrpDt(data?.data)
             } else {
                 setFacilityTypeDrpDt([])
             }

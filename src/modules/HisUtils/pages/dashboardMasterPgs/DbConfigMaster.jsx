@@ -13,7 +13,7 @@ const DbConfigMaster = () => {
     const { dashboardForDt, getDashboardForDrpData, setSelectedOption, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, singleConfigData, getDashConfigData, } = useContext(HISContext);
 
     const [values, setValues] = useState({
-        "configurationFor": '', "serverName": "WEBSPHERE", "jndiServer": '', "jndiServer1": '', "jndiServer2": '', "jndiServer3": '', "driverClass": "", "userName": "", "connectionURL": "", "password": "", "staticReportHead1": "", "staticReportHead2": "", "staticReportHead3": "", "reportHeaderByQuery": "", "logoImageUrl": "", "staticDefaultLimit": ""
+        "configurationFor": '', "serverName": "WEBSPHERE", "jndiServer": '', "jndiServer1": '', "jndiServer2": '', "jndiServer3": '', "driverClass": "", "userName": "", "connectionURL": "", "password": "", "staticReportHead1": "", "staticReportHead2": "", "staticReportHead3": "", "reportHeaderByQuery": "", "logoImageUrl": "", "staticDefaultLimit": "", "logoImageUrl1": "", "logoImageUrl2": "", "logoImageUrl3": ""
     })
 
     const [rows, setRows] = useState([]);
@@ -32,10 +32,13 @@ const DbConfigMaster = () => {
     const [isAccessReq, setIsAccessReq] = useState('No');
     const [isErrorReq, setIsErrorReq] = useState('Yes');
     const [isLogoReq, setIsLogoReq] = useState('Yes');
-    const [logoPosition, setLogoPosition] = useState("Left");
+    const [logoPosition, setLogoPosition] = useState({
+        "logo1Position": "", "logo2Position": "", "logo3Position": ""
+    });
     const [headingAlignment, setHeadingAlignment] = useState("Left");
     const [isLimitRecReq, setIsLimitRecReq] = useState('No');
-
+    const [isHeadByQueryReq, setIsHeadByQueryReq] = useState('No');
+    const [logoCounts, setLogoCounts] = useState('1');
     const [isEditing, setIsEditing] = useState(null);
 
     const [errors, setErrors] = useState({
@@ -92,6 +95,22 @@ const DbConfigMaster = () => {
             setErrors({ ...errors, [error]: '' })
         }
     }
+    console.log(values, 'values')
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                const base64String = reader.result;
+                setValues({ ...values, [e.target.name]: base64String })
+            };
+
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleEditRow = (index) => {
         setIsEditing(index);
         setNewRow(rows[index]);
@@ -143,7 +162,7 @@ const DbConfigMaster = () => {
 
     const saveConfiguration = () => {
         setLoading(true);
-        const { configurationFor, serverName, jndiServer, jndiServer1, jndiServer2, jndiServer3, driverClass, userName, connectionURL, password, staticReportHead1, staticReportHead2, staticReportHead3, reportHeaderByQuery, logoImageUrl, staticDefaultLimit } = values;
+        const { configurationFor, serverName, jndiServer, jndiServer1, jndiServer2, jndiServer3, driverClass, userName, connectionURL, password, staticReportHead1, staticReportHead2, staticReportHead3, reportHeaderByQuery, logoImageUrl, staticDefaultLimit, logoImageUrl1, logoImageUrl2, logoImageUrl3 } = values;
 
         const val = {
             "databaseConfigVO": {
@@ -162,18 +181,25 @@ const DbConfigMaster = () => {
                 "reportHeader2": staticReportHead2,
                 "reportHeader3": staticReportHead3,
                 "reportHeaderByQuery": reportHeaderByQuery,
-                "logoImage": logoImageUrl,
+                // "logoImage": logoImageUrl,
+                "logos": [
+                    { image: logoImageUrl1, position: logoPosition?.logo1Position },
+                    { image: logoImageUrl2, position: logoPosition?.logo2Position },
+                    { image: logoImageUrl3, position: logoPosition?.logo3Position },
+                ],
                 "isDashboardConfigurationCached": isDashboardCached,
                 "maxServiceReferenceNo": 2,
                 "lstWebServiceClientConfigVO": rows?.length > 0 ? rows : [],
                 "isLogoRequired": isLogoReq,
-                "logoPosition": logoPosition,
+                // "logoPosition": logoPosition,
                 "headingAlignment": headingAlignment,
                 "isLogAllAccess": isAccessReq,
                 "isLogAllError": isErrorReq,
                 "isLogAllMsgs": isConsoleReq,
                 "isLimitRequired": isLimitRecReq,
-                "setDefaultLimit": staticDefaultLimit
+                "setDefaultLimit": staticDefaultLimit,
+                "logoCounts": logoCounts,
+                "isHeadByQueryReq": isHeadByQueryReq
             }
         }
 
@@ -267,7 +293,7 @@ const DbConfigMaster = () => {
             <NavbarHeader />
             <div className='main-master-page'>
                 <div className='form-card m-auto p-2'>
-                    <b><h6 className='header-devider m-0'> Configuration Master</h6></b>
+                    <b><h6 className='header-devider m-0 ps-1'> Configuration Master</h6></b>
                     {/* <form action=""> */}
                     <div className='py-2 px-2'>
                         {/* SECTION DEVIDER config for and server*/}
@@ -657,6 +683,8 @@ const DbConfigMaster = () => {
                             </div>
                         </div>
 
+                        <b><h6 className='header-devider my-1 ps-1'>Header Details</h6></b>
+
                         {/* SECTION DEVIDER static header and report header*/}
                         <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                             {/* //left columns */}
@@ -708,27 +736,109 @@ const DbConfigMaster = () => {
                                     </div>
                                 </div>
                                 <div className="form-group row">
-                                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Report Header By Query : </label>
+                                    <label className="col-sm-5 col-form-label pe-0">
+                                        Heading Alignment:
+                                    </label>
                                     <div className="col-sm-7 ps-0 align-content-center">
-                                        <textarea
-                                            className="form-control backcolorinput"
-                                            placeholder="Enter value..."
-                                            rows="1"
-                                            name='reportHeaderByQuery'
-                                            id='reportHeaderByQuery'
-                                            value={values?.reportHeaderByQuery}
-                                            onChange={handleValueChange}
-                                        ></textarea>
-                                        {errors?.reportHeaderByQueryErr &&
-                                            <div className="required-input">
-                                                {errors?.reportHeaderByQueryErr}
-                                            </div>
-                                        }
+                                        <div className="form-check form-check-inline">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                id="headingAlignmentCenter"
+                                                name="headingAlignment"
+                                                value={headingAlignment}
+                                                onChange={(e) => setHeadingAlignment("Center")}
+                                                checked={headingAlignment === "Center"}
+                                            />
+                                            <label className="form-check-label" htmlFor="dbYes">
+                                                Center
+                                            </label>
+                                        </div>
+                                        <div className="form-check form-check-inline">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                id="headingAlignmentLeft"
+                                                name="headingAlignment"
+                                                value={headingAlignment}
+                                                onChange={(e) => setHeadingAlignment("Left")}
+                                                checked={headingAlignment === "Left"}
+                                            />
+                                            <label className="form-check-label" htmlFor="dbNo">
+                                                Left
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
+                            {/* //left columns */}
+                            <div className='col-sm-6'>
+                                <div className="form-group row">
+                                    <label className="col-sm-5 col-form-label pe-0">
+                                        Is Header By Query Required:
+                                    </label>
+                                    <div className="col-sm-7 ps-0 align-content-center">
+                                        <div className="form-check form-check-inline">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                id="isHeadByQueryReqYes"
+                                                name="isHeadByQueryReq"
+                                                value={isHeadByQueryReq}
+                                                onChange={(e) => setIsHeadByQueryReq('Yes')}
+                                                checked={isHeadByQueryReq === 'Yes'}
+                                            />
+                                            <label className="form-check-label" htmlFor="dbYes">
+                                                Yes
+                                            </label>
+                                        </div>
+                                        <div className="form-check form-check-inline">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                id="isHeadByQueryReqNo"
+                                                name="isHeadByQueryReq"
+                                                value={isHeadByQueryReq}
+                                                onChange={(e) => setIsHeadByQueryReq('No')}
+                                                checked={isHeadByQueryReq === 'No'}
+                                            />
+                                            <label className="form-check-label" htmlFor="dbNo">
+                                                No
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {/* right columns */}
+                            <div className='col-sm-6'>
+                                {isHeadByQueryReq === "Yes" &&
+                                    <div className="form-group row">
+                                        <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Report Header By Query : </label>
+                                        <div className="col-sm-7 ps-0 align-content-center">
+                                            <textarea
+                                                className="form-control backcolorinput"
+                                                placeholder="Enter value..."
+                                                rows="1"
+                                                name='reportHeaderByQuery'
+                                                id='reportHeaderByQuery'
+                                                value={values?.reportHeaderByQuery}
+                                                onChange={handleValueChange}
+                                            ></textarea>
+                                            {errors?.reportHeaderByQueryErr &&
+                                                <div className="required-input">
+                                                    {errors?.reportHeaderByQueryErr}
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <b><h6 className='header-devider my-1 ps-1'>Logo Details</h6></b>
                         {/* SECTION DEVIDER logo details*/}
                         <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                             {/* //left columns */}
@@ -768,7 +878,7 @@ const DbConfigMaster = () => {
                                         </div>
                                     </div>
                                 </div>
-                                {isLogoReq === 'Yes' &&
+                                {/* {isLogoReq === 'Yes' &&
                                     <div className="form-group row">
                                         <label className="col-sm-5 col-form-label fix-label pe-0">Logo Image URL : </label>
                                         <div className="col-sm-7 ps-0 align-content-center">
@@ -784,14 +894,14 @@ const DbConfigMaster = () => {
                                         </div>
 
                                     </div>
-                                }
+                                } */}
                             </div>
                             {/* right columns */}
                             {isLogoReq === 'Yes' &&
                                 <div className='col-sm-6'>
                                     <div className="form-group row">
                                         <label className="col-sm-5 col-form-label pe-0">
-                                            Logo Position:
+                                            Logo Counts:
                                         </label>
                                         <div className="col-sm-7 ps-0 align-content-center">
                                             <div className="form-check form-check-inline">
@@ -799,13 +909,13 @@ const DbConfigMaster = () => {
                                                     className="form-check-input"
                                                     type="radio"
                                                     id="logoPositionTop"
-                                                    name="logoPosition"
-                                                    value={logoPosition}
-                                                    onChange={(e) => setLogoPosition("Top")}
-                                                    checked={logoPosition === "Top"}
+                                                    name="logoCounts"
+                                                    value={logoCounts}
+                                                    onChange={(e) => setLogoCounts("1")}
+                                                    checked={logoCounts === "1"}
                                                 />
                                                 <label className="form-check-label" htmlFor="dbYes">
-                                                    Top
+                                                    1
                                                 </label>
                                             </div>
                                             <div className="form-check form-check-inline">
@@ -814,48 +924,26 @@ const DbConfigMaster = () => {
                                                     type="radio"
                                                     id="logoPositionLeft"
                                                     name="logoPosition"
-                                                    value={logoPosition}
-                                                    onChange={(e) => setLogoPosition("Left")}
-                                                    checked={logoPosition === "Left"}
+                                                    value={logoCounts}
+                                                    onChange={(e) => setLogoCounts("2")}
+                                                    checked={logoCounts === "2"}
                                                 />
                                                 <label className="form-check-label" htmlFor="dbNo">
-                                                    Left
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="form-group row">
-                                        <label className="col-sm-5 col-form-label pe-0">
-                                            Heading Alignment:
-                                        </label>
-                                        <div className="col-sm-7 ps-0 align-content-center">
-                                            <div className="form-check form-check-inline">
-                                                <input
-                                                    className="form-check-input"
-                                                    type="radio"
-                                                    id="headingAlignmentCenter"
-                                                    name="headingAlignment"
-                                                    value={headingAlignment}
-                                                    onChange={(e) => setHeadingAlignment("Center")}
-                                                    checked={headingAlignment === "Center"}
-                                                />
-                                                <label className="form-check-label" htmlFor="dbYes">
-                                                    Center
+                                                    2
                                                 </label>
                                             </div>
                                             <div className="form-check form-check-inline">
                                                 <input
                                                     className="form-check-input"
                                                     type="radio"
-                                                    id="headingAlignmentLeft"
-                                                    name="headingAlignment"
-                                                    value={headingAlignment}
-                                                    onChange={(e) => setHeadingAlignment("Left")}
-                                                    checked={headingAlignment === "Left"}
+                                                    id="logoPositionLeft"
+                                                    name="logoPosition"
+                                                    value={logoCounts}
+                                                    onChange={(e) => setLogoCounts("3")}
+                                                    checked={logoCounts === "3"}
                                                 />
                                                 <label className="form-check-label" htmlFor="dbNo">
-                                                    Left
+                                                    3
                                                 </label>
                                             </div>
                                         </div>
@@ -863,6 +951,219 @@ const DbConfigMaster = () => {
                                 </div>
                             }
                         </div>
+
+                        {isLogoReq === 'Yes' &&
+                            <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
+                                {/* //left columns */}
+                                <div className='col-sm-6'>
+                                    {(logoCounts === "1" || logoCounts === "2" || logoCounts === "3") &&
+                                        <div className="form-group row">
+                                            <label className="col-sm-5 col-form-label pe-0">Logo 1 File : </label>
+                                            <div className="col-sm-7 ps-0 align-content-center">
+                                                <InputField
+                                                    type="file"
+                                                    className="backcolorinput"
+                                                    placeholder="Enter value..."
+                                                    name='logoImageUrl1'
+                                                    id='logo1file'
+                                                    onChange={handleFileChange}
+                                                // errorMessage={errors?.staticReportHead1Err}
+                                                />
+                                            </div>
+                                        </div>
+                                    }
+                                    {(logoCounts === "2" || logoCounts === "3") &&
+                                        <div className="form-group row">
+                                            <label className="col-sm-5 col-form-label pe-0">Logo 2 File : </label>
+                                            <div className="col-sm-7 ps-0 align-content-center">
+                                                <InputField
+                                                    type="file"
+                                                    className="backcolorinput"
+                                                    placeholder="Enter value..."
+                                                    name='logoImageUrl2'
+                                                    id='logo2file'
+                                                    onChange={handleFileChange}
+                                                // errorMessage={errors?.staticReportHead1Err}
+                                                />
+                                            </div>
+                                        </div>
+                                    }
+                                    {logoCounts === "3" &&
+                                        <div className="form-group row">
+                                            <label className="col-sm-5 col-form-label pe-0">Logo 3 File : </label>
+                                            <div className="col-sm-7 ps-0 align-content-center">
+                                                <InputField
+                                                    type="file"
+                                                    className="backcolorinput"
+                                                    placeholder="Enter value..."
+                                                    name='logoImageUrl3'
+                                                    id='logo3file'
+                                                    onChange={handleFileChange}
+                                                // errorMessage={errors?.staticReportHead1Err}
+                                                />
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                {/* right columns */}
+
+                                <div className='col-sm-6'>
+                                    {(logoCounts === "1" || logoCounts === "2" || logoCounts === "3") &&
+                                        <div className="form-group row">
+                                            <label className="col-sm-5 col-form-label pe-0">
+                                                Logo 1 Position:
+                                            </label>
+                                            <div className="col-sm-7 ps-0 align-content-center">
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        id="logo1PositionTop"
+                                                        name="logo1Position"
+                                                        value={logoPosition?.logo1Position}
+                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo1Position": "top" })}
+                                                        checked={logoPosition?.logo1Position === "top"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="dbYes">
+                                                        Top
+                                                    </label>
+                                                </div>
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        id="logo1PositionLeft"
+                                                        name="logo1Position"
+                                                        value={logoPosition?.logo1Position}
+                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo1Position": "left" })}
+                                                        checked={logoPosition?.logo1Position === "left"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="dbNo">
+                                                        Left
+                                                    </label>
+                                                </div>
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        id="logo1PositionRight"
+                                                        name="logo1Position"
+                                                        value={logoPosition?.logo1Position}
+                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo1Position": "right" })}
+                                                        checked={logoPosition?.logo1Position === "right"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="dbNo">
+                                                        Right
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    {(logoCounts === "2" || logoCounts === "3") &&
+                                        <div className="form-group row">
+                                            <label className="col-sm-5 col-form-label pe-0">
+                                                Logo 2 Position:
+                                            </label>
+                                            <div className="col-sm-7 ps-0 align-content-center">
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        id="logo2PositionTop"
+                                                        name="logo2Position"
+                                                        value={logoPosition?.logo2Position}
+                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo2Position": "top" })}
+                                                        checked={logoPosition?.logo2Position === "top"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="dbYes">
+                                                        Top
+                                                    </label>
+                                                </div>
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        id="logo2PositionLeft"
+                                                        name="logo2Position"
+                                                        value={logoPosition?.logo2Position}
+                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo2Position": "left" })}
+                                                        checked={logoPosition?.logo2Position === "left"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="dbNo">
+                                                        Left
+                                                    </label>
+                                                </div>
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        id="logo2PositionRight"
+                                                        name="logo2Position"
+                                                        value={logoPosition?.logo2Position}
+                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo2Position": "right" })}
+                                                        checked={logoPosition?.logo2Position === "right"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="dbNo">
+                                                        Right
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    {logoCounts === "3" &&
+                                        <div className="form-group row">
+                                            <label className="col-sm-5 col-form-label pe-0">
+                                                Logo 3 Position:
+                                            </label>
+                                            <div className="col-sm-7 ps-0 align-content-center">
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        id="logo3PositionTop"
+                                                        name="logo3Position"
+                                                        value={logoPosition?.logo3Position}
+                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo3Position": "top" })}
+                                                        checked={logoPosition?.logo3Position === "top"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="dbYes">
+                                                        Top
+                                                    </label>
+                                                </div>
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        id="logo3PositionLeft"
+                                                        name="logo3Position"
+                                                        value={logoPosition?.logo3Position}
+                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo3Position": "left" })}
+                                                        checked={logoPosition?.logo3Position === "left"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="dbNo">
+                                                        Left
+                                                    </label>
+                                                </div>
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        id="logo3PositionRight"
+                                                        name="logo3Position"
+                                                        value={logoPosition?.logo3Position}
+                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo3Position": "right" })}
+                                                        checked={logoPosition?.logo3Position === "right"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="dbNo">
+                                                        Right
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
 
                         {/* SECTION DEVIDER default limits*/}
                         <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>

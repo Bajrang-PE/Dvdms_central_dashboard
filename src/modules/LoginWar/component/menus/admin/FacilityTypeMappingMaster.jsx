@@ -2,10 +2,11 @@ import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
-import { fetchData } from '../../../../../utils/ApiHooks';
+import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
+import { getAuthUserData } from '../../../../../utils/CommonFunction';
 
 const FacilityTypeMappingMaster = () => {
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt,getFacilityTypeDrpData } = useContext(LoginContext);
+    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, getFacilityTypeDrpData, facilityTypeDrpDt } = useContext(LoginContext);
 
     const [facilityTypeId, setFacilityTypeId] = useState("");
     const [stateId, setStateId] = useState("");
@@ -36,11 +37,12 @@ const FacilityTypeMappingMaster = () => {
     }, [stateId, facilityTypeId])
 
     const getUnmappedList = () => {
-        fetchData(`api/v1/unmappedFclty/${stateId}`).then(data => {
-            if (data) {
-                setAvailableOptions(data)
+        fetchData(`api/v1/unmappedFclty/${stateId}/${facilityTypeId}`).then(data => {
+            if (data?.status === 1) {
+                setAvailableOptions(data?.data)
             } else {
-                ToastAlert('Error while fetching record!', 'error')
+                // ToastAlert('Error while fetching record!', 'error')
+                setAvailableOptions([])
             }
         })
     }
@@ -48,10 +50,30 @@ const FacilityTypeMappingMaster = () => {
     const getMappedList = () => {
         fetchData(`api/v1/mapped/${facilityTypeId}/${stateId}`).then(data => {
             if (data.status === 1) {
-                setSelectedOptions(data)
+                setSelectedOptions(data?.data)
             } else {
-                ToastAlert('Error while fetching record!', 'error')
+                // ToastAlert('Error while fetching record!', 'error')
                 setSelectedOptions([])
+            }
+        })
+    }
+
+    const saveFacilityMappedData = () => {
+        const val = {
+            "stateFacilityTypeId": 0,
+            "stateId": stateId,
+            "stateFacilityTypeName": "",
+            "facilityTypeId": facilityTypeId,
+            "seatId": getAuthUserData('userSeatId'),
+            // "facilityTypeSlno": 0,
+            // "order": 0
+        }
+
+        fetchPostData(`api/v1/facility-type`, val).then(data => {
+            if (data?.status === 1) {
+                console.log(data?.data)
+            } else {
+                ToastAlert(data?.message, 'error')
             }
         })
     }
@@ -89,6 +111,11 @@ const FacilityTypeMappingMaster = () => {
         }
     };
 
+    const reset = () => {
+        setFacilityTypeId('')
+        setStateId('')
+    }
+
 
     return (
         <>
@@ -108,7 +135,7 @@ const FacilityTypeMappingMaster = () => {
                                     id="hintquestion"
                                     name="hintquestion"
                                     placeholder="Select Value"
-                                    options={[{ value: '44', label: 'District Hospital' }]}
+                                    options={facilityTypeDrpDt}
                                     className="aliceblue-bg border-dark-subtle"
                                     value={facilityTypeId}
                                     onChange={(e) => setFacilityTypeId(e.target.value)}
