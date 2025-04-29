@@ -12,19 +12,10 @@ const LoginWarRoutes = () => {
         <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/user-dashboard" element={<DvdmsDashboard />} />
-            <Route path="/change-password" element={<ChangeDvdmsPass />} />
-            <Route path="/change-user" element={<ChangeUserDetails />} />
+            <Route path="/change-password" element={<Auth comp={ChangeDvdmsPass} />} />
+            <Route path="/change-user" element={<Auth comp={ChangeUserDetails} />} />
+            {/* <Route path="/zone-master" element={<ZoneMaster />} /> */}
             <Route path="/menus/*" element={<Menus />} />
-
-
-
-
-
-
-            {/* <Route path="/user-dashboard" element={<Auth comp={DvdmsDashboard} />} /> */}
-            {/* <Route path="/change-password" element={<Auth comp={ChangeDvdmsPass} />} /> */}
-            {/* <Route path="/change-user" element={<Auth comp={ChangeUserDetails} />} /> */}
-            {/* <Route path="/menus/*" element={<Auth comp={Menus} />} /> */}
         </Routes>
     );
 };

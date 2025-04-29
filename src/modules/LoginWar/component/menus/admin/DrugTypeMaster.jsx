@@ -6,11 +6,11 @@ import { LoginContext } from '../../../context/LoginContext';
 import DrugTypeForm from '../forms/admin/DrugTypeForm';
 import { ToastAlert } from '../../../utils/CommonFunction';
 import { Modal } from 'react-bootstrap';
-import { fetchData,fetchUpdateData } from '../../../../../utils/ApiHooks';
+import { fetchData, fetchUpdateData } from '../../../../../utils/ApiHooks';
 
 export const DrugTypeMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage ,setShowConfirmSave, confirmSave, setConfirmSave} = useContext(LoginContext);
 
     const [stateNameDrpDt, setStateNameDrpDt] = useState([]);
     const [drugs, setDrugs] = useState([]);
@@ -35,15 +35,6 @@ export const DrugTypeMaster = () => {
         if (values?.recordStatus) {
             fetchListData(values?.recordStatus);
         }
-
-        // if (openPage === "view") {
-        //     if (selectedOption?.length == 0) {
-        //         ToastAlert('Please select a record', 'warning')
-        //         setOpenPage("home");
-        //     } else {
-        //         handleView();
-        //     }
-        // }
 
         if (openPage === "modify") {
             if (selectedOption?.length == 0) {
@@ -85,28 +76,44 @@ export const DrugTypeMaster = () => {
         }
     };
 
-    const handleDelete = async () => {
 
-        const confirmed = window.confirm("Are you sure you want to delete this drug type?");
-        
+    const handleDeleteRecord = () => {
         if (selectedOption?.length > 0) {
-            if(confirmed){
-            const drugTypeId = String(selectedOption[0]?.cwhnumDrugTypeId)
-            const response = await fetchUpdateData(`/drugtype/delete/${drugTypeId}`);
-            ToastAlert('Drug Type Deleted Successfully', 'success')
-            setOpenPage("home")
-          
-            }
+            setOpenPage('delete');
+            setShowConfirmSave(true);
         } else {
-            ToastAlert('Please select a record', 'warning')
-            setOpenPage("home")
-           
+            ToastAlert("Please select a record", "warning");
         }
-    };
+    }
+
+    useEffect(() => {
+        if (confirmSave && openPage === 'delete') {
+            handleDelete();
+        }
+    }, [confirmSave])
+
+     const handleDelete = () => {
+            const drugTypeId = String(selectedOption[0]?.cwhnumDrugTypeId)
+            fetchUpdateData(`/drugtype/delete/${drugTypeId}`).then(data => {
+                if (data) {
+                       ToastAlert("Record Deleted Successfully", "success")
+                       fetchListData(1);
+                       setSelectedOption([]);
+                       setConfirmSave(false);
+                       reset();
+                       setOpenPage("home")
+                } else {
+                    ToastAlert('Error while deleting record!', 'error')
+                    setOpenPage("home")
+                }
+            })
+        }
+
 
 
     const reset = () => {
-        setDrugTypeName("");
+        setOpenPage('home');
+        setSelectedOption([]);
     }
 
     // const handleView = async () => {
@@ -145,11 +152,9 @@ export const DrugTypeMaster = () => {
         },
     ];
 
-
-
     return (
         <div className="masters mx-3 my-2">
-            {(openPage === "home" || openPage === "view") && (<>
+            {(openPage === "home" || openPage === "view" || openPage === 'delete') && (<>
                 <div className='text-left w-100 fw-bold p-1 heading-text' >Drug Type Master</div>
 
                 <div className="row mt-3">
@@ -175,11 +180,11 @@ export const DrugTypeMaster = () => {
                 </div>
 
                 <div>
-                    <GlobalTable column={columns} data={drugs} onAdd={null} onModify={null} onDelete={handleDelete} onView={null}
+                    <GlobalTable column={columns} data={drugs} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null}
                         onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
                 </div>
 
-                {openPage === 'view'  &&
+                {openPage === 'view' &&
                     <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
                         <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
                             <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
@@ -192,7 +197,7 @@ export const DrugTypeMaster = () => {
 
                             <div className='text-center mt-1'>
 
-                                <button className='btn cms-login-btn m-1 btn-sm' onClick={()=>setOpenPage('home')}>
+                                <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
                                     <i className="fa fa-broom me-1"></i> Close
                                 </button>
                             </div>
@@ -205,7 +210,7 @@ export const DrugTypeMaster = () => {
 
 
             {(openPage === "add" || openPage === 'modify') &&
-                <DrugTypeForm />
+                <DrugTypeForm  setValues={setValues} values={values}/>
             }
 
         </div>

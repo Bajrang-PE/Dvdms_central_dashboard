@@ -191,7 +191,7 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getGroupDrpData = () => {
-        fetchData('/api/v1/GrpDrpdwn').then((data) => {
+        fetchData('http://10.226.25.164:8025/api/v1/GrpDrpdwn').then((data) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
@@ -209,8 +209,25 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+    const getDrugTypeDrpData = () => {
+        fetchData('http://10.226.25.164:8025/api/v1/DrugTypeDropdown').then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.cwhnumDrugTypeId,
+                        label: dt?.cwhstrDrugTypeName
+                    }
+                    return val;
+                })
+                setDrugTypeDrpData(drpData)
+            } else {
+                setDrugTypeDrpData([])
+            }
+        })
+    }
+
     const getSubGroupDrpData = (grpId) => {
-        fetchData(`/api/v1/SubGrpDrpDwn/${grpId}`).then((data) => {
+        fetchData(`http://10.226.25.164:8025/api/v1/SubGrpDrpDwn/${grpId}`).then((data) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
@@ -236,22 +253,10 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
-    const getDrugTypeDrpData = () => {
-        fetchData('/api/v1/DrugTypeDropdown').then((data) => {
-            if (data?.status === 1) {
-                const drpData = data?.data?.map((dt) => {
-                    const val = {
-                        value: dt?.cwhnumDrugTypeId,
-                        label: dt?.cwhstrDrugTypeName
-                    }
-                    return val;
-                })
-                setDrugTypeDrpData(drpData)
-            } else {
-                setDrugTypeDrpData([])
-            }
-        })
-    }
+    
+
+
+   
 
     return (
         <LoginContext.Provider value={{

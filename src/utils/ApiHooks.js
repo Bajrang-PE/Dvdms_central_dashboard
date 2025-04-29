@@ -3,7 +3,7 @@ import axios from 'axios';
 const BaseUrl = 'http://10.226.25.164:8024'; //pritee
 // const BaseUrl = 'http://10.226.17.6:8025';  //BG 
 // const BaseUrl = 'http://10.226.29.211:8025/';  //Disha
-// const BaseUrl = 'http://10.226.29.102:8025/';  
+//  const BaseUrl = 'http://10.226.29.102:8025/';  //shubham
 // const BaseUrl = 'http://10.226.30.45:8025/';  //pradeep
 // const BaseUrl = 'http://10.226.26.247:8025/';  //harsh
 
