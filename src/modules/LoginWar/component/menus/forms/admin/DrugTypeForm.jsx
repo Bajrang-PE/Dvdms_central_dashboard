@@ -5,23 +5,38 @@ import { LoginContext } from '../../../../context/LoginContext';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchUpdateData,fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
 
-const DrugTypeForm = () => {
+const DrugTypeForm = ({setValues,values}) => {
 
-    const { openPage,setOpenPage, selectedOption } = useContext(LoginContext);
+    const { openPage,setOpenPage, selectedOption ,setSelectedOption ,setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [drugTypeName, setDrugTypeName] = useState("");
     const [recordStatus, setRecordStatus] = useState("");
     const [drugTypeNameErr, setDrugTypeNameErr] = useState("");
     const [cwhnumDrugTypeId, setCwhnumDrugTypeId] = useState("");
 
+    const handleValidation = () => {
+        let isValid = true;
+        if (!drugTypeName?.trim()) {
+            setDrugTypeNameErr("Drug Type name is required");
+            isValid = false;
+        }
+
+        if (isValid) {
+            setShowConfirmSave(true)
+        }
+    }
+
+     useEffect(() => {
+            if (confirmSave) {
+                save();
+            }
+        }, [confirmSave])
 
 
-    const save = async (e) => {
+    const save = async () => {
 
         if (openPage === 'add') {
-            e.preventDefault();
             let isValid = true
             if (!drugTypeName.trim()) {
-                alert("Please enter Drug Type Name")
                   ToastAlert('Please enter drug type name', 'warning')
                 isValid = false;
             }
@@ -33,12 +48,13 @@ const DrugTypeForm = () => {
                 const response = fetchUpdatePostData("/drugtype/addDrug", data);
                 ToastAlert('Drug Type Added successfully', 'success')
                 setOpenPage("home")
+                reset();
+                setConfirmSave(false);
 
             }
         }
 
         if (openPage === 'modify') {
-            e.preventDefault();
             let isValid = true
             if (!drugTypeName.trim()) {
                 ToastAlert("Please enter Drug Type Name",'warning')
@@ -54,8 +70,12 @@ const DrugTypeForm = () => {
 
                 }
                 const response = await fetchUpdateData(`/drugtype/modify/${cwhnumDrugTypeId}`, data);
-                ToastAlert('Data updated successfully', 'success')
-                reset();
+                 ToastAlert('Record Updated Successfully', 'success');
+                // getZoneListData();
+                 setOpenPage('home');
+                 reset();
+                 setSelectedOption([]);
+                 setConfirmSave(false);
             }
         }
 
@@ -73,12 +93,15 @@ const DrugTypeForm = () => {
 
     const reset = () => {
         setDrugTypeName("");
+        setRecordStatus('1');
+        setConfirmSave(false);
+        setValues({...values,"recordStatus":"1"})
     }
 
     return (
         <div>
             <div className='text-left w-100 fw-bold p-1 heading-text' >Drug Type Master &gt;&gt; Add</div>
-            <GlobalButtons onSave={save}  />
+            <GlobalButtons onSave={handleValidation}  onClear={reset}/>
             <hr className='my-2' />
             <div className='row pt-2'>
                 <div className='col-sm-6 row'>
@@ -96,8 +119,7 @@ const DrugTypeForm = () => {
                                 value={drugTypeName}
                                 placeholder="Enter Drug Type Name"
                                 className="aliceblue-bg border-dark-subtle"
-                            // value={values?.hintquestion}
-                            // onChange={handleValueChange}
+                                errorMessage={drugTypeNameErr}
                             />
                         </div>
                     </div>

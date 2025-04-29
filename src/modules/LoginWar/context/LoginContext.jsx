@@ -29,6 +29,7 @@ const LoginContextApi = ({ children }) => {
     const [groupDrpData, setGroupDrpData] = useState([]);
     const [subGroupDrpData, setSubGroupDrpData] = useState([]);
     const [facilityTypeDrpDt, setFacilityTypeDrpDt] = useState([]);
+    const [drugTypeDrpData, setDrugTypeDrpData] = useState([]);
 
 
     //confirm alert
@@ -180,7 +181,7 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getGroupDrpData = () => {
-        fetchData('/api/v1/GrpDrpdwn').then((data) => {
+        fetchData('http://10.226.25.164:8025/api/v1/GrpDrpdwn').then((data) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
@@ -198,8 +199,25 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+    const getDrugTypeDrpData = () => {
+        fetchData('http://10.226.25.164:8025/api/v1/DrugTypeDropdown').then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.cwhnumDrugTypeId,
+                        label: dt?.cwhstrDrugTypeName
+                    }
+                    return val;
+                })
+                setDrugTypeDrpData(drpData)
+            } else {
+                setDrugTypeDrpData([])
+            }
+        })
+    }
+
     const getSubGroupDrpData = (grpId) => {
-        fetchData(`/api/v1/SubGrpDrpDwn/${grpId}`).then((data) => {
+        fetchData(`http://10.226.25.164:8025/api/v1/SubGrpDrpDwn/${grpId}`).then((data) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
@@ -216,21 +234,32 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getFacilityTypeDrpData = () => {
-        fetchData('/api/v1/drpDwnFcltyTypMapMst').then((data) => {
-            if (data) {
-                const drpData = data?.map((dt) => {
-                    const val = {
-                        value: dt?.id,
-                        label: dt?.name
-                    }
-                    return val;
-                })
-                setFacilityTypeDrpDt(drpData)
+        fetchData('http://10.226.25.164:8025/api/v1/drpDwnFcltyTypMapMst').then((data) => {
+            if (data?.status === 1) {
+                setFacilityTypeDrpDt(data?.data)
             } else {
                 setFacilityTypeDrpDt([])
             }
         })
     }
+
+
+    // const getFacilityTypeDrpData = () => {
+    //     fetchData('http://10.226.25.164:8025/api/v1/drpDwnFcltyTypMapMst').then((data) => {
+    //         if (data) {
+    //             const drpData = data?.map((dt) => {
+    //                 const val = {
+    //                     value: dt?.id,
+    //                     label: dt?.name
+    //                 }
+    //                 return val;
+    //             })
+    //             setFacilityTypeDrpDt(drpData)
+    //         } else {
+    //             setFacilityTypeDrpDt([])
+    //         }
+    //     })
+    // }
 
     return (
         <LoginContext.Provider value={{
@@ -245,6 +274,7 @@ const LoginContextApi = ({ children }) => {
             openPage, setOpenPage,
             getGroupDrpData, groupDrpData, getSubGroupDrpData, subGroupDrpData,
             facilityTypeDrpDt, getFacilityTypeDrpData,
+            getDrugTypeDrpData,drugTypeDrpData,
 
             //confirm box
             showConfirmSave, setShowConfirmSave, confirmSave, setConfirmSave,
