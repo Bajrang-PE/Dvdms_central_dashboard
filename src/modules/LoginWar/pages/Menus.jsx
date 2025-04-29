@@ -16,6 +16,7 @@ import NinFacilityMappingMaster from '../component/menus/admin/NinFacilityMappin
 import DistrictMaster from '../component/menus/admin/DistrictMaster'
 import SubGroupMaster from '../component/menus/admin/SubGroupMaster'
 import GroupMaster from '../component/menus/admin/GroupMaster'
+import StateJobDetailsService from '../component/menus/services/StateJobDetailsService'
 import DrugMaster from '../component/menus/admin/DrugMaster'
 import OutsourceMaster from '../component/menus/admin/OutsourceMaster'
 
@@ -24,6 +25,7 @@ const Menus = () => {
         <>
             <DashHeader />
             <Routes>
+                {/*------------------------------------- MASTERS -------------------------------------- */}
                 {/* created by Vishal */}
                 <Route path="state-config-cwh" element={<StateConfigCwh />} />
                 <Route path="drug-type-master" element={<DrugTypeMaster />} />
@@ -36,7 +38,7 @@ const Menus = () => {
                 <Route path="outsource-master" element={<OutsourceMaster />}/>
 
                 {/* created by BG */}
-                <Route path="generic-drug-master" element={<GenericDrugMaster />} /> 
+                <Route path="generic-drug-master" element={<GenericDrugMaster />} />
                 <Route path="zone-master" element={<ZoneMaster />} />
                 <Route path="state-master" element={<StateMaster />} />
                 <Route path="facility-type-master" element={<FacilityTypeMaster />} />
@@ -44,6 +46,10 @@ const Menus = () => {
                 <Route path="job-order-status-master" element={<JobOrderMaster />} />
                 <Route path="state-cdb-sync-master" element={<StateCdbSyncMaster />} />
                 <Route path="group-master" element={<GroupMaster />} />
+
+                {/*---------------------------- SERVICES-------------------------------------------- */}
+                <Route path="state-job-details" element={<StateJobDetailsService />} />
+
             </Routes>
         </>
     )

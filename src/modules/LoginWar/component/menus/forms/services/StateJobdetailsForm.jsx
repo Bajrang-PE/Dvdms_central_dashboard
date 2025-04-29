@@ -7,8 +7,8 @@ import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
-const GenericDrugMasterForm = (props) => {
-    
+const StateJobdetailsForm = (props) => {
+
     const { subGrpData, groupData, groupId } = props;
     const { openPage, selectedOption, setOpenPage, setSelectedOption, setShowConfirmSave, confirmSave, setConfirmSave, getGenericDrugListData, drugTypeDrpData, getDrugTypeDrpData } = useContext(LoginContext);
     const [recordStatus, setRecordStatus] = useState('1');
@@ -153,9 +153,10 @@ const GenericDrugMasterForm = (props) => {
             <GlobalButtons onSave={handleValidation} onClear={reset} />
             <hr className='my-2' />
             <div className='row pt-2'>
+
                 <div className='col-sm-6'>
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label fix-label required-label">Group Name : </label>
+                        <label className="col-sm-5 col-form-label fix-label">State : </label>
                         <div className="col-sm-7 align-content-center">
                             <span style={{ color: "#013157" }}>{groupData?.filter(dt => dt?.value == groupId)[0]?.label || '---'}</span>
                             {errors?.groupNameErr && (
@@ -166,55 +167,21 @@ const GenericDrugMasterForm = (props) => {
                         </div>
                     </div>
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label fix-label required-label">Sub Group Name : </label>
+                        <label className="col-sm-5 col-form-label fix-label">State Database: </label>
                         <div className="col-sm-7 align-content-center">
-                            <InputSelect
-                                id="subGroupName"
-                                name="subGroupName"
-                                placeholder="Select value"
-                                options={subGrpData}
-                                className="aliceblue-bg border-dark-subtle"
-                                value={values?.subGroupName}
-                                onChange={handleInputChange}
-                                errorMessage={errors?.subGroupNameErr}
-                            />
-                        </div>
-                    </div>
-                    <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label fix-label">Drug Type : </label>
-                        <div className="col-sm-7 align-content-center">
-                            <InputSelect
-                                id="drugtype"
-                                name="drugtype"
-                                placeholder="Select value"
-                                options={drugTypeDrpData}
-                                className="aliceblue-bg border-dark-subtle"
-                                value={values?.drugtype}
-                                onChange={handleInputChange}
-
-                            />
+                            <span style={{ color: "#013157" }}>{groupData?.filter(dt => dt?.value == groupId)[0]?.label || 'EDB'}</span>
+                            {errors?.groupNameErr && (
+                                <div className="required-input">
+                                    {errors?.groupNameErr}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
 
                 <div className='col-sm-6'>
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label fix-label required-label">VED Type : </label>
-                        <div className="col-sm-7 align-content-center">
-                            <InputSelect
-                                id="VEDType"
-                                name="VEDType"
-                                placeholder="Select value"
-                                options={[]}
-                                className="aliceblue-bg border-dark-subtle"
-                                value={values?.VEDType}
-                                onChange={handleInputChange}
-                                errorMessage={errors?.VEDTypeErr}
-                            />
-                        </div>
-                    </div>
-                    <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label fix-label required-label">Drug Name : </label>
+                        <label className="col-sm-5 col-form-label fix-label required-label">Job Name : </label>
                         <div className="col-sm-7 align-content-center">
                             <InputField
                                 type={'text'}
@@ -228,40 +195,100 @@ const GenericDrugMasterForm = (props) => {
                             />
                         </div>
                     </div>
-                    <div className="form-group row">
-                        <label className="col-sm-5 col-form-label fix-label required-label">
-                            Category Name :
-                        </label>
+                </div>
+            </div>
+            <div className='row pt-0' style={{ paddingBottom: "1px" }}>
+                <div className='col-sm-6'>
+                    <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                        <label className="col-sm-5 col-form-label fix-label required-label">State Fetch Query : </label>
                         <div className="col-sm-7 align-content-center">
-                            {categoryOptions.map((option) => (
-                                <div className="form-check form-check-inline" key={option.value}>
-                                    <input
-                                        className="border-dark-subtle form-check-input"
-                                        type="radio"
-                                        name="categoryName"
-                                        id={`categoryName-${option.value}`}
-                                        value={option.value}
-                                        onChange={handleInputChange}
-                                        checked={values?.categoryName === option.value}
-                                    />
-                                    <label className="form-check-label" htmlFor={`categoryName-${option.value}`}>
-                                        {option.label}
-                                    </label>
-                                </div>
-                            ))}
-                            {errors?.categoryNameErr && (
-                                <div className="required-input">
-                                    {errors?.categoryNameErr}
-                                </div>
-                            )}
+                            <textarea className='form-control aliceblue-bg border-dark-subtle' name="feedback" id="feedback"></textarea>
                         </div>
                     </div>
-
                 </div>
-
+                <div className='col-sm-6'>
+                    <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                        <label className="col-sm-5 col-form-label fix-label">Insert Query : </label>
+                        <div className="col-sm-7 align-content-center">
+                            <textarea className='form-control aliceblue-bg border-dark-subtle' name="feedback" id="feedback"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className='row'>
+                <div className='col-sm-6'>
+                    <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                        <label className="col-sm-5 col-form-label fix-label">Pre Procedure Name : </label>
+                        <div className="col-sm-7 align-content-center">
+                            <InputField
+                                type={'text'}
+                                id="drugname"
+                                name="drugname"
+                                placeholder="Enter value"
+                                className="aliceblue-bg border-dark-subtle"
+                                value={values?.drugname}
+                                onChange={handleInputChange}
+                                errorMessage={errors?.drugnameErr}
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div className='col-sm-6'>
+                    <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                        <label className="col-sm-5 col-form-label fix-label required-label">Pre Procedure Mode : </label>
+                        <div className="col-sm-7 align-content-center">
+                            <InputField
+                                type={'text'}
+                                id="drugname"
+                                name="drugname"
+                                placeholder="Enter value"
+                                className="aliceblue-bg border-dark-subtle"
+                                value={values?.drugname}
+                                onChange={handleInputChange}
+                                errorMessage={errors?.drugnameErr}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className='row pt-0'>
+                <div className='col-sm-6'>
+                    <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                        <label className="col-sm-5 col-form-label fix-label">Post Procedure Name : </label>
+                        <div className="col-sm-7 align-content-center">
+                            <InputField
+                                type={'text'}
+                                id="drugname"
+                                name="drugname"
+                                placeholder="Enter value"
+                                className="aliceblue-bg border-dark-subtle"
+                                value={values?.drugname}
+                                onChange={handleInputChange}
+                                errorMessage={errors?.drugnameErr}
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div className='col-sm-6'>
+                    <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                        <label className="col-sm-5 col-form-label fix-label">Procedure Mode : </label>
+                        <div className="col-sm-7 align-content-center">
+                            <InputField
+                                type={'text'}
+                                id="drugname"
+                                name="drugname"
+                                placeholder="Enter value"
+                                className="aliceblue-bg border-dark-subtle"
+                                value={values?.drugname}
+                                onChange={handleInputChange}
+                                errorMessage={errors?.drugnameErr}
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     )
 }
 
-export default GenericDrugMasterForm
+export default StateJobdetailsForm

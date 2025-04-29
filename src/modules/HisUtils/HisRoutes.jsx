@@ -29,7 +29,7 @@ const HisRoutes = () => {
             <Route exact path="/widget-master" name="login" element={<WidgetMaster />} />
             <Route exact path="/tab-master" name="Tab Master" element={<TabMaster />} />
             <Route exact path="/dashboard-master" name="Dashboard Master" element={<DashboardMaster />} />
-            <Route exact path="/dashboard" name="Dashboard Master" element={<Auth comp={DashboardMst} />} />
+            <Route exact path="/dashboard" name="Dashboard Master" element={<DashboardMst />} />
             <Route exact path="/widget" name="Dashboard Master" element={<Tabular />} />
         </Routes>
     )

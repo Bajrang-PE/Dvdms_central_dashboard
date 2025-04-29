@@ -1,36 +1,69 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext';
-import GlobalTable from '../../GlobalTable';
 import InputSelect from '../../InputSelect';
 import DataTable from 'react-data-table-component';
+import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
+import { ToastAlert } from '../../../utils/CommonFunction';
 
 const JobOrderMaster = () => {
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, getZoneListData, zoneListData,stateNameDrpDt ,getSteteNameDrpData} = useContext(LoginContext);
-    const [searchInput, setSearchInput] = useState('');
-    const [recordStatus, setRecordStatus] = useState('1');
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, stateNameDrpDt, getSteteNameDrpData } = useContext(LoginContext);
+    const [stateId, setStateId] = useState('');
+    const [jobList, setJobList] = useState([]);
+
 
     useEffect(() => {
         getSteteNameDrpData()
-    }, [recordStatus])
+    }, [])
 
     const handleRowSelect = (row) => {
-        setSelectedOption((prev) => {
-            if (prev.length > 0 && prev[0]?.cwhnumZoneId === row?.cwhnumZoneId) {
-                return [];
-            }
-            return [row];
-        });
+        setSelectedOption([row]);
     };
+
+    const getJobOrderList = async (id) => {
+        if (id) {
+            const data = await fetchData(`/api/v1/jobOrder/${id}`);
+            if (data.status === 1) {
+                setJobList(data.data);
+
+                const defaultSelected = data.data.find(job => job.cwhnumJobRunId === 1);
+                if (defaultSelected) {
+                    setSelectedOption([defaultSelected]);
+                } else {
+                    setSelectedOption([]);
+                }
+            } else {
+                setJobList([]);
+                setSelectedOption([]);
+            }
+        } else {
+            setJobList([]);
+            setSelectedOption([]);
+        }
+    };
+
+    const saveJobOrderId = (id) => {
+        fetchPostData(`/api/v1/${stateId}/resetJobRunId?currentJobRunId=${selectedOption[0]?.cwhnumJobId}`).then(data => {
+            if (data.status === 1) {
+                console.log(data?.data)
+            } else {
+                ToastAlert(data?.message, 'error')
+            }
+        })
+    }
+
+    useEffect(() => {
+        getJobOrderList(stateId)
+    }, [stateId])
 
     const column = [
         {
             name: 'Job Name',
-            selector: row => row.cwhstrZoneName,
+            selector: row => row.cwhstrJobName,
             sortable: true,
         },
         {
             name: 'Procedure Name',
-            selector: row => row.cwhstrZoneShortName || "---",
+            selector: row => row.cwhstrProcedureName || "---",
             sortable: true,
         },
         {
@@ -40,7 +73,7 @@ const JobOrderMaster = () => {
                     <span className="btn btn-sm text-white px-1 py-0 mr-1" >
                         <input
                             type="radio"
-                            checked={selectedOption.length > 0 && selectedOption[0]?.cwhnumZoneId === row?.cwhnumZoneId}
+                            checked={selectedOption.length > 0 && selectedOption[0]?.cwhnumJobId === row.cwhnumJobId}
                             onChange={(e) => { handleRowSelect(row) }}
                         />
                     </span>
@@ -49,9 +82,9 @@ const JobOrderMaster = () => {
         },
         {
             name: 'Order Id',
-            selector: row => row.cwhstrZoneShortName || "---",
+            selector: row => row.cwhnumJobOrderId || "---",
             sortable: true,
-             width: "15%"
+            width: "15%"
         }
     ]
 
@@ -61,12 +94,11 @@ const JobOrderMaster = () => {
                 color: '#ffffff',
                 backgroundColor: '#05396c ',
                 borderBottomColor: '#FFFFFF',
-                // outline: '1px solid #FFFFFF',
             },
         },
     }
 
-console.log(stateNameDrpDt,'stateNameDrpDt')
+
     return (
         <>
             <div className='masters mx-3 my-2'>
@@ -83,10 +115,10 @@ console.log(stateNameDrpDt,'stateNameDrpDt')
                                     id="state"
                                     name="state"
                                     placeholder="Select value"
-                                    options={[{ value: 1, label: 'Rajasthan' }]}
+                                    options={stateNameDrpDt}
                                     className="aliceblue-bg border-dark-subtle"
-                                // value={recordStatus}
-                                // onChange={(e) => { setRecordStatus(e.target.value) }}
+                                    value={stateId}
+                                    onChange={(e) => { setStateId(e.target.value) }}
                                 />
                             </div>
                         </div>
@@ -106,7 +138,7 @@ console.log(stateNameDrpDt,'stateNameDrpDt')
                     responsive
                     fixedHeaderScrollHeight='65vh'
                     columns={column}
-                    data={zoneListData}
+                    data={jobList}
                     pagination
                     // pointerOnHover
                     customStyles={tableCustomStyles}
@@ -117,7 +149,7 @@ console.log(stateNameDrpDt,'stateNameDrpDt')
                 </div>
 
                 <div className='text-center'>
-                    <button className='btn btn-sm datatable-btns py-0' >
+                    <button className='btn btn-sm datatable-btns py-0' onClick={saveJobOrderId}>
                         <i className="fa fa-save me-1 fs-13 text-success"></i>Save</button>
                 </div>
             </div>
