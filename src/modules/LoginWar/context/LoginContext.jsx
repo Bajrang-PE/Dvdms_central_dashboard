@@ -20,6 +20,7 @@ const LoginContextApi = ({ children }) => {
     const [genericDrugListData, setGenericDrugListData] = useState([]);
     const [stateListData, setStateListData] = useState([]);
     const [groupListData, setGroupListData] = useState([]);
+    const [stateJobListData, setStateJobListData] = useState([]);
 
     //dropdowns
     const [hintQuestionDrpDt, setHintQuestionDrpDt] = useState([]);
@@ -29,6 +30,7 @@ const LoginContextApi = ({ children }) => {
     const [groupDrpData, setGroupDrpData] = useState([]);
     const [subGroupDrpData, setSubGroupDrpData] = useState([]);
     const [facilityTypeDrpDt, setFacilityTypeDrpDt] = useState([]);
+    const [drugTypeDrpData, setDrugTypeDrpData] = useState([]);
 
 
     //confirm alert
@@ -103,9 +105,18 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
-    //-----------------------------------------------MASTERS----------------------------------------------
+    const getStateJobDetailsListData = (stateId, status) => {
+        fetchData(`http://10.226.26.247:8025/api/v1/stateJobDetails/getJobDetailsByStateID?stateID=${stateId ? stateId : '0'}&isActive=${status ? status : "1"}`).then((data) => {
+            if (data?.status === 1) {
+                setStateJobListData(data?.data)
+            } else {
+                setStateJobListData([])
+            }
+        })
+    }
 
-    //----------------------------------Dropdowns
+
+    //----------------------------------Dropdowns----------------------------------------------------------
     const getHintQuestionDrpData = () => {
         fetchData('/login/hntQueDropDown').then((data) => {
             if (data?.status === 1) {
@@ -225,6 +236,23 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+    const getDrugTypeDrpData = () => {
+        fetchData('/api/v1/DrugTypeDropdown').then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.cwhnumDrugTypeId,
+                        label: dt?.cwhstrDrugTypeName
+                    }
+                    return val;
+                })
+                setDrugTypeDrpData(drpData)
+            } else {
+                setDrugTypeDrpData([])
+            }
+        })
+    }
+
     return (
         <LoginContext.Provider value={{
             widgetData, getWidgetData,
@@ -238,6 +266,7 @@ const LoginContextApi = ({ children }) => {
             openPage, setOpenPage,
             getGroupDrpData, groupDrpData, getSubGroupDrpData, subGroupDrpData,
             facilityTypeDrpDt, getFacilityTypeDrpData,
+            drugTypeDrpData, getDrugTypeDrpData,
 
             //confirm box
             showConfirmSave, setShowConfirmSave, confirmSave, setConfirmSave,
@@ -248,7 +277,8 @@ const LoginContextApi = ({ children }) => {
             getFacilityTypeListData, facilityTypeListData,
             getGenericDrugListData, genericDrugListData,
             getStateListData, stateListData,
-            getGroupListData, groupListData
+            getGroupListData, groupListData,
+            getStateJobDetailsListData, stateJobListData
         }}>
             {children}
         </LoginContext.Provider>

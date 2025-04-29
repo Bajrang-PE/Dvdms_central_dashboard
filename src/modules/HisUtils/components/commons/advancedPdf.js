@@ -195,7 +195,7 @@ export const generatePDF = async (widgetData, tableData, config, filters = []) =
 
     // rptDisplayName (Dynamic Title Below Static Header)
     doc.setFontSize(11);
-    doc.text(rptDisplayName || 'Report', pageWidth / 2, headerYStart + 22, { align: 'center' });
+    doc.text(rptDisplayName || 'Report', pageWidth / 2, headerYStart + 22, { align: headingAlignment });
   };
 
   // Initial Header Drawing for First Page

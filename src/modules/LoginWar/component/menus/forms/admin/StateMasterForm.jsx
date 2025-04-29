@@ -14,6 +14,7 @@ const StateMasterForm = () => {
     const [values, setValues] = useState({
         stateName: "", stShortName: "", zoneName: "", recStatus: "1"
     })
+
     const [errors, setErrors] = useState({
         stateNameErr: "", stShortNameErr: "", zoneNameErr: "", recStatusErr: ""
     })
@@ -29,6 +30,7 @@ const StateMasterForm = () => {
 
     const saveStateListData = () => {
         const { stateName, stShortName, zoneName, recStatus } = values;
+        
         const val = {
             "seatId": getAuthUserData('userSeatId'),
             "stateName": stateName,

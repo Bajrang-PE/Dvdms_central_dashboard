@@ -56,6 +56,7 @@ const TabularDash = ({ widgetData }) => {
   const [columns, setColumns] = useState([]);
 
   console.log(widgetData, 'widgetData')
+  console.log(singleConfigData, 'singleConfigData')
 
   //parameter search
   useEffect(() => {
@@ -206,8 +207,6 @@ const TabularDash = ({ widgetData }) => {
     }
   }, [paramsValues, widgetData]);
 
-  console.log(filterData, 'data')
-  console.log(tableData, 'datatt')
 
   const headingAlign = widgetData?.tableHeadingAlignment === '1' ? 'center' : 'left';
   const borderReq = widgetData?.isTableBorderRequired || '';
@@ -226,6 +225,10 @@ const TabularDash = ({ widgetData }) => {
   const widgetTopMargin = widgetData.widgetTopMargin || "";
   const initialRecord = widgetData?.initialRecordNo;
   const finalRecord = widgetData?.finalRecordNo;
+  const defLimit = singleConfigData?.databaseConfigVO?.setDefaultLimit || ''
+  const parsedLimit = parseInt(defLimit, 10);
+  const safeLimit = isNaN(parsedLimit) || parsedLimit <= 0 ? null : parsedLimit;
+
 
   // const columns = useMemo(() => {
   //   const srNoColumn = isIndexNoReq
@@ -342,7 +345,7 @@ const TabularDash = ({ widgetData }) => {
 
       <Tabular
         columns={columns}
-        data={filterData}
+        data={safeLimit ? filterData.slice(0, safeLimit) : filterData}
         pagination={isPaginationReq}
         recordsPerPage={recordPerPage}
         fixedHeader={isHeadingFixed}

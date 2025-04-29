@@ -13,7 +13,7 @@ const MenuList = (props) => {
         {
             title: 'Services',
             items: [
-                { dataVal: 'state', menuName: 'State Job Details', icon: 'fa-desktop' },
+                { dataVal: 'state', menuName: 'State Job Details', icon: 'fa-desktop',link: "/dvdms/menus/state-job-details" },
                 { dataVal: 'country', menuName: 'Get Nin Data', icon: 'fa-desktop' },
                 { dataVal: 'district', menuName: 'Covid Drig Availability Status', icon: 'fa-desktop' },
             ],
