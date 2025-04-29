@@ -38,6 +38,8 @@ const MenuList = (props) => {
                         { dataVal: 'editUser', menuName: 'Drug Type Master', icon: 'fa-gear' },
                         { dataVal: 'editUser', menuName: 'Nin Facility Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/nin-facility-mapping-master" },
                         { dataVal: 'editUser', menuName: 'Sub Group Master', icon: 'fa-gear', link: "/dvdms/menus/sub-group-master" },
+                        { dataVal: 'editUser', menuName: 'Drug Master', icon: 'fa-gear', link: "/dvdms/menus/drug-master" },
+                        { dataVal: 'editUser', menuName: 'Outsource Master', icon: 'fa-gear', link: "/dvdms/menus/outsource-master" },
 
                         { dataVal: 'editUser', menuName: 'Generic Drug Master', icon: 'fa-gear', link: "/dvdms/menus/generic-drug-master" },
                         { dataVal: 'editUser', menuName: 'Facility Type Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/facility-type-mapping-master" },

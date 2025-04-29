@@ -16,6 +16,8 @@ import NinFacilityMappingMaster from '../component/menus/admin/NinFacilityMappin
 import DistrictMaster from '../component/menus/admin/DistrictMaster'
 import SubGroupMaster from '../component/menus/admin/SubGroupMaster'
 import GroupMaster from '../component/menus/admin/GroupMaster'
+import DrugMaster from '../component/menus/admin/DrugMaster'
+import OutsourceMaster from '../component/menus/admin/OutsourceMaster'
 
 const Menus = () => {
     return (
@@ -30,6 +32,8 @@ const Menus = () => {
                 <Route path="nin-facility-mapping-master" element={<NinFacilityMappingMaster />} />
                 <Route path="district-master" element={<DistrictMaster />} />
                 <Route path="sub-group-master" element={<SubGroupMaster />}/>
+                <Route path="drug-master" element={<DrugMaster/>}/>
+                <Route path="outsource-master" element={<OutsourceMaster />}/>
 
                 {/* created by BG */}
                 <Route path="generic-drug-master" element={<GenericDrugMaster />} /> 
