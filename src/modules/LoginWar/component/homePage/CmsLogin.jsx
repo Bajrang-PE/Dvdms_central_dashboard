@@ -92,7 +92,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                         Cookies.set('csrfToken', csrfToken);
                         localStorage.setItem('accessToken', accessToken);
                         localStorage.setItem('refreshToken', refreshToken);
-                        navigate('dvdms/user-dashboard');
+                        navigate('/dvdms/user-dashboard');
                     } else {
                         ToastAlert(data?.message, 'error');
                     }

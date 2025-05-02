@@ -48,12 +48,13 @@ const GenericDrugMasterForm = (props) => {
         fetchPostData(`api/v1/drugs`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
-                getGenericDrugListData();
+                getGenericDrugListData(groupId,values?.subGroupName,recordStatus);
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
             } else {
                 ToastAlert(data?.message, "error");
+                setConfirmSave(false);
             }
         })
     }
@@ -80,6 +81,7 @@ const GenericDrugMasterForm = (props) => {
                 setConfirmSave(false);
             } else {
                 ToastAlert(data?.message, "error");
+                setConfirmSave(false);
             }
         })
     }
@@ -94,10 +96,10 @@ const GenericDrugMasterForm = (props) => {
             setErrors(prev => ({ ...prev, "subGroupNameErr": "Sub group is required" }));
             isValid = false;
         }
-        if (!values?.VEDType?.trim()) {
-            setErrors(prev => ({ ...prev, "VEDTypeErr": "Select a value" }));
-            isValid = false;
-        }
+        // if (!values?.VEDType?.trim()) {
+        //     setErrors(prev => ({ ...prev, "VEDTypeErr": "Select a value" }));
+        //     isValid = false;
+        // }
         if (!values?.categoryName?.trim()) {
             setErrors(prev => ({ ...prev, "categoryNameErr": "Category name is required" }));
             isValid = false;

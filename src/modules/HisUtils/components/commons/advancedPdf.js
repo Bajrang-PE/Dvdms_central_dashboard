@@ -19,7 +19,7 @@ export const generatePDF1 = async (widgetData, tableData, config, filters = []) 
     isPdfHeaderReqInAllPages
   } = widgetData;
 
-  const { reportHeader1, reportHeader2, reportHeader3, isLogoRequired, logoImage, headingAlignment,logos,logoCounts } = config;
+  const { reportHeader1, reportHeader2, reportHeader3, isLogoRequired, logoImage, headingAlignment, logos, logoCounts } = config;
 
   const orientation = printPDFIn === 'Landscape' ? 'l' : 'p';
   const pdf = new jsPDF(orientation, 'mm', 'a4');
@@ -40,7 +40,7 @@ export const generatePDF1 = async (widgetData, tableData, config, filters = []) 
 
     doc.setFontSize(12);
     doc.setFont('bold');
- 
+
 
     doc.text(reportHeader1, pageWidth / 2, 15, { align: headingAlignment.toLowerCase() });
     doc.text(reportHeader2, pageWidth / 2, 20, { align: headingAlignment.toLowerCase() });
@@ -141,41 +141,37 @@ export const generatePDF = async (widgetData, tableData, config, filters = []) =
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
-  // Function to draw the header with multiple logos
-  const drawHeader = (doc, title) => {
-    if (isLogoRequired === 'Yes' && logos && logos.length > 0) {
-      const logoWidth = 15;
-      const logoHeight = 18;
-      const margin = 10; // Margin from edges
-      
+  const drawHeader = (doc) => {
+    const logoWidth = 15;
+    const logoHeight = 18;
+    const margin = 10;
+    const textMargin = 10;
+
+    // Handle logos
+    if (isLogoRequired === 'Yes' && logos?.length) {
       logos.forEach(logo => {
         if (!logo.image) return;
-        
+
         let logoX, logoY;
-        
-        switch(logo.position.toLowerCase()) {
+
+        switch (logo.position.toLowerCase()) {
           case 'top':
             logoX = pageWidth / 2 - logoWidth / 2;
             logoY = 5;
             break;
           case 'left':
             logoX = margin;
-            logoY = margin + 5; // Slightly lower than top
+            logoY = 5;
             break;
           case 'right':
             logoX = pageWidth - logoWidth - margin;
-            logoY = margin + 5; // Slightly lower than top
-            break;
-          case 'bottom':
-            logoX = pageWidth / 2 - logoWidth / 2;
-            logoY = pageHeight - logoHeight - margin;
+            logoY = 5;
             break;
           default:
-            // Default to top center if position not recognized
             logoX = pageWidth / 2 - logoWidth / 2;
             logoY = margin;
         }
-        
+
         try {
           doc.addImage(logo.image, 'JPEG', logoX, logoY, logoWidth, logoHeight);
         } catch (error) {
@@ -184,24 +180,47 @@ export const generatePDF = async (widgetData, tableData, config, filters = []) =
       });
     }
 
-    // Adjust header text position based on logos
-    const headerYStart = isLogoRequired === 'Yes' && logos.some(logo => logo.position === 'top') ? 22 : 15;
-    
+    // Calculate starting Y position
+    const hasTopLogo = isLogoRequired === 'Yes' && logos?.some(logo =>
+      logo.position.toLowerCase() === 'top' && logo.image
+    );
+    const headerYStart = hasTopLogo ? logoHeight + 10 : 15;
+    const alignment = headingAlignment.toLowerCase();
+
+    // Determine x-position based on alignment
+    let headerX;
+    switch (alignment) {
+      case 'left':
+        headerX = textMargin;
+        break;
+      case 'right':
+        headerX = pageWidth - textMargin;
+        break;
+      case 'center':
+      default:
+        headerX = pageWidth / 2;
+    }
+
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text(reportHeader1, pageWidth / 2, headerYStart+5, { align: headingAlignment.toLowerCase() });
-    doc.text(reportHeader2, pageWidth / 2, headerYStart + 10, { align: headingAlignment.toLowerCase() });
-    doc.text(reportHeader3, pageWidth / 2, headerYStart + 15, { align: headingAlignment.toLowerCase() });
 
-    // rptDisplayName (Dynamic Title Below Static Header)
+    doc.text(reportHeader1, headerX, headerYStart, { align: alignment });
+    doc.text(reportHeader2, headerX, headerYStart + 5, { align: alignment });
+    doc.text(reportHeader3, headerX, headerYStart + 10, { align: alignment });
+
     doc.setFontSize(11);
-    doc.text(rptDisplayName || 'Report', pageWidth / 2, headerYStart + 22, { align: headingAlignment });
+    doc.text(rptDisplayName || 'Report', headerX, headerYStart + 17, { align: alignment });
+
+
+    return headerYStart + 20;
   };
 
-  // Initial Header Drawing for First Page
-  drawHeader(pdf);
+  // drawHeader(pdf);
 
-  let yPosition = isLogoRequired === 'Yes' && logos.some(logo => logo.position === 'top') ? 45 : 35;
+  const headerEndY = drawHeader(pdf);
+  let yPosition = headerEndY + 5;
+
+  // let yPosition = isLogoRequired === 'Yes' && logos.some(logo => logo.position === 'top') ? 45 : 35;
 
   // Filters Section
   if (showFilterDetailsInPDF === 'Yes' && filters.length) {
@@ -253,25 +272,7 @@ export const generatePDF = async (widgetData, tableData, config, filters = []) =
         const textWidth = pdf.getTextWidth(reportDate);
         pdf.text(reportDate, pageWidth - textWidth - 10, pdf.internal.pageSize.getHeight() - 10);
       }
-      
-      // Draw bottom logos if any
-      // if (isLogoRequired === 'Yes' && logos && logos.some(logo => logo.position === 'bottom')) {
-      //   const logoWidth = 15;
-      //   const logoHeight = 18;
-      //   const margin = 10;
-        
-      //   logos.forEach(logo => {
-      //     if (logo.position.toLowerCase() === 'bottom' && logo.image) {
-      //       const logoX = pageWidth / 2 - logoWidth / 2;
-      //       const logoY = pdf.internal.pageSize.getHeight() - logoHeight - margin - 10;
-      //       try {
-      //         pdf.addImage(logo.image, 'JPEG', logoX, logoY, logoWidth, logoHeight);
-      //       } catch (error) {
-      //         console.error('Error adding bottom logo:', error);
-      //       }
-      //     }
-      //   });
-      // }
+
     }
   });
 
@@ -285,7 +286,7 @@ export const generatePDF = async (widgetData, tableData, config, filters = []) =
 
 export const generateCSV = (widgetData, tableData, config) => {
   if (!Array.isArray(tableData) || tableData.length === 0) {
-    ToastAlert('No data available to download.','warning');
+    ToastAlert('No data available to download.', 'warning');
     return;
   }
 
@@ -295,16 +296,6 @@ export const generateCSV = (widgetData, tableData, config) => {
   const { reportHeader1, reportHeader2, reportHeader3, isLogoRequired, logoImage, headingAlignment } = config;
   const currentDate = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB');
 
-  // const heading = [
-  //   ['Ministry of Health Family Welfare'],
-  //   ['Government of India'],
-  //   ['DVDMS Central Dashboard'],
-  //   [rptDisplayName || 'Report Title'],
-  //   [],
-  //   [],
-  //   [`Date: ${currentDate}`],
-  //   []
-  // ];
   const heading = [
     [reportHeader1],
     [reportHeader2],

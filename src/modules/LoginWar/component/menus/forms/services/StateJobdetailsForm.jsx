@@ -5,24 +5,22 @@ import InputField from '../../../InputField';
 import InputSelect from '../../../InputSelect';
 import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 import { ToastAlert } from '../../../../utils/CommonFunction';
-import { getAuthUserData } from '../../../../../../utils/CommonFunction';
+import { formatDateForBackend, getAuthUserData, parseBackendDate } from '../../../../../../utils/CommonFunction';
+import DatePicker from 'react-datepicker';
 
 const StateJobdetailsForm = (props) => {
 
-    const { subGrpData, groupData, groupId } = props;
-    const { openPage, selectedOption, setOpenPage, setSelectedOption, setShowConfirmSave, confirmSave, setConfirmSave, getGenericDrugListData, drugTypeDrpData, getDrugTypeDrpData } = useContext(LoginContext);
+    const { stateData, setSearchInput } = props;
+    const { openPage, selectedOption, setSelectedOption, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, getStateJobDetailsListData } = useContext(LoginContext);
+
     const [recordStatus, setRecordStatus] = useState('1');
 
     const [values, setValues] = useState({
-        "groupName": "", "subGroupName": "", "drugtype": "", "VEDType": "", "categoryName": "", "drugname": ""
+        "stateName": "", "stateDatabase": "", "jobName": "", "stateFetchQuery": "", "insertQuery": "", "preProcedureName": "", "preProcedureMode": "", "postProcedureName": "", "procedureMode": "", "jobStartTime": new Date(), "duration": "", "lastStateTime": new Date(),
     })
     const [errors, setErrors] = useState({
-        "groupNameErr": "", "subGroupNameErr": "", "VEDTypeErr": "", "categoryNameErr": "", "drugnameErr": ""
+        "jobNameErr": "", "stateFetchQueryErr": "", "preProcedureModeErr": ""
     })
-
-    useEffect(() => {
-        getDrugTypeDrpData()
-    }, [])
 
     const handleInputChange = (e) => {
         const { name, value } = e?.target;
@@ -33,77 +31,90 @@ const StateJobdetailsForm = (props) => {
         }
     }
 
-    const saveGenericDrugData = () => {
+    const saveJobDetailsData = () => {
         const val = {
-            "seatId": getAuthUserData('userSeatId'),
-            "drugName": values?.drugname,
-            "groupId": groupId,
-            "subgroupId": values?.subGroupName,
-            "drugTypeId": values?.drugtype,
-            "drugCatCode": values?.categoryName,
-            "drugVedCode": values?.VEDType,
-            "isValid": recordStatus,
-            "isMotherHealth": 0
+            "seatID": getAuthUserData('userSeatId'),
+            "fetchQuery": values?.stateFetchQuery,
+            "insertQuery": values?.insertQuery,
+            "jobName": values?.jobName,
+            "jobStart": formatDateForBackend(values?.jobStartTime),
+            "nextRunTime": "",
+            "lastRunTime": "",
+            "lastStateTime": formatDateForBackend(values?.lastStateTime),
+            // "jobID": 0,
+            "jobDuration": parseInt(values?.duration),
+            "stateID": stateData[0]?.value,
+            "preProcedureName": values?.preProcedureName,
+            "preProcedureMode": parseInt(values?.preProcedureMode),
+            "postProcedureName": values?.postProcedureName,
+            "postProcedureMode": parseInt(values?.procedureMode),
+            // "isActive": recordStatus
         }
-        fetchPostData(`api/v1/drugs`, val).then(data => {
+        fetchPostData(`/api/v1/stateJobDetails/createNewJob`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
-                getGenericDrugListData();
+                getStateJobDetailsListData(stateData[0]?.value, recordStatus);
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
+                setSelectedOption([]);
+                setSearchInput('');
             } else {
                 ToastAlert(data?.message, "error");
+                setConfirmSave(false);
             }
         })
     }
 
-    const updateGenericDrugData = () => {
+    const updateJobDetailsData = () => {
         const val = {
-            "centralDrugId": selectedOption[0]?.centralDrugId,
-            "seatId": getAuthUserData('userSeatId'),
-            "drugName": values?.drugname,
-            "groupId": groupId,
-            "subgroupId": values?.subGroupName,
-            "drugTypeId": values?.drugtype,
-            "drugCatCode": values?.categoryName,
-            "drugVedCode": values?.VEDType,
-            "isValid": recordStatus,
-            "isMotherHealth": 0
+            "seatID": getAuthUserData('userSeatId'),
+            "fetchQuery": values?.stateFetchQuery,
+            "insertQuery": values?.insertQuery,
+            "jobName": values?.jobName,
+            "jobStart": formatDateForBackend(values?.jobStartTime),
+            "nextRunTime": "",
+            "lastRunTime": "",
+            "lastStateTime": formatDateForBackend(values?.lastStateTime),
+            // "jobID": selectedOption[0]?.jobID,
+            "jobDuration": parseInt(values?.duration) || 0,
+            "stateID": stateData[0]?.value,
+            "preProcedureName": values?.preProcedureName,
+            "preProcedureMode": parseInt(values?.preProcedureMode),
+            "postProcedureName": values?.postProcedureName,
+            "postProcedureMode": parseInt(values?.procedureMode),
+            "isActive": parseInt(recordStatus) || 0
         }
-        fetchUpdateData(`api/v1/drugs/${selectedOption[0]?.centralDrugId}`, val).then(data => {
+        fetchUpdateData(`api/v1/stateJobDetails/updateJob?jobID=${selectedOption[0]?.jobID}&jobName=${selectedOption[0]?.jobName}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
-                getGenericDrugListData();
+                getStateJobDetailsListData(stateData[0]?.value, recordStatus);
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
+                setSelectedOption([]);
+                setSearchInput('');
             } else {
                 ToastAlert(data?.message, "error");
+                setConfirmSave(false);
             }
         })
     }
 
     const handleValidation = () => {
         let isValid = true;
-        if (!groupId?.trim()) {
-            setErrors(prev => ({ ...prev, "groupNameErr": "Group name is required" }));
+
+        if (!values?.jobName?.trim()) {
+            setErrors(prev => ({ ...prev, "jobNameErr": "Job name is required" }));
             isValid = false;
         }
-        if (!values?.subGroupName?.trim()) {
-            setErrors(prev => ({ ...prev, "subGroupNameErr": "Sub group is required" }));
+        if (!values?.stateFetchQuery?.trim()) {
+            setErrors(prev => ({ ...prev, "stateFetchQueryErr": "Fetch query is required" }));
             isValid = false;
         }
-        if (!values?.VEDType?.trim()) {
-            setErrors(prev => ({ ...prev, "VEDTypeErr": "Select a value" }));
-            isValid = false;
-        }
-        if (!values?.categoryName?.trim()) {
-            setErrors(prev => ({ ...prev, "categoryNameErr": "Category name is required" }));
-            isValid = false;
-        }
-        if (!values?.drugname?.trim()) {
-            setErrors(prev => ({ ...prev, "drugnameErr": "Drug name is required" }));
+
+        if (!values?.preProcedureMode?.toString()?.trim()) {
+            setErrors(prev => ({ ...prev, "preProcedureModeErr": "This Procedure mode is required" }));
             isValid = false;
         }
 
@@ -115,9 +126,9 @@ const StateJobdetailsForm = (props) => {
     useEffect(() => {
         if (confirmSave) {
             if (openPage === 'modify') {
-                updateGenericDrugData();
+                updateJobDetailsData();
             } else {
-                saveGenericDrugData();
+                saveJobDetailsData();
             }
         }
     }, [confirmSave])
@@ -126,27 +137,28 @@ const StateJobdetailsForm = (props) => {
         if (selectedOption?.length > 0) {
             setValues({
                 ...values,
-                "groupName": selectedOption[0]?.groupId, "subGroupName": selectedOption[0]?.subgroupId, "drugtype": selectedOption[0]?.drugTypeId, "VEDType": selectedOption[0]?.drugVedCode, "categoryName": selectedOption[0]?.drugCatCode, "drugname": selectedOption[0]?.drugName
+                "jobName": selectedOption[0]?.jobName,
+                "stateFetchQuery": selectedOption[0]?.fetchQuery,
+                "insertQuery": selectedOption[0]?.insertQuery,
+                "preProcedureName": selectedOption[0]?.preProcedureName,
+                "preProcedureMode": parseInt(selectedOption[0]?.preProcedureMode) || null,
+                "postProcedureName": selectedOption[0]?.postProcedureName,
+                "procedureMode": parseInt(selectedOption[0]?.postProcedureMode || null),
+                "jobStartTime": parseBackendDate(selectedOption[0]?.jobStart),
+                "duration": selectedOption[0]?.jobDuration,
+                "lastStateTime": parseBackendDate(selectedOption[0]?.lastStateTime)
             })
+            setRecordStatus(selectedOption[0]?.isActive == "1" ? '1' : '0')
         }
     }, [selectedOption])
 
     const reset = () => {
         setRecordStatus('Active')
         setConfirmSave(false);
-        setValues({ "groupName": "", "subGroupName": "", "drugtype": "", "VEDType": "", "categoryName": "", "drugname": "" });
-        setErrors({ "groupNameErr": "", "subGroupNameErr": "", "VEDTypeErr": "", "categoryNameErr": "", "drugnameErr": "" });
+        setValues({ "stateName": "", "stateDatabase": "", "jobName": "", "stateFetchQuery": "", "insertQuery": "", "preProcedureName": "", "preProcedureMode": "", "postProcedureName": "", "procedureMode": "", "jobStartTime": new Date(), "duration": "", "lastStateTime": new Date() });
+        setErrors({ "jobNameErr": "", "stateFetchQueryErr": "", "preProcedureModeErr": "" });
     }
-
-    const categoryOptions = [
-        { value: "10", label: "P" },
-        { value: "11", label: "S" },
-        { value: "12", label: "T" },
-        { value: "13", label: "P,S" },
-        { value: "14", label: "P,T" },
-        { value: "15", label: "S,T" },
-        { value: "16", label: "P,S,T" }
-    ];
+    console.log(values, 'values')
 
     return (
         <div>
@@ -158,23 +170,23 @@ const StateJobdetailsForm = (props) => {
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
                         <label className="col-sm-5 col-form-label fix-label">State : </label>
                         <div className="col-sm-7 align-content-center">
-                            <span style={{ color: "#013157" }}>{groupData?.filter(dt => dt?.value == groupId)[0]?.label || '---'}</span>
-                            {errors?.groupNameErr && (
+                            <span style={{ color: "#013157" }}>{stateData[0]?.label || '---'}</span>
+                            {/* {errors?.groupNameErr && (
                                 <div className="required-input">
                                     {errors?.groupNameErr}
                                 </div>
-                            )}
+                            )} */}
                         </div>
                     </div>
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
                         <label className="col-sm-5 col-form-label fix-label">State Database: </label>
                         <div className="col-sm-7 align-content-center">
-                            <span style={{ color: "#013157" }}>{groupData?.filter(dt => dt?.value == groupId)[0]?.label || 'EDB'}</span>
-                            {errors?.groupNameErr && (
+                            <span style={{ color: "#013157" }}>{values?.stateDatabase || 'EDB'}</span>
+                            {/* {errors?.groupNameErr && (
                                 <div className="required-input">
                                     {errors?.groupNameErr}
                                 </div>
-                            )}
+                            )} */}
                         </div>
                     </div>
                 </div>
@@ -185,14 +197,15 @@ const StateJobdetailsForm = (props) => {
                         <div className="col-sm-7 align-content-center">
                             <InputField
                                 type={'text'}
-                                id="drugname"
-                                name="drugname"
+                                id="jobName"
+                                name="jobName"
                                 placeholder="Enter value"
                                 className="aliceblue-bg border-dark-subtle"
-                                value={values?.drugname}
+                                value={values?.jobName}
                                 onChange={handleInputChange}
-                                errorMessage={errors?.drugnameErr}
+                                errorMessage={errors?.jobNameErr}
                             />
+
                         </div>
                     </div>
                 </div>
@@ -202,7 +215,18 @@ const StateJobdetailsForm = (props) => {
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
                         <label className="col-sm-5 col-form-label fix-label required-label">State Fetch Query : </label>
                         <div className="col-sm-7 align-content-center">
-                            <textarea className='form-control aliceblue-bg border-dark-subtle' name="feedback" id="feedback"></textarea>
+                            <textarea
+                                className='form-control aliceblue-bg border-dark-subtle'
+                                name="stateFetchQuery"
+                                id="stateFetchQuery"
+                                value={values?.stateFetchQuery}
+                                onChange={handleInputChange}
+                            />
+                            {errors?.stateFetchQueryErr && (
+                                <div className="required-input">
+                                    {errors?.stateFetchQueryErr}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -210,7 +234,14 @@ const StateJobdetailsForm = (props) => {
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
                         <label className="col-sm-5 col-form-label fix-label">Insert Query : </label>
                         <div className="col-sm-7 align-content-center">
-                            <textarea className='form-control aliceblue-bg border-dark-subtle' name="feedback" id="feedback"></textarea>
+                            <textarea
+                                className='form-control aliceblue-bg border-dark-subtle'
+                                name="insertQuery"
+                                id="insertQuery"
+                                value={values?.insertQuery}
+                                onChange={handleInputChange}
+                            >
+                            </textarea>
                         </div>
                     </div>
                 </div>
@@ -221,14 +252,14 @@ const StateJobdetailsForm = (props) => {
                         <label className="col-sm-5 col-form-label fix-label">Pre Procedure Name : </label>
                         <div className="col-sm-7 align-content-center">
                             <InputField
-                                type={'text'}
-                                id="drugname"
-                                name="drugname"
+                                type='text'
+                                id="preProcedureName"
+                                name="preProcedureName"
                                 placeholder="Enter value"
                                 className="aliceblue-bg border-dark-subtle"
-                                value={values?.drugname}
+                                value={values?.preProcedureName}
                                 onChange={handleInputChange}
-                                errorMessage={errors?.drugnameErr}
+                            // errorMessage={errors?.drugnameErr}
                             />
                         </div>
                     </div>
@@ -239,13 +270,13 @@ const StateJobdetailsForm = (props) => {
                         <div className="col-sm-7 align-content-center">
                             <InputField
                                 type={'text'}
-                                id="drugname"
-                                name="drugname"
+                                id="preProcedureMode"
+                                name="preProcedureMode"
                                 placeholder="Enter value"
                                 className="aliceblue-bg border-dark-subtle"
-                                value={values?.drugname}
+                                value={values?.preProcedureMode}
                                 onChange={handleInputChange}
-                                errorMessage={errors?.drugnameErr}
+                                errorMessage={errors?.preProcedureModeErr}
                             />
                         </div>
                     </div>
@@ -258,13 +289,13 @@ const StateJobdetailsForm = (props) => {
                         <div className="col-sm-7 align-content-center">
                             <InputField
                                 type={'text'}
-                                id="drugname"
-                                name="drugname"
+                                id="postProcedureName"
+                                name="postProcedureName"
                                 placeholder="Enter value"
                                 className="aliceblue-bg border-dark-subtle"
-                                value={values?.drugname}
+                                value={values?.postProcedureName}
                                 onChange={handleInputChange}
-                                errorMessage={errors?.drugnameErr}
+                            // errorMessage={errors?.drugnameErr}
                             />
                         </div>
                     </div>
@@ -275,16 +306,140 @@ const StateJobdetailsForm = (props) => {
                         <div className="col-sm-7 align-content-center">
                             <InputField
                                 type={'text'}
-                                id="drugname"
-                                name="drugname"
+                                id="procedureMode"
+                                name="procedureMode"
                                 placeholder="Enter value"
                                 className="aliceblue-bg border-dark-subtle"
-                                value={values?.drugname}
+                                value={values?.procedureMode}
                                 onChange={handleInputChange}
-                                errorMessage={errors?.drugnameErr}
+                            // errorMessage={errors?.drugnameErr}
                             />
                         </div>
                     </div>
+                </div>
+            </div>
+            <div className='row pt-0'>
+                <div className='col-sm-6'>
+                    <div className="form-group row">
+                        <label className="col-sm-5 col-form-label fix-label">Job Start Time : </label>
+                        <div className="col-sm-7 align-content-center position-relative d-inline-block">
+                            <DatePicker
+                                name='jobStartTime'
+                                selected={values?.jobStartTime}
+                                onChange={(date) => {
+                                    setValues({ ...values, 'jobStartTime': date });
+                                    setErrors({ ...errors, 'expiryDateErr': '' })
+                                }}
+                                showTimeSelect
+                                timeFormat="HH:mm:ss"
+                                timeIntervals={1}
+                                timeCaption="Time"
+                                dateFormat="dd-MMM-yyyy HH:mm:ss"
+                                isClearable={false}
+                                placeholderText={'Select Date and Time...'}
+                                autoComplete="off"
+                                showYearDropdown
+                                showMonthDropdown
+                                dropdownMode="select"
+                                className="datepicker form-control form-control-sm aliceblue-bg border-dark-subtle"
+                            // readOnly={openPageName === 'view'}
+                            // minDate={effDate}
+                            />
+                            <span className='position-absolute top-50 end-0 translate-middle-y me-3 pointer'>
+                                📅</span>
+                        </div>
+                    </div>
+                    <div className="form-group row">
+                        <label className="col-sm-5 col-form-label fix-label">Last State Time : </label>
+                        <div className="col-sm-7 align-content-center position-relative d-inline-block">
+                            <DatePicker
+                                name='lastStateTime'
+                                selected={values?.lastStateTime}
+                                onChange={(date) => {
+                                    setValues({ ...values, 'lastStateTime': date });
+                                    setErrors({ ...errors, 'expiryDateErr': '' })
+                                }}
+                                showTimeSelect
+                                timeFormat="HH:mm:ss"
+                                timeIntervals={1}
+                                timeCaption="Time"
+                                dateFormat="dd-MMM-yyyy HH:mm:ss"
+                                isClearable={false}
+                                placeholderText={'Select Date and Time...'}
+                                autoComplete="off"
+                                showYearDropdown
+                                showMonthDropdown
+                                dropdownMode="select"
+                                className="datepicker form-control form-control-sm aliceblue-bg border-dark-subtle"
+                            // readOnly={openPageName === 'view'}
+                            // minDate={effDate}
+                            />
+                            <span className='position-absolute top-50 end-0 translate-middle-y me-3 pointer'>
+                                📅</span>
+                        </div>
+                    </div>
+
+                </div>
+                <div className='col-sm-6'>
+                    <div className="form-group row">
+                        <label className="col-sm-5 col-form-label fix-label">Duration : </label>
+                        <div className="col-sm-7 align-content-center">
+                            <InputSelect
+                                id="duration"
+                                name="duration"
+                                placeholder={"Select Value"}
+                                className={"aliceblue-bg border-dark-subtle"}
+                                options={[{ value: 24, label: "24 Hours" }]}
+                                onChange={handleInputChange}
+                                value={values?.duration}
+                            // errorMessage={errors?.drugTypeIdErr}
+                            />
+                        </div>
+                    </div>
+                    {openPage === 'modify' &&
+
+                        <div className="form-group row">
+                            <label className="col-sm-5 col-form-label fix-label">
+                                Record Status :
+                            </label>
+                            <div className="col-sm-7 align-content-center">
+                                <div className="form-check form-check-inline">
+                                    <input
+                                        className="border-dark-subtle form-check-input"
+                                        type="radio"
+                                        name="recordStatus"
+                                        id="recordStatus"
+                                        value={'1'}
+                                        onChange={(e) => setRecordStatus(e.target.value)}
+                                        checked={recordStatus === "1"}
+                                    />
+                                    <label className="form-check-label" htmlFor="dbYes">
+                                        Active
+                                    </label>
+                                </div>
+                                <div className="form-check form-check-inline">
+                                    <input
+                                        className="border-dark-subtle form-check-input"
+                                        type="radio"
+                                        name="recordStatus"
+                                        id="recordStatus"
+                                        value={'0'}
+                                        onChange={(e) => setRecordStatus(e.target.value)}
+                                        checked={recordStatus === "0"}
+                                    />
+                                    <label className="form-check-label" htmlFor="dbNo">
+                                        InActive
+                                    </label>
+                                </div>
+                            </div>
+                            {/* {errors?.recStatusErr && (
+                                    <div className="required-input">
+                                        {errors?.recStatusErr}
+                                    </div>
+                                )} */}
+                        </div>
+
+                    }
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import NavbarHeader from '../../components/headers/NavbarHeader'
 import InputField from '../../components/commons/InputField'
 import InputSelect from '../../components/commons/InputSelect'
@@ -8,6 +8,7 @@ import { serverName } from '../../localData/DropDownData'
 import { ToastAlert } from '../../utils/commonFunction'
 import { HISContext } from '../../contextApi/HISContext'
 import { fetchData, fetchUpdateData } from '../../../../utils/ApiHooks'
+import LogoUploader from '../../components/commons/LogoUploader'
 
 const DbConfigMaster = () => {
     const { dashboardForDt, getDashboardForDrpData, setSelectedOption, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, singleConfigData, getDashConfigData, } = useContext(HISContext);
@@ -70,6 +71,9 @@ const DbConfigMaster = () => {
                 staticReportHead3: dtd?.reportHeader3,
                 reportHeaderByQuery: dtd?.reportHeaderByQuery,
                 logoImageUrl: dtd?.logoImage,
+                logoImageUrl1: dtd?.logos[0]?.image,
+                logoImageUrl2: dtd?.logos[1]?.image,
+                logoImageUrl3: dtd?.logos[2]?.image,
                 staticDefaultLimit: dtd?.setDefaultLimit,
             })
             setIsDbConnReq(dtd?.isDbConnectionReq);
@@ -78,10 +82,16 @@ const DbConfigMaster = () => {
             setIsAccessReq(dtd?.isLogAllAccess);
             setIsErrorReq(dtd?.isLogAllError);
             setIsLogoReq(dtd?.isLogoRequired);
-            setLogoPosition(dtd?.logoPosition);
+            setLogoPosition({
+                "logo1Position": dtd?.logos[0]?.position,
+                "logo2Position": dtd?.logos[1]?.position,
+                "logo3Position": dtd?.logos[2]?.position
+            });
             setHeadingAlignment(dtd?.headingAlignment);
             setIsLimitRecReq(dtd?.isLimitRequired);
             setRows(dtd?.lstWebServiceClientConfigVO)
+            setLogoCounts(dtd?.logoCounts)
+            setIsHeadByQueryReq(dtd?.isHeadByQueryReq)
         }
     }, [singleConfigData])
 
@@ -95,21 +105,11 @@ const DbConfigMaster = () => {
             setErrors({ ...errors, [error]: '' })
         }
     }
-    console.log(values, 'values')
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
 
-        if (file) {
-            const reader = new FileReader();
-
-            reader.onloadend = () => {
-                const base64String = reader.result;
-                setValues({ ...values, [e.target.name]: base64String })
-            };
-
-            reader.readAsDataURL(file);
-        }
+    const handleLogoChange = (name, base64String) => {
+        setValues((prev) => ({ ...prev, [name]: base64String }));
     };
+
 
     const handleEditRow = (index) => {
         setIsEditing(index);
@@ -186,7 +186,7 @@ const DbConfigMaster = () => {
                     { image: logoImageUrl1, position: logoPosition?.logo1Position },
                     { image: logoImageUrl2, position: logoPosition?.logo2Position },
                     { image: logoImageUrl3, position: logoPosition?.logo3Position },
-                ],
+                ].slice(0, parseInt(logoCounts)),
                 "isDashboardConfigurationCached": isDashboardCached,
                 "maxServiceReferenceNo": 2,
                 "lstWebServiceClientConfigVO": rows?.length > 0 ? rows : [],
@@ -838,7 +838,7 @@ const DbConfigMaster = () => {
                             </div>
                         </div>
 
-                        <b><h6 className='header-devider my-1 ps-1'>Logo Details</h6></b>
+                        <b><h6 className='header-devider my-1 ps-1'>Logo Details -  <span className='required-label'><i>click on icon to uplaod logos</i></span></h6></b>
                         {/* SECTION DEVIDER logo details*/}
                         <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                             {/* //left columns */}
@@ -878,23 +878,6 @@ const DbConfigMaster = () => {
                                         </div>
                                     </div>
                                 </div>
-                                {/* {isLogoReq === 'Yes' &&
-                                    <div className="form-group row">
-                                        <label className="col-sm-5 col-form-label fix-label pe-0">Logo Image URL : </label>
-                                        <div className="col-sm-7 ps-0 align-content-center">
-                                            <textarea
-                                                className="form-control backcolorinput"
-                                                placeholder="Enter value..."
-                                                rows="1"
-                                                name='logoImageUrl'
-                                                id='logoImageUrl'
-                                                value={values?.logoImageUrl}
-                                                onChange={handleValueChange}
-                                            ></textarea>
-                                        </div>
-
-                                    </div>
-                                } */}
                             </div>
                             {/* right columns */}
                             {isLogoReq === 'Yes' &&
@@ -960,7 +943,7 @@ const DbConfigMaster = () => {
                                         <div className="form-group row">
                                             <label className="col-sm-5 col-form-label pe-0">Logo 1 File : </label>
                                             <div className="col-sm-7 ps-0 align-content-center">
-                                                <InputField
+                                                {/* <InputField
                                                     type="file"
                                                     className="backcolorinput"
                                                     placeholder="Enter value..."
@@ -968,6 +951,11 @@ const DbConfigMaster = () => {
                                                     id='logo1file'
                                                     onChange={handleFileChange}
                                                 // errorMessage={errors?.staticReportHead1Err}
+                                                /> */}
+                                                <LogoUploader
+                                                    name="logoImageUrl1"
+                                                    value={values.logoImageUrl1}
+                                                    onChange={handleLogoChange}
                                                 />
                                             </div>
                                         </div>
@@ -976,7 +964,7 @@ const DbConfigMaster = () => {
                                         <div className="form-group row">
                                             <label className="col-sm-5 col-form-label pe-0">Logo 2 File : </label>
                                             <div className="col-sm-7 ps-0 align-content-center">
-                                                <InputField
+                                                {/* <InputField
                                                     type="file"
                                                     className="backcolorinput"
                                                     placeholder="Enter value..."
@@ -984,6 +972,11 @@ const DbConfigMaster = () => {
                                                     id='logo2file'
                                                     onChange={handleFileChange}
                                                 // errorMessage={errors?.staticReportHead1Err}
+                                                /> */}
+                                                <LogoUploader
+                                                    name="logoImageUrl2"
+                                                    value={values.logoImageUrl2}
+                                                    onChange={handleLogoChange}
                                                 />
                                             </div>
                                         </div>
@@ -992,7 +985,13 @@ const DbConfigMaster = () => {
                                         <div className="form-group row">
                                             <label className="col-sm-5 col-form-label pe-0">Logo 3 File : </label>
                                             <div className="col-sm-7 ps-0 align-content-center">
-                                                <InputField
+                                                <LogoUploader
+                                                    name='logoImageUrl3'
+                                                    value={values.logoImageUrl3}
+                                                    onChange={handleLogoChange}
+                                                />
+
+                                                {/* <InputField
                                                     type="file"
                                                     className="backcolorinput"
                                                     placeholder="Enter value..."
@@ -1000,7 +999,7 @@ const DbConfigMaster = () => {
                                                     id='logo3file'
                                                     onChange={handleFileChange}
                                                 // errorMessage={errors?.staticReportHead1Err}
-                                                />
+                                                /> */}
                                             </div>
                                         </div>
                                     }
