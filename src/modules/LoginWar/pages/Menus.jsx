@@ -19,6 +19,7 @@ import GroupMaster from '../component/menus/admin/GroupMaster'
 import StateJobDetailsService from '../component/menus/services/StateJobDetailsService'
 import DrugMaster from '../component/menus/admin/DrugMaster'
 import OutsourceMaster from '../component/menus/admin/OutsourceMaster'
+import TestMappingMaster from '../component/menus/admin/TestMappingMaster'
 
 const Menus = () => {
     return (
@@ -36,6 +37,7 @@ const Menus = () => {
                 <Route path="sub-group-master" element={<SubGroupMaster />}/>
                 <Route path="drug-master" element={<DrugMaster/>}/>
                 <Route path="outsource-master" element={<OutsourceMaster />}/>
+                <Route path="test-mapping-master"element={<TestMappingMaster />}/> 
 
                 {/* created by BG */}
                 <Route path="generic-drug-master" element={<GenericDrugMaster />} />

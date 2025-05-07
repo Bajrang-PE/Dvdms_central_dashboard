@@ -14,14 +14,14 @@ const DrugMaster = () => {
     } = useContext(LoginContext);
 
      const [values, setValues] = useState({
-            "groupId":"","subGroupId":"","recordStatus":"1"
+            "groupId":"0","subGroupId":"0","recordStatus":"1"
         })
 
           const [errors, setErrors] = useState({
                 groupIdErr: "",subGroupIdErr:""
             })
 
-        const[listData ,setListData]=useState([])
+        const [listData ,setListData]=useState([])
         const [selectAll, setSelectAll] = useState(false);
         const [selectedGroupName,setSelectedGroupName]=useState("")
         const [selectedSubGroupName,setSelectedSubGroupName]=useState("")
@@ -64,8 +64,15 @@ const DrugMaster = () => {
     useEffect(() => {
         setValues(prev => ({
           ...prev,
-          subGroupId: ""
+          subGroupId: "0"
         }));
+
+        if(values.groupId === ""){
+            setValues(prev => ({
+                ...prev,
+                groupId: "0"
+              }));
+        }
       }, [values.groupId]);
 
  
@@ -137,7 +144,7 @@ const DrugMaster = () => {
                 <div style={{ position: 'absolute', top: 4, left: 10 }}>
                     <input
                         type="checkbox"
-                        checked={selectedOption[0]?.cwhnumDrugId === row.cwhnumDrugId}
+                        checked={selectedOption[0]?.cwhnumCentraldrugid === row.cwhnumCentraldrugid}
                         onChange={() => setSelectedOption([row])}
                     />
                 </div>
@@ -146,12 +153,12 @@ const DrugMaster = () => {
         },
         {
             name: 'Drug Name',
-            selector: row => row.cwhstrDrugName,
+            selector: row => row.cwhstrCentraldrugname,
             sortable: true,
         },
         {
             name: 'Drug Type',
-            selector: row => row.cwhnumDrugTypeId,
+            selector: row => row.strDrugTypeName,
             sortable: true,
         },
         {
