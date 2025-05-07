@@ -153,7 +153,7 @@ const ZoneMaster = () => {
                 </>)}
 
                 {(openPage === "add" || openPage === 'modify') && (<>
-                    <ZoneMasterForm />
+                    <ZoneMasterForm setSearchInput={setSearchInput}/>
                 </>)}
             </div>
         </>

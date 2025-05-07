@@ -46,6 +46,7 @@ const MenuList = (props) => {
                         { dataVal: 'editUser', menuName: 'Facility Type Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/facility-type-mapping-master" },
                         { dataVal: 'editUser', menuName: 'Job Order', icon: 'fa-gear' ,link: "/dvdms/menus/job-order-status-master"},
                         { dataVal: 'editUser', menuName: 'State CDB Sync Master', icon: 'fa-gear' ,link: "/dvdms/menus/state-cdb-sync-master"},
+                        { dataVal: 'editUser', menuName: 'Drug Mapping Master', icon: 'fa-gear' ,link: "/dvdms/menus/drug-mapping-master"},
                     ],
                 },
                 {

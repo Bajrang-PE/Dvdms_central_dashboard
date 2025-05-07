@@ -20,7 +20,7 @@ import { graphOptions, highchartGraphOptions, parameterType } from '../../localD
 import ParamsDetail from '../../components/dashboardMasters/tabMaster/ParamsDetail'
 import InputSelect from '../../components/commons/InputSelect'
 import { ToastAlert } from '../../utils/commonFunction'
-import { fetchPostData,fetchUpdateData } from '../../../../utils/ApiHooks'
+import { fetchPostData, fetchUpdateData } from '../../../../utils/ApiHooks'
 
 const WidgetMaster = () => {
 
@@ -45,7 +45,7 @@ const WidgetMaster = () => {
     "selFilterIds": ""
 
   })
-// console.log(allWidgetData,'allWidgetData')
+  // console.log(allWidgetData,'allWidgetData')
   const [radioValues, setRadioValues] = useState({
     widgetViewed: 'Tabular', isWidgetNameVisible: 'Yes', selectedModeQuery: 'Query', widgetPurpose: 'Download',
     widgetHeadingAlign: 'left', isRecordLimitReq: 'Yes', isWidgetBorderReq: 'Yes',
@@ -109,6 +109,13 @@ const WidgetMaster = () => {
     }
   }, [values?.selFilterIds, parameterDrpData]);
 
+    //to set value of dashboard for auto
+    const dashFor = localStorage.getItem('dfor');
+    useEffect(() => {
+      if (dashFor) {
+        setValues({ ...values, "widgetFor": dashFor })
+      }
+    }, [dashFor])
 
   useEffect(() => {
     if (selectedOptions?.length > 0) {
@@ -128,6 +135,7 @@ const WidgetMaster = () => {
     // console.log(localValues, 'bgb')
     if (localValues && localValues !== '') {
       const val = JSON.parse(localValues);
+      console.log(val,'vavavak')
       setValues(val);
       setActionMode(mode);
       setRows(val?.query);
@@ -349,11 +357,11 @@ const WidgetMaster = () => {
     }
   }
 
-  const returnLinkedData=(linkedWidgetRptId)=>{
-    if (!linkedWidgetRptId || !widgetDrpData) return []; 
+  const returnLinkedData = (linkedWidgetRptId) => {
+    if (!linkedWidgetRptId || !widgetDrpData) return [];
 
     const ids = linkedWidgetRptId.split(",").map(id => id.trim());
-  
+
     return widgetDrpData.filter(item => ids.includes(item.value));
   }
 
@@ -391,7 +399,7 @@ const WidgetMaster = () => {
         pdfTableHeadTxtFontClr: singleData[0]?.pdfTableheadingFontColour,//
         groupClmNoComma: singleData[0]?.groupColumnNo,//
 
-        query: singleData[0]?.modeOfQuery !== 'WebSevice' ? singleData[0]?.queryVO : [],//
+        query: singleData[0]?.modeOfQuery !== 'WebSevice' ? singleData[0]?.query : [],//
         webQuery: singleData[0]?.modeOfQuery === 'WebSevice' ? singleData[0]?.queryVO : [],//
         procedureName: singleData[0]?.procedureMode,//
         treeChildQuery: singleData[0]?.treeChildQuery,
@@ -536,6 +544,7 @@ const WidgetMaster = () => {
         // Iframe fields
         isSsoUrl: singleData[0]?.isSSOUrl,//
       });
+      setRows(singleData[0]?.query)
       setLoading(false)
     }
   }, [singleData]);
@@ -1333,7 +1342,7 @@ const WidgetMaster = () => {
 
   // console.log(rows, 'rows')
   // console.log(errors, 'errors')
-  console.log(values?.graphTypes, 'bgbgbgbg')
+  // console.log(values?.graphTypes, 'bgbgbgbg')
   // console.log(radioValues, 'rd')
   // console.log(allWidgetData?.filter(dt=>dt?.rptId == 11600023))
 
@@ -1412,18 +1421,21 @@ const WidgetMaster = () => {
 
               <div className='text-center mt-2 pre-nxt-btn'>
                 <button className='btn btn-sm ms-1'
-                  onClick={()=>previousTab()}
+                  onClick={() => previousTab()}
                   disabled={tabIndex > 1 ? false : true}
                 >
                   <FontAwesomeIcon icon={faArrowLeft} className="dropdown-gear-icon me-2" />
                   Previous
                 </button>
-                <button className='btn btn-sm ms-1' onClick={()=>saveTabsData()}>
-                  {`${tabIndex < tabNavMenus?.length ? 'Save & Next' : 'Save'}`}
-                  {tabIndex < tabNavMenus?.length &&
-                    <FontAwesomeIcon icon={faArrowRight} className="dropdown-gear-icon ms-2" />
-                  }
-                </button>
+                {tabIndex === tabNavMenus?.length ? <></> :
+                  <button className='btn btn-sm ms-1' onClick={() => saveTabsData()}>
+                    {`${tabIndex < tabNavMenus?.length ? 'Save & Next' : 'Save'}`}
+                    {tabIndex < tabNavMenus?.length &&
+                      <FontAwesomeIcon icon={faArrowRight} className="dropdown-gear-icon ms-2" />
+                    }
+                  </button>
+                }
+
               </div>
             </div>
             :
@@ -1441,7 +1453,7 @@ const WidgetMaster = () => {
                         options={dashboardForDt}
                         className="backcolorinput"
                         value={values?.widgetFor}
-                        onChange={handleValueChange}
+                        onChange={(e) => { handleValueChange(e); localStorage?.setItem("dfor", e.target.value) }}
                       />
                     </div>
                   </div>

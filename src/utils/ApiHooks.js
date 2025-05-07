@@ -6,6 +6,7 @@ const BaseUrl = 'http://10.226.25.164:8024'; //pritee
 //  const BaseUrl = 'http://10.226.29.102:8025/';  //shubham
 // const BaseUrl = 'http://10.226.30.45:8025/';  //pradeep
 // const BaseUrl = 'http://10.226.26.247:8025/';  //harsh
+// const BaseUrl = 'http://10.226.80.61:8024/';  //server
 
 
 axios.defaults.baseURL = BaseUrl;
@@ -110,9 +111,9 @@ export const fetchUpdatePostData = async (url, data) => {
     }
 };
 
-export const fetchDeleteData = async (url, data) => {
+export const fetchDeleteData = async (url, payload) => {
     try {
-        const response = await axios.delete(url);
+        const response = await axios.delete(url, { data: payload });
         return response.data;
     } catch (error) {
         console.log('API Error:', error);

@@ -35,8 +35,7 @@ const LoginContextApi = ({ children }) => {
     const [dateDrpDt, setDateDrpDt] = useState([]);
     const [testTypeDrpData, setTestTypeDrpData] = useState([]);
     const [hospNameDrpData, setHospNameDrpData] = useState([]);
-
-
+    const [zoneDrpData, setZoneDrpData] = useState([]);
 
 
     //confirm alert
@@ -162,7 +161,7 @@ const LoginContextApi = ({ children }) => {
                         value: date,
                         label: date
                     }));
-    
+
                     setDateDrpDt(drpData);
                 } else {
                     setDateDrpDt([]);
@@ -197,11 +196,11 @@ const LoginContextApi = ({ children }) => {
 
     const getSupplierNameDrpData = () => {
 
-       // localhost:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=27&stateID=58
+        // localhost:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=27&stateID=58
 
         fetchData('http://10.226.26.247:8025/api/v1/supplierMappingMaster/getAllSuppliers').then((data) => {
             if (data) {
-                console.log("data-------",data)
+                console.log("data-------", data)
 
                 const drpData = data.data?.map((dt) => {
                     const val = {
@@ -316,11 +315,29 @@ const LoginContextApi = ({ children }) => {
                 setTestTypeDrpData(drpData)
             } else {
                 setTestTypeDrpData([])
+
             }
         })
     }
 
-    const getHospNameDrpData = (stateId,facilityId) => {
+    const getZoneDrpData = () => {
+        fetchData(`api/v1/zones/status?status=1`).then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.cwhnumZoneId,
+                        label: dt?.cwhstrZoneName
+                    }
+                    return val;
+                })
+                setZoneDrpData(drpData)
+            } else {
+                setZoneDrpData([])
+            }
+        })
+    }
+
+    const getHospNameDrpData = (stateId, facilityId) => {
         fetchData(`http://10.226.26.247:8025/api/v1/outsourceMaster/getHospitalList?stateID=${stateId}&facilityTypeID=${facilityId}`).then((data) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
@@ -337,10 +354,9 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
-    
 
 
-   
+
 
     return (
         <LoginContext.Provider value={{
@@ -356,10 +372,11 @@ const LoginContextApi = ({ children }) => {
             getGroupDrpData, groupDrpData, getSubGroupDrpData, subGroupDrpData,
             facilityTypeDrpDt, getFacilityTypeDrpData,
             drugTypeDrpData, getDrugTypeDrpData,
-            genericDrugDrpData,getGenericDrugDrpData,
-            dateDrpDt,getDateDrpData,
-            testTypeDrpData,getTestTypeDrpData,
-            hospNameDrpData,getHospNameDrpData,
+            genericDrugDrpData, getGenericDrugDrpData,
+            dateDrpDt, getDateDrpData,
+            testTypeDrpData, getTestTypeDrpData,
+            hospNameDrpData, getHospNameDrpData,
+            zoneDrpData, getZoneDrpData,
 
             //confirm box
             showConfirmSave, setShowConfirmSave, confirmSave, setConfirmSave,

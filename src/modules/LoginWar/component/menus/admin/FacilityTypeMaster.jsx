@@ -52,6 +52,7 @@ const FacilityTypeMaster = () => {
                 onClose();
             } else {
                 ToastAlert(data?.message, 'error')
+                setConfirmSave(false);
             }
         })
     }

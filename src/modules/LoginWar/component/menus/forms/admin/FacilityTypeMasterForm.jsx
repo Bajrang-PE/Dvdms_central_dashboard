@@ -29,6 +29,7 @@ const FacilityTypeMasterForm = () => {
                 setConfirmSave(false);
             } else {
                 ToastAlert(data?.message, "error");
+                setConfirmSave(false);
             }
         })
     }
@@ -53,6 +54,7 @@ const FacilityTypeMasterForm = () => {
                 setConfirmSave(false);
             } else {
                 ToastAlert(data?.message, "error")
+                setConfirmSave(false);
             }
         })
     }

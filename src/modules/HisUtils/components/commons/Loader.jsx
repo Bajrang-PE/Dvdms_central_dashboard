@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { BounceLoader, ClockLoader, RingLoader } from 'react-spinners';
+import { RingLoader } from 'react-spinners';
 import { HISContext } from '../../contextApi/HISContext';
 
 const Loader = () => {
