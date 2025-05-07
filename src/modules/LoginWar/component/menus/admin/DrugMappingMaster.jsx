@@ -1,15 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext';
-import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
+import { ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
 import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
-import { getAuthUserData } from '../../../../../utils/CommonFunction';
+import Select from 'react-select'
 
-const FacilityTypeMappingMaster = () => {
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, getFacilityTypeDrpData, facilityTypeDrpDt } = useContext(LoginContext);
+const DrugMappingMaster = () => {
+    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext);
 
-    const [facilityTypeId, setFacilityTypeId] = useState("");
+    const [itemCategory, setItemCategory] = useState("");
+    const [itemName, setItemName] = useState(null);
     const [stateId, setStateId] = useState("");
+    const [itemNameList, setItemNameList] = useState([]);
+
     const [availableOptions, setAvailableOptions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [selectedAvailable, setSelectedAvailable] = useState([]);
@@ -18,7 +21,6 @@ const FacilityTypeMappingMaster = () => {
     useEffect(() => {
         if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
         setOpenPage("add");
-        getFacilityTypeDrpData();
     }, []);
 
     useEffect(() => {
@@ -31,13 +33,49 @@ const FacilityTypeMappingMaster = () => {
     }, [stateId]);
 
     useEffect(() => {
-        if (stateId && facilityTypeId) {
+        if (stateId && itemName) {
             getMappedList();
         }
-    }, [stateId, facilityTypeId])
+    }, [stateId, itemName])
+
+
+    const getItemNameList = (selectedValue) => {
+        let url = '';
+
+        switch (selectedValue) {
+            case "1":
+                url = `api/v1/fetchDrugs`;
+                break;
+            case "2":
+                url = `api/v1/fetchReagentDrugs`;
+                break;
+            case "3":
+                url = `api/v1/fetchDetailedDrugs`;
+                break;
+            default:
+                setItemNameList([]);
+                setItemName({});
+                return;
+        }
+
+        fetchData(url).then(data => {
+            if (data?.status === 1) {
+                const options = data?.data?.map(item => ({
+                    value: item.cwhnumDrugId,
+                    label: item.cwhstrDrugName,
+                }));
+
+                setItemNameList(options);
+            } else {
+                setItemNameList([]);
+                setItemName({});
+            }
+        });
+    };
+
 
     const getUnmappedList = () => {
-        fetchData(`api/v1/unmappedFacilities/${stateId}`).then(data => {
+        fetchData(`api/v1/UnmapDrug/${stateId}`).then(data => {
             if (data?.status === 1) {
                 setAvailableOptions(data?.data)
             } else {
@@ -48,7 +86,7 @@ const FacilityTypeMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`api/v1/mapped/${facilityTypeId}/${stateId}`).then(data => {
+        fetchData(`api/v1/MappedDrug/${itemName?.value}/${stateId}`).then(data => {
             if (data.status === 1) {
                 setSelectedOptions(data?.data)
             } else {
@@ -59,14 +97,22 @@ const FacilityTypeMappingMaster = () => {
     }
 
     const saveFacilityMappedData = () => {
+
         const val = {
-            "stateFacilityTypeId": 0,
-            "stateId": stateId,
-            "stateFacilityTypeName": "",
-            "facilityTypeId": facilityTypeId,
-            "seatId": getAuthUserData('userSeatId'),
-            // "facilityTypeSlno": 0,
-            // "order": 0
+            "stateDrugId": 0,
+            "stateId": 0,
+            "entryDate": "2025-05-05T09:17:11.477Z",
+            "seatId": 0,
+            "isValid": 0,
+            "stateDrugIdTxt": "string",
+            "stateDrugName": "string",
+            "drugId": 0,
+            "deletedDate": "2025-05-05T09:17:11.477Z",
+            "drugSlno": 0,
+            "mappedCorrectly": 0,
+            "itemCategoryId": 0,
+            "isEdl": 0,
+            "reagentId": 0
         }
 
         fetchPostData(`api/v1/facility-type`, val).then(data => {
@@ -79,16 +125,16 @@ const FacilityTypeMappingMaster = () => {
     }
 
     const moveToSelected = () => {
-        if (facilityTypeId) {
+        if (itemCategory) {
             const itemsToMove = availableOptions.filter(opt =>
-                selectedAvailable.includes(String(opt.facilityTypeId))
+                selectedAvailable.includes(String(opt.idWithFlag))
             );
             const newSelected = itemsToMove.filter(item =>
-                !selectedOptions.some(selected => selected.facilityTypeId === item.facilityTypeId)
+                !selectedOptions.some(selected => selected.idWithFlag === item.idWithFlag)
             );
             setSelectedOptions(prev => [...prev, ...newSelected]);
             setAvailableOptions(prev => prev.filter(opt =>
-                !selectedAvailable.includes(String(opt.facilityTypeId))
+                !selectedAvailable.includes(String(opt.idWithFlag))
             ));
             setSelectedAvailable([]);
         } else {
@@ -97,13 +143,13 @@ const FacilityTypeMappingMaster = () => {
     };
 
     const moveToAvailable = () => {
-        if (facilityTypeId) {
+        if (itemCategory) {
             const itemsToMove = selectedOptions.filter(opt =>
-                selectedSelected.includes(String(opt.facilityTypeId))
+                selectedSelected.includes(String(opt.idWithFlag))
             );
             setAvailableOptions(prev => [...prev, ...itemsToMove]);
             setSelectedOptions(prev => prev.filter(opt =>
-                !selectedSelected.includes(String(opt.facilityTypeId))
+                !selectedSelected.includes(String(opt.idWithFlag))
             ));
             setSelectedSelected([]);
         } else {
@@ -116,31 +162,55 @@ const FacilityTypeMappingMaster = () => {
         setStateId('')
     }
 
+    const mapCategoryOptions = [
+        { value: "1", label: "Drugs" },
+        { value: "2", label: "Diagnostics Reagents and Kits" },
+        { value: "3", label: "All" }
+    ];
+
+    console.log(itemNameList, 'itemnamelist')
+    console.log(itemName, 'itemname')
 
     return (
         <>
             <div className='masters mx-3 my-2'>
                 <div className='masters-header row'>
-                    <span className='col-12'><b>{`Facility Type Mapping Master`}</b></span>
-                    {/* {openPage === "home" && <span className='col-6 text-end'>Total Records : {functionalityData?.length || 0}</span>} */}
+                    <span className='col-12'><b>{`Drug Mapping Master`}</b></span>
                 </div>
 
 
                 <div className='row pt-2'>
                     <div className='col-sm-6'>
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-5 col-form-label fix-label required-label">Facility Type : </label>
+                            <label className="col-sm-5 col-form-label fix-label required-label">Item Category : </label>
                             <div className="col-sm-7 align-content-center">
                                 <InputSelect
-                                    id="hintquestion"
-                                    name="hintquestion"
+                                    id="itemCategory"
+                                    name="itemCategory"
                                     placeholder="Select Value"
-                                    options={facilityTypeDrpDt}
+                                    options={mapCategoryOptions}
                                     className="aliceblue-bg border-dark-subtle"
-                                    value={facilityTypeId}
-                                    onChange={(e) => setFacilityTypeId(e.target.value)}
-                                />
+                                    value={itemCategory}
+                                    onChange={(e) => { setItemCategory(e.target.value); getItemNameList(e.target.value) }}
 
+                                />
+                            </div>
+                        </div>
+                        <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                            <label className="col-sm-5 col-form-label fix-label required-label">Item Name : </label>
+                            <div className="col-sm-7 align-content-center">
+                                <Select
+                                    id='itemName'
+                                    name='itemName'
+                                    options={itemNameList}
+                                    isMulti={false}
+                                    className="aliceblue-bg border-dark-subtle react-select-login"
+                                    value={itemName}
+                                    onChange={(e) => setItemName(e)}
+                                    isSearchable={true}
+                                    isDisabled={itemNameList?.length > 0 ? false : true}
+                                    placeholder="select value"
+                                />
                             </div>
                         </div>
                     </div>
@@ -165,13 +235,13 @@ const FacilityTypeMappingMaster = () => {
                 <div className="d-flex align-items-center my-3">
                     <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
                     <div className="px-1 text-primary fw-bold fs-13">
-                        <span className="text-danger">*</span> State Facility Type
+                        <span className="text-danger">*</span> State Drug Name
                     </div>
                     <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
                 </div>
 
                 <div className='d-flex justify-content-center mt-1 mb-2'>
-                    <div className='' style={{ width: "30%" }}>
+                    <div className='' style={{ width: "45%" }}>
                         <select
                             className="form-select form-select-sm aliceblue-bg border-dark-subtle"
                             size="8"
@@ -183,8 +253,8 @@ const FacilityTypeMappingMaster = () => {
                             }}
                         >
                             {availableOptions.map(opt => (
-                                <option key={opt.facilityTypeId} value={opt.facilityTypeId}>
-                                    {opt.facilityTypeName}
+                                <option key={opt.idWithFlag} value={opt.idWithFlag}>
+                                    {opt.cwhstrDrugName}
                                 </option>
                             ))}
                         </select>
@@ -216,7 +286,7 @@ const FacilityTypeMappingMaster = () => {
                         </div>
                     </div>
 
-                    <div className='' style={{ width: "30%" }}>
+                    <div className='' style={{ width: "45%" }}>
                         <select
                             className="form-select form-select-sm aliceblue-bg border-dark-subtle"
                             size="8"
@@ -228,8 +298,8 @@ const FacilityTypeMappingMaster = () => {
                             }}
                         >
                             {selectedOptions.map(opt => (
-                                <option key={opt.facilityTypeId} value={opt.facilityTypeId}>
-                                    {opt.facilityTypeName}
+                                <option key={opt.idWithFlag} value={opt.idWithFlag}>
+                                    {opt.cwhstrDrugName}
                                 </option>
                             ))}
                         </select>
@@ -252,4 +322,4 @@ const FacilityTypeMappingMaster = () => {
     )
 }
 
-export default FacilityTypeMappingMaster
+export default DrugMappingMaster

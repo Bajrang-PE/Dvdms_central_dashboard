@@ -191,16 +191,29 @@ const StateJobDetailsService = () => {
                     </div>
                     <hr className='my-2' />
 
-                    <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} isRun={true}/>
+                    <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={stateId ? true : false} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} isRun={true} />
 
                 </>)}
 
                 {openPage === 'view' &&
-                    <ViewPage data={[{ value: 'India', label: "Country" }, { value: selectedOption[0]?.stateName, label: "State Name" }, { value: selectedOption[0]?.stateShortName, label: "State ShortName" }, { value: selectedOption[0]?.isValid == 1 ? "Active" : "InActive", label: "Record Status" }]} onClose={onClose} title={"State Master"} />
+                    <ViewPage data={[
+                        { value: stateNameDrpDt?.filter(dt => dt?.value == stateId)[0]?.label, label: "State" }, { value: "EDB", label: "State Database" },
+                        { value: selectedOption[0]?.jobName, label: "Job Name" },
+                        { value: selectedOption[0]?.preProcedureName, label: "Pre Procedure Name" },
+                        { value: selectedOption[0]?.preProcedureMode, label: "Pre Procedure Mode" },
+                        { value: selectedOption[0]?.postProcedureName, label: "Post Procedure Name" },
+                        { value: selectedOption[0]?.postProcedureMode, label: "Post Procedure Mode" },
+                        { value: selectedOption[0]?.jobDuration, label: "Duration" },
+                        { value: selectedOption[0]?.jobStart, label: "Job Start Time" },
+                        { value: selectedOption[0]?.lastStateTime, label: "Last State Time" },
+                        { value: selectedOption[0]?.fetchQuery, label: "State Fetch Query" },
+                        { value: selectedOption[0]?.insertQuery, label: "Insert Query" },
+                    ]}
+                        onClose={onClose} title={"State Job Detail"} size={'xl'} />
                 }
 
                 {(openPage === "add" || openPage === 'modify') && (<>
-                    <StateJobdetailsForm stateData={stateNameDrpDt?.filter(dt => dt?.value == stateId)} setSearchInput={setSearchInput} />
+                    <StateJobdetailsForm stateData={stateNameDrpDt?.filter(dt => dt?.value == stateId)} setSearchInput={setSearchInput} setStatus={setRecordStatus} />
                 </>)}
 
             </div>

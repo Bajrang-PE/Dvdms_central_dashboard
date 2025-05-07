@@ -34,8 +34,8 @@ const TabMaster = () => {
     "tabFor": "", "tabNameDisplay": "", "tabNameInternal": "", "parentTab": "", "ellipseInDisplay": "",
     "tabIconImage": "", "iconName": "", "id": '',
     //tab details
-    "tabNameFontWeight": "", "tabDetailBgColor": "", "tabTopPadding": "", "buttonMarginHeading": "",
-    "tabNameFontSize": "", "tabNameTxtDecorat": "", "tabDetailTitleColor": "",
+    "tabNameFontWeight": "500", "tabDetailBgColor": "", "tabTopPadding": "10", "buttonMarginHeading": "",
+    "tabNameFontSize": "12", "tabNameTxtDecorat": "none", "tabDetailTitleColor": "",
     //parameter detail
     "parameterOption": "1", "loadOption": "ONWINDOWLOAD", "paraComboBgColor": "", "paraComboFontColor": "", "paraLabelFontColor": "", "paraRemark": "", 'allParameters': "",
     //jndi
@@ -51,7 +51,7 @@ const TabMaster = () => {
   const [radioValues, setRadioValues] = useState({
     "isTabUsedForDrill": "No", "isTabNameInReportReq": "No", "isCssTabIconReq": "No",
     //tab details
-    "showTabNameInDetail": "Yes", "widgetMaxMin": "",
+    "showTabNameInDetail": "Yes", "widgetMaxMin": "No",
     //footer detail
     "isLegendCollapes": "Yes", "isMarqueeReq": "No", "isLegendBorderReq": "Yes",
   })
@@ -74,6 +74,14 @@ const TabMaster = () => {
     }
 
   }, []);
+
+    //to set value of dashboard for auto
+    const dashFor = localStorage.getItem('dfor');
+    useEffect(() => {
+      if (dashFor) {
+        setValues({ ...values, "tabFor": dashFor })
+      }
+    }, [dashFor])
 
   useEffect(() => {
     if (dashboardForDt?.length === 0) { getDashboardForDrpData(); }
@@ -650,12 +658,14 @@ const TabMaster = () => {
                   <FontAwesomeIcon icon={faArrowLeft} className="dropdown-gear-icon me-2" />
                   Previous
                 </button>
+                {tabIndex === tabNavMenus?.length ? <></> :
                 <button className='btn btn-sm ms-1' onClick={()=>saveMenuTabsData()}>
                   {`${tabIndex < tabNavMenus?.length ? 'Save & Next' : 'Save'}`}
                   {tabIndex < tabNavMenus?.length &&
                     <FontAwesomeIcon icon={faArrowRight} className="dropdown-gear-icon ms-2" />
                   }
                 </button>
+}
               </div>
             }
           </div>

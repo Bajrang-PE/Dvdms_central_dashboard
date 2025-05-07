@@ -6,15 +6,16 @@ import InputSelect from '../../../InputSelect';
 import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
+import { categoryOptions, vedOptions } from '../../../../localData/HomeData';
 
 const GenericDrugMasterForm = (props) => {
-    
-    const { subGrpData, groupData, groupId } = props;
+
+    const { subGrpData, groupData, groupId, setSearchInput } = props;
     const { openPage, selectedOption, setOpenPage, setSelectedOption, setShowConfirmSave, confirmSave, setConfirmSave, getGenericDrugListData, drugTypeDrpData, getDrugTypeDrpData } = useContext(LoginContext);
     const [recordStatus, setRecordStatus] = useState('1');
 
     const [values, setValues] = useState({
-        "groupName": "", "subGroupName": "", "drugtype": "", "VEDType": "", "categoryName": "", "drugname": ""
+        "groupName": "", "subGroupName": "", "drugtype": "", "VEDType": "", "categoryName": "10", "drugname": ""
     })
     const [errors, setErrors] = useState({
         "groupNameErr": "", "subGroupNameErr": "", "VEDTypeErr": "", "categoryNameErr": "", "drugnameErr": ""
@@ -48,10 +49,12 @@ const GenericDrugMasterForm = (props) => {
         fetchPostData(`api/v1/drugs`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
-                getGenericDrugListData(groupId,values?.subGroupName,recordStatus);
+                getGenericDrugListData(groupId, values?.subGroupName, recordStatus);
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
+                setSelectedOption([])
+
             } else {
                 ToastAlert(data?.message, "error");
                 setConfirmSave(false);
@@ -75,10 +78,11 @@ const GenericDrugMasterForm = (props) => {
         fetchUpdateData(`api/v1/drugs/${selectedOption[0]?.centralDrugId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
-                getGenericDrugListData();
+                getGenericDrugListData(groupId, values?.subGroupName, recordStatus);
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
+                setSelectedOption([])
             } else {
                 ToastAlert(data?.message, "error");
                 setConfirmSave(false);
@@ -92,14 +96,14 @@ const GenericDrugMasterForm = (props) => {
             setErrors(prev => ({ ...prev, "groupNameErr": "Group name is required" }));
             isValid = false;
         }
-        if (!values?.subGroupName?.trim()) {
+        if (!values?.subGroupName?.toString()?.trim()) {
             setErrors(prev => ({ ...prev, "subGroupNameErr": "Sub group is required" }));
             isValid = false;
         }
-        // if (!values?.VEDType?.trim()) {
-        //     setErrors(prev => ({ ...prev, "VEDTypeErr": "Select a value" }));
-        //     isValid = false;
-        // }
+        if (!values?.VEDType?.toString()?.trim()) {
+            setErrors(prev => ({ ...prev, "VEDTypeErr": "Please select a value" }));
+            isValid = false;
+        }
         if (!values?.categoryName?.trim()) {
             setErrors(prev => ({ ...prev, "categoryNameErr": "Category name is required" }));
             isValid = false;
@@ -134,21 +138,13 @@ const GenericDrugMasterForm = (props) => {
     }, [selectedOption])
 
     const reset = () => {
-        setRecordStatus('Active')
+        setRecordStatus('1')
         setConfirmSave(false);
-        setValues({ "groupName": "", "subGroupName": "", "drugtype": "", "VEDType": "", "categoryName": "", "drugname": "" });
+        setValues({ "groupName": "", "subGroupName": "", "drugtype": "", "VEDType": "", "categoryName": "10", "drugname": "" });
         setErrors({ "groupNameErr": "", "subGroupNameErr": "", "VEDTypeErr": "", "categoryNameErr": "", "drugnameErr": "" });
+        setSearchInput('')
     }
 
-    const categoryOptions = [
-        { value: "10", label: "P" },
-        { value: "11", label: "S" },
-        { value: "12", label: "T" },
-        { value: "13", label: "P,S" },
-        { value: "14", label: "P,T" },
-        { value: "15", label: "S,T" },
-        { value: "16", label: "P,S,T" }
-    ];
 
     return (
         <div>
@@ -207,7 +203,7 @@ const GenericDrugMasterForm = (props) => {
                                 id="VEDType"
                                 name="VEDType"
                                 placeholder="Select value"
-                                options={[]}
+                                options={vedOptions}
                                 className="aliceblue-bg border-dark-subtle"
                                 value={values?.VEDType}
                                 onChange={handleInputChange}

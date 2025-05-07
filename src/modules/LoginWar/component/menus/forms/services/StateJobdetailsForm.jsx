@@ -10,7 +10,7 @@ import DatePicker from 'react-datepicker';
 
 const StateJobdetailsForm = (props) => {
 
-    const { stateData, setSearchInput } = props;
+    const { stateData, setSearchInput, setStatus } = props;
     const { openPage, selectedOption, setSelectedOption, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, getStateJobDetailsListData } = useContext(LoginContext);
 
     const [recordStatus, setRecordStatus] = useState('1');
@@ -59,6 +59,7 @@ const StateJobdetailsForm = (props) => {
                 setConfirmSave(false);
                 setSelectedOption([]);
                 setSearchInput('');
+                setStatus('1');
             } else {
                 ToastAlert(data?.message, "error");
                 setConfirmSave(false);
@@ -94,6 +95,7 @@ const StateJobdetailsForm = (props) => {
                 setConfirmSave(false);
                 setSelectedOption([]);
                 setSearchInput('');
+                setStatus('1');
             } else {
                 ToastAlert(data?.message, "error");
                 setConfirmSave(false);
@@ -153,12 +155,12 @@ const StateJobdetailsForm = (props) => {
     }, [selectedOption])
 
     const reset = () => {
-        setRecordStatus('Active')
+        setRecordStatus('1')
         setConfirmSave(false);
         setValues({ "stateName": "", "stateDatabase": "", "jobName": "", "stateFetchQuery": "", "insertQuery": "", "preProcedureName": "", "preProcedureMode": "", "postProcedureName": "", "procedureMode": "", "jobStartTime": new Date(), "duration": "", "lastStateTime": new Date() });
         setErrors({ "jobNameErr": "", "stateFetchQueryErr": "", "preProcedureModeErr": "" });
     }
-    console.log(values, 'values')
+    console.log(selectedOption, 'values')
 
     return (
         <div>
@@ -171,22 +173,12 @@ const StateJobdetailsForm = (props) => {
                         <label className="col-sm-5 col-form-label fix-label">State : </label>
                         <div className="col-sm-7 align-content-center">
                             <span style={{ color: "#013157" }}>{stateData[0]?.label || '---'}</span>
-                            {/* {errors?.groupNameErr && (
-                                <div className="required-input">
-                                    {errors?.groupNameErr}
-                                </div>
-                            )} */}
                         </div>
                     </div>
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
                         <label className="col-sm-5 col-form-label fix-label">State Database: </label>
                         <div className="col-sm-7 align-content-center">
                             <span style={{ color: "#013157" }}>{values?.stateDatabase || 'EDB'}</span>
-                            {/* {errors?.groupNameErr && (
-                                <div className="required-input">
-                                    {errors?.groupNameErr}
-                                </div>
-                            )} */}
                         </div>
                     </div>
                 </div>
@@ -432,11 +424,6 @@ const StateJobdetailsForm = (props) => {
                                     </label>
                                 </div>
                             </div>
-                            {/* {errors?.recStatusErr && (
-                                    <div className="required-input">
-                                        {errors?.recStatusErr}
-                                    </div>
-                                )} */}
                         </div>
 
                     }

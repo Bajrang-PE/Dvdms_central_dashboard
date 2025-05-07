@@ -6,6 +6,7 @@ import GlobalTable from '../../GlobalTable';
 import GenericDrugMasterForm from '../forms/admin/GenericDrugMasterForm';
 import { fetchDeleteData } from '../../../../../utils/ApiHooks';
 import ViewPage from '../ViewPage';
+import { categoryOptions } from '../../../localData/HomeData';
 
 const GenericDrugMaster = () => {
 
@@ -56,14 +57,16 @@ const GenericDrugMaster = () => {
 
     const deleteRecord = () => {
         fetchDeleteData(`api/v1/drugs/${selectedOption[0]?.centralDrugId}`).then(data => {
-            if (data?.status ===1 ) {
+            if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getGenericDrugListData(groupId, subGroupId, recordStatus);
                 setSelectedOption([]);
                 setConfirmSave(false);
                 onClose();
+                setSearchInput('')
             } else {
                 ToastAlert(data?.message, 'error')
+                setConfirmSave(false);
             }
         })
     }
@@ -122,7 +125,7 @@ const GenericDrugMaster = () => {
         },
         {
             name: 'Category Name',
-            selector: row => row.drugCatCode || "---",
+            selector: row => categoryOptions?.filter(dt => dt?.value == row.drugCatCode)[0]?.label || "---",
             sortable: true,
         }
     ]
@@ -194,7 +197,7 @@ const GenericDrugMaster = () => {
                 </>)}
 
                 {(openPage === "add" || openPage === 'modify') && (<>
-                    <GenericDrugMasterForm subGrpData={subGroupDrpData} groupData={groupDrpData} groupId={groupId} />
+                    <GenericDrugMasterForm subGrpData={subGroupDrpData} groupData={groupDrpData} groupId={groupId} setSearchInput={setSearchInput}/>
                 </>)}
             </div>
         </>

@@ -366,6 +366,7 @@ const DataServiceMaster = () => {
                     id="serviceDisplayName"
                     onChange={handleValueChange}
                     value={values?.serviceDisplayName}
+                    onBlur={() => { setValues({ ...values, 'serviceCallingName': values?.serviceDisplayName }) }}
                   />
                   {errors?.serviceDisplayNameErr &&
                     <div className="required-input">

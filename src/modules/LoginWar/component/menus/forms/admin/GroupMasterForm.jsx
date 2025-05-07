@@ -6,7 +6,7 @@ import GlobalButtons from '../../GlobalButtons';
 import InputField from '../../../InputField';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
-const GroupMasterForm = () => {
+const GroupMasterForm = ({ setSearchInput }) => {
     const { openPage, selectedOption, setOpenPage, setSelectedOption, getGroupListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [groupName, setGroupName] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active');
@@ -29,6 +29,7 @@ const GroupMasterForm = () => {
                 setConfirmSave(false);
             } else {
                 ToastAlert(data?.message, "error");
+                setConfirmSave(false);
             }
         })
     }
@@ -38,7 +39,7 @@ const GroupMasterForm = () => {
             "seatId": getAuthUserData('userSeatId'),
             "groupName": groupName,
             "status": recordStatus,
-            "groupId":selectedOption[0]?.groupId,
+            "groupId": selectedOption[0]?.groupId,
             "isValid": 1,
         }
         fetchUpdateData(`api/v1/Group/${selectedOption[0]?.groupId}`, val).then(data => {
@@ -51,6 +52,7 @@ const GroupMasterForm = () => {
                 setConfirmSave(false);
             } else {
                 ToastAlert(data?.message, "error")
+                setConfirmSave(false);
             }
         })
     }
@@ -89,6 +91,7 @@ const GroupMasterForm = () => {
         setGroupName('');
         setRecordStatus('Active');
         setConfirmSave(false);
+        setSearchInput('');
     }
     return (
         <div>

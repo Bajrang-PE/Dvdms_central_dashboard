@@ -34,7 +34,7 @@ const DbConfigMaster = () => {
     const [isErrorReq, setIsErrorReq] = useState('Yes');
     const [isLogoReq, setIsLogoReq] = useState('Yes');
     const [logoPosition, setLogoPosition] = useState({
-        "logo1Position": "", "logo2Position": "", "logo3Position": ""
+        "logo1Position": "left", "logo2Position": "right", "logo3Position": "top"
     });
     const [headingAlignment, setHeadingAlignment] = useState("Left");
     const [isLimitRecReq, setIsLimitRecReq] = useState('No');
@@ -45,6 +45,14 @@ const DbConfigMaster = () => {
     const [errors, setErrors] = useState({
         "configurationForErr": '', "serverNameErr": '', "driverClassErr": '', "connectionURLErr": '', "userNameErr": '', "passwordErr": '', "staticReportHead1Err": '', "reportHeaderByQueryErr": '', "jndiServerErr": '', "jndiServer1Err": '', "isDashboardCachedErr": '',
     })
+
+    //to set value of dashboard for auto
+    const dashFor = localStorage.getItem('dfor');
+    useEffect(() => {
+        if (dashFor) {
+            setValues({ ...values, "configurationFor": dashFor })
+        }
+    }, [dashFor])
 
     useEffect(() => {
         if (dashboardForDt?.length === 0) { getDashboardForDrpData(); }
@@ -57,7 +65,7 @@ const DbConfigMaster = () => {
             setValues({
                 ...values,
                 configurationFor: dtd?.dashboardFor,
-                serverName: dtd?.serverName,
+                serverName: dtd?.serverName || "WEBSPHERE",
                 jndiServer: dtd?.jndiForPrimaryServer,
                 jndiServer1: dtd?.jndiForSecondaryServer1,
                 jndiServer2: dtd?.jndiForSecondaryServer2,
@@ -76,22 +84,22 @@ const DbConfigMaster = () => {
                 logoImageUrl3: dtd?.logos[2]?.image,
                 staticDefaultLimit: dtd?.setDefaultLimit,
             })
-            setIsDbConnReq(dtd?.isDbConnectionReq);
-            setIsDashboardCached(dtd?.isDashboardConfigurationCached);
-            setIsConsoleReq(dtd?.isLogAllMsgs);
-            setIsAccessReq(dtd?.isLogAllAccess);
-            setIsErrorReq(dtd?.isLogAllError);
-            setIsLogoReq(dtd?.isLogoRequired);
+            setIsDbConnReq(dtd?.isDbConnectionReq || "1");
+            setIsDashboardCached(dtd?.isDashboardConfigurationCached || "Yes");
+            setIsConsoleReq(dtd?.isLogAllMsgs || "Yes");
+            setIsAccessReq(dtd?.isLogAllAccess || "No");
+            setIsErrorReq(dtd?.isLogAllError || "Yes");
+            setIsLogoReq(dtd?.isLogoRequired || "Yes");
             setLogoPosition({
-                "logo1Position": dtd?.logos[0]?.position,
-                "logo2Position": dtd?.logos[1]?.position,
-                "logo3Position": dtd?.logos[2]?.position
+                "logo1Position": dtd?.logos[0]?.position || 'left',
+                "logo2Position": dtd?.logos[1]?.position || "right",
+                "logo3Position": dtd?.logos[2]?.position || "top"
             });
-            setHeadingAlignment(dtd?.headingAlignment);
-            setIsLimitRecReq(dtd?.isLimitRequired);
-            setRows(dtd?.lstWebServiceClientConfigVO)
-            setLogoCounts(dtd?.logoCounts)
-            setIsHeadByQueryReq(dtd?.isHeadByQueryReq)
+            setHeadingAlignment(dtd?.headingAlignment || "Left");
+            setIsLimitRecReq(dtd?.isLimitRequired || "No");
+            setRows(dtd?.lstWebServiceClientConfigVO || [])
+            setLogoCounts(dtd?.logoCounts || '1')
+            setIsHeadByQueryReq(dtd?.isHeadByQueryReq || "No")
         }
     }, [singleConfigData])
 
@@ -141,7 +149,11 @@ const DbConfigMaster = () => {
             setIsEditing(null);
         } else {
             // let oldDt = values?.helpDocs?.length > 0 ? values?.helpDocs : [];
-            setRows([...rows, newRow]);
+            if (rows?.length > 0) {
+                setRows([...rows, newRow]);
+            } else {
+                setRows([newRow]);
+            }
             // oldDt?.push(newRow)
             // setValues({ ...values, ['helpDocs']: oldDt })
         }
@@ -259,7 +271,7 @@ const DbConfigMaster = () => {
             setErrors(prev => ({ ...prev, 'staticReportHead1Err': "report header is required" }));
             isValid = false;
         }
-        if (!values?.reportHeaderByQuery?.trim()) {
+        if (!values?.reportHeaderByQuery?.trim() && isHeadByQueryReq === 'Yes') {
             setErrors(prev => ({ ...prev, 'reportHeaderByQueryErr': "this field is required" }));
             isValid = false;
         }
@@ -280,11 +292,12 @@ const DbConfigMaster = () => {
     }, [confirmSave])
 
     const reset = () => {
-        setValues({ "configurationFor": '', "serverName": "WEBSPHERE", "jndiServer": '', "jndiServer1": '', "jndiServer2": '', "jndiServer3": '', "driverClass": "", "userName": "", "connectionURL": "", "password": "", "staticReportHead1": "", "staticReportHead2": "", "staticReportHead3": "", "reportHeaderByQuery": "", "logoImageUrl": "", "staticDefaultLimit": "" });
+        setValues({ "configurationFor": '', "serverName": "WEBSPHERE", "jndiServer": '', "jndiServer1": '', "jndiServer2": '', "jndiServer3": '', "driverClass": "", "userName": "", "connectionURL": "", "password": "", "staticReportHead1": "", "staticReportHead2": "", "staticReportHead3": "", "reportHeaderByQuery": "", "logoImageUrl": "", "staticDefaultLimit": "", "logoImageUrl1": "", "logoImageUrl2": "", "logoImageUrl3": "" });
 
         setErrors({ "configurationForErr": '', "serverNameErr": '', "driverClassErr": '', "connectionURLErr": '', "userNameErr": '', "passwordErr": '', "staticReportHead1Err": '', "reportHeaderByQueryErr": '', "jndiServerErr": '', "jndiServer1Err": '', "isDashboardCachedErr": '', });
         setLoading(false)
         setRows([])
+        setLogoPosition({ "logo1Position": "left", "logo2Position": "right", "logo3Position": "top" })
     }
 
 
@@ -310,7 +323,7 @@ const DbConfigMaster = () => {
                                             options={dashboardForDt}
                                             className="backcolorinput"
                                             value={values?.configurationFor}
-                                            onChange={handleValueChange}
+                                            onChange={(e) => { handleValueChange(e); localStorage?.setItem("dfor", e.target.value) }}
                                             errorMessage={errors?.configurationForErr}
                                         />
                                     </div>
@@ -1017,20 +1030,6 @@ const DbConfigMaster = () => {
                                                     <input
                                                         className="form-check-input"
                                                         type="radio"
-                                                        id="logo1PositionTop"
-                                                        name="logo1Position"
-                                                        value={logoPosition?.logo1Position}
-                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo1Position": "top" })}
-                                                        checked={logoPosition?.logo1Position === "top"}
-                                                    />
-                                                    <label className="form-check-label" htmlFor="dbYes">
-                                                        Top
-                                                    </label>
-                                                </div>
-                                                <div className="form-check form-check-inline">
-                                                    <input
-                                                        className="form-check-input"
-                                                        type="radio"
                                                         id="logo1PositionLeft"
                                                         name="logo1Position"
                                                         value={logoPosition?.logo1Position}
@@ -1041,6 +1040,22 @@ const DbConfigMaster = () => {
                                                         Left
                                                     </label>
                                                 </div>
+
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        id="logo1PositionTop"
+                                                        name="logo1Position"
+                                                        value={logoPosition?.logo1Position}
+                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo1Position": "top" })}
+                                                        checked={logoPosition?.logo1Position === "top"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="dbYes">
+                                                        Center
+                                                    </label>
+                                                </div>
+
                                                 <div className="form-check form-check-inline">
                                                     <input
                                                         className="form-check-input"
@@ -1068,20 +1083,6 @@ const DbConfigMaster = () => {
                                                     <input
                                                         className="form-check-input"
                                                         type="radio"
-                                                        id="logo2PositionTop"
-                                                        name="logo2Position"
-                                                        value={logoPosition?.logo2Position}
-                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo2Position": "top" })}
-                                                        checked={logoPosition?.logo2Position === "top"}
-                                                    />
-                                                    <label className="form-check-label" htmlFor="dbYes">
-                                                        Top
-                                                    </label>
-                                                </div>
-                                                <div className="form-check form-check-inline">
-                                                    <input
-                                                        className="form-check-input"
-                                                        type="radio"
                                                         id="logo2PositionLeft"
                                                         name="logo2Position"
                                                         value={logoPosition?.logo2Position}
@@ -1092,6 +1093,21 @@ const DbConfigMaster = () => {
                                                         Left
                                                     </label>
                                                 </div>
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        id="logo2PositionTop"
+                                                        name="logo2Position"
+                                                        value={logoPosition?.logo2Position}
+                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo2Position": "top" })}
+                                                        checked={logoPosition?.logo2Position === "top"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="dbYes">
+                                                        Center
+                                                    </label>
+                                                </div>
+
                                                 <div className="form-check form-check-inline">
                                                     <input
                                                         className="form-check-input"
@@ -1115,20 +1131,7 @@ const DbConfigMaster = () => {
                                                 Logo 3 Position:
                                             </label>
                                             <div className="col-sm-7 ps-0 align-content-center">
-                                                <div className="form-check form-check-inline">
-                                                    <input
-                                                        className="form-check-input"
-                                                        type="radio"
-                                                        id="logo3PositionTop"
-                                                        name="logo3Position"
-                                                        value={logoPosition?.logo3Position}
-                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo3Position": "top" })}
-                                                        checked={logoPosition?.logo3Position === "top"}
-                                                    />
-                                                    <label className="form-check-label" htmlFor="dbYes">
-                                                        Top
-                                                    </label>
-                                                </div>
+
                                                 <div className="form-check form-check-inline">
                                                     <input
                                                         className="form-check-input"
@@ -1143,6 +1146,22 @@ const DbConfigMaster = () => {
                                                         Left
                                                     </label>
                                                 </div>
+
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        id="logo3PositionTop"
+                                                        name="logo3Position"
+                                                        value={logoPosition?.logo3Position}
+                                                        onChange={(e) => setLogoPosition({ ...logoPosition, "logo3Position": "top" })}
+                                                        checked={logoPosition?.logo3Position === "top"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="dbYes">
+                                                        Center
+                                                    </label>
+                                                </div>
+
                                                 <div className="form-check form-check-inline">
                                                     <input
                                                         className="form-check-input"
@@ -1331,12 +1350,11 @@ const DbConfigMaster = () => {
                     <div className='text-center py-1 rounded-2 configuration-buttons'>
                         <button className='btn btn-sm me-1' onClick={() => handleSaveConfig()}><FontAwesomeIcon icon={faFile} className="dropdown-gear-icon me-1" />Save</button>
                         <button className='btn btn-sm ms-1 me-1' onClick={() => checkDatabaseConnection()}><FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />Test DB Connection</button>
-                        <button className='btn btn-sm ms-1 me-1'><FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-1" />Reset</button>
-                        <button className='btn btn-sm ms-1 me-1'><FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />Port Xml Data</button>
-                        <button className='btn btn-sm ms-1'><FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />Clear All Cached Data</button>
+                        <button className='btn btn-sm ms-1 me-1' onClick={reset}><FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-1" />Reset</button>
+                        {/* <button className='btn btn-sm ms-1 me-1'><FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />Port Xml Data</button> */}
+                        {/* <button className='btn btn-sm ms-1'><FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />Clear All Cached Data</button> */}
                     </div>
                 </div>
-
             </div>
         </>
     )

@@ -5,6 +5,7 @@ import { cachingStatusForWidgetOptions, dataLoadOptions } from '../../../localDa
 
 const AboutDashboard = (props) => {
     const { handleValueChange, handleRadioChange, radioValues, values, setValues, dashboardForDt, errors } = props;
+
     return (
         <div>
             <b><h6 className='header-devider m-0'> Dashboard Master</h6></b>
@@ -23,7 +24,7 @@ const AboutDashboard = (props) => {
                                 options={dashboardForDt}
                                 className="backcolorinput"
                                 value={values?.dashboardFor}
-                                onChange={handleValueChange}
+                                onChange={(e) => { handleValueChange(e); localStorage?.setItem("dfor", e.target.value) }}
                             // disabled={actionMode === 'edit' ? true : false}
                             />
                             {errors?.dashboardForErr &&
@@ -51,6 +52,7 @@ const AboutDashboard = (props) => {
                                 id="dashNameDisplay"
                                 onChange={handleValueChange}
                                 value={values?.dashNameDisplay}
+                                onBlur={() => { setValues({ ...values, 'dashNameInternal': values?.dashNameDisplay }) }}
                             />
                             {errors?.dashNameDisplayErr &&
                                 <div className="required-input">

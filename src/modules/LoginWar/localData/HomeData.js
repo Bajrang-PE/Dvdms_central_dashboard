@@ -181,3 +181,19 @@ export const functionalityData = [
 
     { title: "RC Expiry Details", description: "State wise RC expired in days.", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/9.png" },
 ]
+
+export const categoryOptions = [
+    { value: "10", label: "P" },
+    { value: "11", label: "S" },
+    { value: "12", label: "T" },
+    { value: "13", label: "P,S" },
+    { value: "14", label: "P,T" },
+    { value: "15", label: "S,T" },
+    { value: "16", label: "P,S,T" }
+];
+
+export const vedOptions = [
+    { value: "1", label: "Vital" },
+    { value: "2", label: "Essential" },
+    { value: "3", label: "Desirable" }
+  ];

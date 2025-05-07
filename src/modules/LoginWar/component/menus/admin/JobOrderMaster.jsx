@@ -42,13 +42,19 @@ const JobOrderMaster = () => {
     };
 
     const saveJobOrderId = (id) => {
-        fetchPostData(`/api/v1/${stateId}/resetJobRunId?currentJobRunId=${selectedOption[0]?.cwhnumJobId}`).then(data => {
-            if (data.status === 1) {
-                console.log(data?.data)
-            } else {
-                ToastAlert(data?.message, 'error')
-            }
-        })
+        if (!stateId || stateId == "" || stateId === null) {
+            ToastAlert("Please select a state first", 'warning')
+        } else if (!id || id == "" || id === null) {
+            ToastAlert("No job selected", 'warning')
+        } else {
+            fetchPostData(`/api/v1/${stateId}/resetJobRunId?currentJobRunId=${id}`).then(data => {
+                if (data.status === 1) {
+                    console.log(data?.data)
+                } else {
+                    ToastAlert(data?.message, 'error')
+                }
+            })
+        }
     }
 
     useEffect(() => {
@@ -149,7 +155,7 @@ const JobOrderMaster = () => {
                 </div>
 
                 <div className='text-center'>
-                    <button className='btn btn-sm datatable-btns py-0' onClick={saveJobOrderId}>
+                    <button className='btn btn-sm datatable-btns py-0' onClick={() => saveJobOrderId(selectedOption[0]?.cwhnumJobId)}>
                         <i className="fa fa-save me-1 fs-13 text-success"></i>Save</button>
                 </div>
             </div>

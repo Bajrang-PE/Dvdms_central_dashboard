@@ -31,6 +31,7 @@ const LoginContextApi = ({ children }) => {
     const [subGroupDrpData, setSubGroupDrpData] = useState([]);
     const [facilityTypeDrpDt, setFacilityTypeDrpDt] = useState([]);
     const [drugTypeDrpData, setDrugTypeDrpData] = useState([]);
+    const [zoneDrpData, setZoneDrpData] = useState([]);
 
 
     //confirm alert
@@ -253,10 +254,25 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
-    
+    const getZoneDrpData = () => {
+        fetchData(`api/v1/zones/status?status=1`).then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.cwhnumZoneId,
+                        label: dt?.cwhstrZoneName
+                    }
+                    return val;
+                })
+                setZoneDrpData(drpData)
+            } else {
+                setZoneDrpData([])
+            }
+        })
+    }
 
 
-   
+
 
     return (
         <LoginContext.Provider value={{
@@ -272,6 +288,7 @@ const LoginContextApi = ({ children }) => {
             getGroupDrpData, groupDrpData, getSubGroupDrpData, subGroupDrpData,
             facilityTypeDrpDt, getFacilityTypeDrpData,
             drugTypeDrpData, getDrugTypeDrpData,
+            zoneDrpData, getZoneDrpData,
 
             //confirm box
             showConfirmSave, setShowConfirmSave, confirmSave, setConfirmSave,
