@@ -632,3 +632,9 @@ label {
   background-color: #1f1f1f !important;
   color: white !important;
 }
+.logo-upload-close{
+  align-self: flex-start;
+}
+.logo-upload-close:hover{
+  color: red;
+}

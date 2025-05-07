@@ -19,6 +19,7 @@ import GroupMaster from '../component/menus/admin/GroupMaster'
 import StateJobDetailsService from '../component/menus/services/StateJobDetailsService'
 import DrugMaster from '../component/menus/admin/DrugMaster'
 import OutsourceMaster from '../component/menus/admin/OutsourceMaster'
+import DrugMappingMaster from '../component/menus/admin/DrugMappingMaster'
 
 const Menus = () => {
     return (
@@ -46,6 +47,7 @@ const Menus = () => {
                 <Route path="job-order-status-master" element={<JobOrderMaster />} />
                 <Route path="state-cdb-sync-master" element={<StateCdbSyncMaster />} />
                 <Route path="group-master" element={<GroupMaster />} />
+                <Route path="drug-mapping-master" element={<DrugMappingMaster />} />
 
                 {/*---------------------------- SERVICES-------------------------------------------- */}
                 <Route path="state-job-details" element={<StateJobDetailsService />} />

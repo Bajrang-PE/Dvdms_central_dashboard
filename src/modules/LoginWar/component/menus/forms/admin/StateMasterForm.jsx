@@ -7,9 +7,9 @@ import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 
-const StateMasterForm = () => {
+const StateMasterForm = ({setSearchInput}) => {
 
-    const { openPage, selectedOption, setOpenPage, setSelectedOption, getStateListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const { openPage, selectedOption, setOpenPage, setSelectedOption, getStateListData, setShowConfirmSave, confirmSave, setConfirmSave, zoneDrpData, getZoneDrpData } = useContext(LoginContext);
 
     const [values, setValues] = useState({
         stateName: "", stShortName: "", zoneName: "", recStatus: "1"
@@ -18,6 +18,10 @@ const StateMasterForm = () => {
     const [errors, setErrors] = useState({
         stateNameErr: "", stShortNameErr: "", zoneNameErr: "", recStatusErr: ""
     })
+
+    useEffect(() => {
+        if (zoneDrpData?.length === 0) { getZoneDrpData(); }
+    }, [])
 
     const handleValueChange = (e) => {
         const { value, name } = e.target;
@@ -30,7 +34,7 @@ const StateMasterForm = () => {
 
     const saveStateListData = () => {
         const { stateName, stShortName, zoneName, recStatus } = values;
-        
+
         const val = {
             "seatId": getAuthUserData('userSeatId'),
             "stateName": stateName,
@@ -137,8 +141,9 @@ const StateMasterForm = () => {
         setValues({ stateName: "", stShortName: "", zoneName: "", recStatus: "1" });
         setErrors({ stateNameErr: "", stShortNameErr: "", zoneNameErr: "", recStatusErr: "" })
         setConfirmSave(false);
+        setSearchInput('')
     }
-console.log(values)
+
     return (
         <div>
             <GlobalButtons onSave={handleValidation} onClear={reset} />
@@ -184,7 +189,7 @@ console.log(values)
                                 id="zoneName"
                                 name="zoneName"
                                 placeholder="Select Status"
-                                options={[{ value: "1", label: '1' }, { value: "2", label: '2' }]}
+                                options={zoneDrpData}
                                 className="aliceblue-bg border-dark-subtle"
                                 value={values?.zoneName}
                                 onChange={handleValueChange}

@@ -11,7 +11,6 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { HISContext } from '../../contextApi/HISContext'
 import { ToastAlert } from '../../utils/commonFunction'
 import GlobalDataTable from '../../components/commons/GlobalDataTable'
-import { Link } from 'react-router-dom'
 import { fetchPostData } from '../../../../utils/ApiHooks'
 
 const DashboardMaster = () => {
@@ -30,7 +29,7 @@ const DashboardMaster = () => {
 
   const [availableOptionsTab, setAvailableOptionsTab] = useState([]);
   const [selectedOptionsTab, setSelectedOptionsTab] = useState();
-  const [isInputChanged, setIsInputChanged] = useState(false);
+  
 
   const [values, setValues] = useState({
     "dashboardFor": "", "dashNameDisplay": "", "dashNameInternal": "", "menuContainerBgColor": "", "dashTitlefontColor": "", "iconColor": "", "menuContainerBgImage": "", "cachingStatus": '', "dataLoad": "ALL", "id": "",
@@ -73,8 +72,14 @@ const DashboardMaster = () => {
     if (localRadio && localRadio !== '') {
       setRadioValues(JSON.parse(localRadio));
     }
-
   }, []);
+  
+  const dashFor = localStorage.getItem('dfor');
+  useEffect(() => {
+    if (dashFor) {
+      setValues({ ...values, "dashboardFor": dashFor })
+    }
+  }, [dashFor])
 
   //parameter search
   useEffect(() => {
@@ -629,18 +634,20 @@ const DashboardMaster = () => {
             {values?.dashboardFor &&
               <div className='text-center mt-2 pre-nxt-btn'>
                 <button className='btn btn-sm ms-1'
-                  onClick={()=>previousTab()}
+                  onClick={() => previousTab()}
                   disabled={tabIndex > 1 ? false : true}
                 >
                   <FontAwesomeIcon icon={faArrowLeft} className="dropdown-gear-icon me-2" />
                   Previous
                 </button>
-                <button className='btn btn-sm ms-1' onClick={()=>saveMenuTabsData()}>
-                  {`${tabIndex < tabNavMenus?.length ? 'Save & Next' : 'Save'}`}
-                  {tabIndex < tabNavMenus?.length &&
-                    <FontAwesomeIcon icon={faArrowRight} className="dropdown-gear-icon ms-2" />
-                  }
-                </button>
+                {tabIndex === tabNavMenus?.length ? <></> :
+                  <button className='btn btn-sm ms-1' onClick={() => saveMenuTabsData()}>
+                    {`${tabIndex < tabNavMenus?.length ? 'Save & Next' : 'Save'}`}
+                    {tabIndex < tabNavMenus?.length &&
+                      <FontAwesomeIcon icon={faArrowRight} className="dropdown-gear-icon ms-2" />
+                    }
+                  </button>
+                }
               </div>
             }
           </div>

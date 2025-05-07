@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
+import { getAuthUserData } from '../../../../utils/CommonFunction';
 
 const FeedbackForm = ({ onClose }) => {
 
@@ -19,7 +20,7 @@ const FeedbackForm = ({ onClose }) => {
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
                                 <label className="col-sm-4 col-form-label fix-label">User Name : </label>
                                 <div className="col-sm-8 align-content-center">
-                                    Bajrang
+                                    {getAuthUserData('username')}
                                 </div>
                             </div>
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>

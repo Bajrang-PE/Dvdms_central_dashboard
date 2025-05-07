@@ -36,7 +36,7 @@ const AboutTab = (props) => {
                                 options={dashboardForDt}
                                 className="backcolorinput"
                                 value={values?.tabFor}
-                                onChange={handleValueChange}
+                                onChange={(e) => { handleValueChange(e); localStorage?.setItem("dfor", e.target.value) }}
                             // disabled={actionMode === 'edit' ? true : false}
                             />
                             {errors?.tabForErr &&
@@ -64,6 +64,7 @@ const AboutTab = (props) => {
                                 id="tabNameInternal"
                                 onChange={handleValueChange}
                                 value={values?.tabNameInternal}
+                                onBlur={() => { setValues({ ...values, 'tabNameDisplay': values?.tabNameInternal }) }}
                             />
                             {errors?.tabNameInternalErr &&
                                 <div className="required-input">

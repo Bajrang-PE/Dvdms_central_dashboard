@@ -56,7 +56,6 @@ const TabularDash = ({ widgetData }) => {
   const [columns, setColumns] = useState([]);
 
   console.log(widgetData, 'widgetData')
-  console.log(singleConfigData, 'singleConfigData')
 
   //parameter search
   useEffect(() => {
@@ -202,7 +201,6 @@ const TabularDash = ({ widgetData }) => {
 
   useEffect(() => {
     if (widgetData) {
-      // alert('bgbg')
       fetchData(widgetData);
     }
   }, [paramsValues, widgetData]);

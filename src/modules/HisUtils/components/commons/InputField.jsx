@@ -16,7 +16,8 @@ const InputField = ({
     style,
     errorMessage,
     type,
-    onClick
+    onClick,
+    ref
 
 }) => {
     return (
@@ -38,6 +39,7 @@ const InputField = ({
                 style={style}
                 autoComplete='off'
                 onClick={onClick}
+                ref={ref}
             />
             {errorMessage &&
                 <div className="required-input">

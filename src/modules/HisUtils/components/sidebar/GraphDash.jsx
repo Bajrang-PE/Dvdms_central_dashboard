@@ -415,7 +415,7 @@ const GraphDash = ({ widgetData }) => {
       },
     },
   };
-
+console.log(widgetData,'widgetdata')
   return (
     <div className={`high-chart-main ${theme === 'Dark' ? 'dark-theme' : ""}`} style={{ border: `7px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
 

@@ -19,6 +19,7 @@ const StateMaster = () => {
         getStateListData(recordStatus ? recordStatus : '1')
     }, [recordStatus])
 
+   
     const handleRowSelect = (row) => {
         setSelectedOption((prev) => {
             if (prev.length > 0 && prev[0]?.stateId === row?.stateId) {
@@ -54,6 +55,7 @@ const StateMaster = () => {
                 setRecordStatus('1');
             } else {
                 ToastAlert(data?.message, 'error')
+                setConfirmSave(false);
             }
         })
     }
@@ -166,7 +168,7 @@ const StateMaster = () => {
                 }
 
                 {(openPage === "add" || openPage === 'modify') && (<>
-                    <StateMasterForm />
+                    <StateMasterForm setSearchInput={setSearchInput}/>
                 </>)}
 
             </div>

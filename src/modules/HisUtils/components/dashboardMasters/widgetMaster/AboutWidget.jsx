@@ -112,7 +112,7 @@ const AboutWidget = (props) => {
                                 options={dashboardForDt}
                                 className="backcolorinput"
                                 value={values?.widgetFor}
-                                onChange={handleValueChange}
+                                onChange={(e) => { handleValueChange(e); localStorage?.setItem("dfor", e.target.value) }}
                                 errorMessage={errors?.widgetForErr}
                             />
                         </div>
@@ -174,7 +174,7 @@ const AboutWidget = (props) => {
                                     />
                                 </td>
                                 <td className='px-0 action-buttons'>
-                                    <button className='btn btn-sm me-1 py-0 px-0' style={{ background: "#34495e", color: "white" }} onClick={()=>handleAddRow()}><FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size='sm' />Add</button>
+                                    <button className='btn btn-sm me-1 py-0 px-0' style={{ background: "#34495e", color: "white" }} onClick={() => handleAddRow()}><FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size='sm' />Add</button>
                                 </td>
                             </tr>
                             {rows.map((row, index) => (
@@ -203,7 +203,7 @@ const AboutWidget = (props) => {
                     </table>
                     <b><h6 className='header-devider mt-1'></h6></b>
                 </div>
-                }
+            }
 
             {/* SECTION DEVIDER widget viewed and is visible*/}
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
@@ -381,6 +381,7 @@ const AboutWidget = (props) => {
                                 id="widgetNameDisplay"
                                 onChange={handleValueChange}
                                 value={values?.widgetNameDisplay}
+                                onBlur={() => { setValues({ ...values, 'widgetNameInternal': values?.widgetNameDisplay }) }}
                                 errorMessage={errors?.widgetNameDisplayErr}
                             />
                         </div>

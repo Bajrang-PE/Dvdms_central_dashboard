@@ -5,7 +5,7 @@ import { LoginContext } from '../../../../context/LoginContext';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchData, fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 
-const ZoneMasterForm = () => {
+const ZoneMasterForm = ({setSearchInput}) => {
     const { openPage, selectedOption, setOpenPage, setSelectedOption, getZoneListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [zoneName, setZoneName] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active');
@@ -46,6 +46,7 @@ const ZoneMasterForm = () => {
                 setConfirmSave(false);
             } else {
                 ToastAlert(data?.message, "error");
+                setConfirmSave(false);
             }
         })
     }
@@ -69,6 +70,7 @@ const ZoneMasterForm = () => {
                 setConfirmSave(false);
             } else {
                 ToastAlert(data?.message, "error")
+                setConfirmSave(false);
             }
         })
     }
@@ -107,6 +109,7 @@ const ZoneMasterForm = () => {
         setZoneName('');
         setRecordStatus('Active');
         setConfirmSave(false);
+        setSearchInput('')
     }
     return (
         <div>

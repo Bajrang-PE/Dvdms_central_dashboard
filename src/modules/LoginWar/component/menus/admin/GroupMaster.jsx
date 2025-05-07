@@ -42,14 +42,15 @@ const GroupMaster = () => {
 
     const deleteRecord = () => {
         fetchDeleteData(`api/v1/Group/${selectedOption[0]?.groupId}`).then(data => {
-            if (data) {
+            if (data.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getGroupListData();
                 setSelectedOption([]);
                 setConfirmSave(false);
                 onClose();
             } else {
-                ToastAlert('Error while deleting record!', 'error')
+                ToastAlert(data?.message, 'error')
+                setConfirmSave(false);
             }
         })
     }
@@ -139,7 +140,7 @@ const GroupMaster = () => {
                 </>)}
 
                 {(openPage === "add" || openPage === 'modify') && (<>
-                    <GroupMasterForm />
+                    <GroupMasterForm setSearchInput={setSearchInput}/>
                 </>)}
             </div>
         </>

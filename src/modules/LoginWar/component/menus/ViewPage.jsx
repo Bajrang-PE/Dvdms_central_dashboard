@@ -3,10 +3,10 @@ import { Modal } from 'react-bootstrap'
 
 const ViewPage = (props) => {
 
-    const { data, onClose, title } = props;
+    const { data, onClose, title, size } = props;
 
     return (
-        <Modal show={true} onHide={onClose} size='lg' dialogClassName="dialog-min">
+        <Modal show={true} onHide={onClose} size={size ? size : 'lg'} dialogClassName="dialog-min">
             <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
 
                 <b><h6 className='m-1 p-0'>
@@ -19,7 +19,9 @@ const ViewPage = (props) => {
                         <label className="fix-label col-sm-6 text-end">
                             <span className='me-2' style={{ color: "#013157", fontWeight: "bold" }}>{dt?.label}</span> : </label>
                         <div className='fix-label col-sm-6 text-start'>
-                            <span className=''>{dt?.value}</span>
+                            <span className='text-wrap text-break d-inline-block' style={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap', maxWidth: '100%' }}>
+                                {dt?.value}
+                            </span>
                         </div>
                     </div>
                 ))}

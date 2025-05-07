@@ -48,6 +48,14 @@ const ParameterMaster = () => {
     }
   }, [searchInput, parameterData]);
 
+  //to set value of dashboard for auto
+    const dashFor = localStorage.getItem('dfor');
+    useEffect(() => {
+      if (dashFor) {
+        setValues({ ...values, "parameterFor": dashFor })
+      }
+    }, [dashFor])
+
   useEffect(() => {
     if (values?.parameterFor) { getAllParameterData(values?.parameterFor); }
   }, [values?.parameterFor])
@@ -455,7 +463,7 @@ const ParameterMaster = () => {
                       options={dashboardForDt}
                       className="backcolorinput"
                       value={values?.parameterFor}
-                      onChange={handleValueChange}
+                      onChange={(e) => { handleValueChange(e); localStorage?.setItem("dfor", e.target.value) }}
                       disabled={actionMode === 'edit' ? true : false}
                     />
                     {errors?.parameterForErr &&
@@ -506,6 +514,7 @@ const ParameterMaster = () => {
                       id="parameterInternal"
                       onChange={handleValueChange}
                       value={values?.parameterInternal}
+                      onBlur={() => { setValues({ ...values, 'parameterDisplay': values?.parameterInternal }) }}
                     />
                     {errors?.parameterInternalErr &&
                       <div className="required-input">
@@ -980,7 +989,7 @@ const ParameterMaster = () => {
                     <div className='col-2'>
                       <button
                         className="btn btn-outline-secondary btn-sm me-1 p-1"
-                        onClick={()=>handleAddRow()}
+                        onClick={() => handleAddRow()}
                       >
                         <FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size='sm' />
                       </button>

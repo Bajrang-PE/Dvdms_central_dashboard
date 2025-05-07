@@ -8,31 +8,62 @@ import { useLocation } from 'react-router-dom';
 import { fetchProcedureData, fetchQueryData } from '../../utils/commonFunction';
 
 const KpiDash = ({ widgetData }) => {
-    const { setActiveTab, allTabsData, setLoading } = useContext(HISContext);
+    const { setActiveTab, allTabsData, setLoading, paramsValues } = useContext(HISContext);
     const [kpiData, setKpiData] = useState([]);
 
+    const formatData = (rawData = []) => {
+        return rawData.map((item) => {
+            const formattedItem = {};
+            Object.entries(item).forEach(([key, value]) => {
+
+                const formattedKey = key.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+                formattedItem[formattedKey] = formattedKey.includes("State") ? value : value;
+            });
+            return formattedItem;
+        });
+    };
+    console.log(widgetData, 'widget')
     const fetchData = async (widget) => {
         if (widget?.modeOfQuery === "Procedure") {
             if (!widget?.procedureMode) return;
             try {
-                const data = await fetchProcedureData(widget?.procedureMode);
-                setKpiData(
-                    data?.length > 0 && data?.map((item) => ({
-                        name: item.column_1,
-                        y: item.column_2,
-                    })));
+                const paramVal = formatParams(paramsValues ? paramsValues : null);
+
+                const params = [
+                    getAuthUserData('hospitalCode')?.toString(), //hospital code===
+                    "10001", //user id===
+                    "", //primary key
+                    paramVal.paramsId || "", //parameter ids
+                    paramVal.paramsValue || "", //parameter values
+                    isPaginationReq?.toString(), //is pagination required===
+                    initialRecord?.toString(), //initial record no.===
+                    finalRecord?.toString(), //final record no.===
+                    "", //date options
+                    "16-Apr-2025",//from values
+                    "16-Apr-2025" // to values
+                ]
+                const response = await fetchProcedureData(widget?.procedureMode, params);
+                const formattedData = formatData(response.data || []);
+                // const generatedColumns = generateColumns(formattedData);
+                setKpiData(formattedData);
             } catch (error) {
                 console.error("Error loading query data:", error);
             }
         } else {
-            if (!widget?.queryVO?.length > 0) return;
+            // if (!widget?.queryVO?.length > 0) return;
             try {
-                const data = await fetchQueryData(widget?.queryVO);
-                setKpiData(
-                    data?.length > 0 && data?.map((item) => ({
-                        name: item.column_1,
-                        y: item.column_2,
-                    })));
+                const data = await fetchQueryData(widget?.query);
+                console.log(data, 'data')
+                if (data?.length > 0) {
+                    setKpiData(
+                        data?.length > 0 && data?.map((item) => ({
+                            name: item.column_1,
+                            y: item.column_2,
+                        })));
+                } else {
+                    setKpiData([])
+                }
             } catch (error) {
                 console.error("Error loading query data:", error);
             }

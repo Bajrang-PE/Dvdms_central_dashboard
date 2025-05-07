@@ -3,7 +3,6 @@ import { LoginContext } from '../../../context/LoginContext';
 import InputSelect from '../../InputSelect';
 import GlobalTable from '../../GlobalTable';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
-import StateMasterForm from '../forms/admin/StateMasterForm';
 import { fetchDeleteData } from '../../../../../utils/ApiHooks';
 import ViewPage from '../ViewPage';
 import StateJobdetailsForm from '../forms/services/StateJobdetailsForm';
@@ -24,12 +23,14 @@ const StateJobDetailsService = () => {
     useEffect(() => {
         if (stateId) {
             getStateJobDetailsListData(stateId, recordStatus)
+        } else {
+            setFilterData([]);
         }
     }, [stateId, recordStatus])
 
     const handleRowSelect = (row) => {
         setSelectedOption((prev) => {
-            if (prev.length > 0 && prev[0]?.stateId === row?.stateId) {
+            if (prev.length > 0 && prev[0]?.jobID === row?.jobID) {
                 return [];
             }
             return [row];
@@ -42,8 +43,8 @@ const StateJobDetailsService = () => {
         } else {
             const lowercasedText = searchInput.toLowerCase();
             const newFilteredData = stateJobListData.filter(row => {
-                const paramName = row?.stateName?.toLowerCase() || "";
-                const shortName = row?.stateShortName?.toLowerCase() || "";
+                const paramName = row?.jobName?.toLowerCase() || "";
+                const shortName = row?.jobDuration?.toLowerCase() || "";
 
                 return paramName.includes(lowercasedText) || shortName.includes(lowercasedText);
             });
@@ -52,20 +53,24 @@ const StateJobDetailsService = () => {
     }, [searchInput, stateJobListData]);
 
     const deleteRecord = () => {
-        fetchDeleteData(`http://10.226.26.247:8025/api/v1/stateJobDetails/DeleteJob`).then(data => {
+        const val = {
+            "jobID": selectedOption[0]?.jobID,
+            "jobName": selectedOption[0]?.jobName
+        }
+
+        fetchDeleteData(`/api/v1/stateJobDetails/DeleteJob`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getStateJobDetailsListData(stateId, recordStatus);
                 setSelectedOption([]);
                 setConfirmSave(false);
                 onClose();
-                // setRecordStatus('1');
             } else {
                 ToastAlert(data?.message, 'error')
+                setConfirmSave(false);
             }
         })
     }
-
     const handleDeleteRecord = () => {
         if (selectedOption?.length > 0) {
             setOpenPage('delete');
@@ -75,11 +80,11 @@ const StateJobDetailsService = () => {
         }
     }
 
-    // useEffect(() => {
-    //     if (confirmSave && openPage === 'delete') {
-    //         deleteRecord();
-    //     }
-    // }, [confirmSave])
+    useEffect(() => {
+        if (confirmSave && openPage === 'delete') {
+            deleteRecord();
+        }
+    }, [confirmSave])
 
     const column = [
         {
@@ -95,7 +100,7 @@ const StateJobDetailsService = () => {
                     <span className="btn btn-sm text-white px-1 py-0 mr-1" >
                         <input
                             type="checkbox"
-                            checked={selectedOption.length > 0 && selectedOption[0]?.stateId === row?.stateId}
+                            checked={selectedOption.length > 0 && selectedOption[0]?.jobID === row?.jobID}
                             onChange={(e) => { handleRowSelect(row) }}
                         />
                     </span>
@@ -104,32 +109,32 @@ const StateJobDetailsService = () => {
         },
         {
             name: 'Job Name',
-            selector: row => row.stateName,
+            selector: row => row.jobName,
             sortable: true,
         },
         {
             name: 'Job Start Time',
-            selector: row => row.stateShortName,
+            selector: row => row.jobStart,
             sortable: true,
         },
         {
             name: 'Job Durations',
-            selector: row => row.stateShortName,
+            selector: row => row.jobDuration,
             sortable: true,
         },
         {
             name: 'Last Job Run',
-            selector: row => row.stateShortName,
+            selector: row => row.lastRunTime,
             sortable: true,
         },
         {
             name: 'Next Job Run',
-            selector: row => row.stateShortName,
+            selector: row => row.nextRunTime,
             sortable: true,
         },
         {
             name: 'Last State Time',
-            selector: row => row.stateShortName,
+            selector: row => row.lastStateTime,
             sortable: true,
         },
     ]
@@ -137,8 +142,8 @@ const StateJobDetailsService = () => {
     const onClose = () => {
         setOpenPage('home');
         setSelectedOption([]);
+        setSearchInput('');
     }
-
 
     return (
         <>
@@ -186,16 +191,29 @@ const StateJobDetailsService = () => {
                     </div>
                     <hr className='my-2' />
 
-                    <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                    <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={stateId ? true : false} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} isRun={true} />
 
                 </>)}
 
                 {openPage === 'view' &&
-                    <ViewPage data={[{ value: 'India', label: "Country" }, { value: selectedOption[0]?.stateName, label: "State Name" }, { value: selectedOption[0]?.stateShortName, label: "State ShortName" }, { value: selectedOption[0]?.isValid == 1 ? "Active" : "InActive", label: "Record Status" }]} onClose={onClose} title={"State Master"} />
+                    <ViewPage data={[
+                        { value: stateNameDrpDt?.filter(dt => dt?.value == stateId)[0]?.label, label: "State" }, { value: "EDB", label: "State Database" },
+                        { value: selectedOption[0]?.jobName, label: "Job Name" },
+                        { value: selectedOption[0]?.preProcedureName, label: "Pre Procedure Name" },
+                        { value: selectedOption[0]?.preProcedureMode, label: "Pre Procedure Mode" },
+                        { value: selectedOption[0]?.postProcedureName, label: "Post Procedure Name" },
+                        { value: selectedOption[0]?.postProcedureMode, label: "Post Procedure Mode" },
+                        { value: selectedOption[0]?.jobDuration, label: "Duration" },
+                        { value: selectedOption[0]?.jobStart, label: "Job Start Time" },
+                        { value: selectedOption[0]?.lastStateTime, label: "Last State Time" },
+                        { value: selectedOption[0]?.fetchQuery, label: "State Fetch Query" },
+                        { value: selectedOption[0]?.insertQuery, label: "Insert Query" },
+                    ]}
+                        onClose={onClose} title={"State Job Detail"} size={'xl'} />
                 }
 
                 {(openPage === "add" || openPage === 'modify') && (<>
-                    <StateJobdetailsForm />
+                    <StateJobdetailsForm stateData={stateNameDrpDt?.filter(dt => dt?.value == stateId)} setSearchInput={setSearchInput} setStatus={setRecordStatus} />
                 </>)}
 
             </div>

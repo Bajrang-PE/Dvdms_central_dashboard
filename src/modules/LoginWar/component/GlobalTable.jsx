@@ -6,7 +6,7 @@ import { LoginContext } from '../context/LoginContext';
 
 const GlobalTable = (props) => {
     const { selectedOption, setSelectedOption } = useContext(LoginContext);
-    const { column, data, onDelete, onReport, setSearchInput, isShowBtn, isAdd, isModify, isDelete, isView, isReport, setOpenPage, isSearch } = props;
+    const { column, data, onDelete, onReport, setSearchInput, isShowBtn, isAdd, isModify, isDelete, isView, isReport, setOpenPage, isSearch, isRun, onRun, searchInput } = props;
 
     const tableCustomStyles = {
         headRow: {
@@ -49,6 +49,10 @@ const GlobalTable = (props) => {
                                         }}>
                                             <i className="fa fa-eye me-1 fs-13 text-info"></i>View</button>}
 
+                                    {isRun &&
+                                        <button className='btn btn-sm datatable-btns py-0' onClick={onRun}>
+                                            <i class="fa-solid fa-square-check me-1 fs-13 text-success"></i>
+                                            Run Job</button>}
                                 </>)}
                                 {isReport &&
                                     <button className='btn btn-sm datatable-btns py-0' onClick={onReport}>
@@ -67,7 +71,7 @@ const GlobalTable = (props) => {
                                 placeholder="Enter"
                                 className="aliceblue-bg border-dark-subtle"
                                 onChange={(e) => { setSearchInput(e?.target?.value); }}
-                            // value={values?.customMsgForNoData}
+                                value={searchInput}
                             />
                         </div>
                     </div>
