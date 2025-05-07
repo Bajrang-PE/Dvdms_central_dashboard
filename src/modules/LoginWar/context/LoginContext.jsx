@@ -31,6 +31,10 @@ const LoginContextApi = ({ children }) => {
     const [subGroupDrpData, setSubGroupDrpData] = useState([]);
     const [facilityTypeDrpDt, setFacilityTypeDrpDt] = useState([]);
     const [drugTypeDrpData, setDrugTypeDrpData] = useState([]);
+    const [genericDrugDrpData, setGenericDrugDrpData] = useState([]);
+    const [dateDrpDt, setDateDrpDt] = useState([]);
+    const [testTypeDrpData, setTestTypeDrpData] = useState([]);
+    const [hospNameDrpData, setHospNameDrpData] = useState([]);
     const [zoneDrpData, setZoneDrpData] = useState([]);
 
 
@@ -149,6 +153,26 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+    const getDateDrpData = () => {
+        fetchData('http://10.226.26.247:8025/api/v1/outsourceMaster/getDateRange')
+            .then((res) => {
+                if (res && res.data) {
+                    const drpData = res.data.map((date) => ({
+                        value: date,
+                        label: date
+                    }));
+
+                    setDateDrpDt(drpData);
+                } else {
+                    setDateDrpDt([]);
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching date data:', error);
+                setDateDrpDt([]);
+            });
+    };
+
     const getDistrictNameDrpData = (id) => {
         fetchData('/state/getstate').then((data) => {
             if (data) {
@@ -171,13 +195,17 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getSupplierNameDrpData = () => {
-        fetchData('/state/getstate').then((data) => {
-            if (data) {
 
-                const drpData = data?.map((dt) => {
+        // localhost:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=27&stateID=58
+
+        fetchData('http://10.226.26.247:8025/api/v1/supplierMappingMaster/getAllSuppliers').then((data) => {
+            if (data) {
+                console.log("data-------", data)
+
+                const drpData = data.data?.map((dt) => {
                     const val = {
-                        value: dt?.cwhnumStateId,
-                        label: dt?.cwhstrStateName
+                        value: dt?.supplierID,
+                        label: dt?.supplierName
                     }
 
                     return val;
@@ -209,6 +237,26 @@ const LoginContextApi = ({ children }) => {
             }
         })
     }
+
+    const getGenericDrugDrpData = () => {
+        fetchData('http://10.226.25.164:8025/api/v1/gnricDrugNameCombo').then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.id,
+                        label: dt?.name
+                    }
+
+                    return val;
+                })
+                setGenericDrugDrpData(drpData)
+
+            } else {
+                setGenericDrugDrpData([])
+            }
+        })
+    }
+
 
     const getDrugTypeDrpData = () => {
         fetchData('http://10.226.25.164:8025/api/v1/DrugTypeDropdown').then((data) => {
@@ -245,11 +293,29 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getFacilityTypeDrpData = () => {
-        fetchData('/api/v1/drpDwnFcltyTypMapMst').then((data) => {
+        fetchData('http://10.226.25.164:8025/api/v1/drpDwnFcltyTypMapMst').then((data) => {
             if (data?.status === 1) {
                 setFacilityTypeDrpDt(data?.data)
             } else {
                 setFacilityTypeDrpDt([])
+            }
+        })
+    }
+
+    const getTestTypeDrpData = () => {
+        fetchData('http://10.226.26.247:8025/api/v1/outsourceMaster/getTestTypes').then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.testID,
+                        label: dt?.testName
+                    }
+                    return val;
+                })
+                setTestTypeDrpData(drpData)
+            } else {
+                setTestTypeDrpData([])
+
             }
         })
     }
@@ -271,6 +337,24 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+    const getHospNameDrpData = (stateId, facilityId) => {
+        fetchData(`http://10.226.26.247:8025/api/v1/outsourceMaster/getHospitalList?stateID=${stateId}&facilityTypeID=${facilityId}`).then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.storeID,
+                        label: dt?.storeName
+                    }
+                    return val;
+                })
+                setHospNameDrpData(drpData)
+            } else {
+                setHospNameDrpData([])
+            }
+        })
+    }
+
+
 
 
 
@@ -288,6 +372,10 @@ const LoginContextApi = ({ children }) => {
             getGroupDrpData, groupDrpData, getSubGroupDrpData, subGroupDrpData,
             facilityTypeDrpDt, getFacilityTypeDrpData,
             drugTypeDrpData, getDrugTypeDrpData,
+            genericDrugDrpData, getGenericDrugDrpData,
+            dateDrpDt, getDateDrpData,
+            testTypeDrpData, getTestTypeDrpData,
+            hospNameDrpData, getHospNameDrpData,
             zoneDrpData, getZoneDrpData,
 
             //confirm box

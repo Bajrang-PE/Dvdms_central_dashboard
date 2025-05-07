@@ -2,13 +2,20 @@ import React, { useContext, useEffect, useState } from 'react';
 import GlobalButtons from '../GlobalButtons';
 import InputSelect from '../../InputSelect';
 import { LoginContext } from '../../../context/LoginContext';
-import { fetchData,fetchUpdateData } from '../../../../../utils/ApiHooks';
+import { fetchData, fetchUpdateData, fetchUpdatePostData } from '../../../../../utils/ApiHooks';
+import { getAuthUserData } from '../../../../../utils/CommonFunction';
+import { ToastAlert } from '../../../utils/CommonFunction';
 
 const SupplierMappingMaster = () => {
     const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, getSupplierNameDrpData, supplierNameDrpDt } = useContext(LoginContext);
+    const [addedToRight, setAddedToRight] = useState([]);
+    const [removedFromRight, setRemovedFromRight] = useState([]);
+    const [initialMappedOptions, setInitialMappedOptions] = useState([]);
 
     const [suppId, setSuppId] = useState("");
     const [stateId, setStateId] = useState("");
+    const [suppIdErr, setSuppIdErr] = useState("");
+    const [stateIdErr, setStateIdErr] = useState("");
     const [availableOptions, setAvailableOptions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [selectedAvailable, setSelectedAvailable] = useState([]);
@@ -22,23 +29,28 @@ const SupplierMappingMaster = () => {
 
     useEffect(() => {
         if (stateId) {
-            getStateSuppList();
+            getStateSuppUnmapList();
+            getStateSuppMappedList();
             setSelectedOptions([]);
+        } else {
+            setAvailableOptions([]);
+            setSelectedOptions([])
         }
         setSelectedAvailable([]);
         setSelectedSelected([]);
-    }, [stateId]);
+    }, [stateId, suppId]);
 
-    const getStateSuppList = () => {
-        fetchData('/state/getstate').then((data) => {
-            if (data) {
+    const getStateSuppUnmapList = () => {
+
+        fetchData(`http://10.226.26.247:8025/api/v1/supplierMappingMaster/getUnmappedSuppliers?stateID=${stateId || 0}`).then((data) => {
+            if (data.data) {
                 const drpData = Array.from(
                     new Map(
-                        data.map(dt => [
-                            dt.cwhnumStateId.toString(), // force string key
+                        data.data.map(dt => [
+                            dt.supplierID.toString(), // force string key
                             {
-                                value: dt.cwhnumStateId.toString(), // ensure it's string for <option>
-                                label: dt.cwhstrStateName,
+                                value: dt.supplierID.toString(), // ensure it's string for <option>
+                                label: dt.supplierName,
                             }
                         ])
                     ).values()
@@ -50,49 +62,188 @@ const SupplierMappingMaster = () => {
         });
     };
 
+
+    // const getStateSuppMappedList = () => {
+    //  alert("getSupplierMappedList")
+    //     fetchData(`http://10.226.26.247:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=${suppId}&stateID=${stateId}`).then((data) => {
+    //         if (data) {
+    //             alert("in if")
+    //             const drpData = Array.from(
+    //                 new Map(
+    //                     data.data.map(dt => [
+    //                         dt.supplierID.toString(), // force string key
+    //                         {
+    //                             value: dt.supplierID.toString(), // ensure it's string for <option>
+    //                             label: dt.supplierName,
+    //                         }
+    //                     ])
+    //                 ).values()
+    //             );
+    //             alert("drpData"+drpData)
+    //             setSelectedSelected(drpData);
+    //         } else {
+    //             alert("in else")
+    //             setSelectedSelected([]);
+    //         }
+    //     });
+    // };
+
+    const getStateSuppMappedList = () => {
+
+        fetchData(`http://10.226.26.247:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=${suppId || 0}&stateID=${stateId || 0}`)
+            .then((data) => {
+                if (data?.data) {
+                    const drpData = Array.from(
+                        new Map(
+                            data.data.map(dt => [
+                                dt.supplierID.toString(),
+                                { value: dt.supplierID.toString(), label: dt.supplierName }
+                            ])
+                        ).values()
+                    );
+                    setSelectedOptions(drpData);
+                    setInitialMappedOptions(drpData); // snapshot for comparison
+                } else {
+                    setSelectedOptions([]);
+                    setInitialMappedOptions([]);
+                }
+            });
+    };
+
+
+
+
+    // const moveToSelected = () => {
+    //     const itemsToMove = availableOptions.filter(opt => selectedAvailable.includes(opt.value));
+    //     const newSelected = itemsToMove.filter(item =>
+    //         !selectedOptions.some(selected => selected.value === item.value)
+    //     );
+    //     setSelectedOptions(prev => [...prev, ...newSelected]);
+    //     setAvailableOptions(prev => prev.filter(opt => !selectedAvailable.includes(opt.value)));
+    //     setSelectedAvailable([]);
+    // };
+
     const moveToSelected = () => {
         const itemsToMove = availableOptions.filter(opt => selectedAvailable.includes(opt.value));
-        const newSelected = itemsToMove.filter(item =>
-            !selectedOptions.some(selected => selected.value === item.value)
-        );
-        setSelectedOptions(prev => [...prev, ...newSelected]);
+
+        setSelectedOptions(prev => {
+            const updated = [...prev];
+            itemsToMove.forEach(item => {
+                if (!updated.some(opt => opt.value === item.value)) {
+                    updated.push(item);
+                    setAddedToRight(prevAdded => [...prevAdded, item]); // track additions
+                }
+            });
+            return updated;
+        });
+
         setAvailableOptions(prev => prev.filter(opt => !selectedAvailable.includes(opt.value)));
         setSelectedAvailable([]);
     };
 
+
+    // const moveToAvailable = () => {
+    //     const itemsToMove = selectedOptions.filter(opt => selectedSelected.includes(opt.value));
+    //     setAvailableOptions(prev => [...prev, ...itemsToMove]);
+    //     setSelectedOptions(prev => prev.filter(opt => !selectedSelected.includes(opt.value)));
+    //     setSelectedSelected([]);
+    // };
+
     const moveToAvailable = () => {
         const itemsToMove = selectedOptions.filter(opt => selectedSelected.includes(opt.value));
-        setAvailableOptions(prev => [...prev, ...itemsToMove]);
+
+        setAvailableOptions(prev => {
+            const updated = [...prev];
+            itemsToMove.forEach(item => {
+                if (!updated.some(opt => opt.value === item.value)) {
+                    updated.push(item);
+                    setRemovedFromRight(prevRemoved => [...prevRemoved, item]); // track removals
+                }
+            });
+            return updated;
+        });
+
         setSelectedOptions(prev => prev.filter(opt => !selectedSelected.includes(opt.value)));
         setSelectedSelected([]);
     };
 
     const reset = () => {
-        setSuppId(""),
-            setStateId(""),
-            setAvailableOptions([]),
-            setSelectedOptions([]),
-            setSelectedAvailable([]),
-            setSelectedSelected([])
-    }
+        setSuppId("");
+        setStateId("");
+        setAvailableOptions([]);
+        setSelectedOptions([]);
+        setSelectedAvailable([]);
+        setSelectedSelected([]);
+        setAddedToRight([]);
+        setRemovedFromRight([]);
+    };
 
     const handleSave = () => {
-        if (selectedOptions.length > 0) {
-            console.log("========selectedOptions=========", selectedOptions)
-            const data = {
-                stateId: suppId,
-                supplierId: suppId,
-                mappedItems: selectedOptions.map(opt => opt.value)
-            };
 
-            fetchUpdateData("api", data); // Replace with actual endpoint
-            alert("Data saved!");
-            //setOpenPage("home");
-        } else {
-            alert("Please map at least one item.");
-            //setOpenPage("home");
+        let isValid = true;
+
+        if (suppId === "") {
+            setSuppIdErr("please select supplier name")
+            isValid = false;
+        }
+        if (stateId === "") {
+            setStateIdErr("please select state name")
+            isValid = false;
+        }
+
+        if (isValid) {
+
+            const addedToRight = selectedOptions.filter(
+                item => !initialMappedOptions.some(i => i.value === item.value)
+            );
+
+            const removedFromRight = initialMappedOptions.filter(
+                item => !selectedOptions.some(i => i.value === item.value)
+            );
+
+
+            console.log("Added55555555:", addedToRight);
+            console.log("Removed6666666:", removedFromRight);
+
+            const mappedData = addedToRight?.map(dt => ({
+                "stateID": stateId,
+                "stateSupplierID": dt?.value,
+                "seatID": 3424,
+                "supplierID": suppId,
+                "supplierName": dt?.label,
+
+            }))
+
+            const unMappedData = removedFromRight?.map(dt => ({
+                "stateID": stateId,
+                "supplierID": dt?.value,
+                "supplierName": dt?.label,
+            }))
+
+            const val = {
+                "supplierMappingMasterDTO": mappedData?.length > 0 ? mappedData : [],
+                "supplierUnmappingMasterDTO": unMappedData?.length > 0 ? unMappedData : [],
+
+            }
+
+            console.log(mappedData, 'bbbbbbbbbbbbbbbbbbbb')
+
+            if (selectedOptions.length > 0) {
+
+                fetchUpdatePostData("http://10.226.26.247:8025/api/v1/supplierMappingMaster/postSupplierData", val).then(data => {
+                    if (data.status == 1) {
+                        ToastAlert('Data mapped successfully', 'success');
+                        reset();
+                    } else {
+                        ToastAlert('Error', 'error')
+                    }
+                });
+            } else {
+                alert("Please map at least one supplier.");
+            }
         }
     };
+
 
     return (
 
@@ -110,8 +261,13 @@ const SupplierMappingMaster = () => {
                             id='suppId'
                             placeholder="Select value"
                             options={supplierNameDrpDt}
-                            onChange={(e) => setSuppId(e.target.value)}
+                            onChange={(e) => {
+                                setSuppId(e.target.value);
+                                setSuppIdErr("");
+                            }
+                            }
                             value={suppId}
+                            errorMessage={suppIdErr}
                         />
                     </div>
                 </div>
@@ -125,20 +281,24 @@ const SupplierMappingMaster = () => {
                             id='stateId'
                             placeholder="Select value"
                             options={stateNameDrpDt}
-                            onChange={(e) => setStateId(e.target.value)}
+                            onChange={(e) => {
+                                setStateId(e.target.value);
+                                setStateIdErr("");
+                            }}
                             value={stateId}
+                            errorMessage={stateIdErr}
                         />
                     </div>
                 </div>
             </div>
 
             <div className="d-flex align-items-center my-3">
-                    <div className="flex-grow-1" style={{border:"1px solid #193fe6"}}></div>
-                    <div className="px-1 text-primary fw-bold fs-13">
-                        <span className="text-danger">*</span> State Facility Type
-                    </div>
-                    <div className="flex-grow-1" style={{border:"1px solid #193fe6"}}></div>
+                <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
+                <div className="px-1 text-primary fw-bold fs-13">
+                    <span className="text-danger">*</span> State Facility Type
                 </div>
+                <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
+            </div>
 
             {/* Dual List Box */}
             <div className='d-flex justify-content-center mt-1 mb-2'>
@@ -206,10 +366,10 @@ const SupplierMappingMaster = () => {
             </div>
 
             <div className='text-center'>
-                <button className='btn btn-sm new-btn-blue py-0' >
+                <button className='btn btn-sm new-btn-blue py-0' onClick={handleSave}>
                     <i className="fa fa-save me-1"></i>
                     Save</button>
-                <button className='btn btn-sm new-btn-blue py-0' >  <i className="fa fa-broom me-1"></i>Clear</button>
+                <button className='btn btn-sm new-btn-blue py-0' onClick={reset}>  <i className="fa fa-broom me-1"></i>Clear</button>
             </div>
         </div>
     );

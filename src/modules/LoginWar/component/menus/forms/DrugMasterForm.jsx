@@ -13,7 +13,9 @@ const DrugMasterForm = (props) => {
     const { selectedGroupId } = props;
     const { selectedSubGroupId } = props;
 
-    const { setShowConfirmSave, confirmSave, setConfirmSave, openPage, setOpenPage, selectedOption ,drugTypeDrpData,getDrugTypeDrpData} = useContext(LoginContext)
+    const { setShowConfirmSave, confirmSave, setConfirmSave, openPage, setOpenPage, selectedOption, setSelectedOption, drugTypeDrpData,getDrugTypeDrpData,
+        getGenericDrugDrpData,genericDrugDrpData
+    } = useContext(LoginContext)
 
     const [values, setValues] = useState({
         "genericDrugId": "", "drugTypeId": "", "drugName": "", "strength": "", "snomedNameId": "1"
@@ -25,6 +27,7 @@ const DrugMasterForm = (props) => {
 
     useEffect(()=>{
         getDrugTypeDrpData();
+        getGenericDrugDrpData();
     },[])
  
     const getCodes = () => {
@@ -86,6 +89,7 @@ const DrugMasterForm = (props) => {
         if (openPage === "add") {
             const val = {
                 cwhnumGroupId: selectedGroupId,
+                cwhnumDrugId:12121212,
                 cwhnumSubGroupId: selectedSubGroupId,
                 cwhnumCentralDrugId: values?.genericDrugId,
                 cwhnumDrugTypeId: values?.drugTypeId,
@@ -101,7 +105,7 @@ const DrugMasterForm = (props) => {
                     console.log("======addded======",data)
                     ToastAlert("Data saved successfully", "success")
                 } else {
-                    ToastAlert("Error", "warnning")
+                    ToastAlert("Error", "error")
                 }
             })
         }
@@ -130,7 +134,7 @@ const DrugMasterForm = (props) => {
 
         setConfirmSave(false);
         setOpenPage("home")
-        selectedOption([])
+        setSelectedOption([])
         reset();
     }
 
@@ -186,7 +190,7 @@ const DrugMasterForm = (props) => {
                             id="genericDrugId"
                             name="genericDrugId"
                             placeholder={"Select Value"}
-                            options={[{ label: "A", value: "1" }, { label: "B", value: "2" }]}
+                            options={genericDrugDrpData}
                             onChange={handleValueChange}
                             value={values?.genericDrugId}
                             errorMessage={errors?.genericDrugIdErr}

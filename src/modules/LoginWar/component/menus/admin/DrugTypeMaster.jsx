@@ -10,13 +10,27 @@ import { fetchData, fetchUpdateData } from '../../../../../utils/ApiHooks';
 
 export const DrugTypeMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage ,setShowConfirmSave, confirmSave, setConfirmSave} = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
 
     const [stateNameDrpDt, setStateNameDrpDt] = useState([]);
     const [drugs, setDrugs] = useState([]);
     const [searchInput, setSearchInput] = useState('');
     const [selectedRows, setSelectedRows] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
+    const [filterData, setFilterData] = useState([drugs]);
+
+    useEffect(() => {
+        if (searchInput === '') {
+            setFilterData(drugs)
+        } else {
+            const lowercasedText = searchInput.toLowerCase();
+            const newFilteredData = drugs.filter(row => {
+                const paramName = row?.cwhstrDrugTypeName?.toLowerCase() || "";
+                return paramName.includes(lowercasedText);
+            });
+            setFilterData(newFilteredData);
+        }
+    }, [searchInput, drugs])
 
 
     const [errors, setErrors] = useState({
@@ -92,22 +106,22 @@ export const DrugTypeMaster = () => {
         }
     }, [confirmSave])
 
-     const handleDelete = () => {
-            const drugTypeId = String(selectedOption[0]?.cwhnumDrugTypeId)
-            fetchUpdateData(`/drugtype/delete/${drugTypeId}`).then(data => {
-                if (data) {
-                       ToastAlert("Record Deleted Successfully", "success")
-                       fetchListData(1);
-                       setSelectedOption([]);
-                       setConfirmSave(false);
-                       reset();
-                       setOpenPage("home")
-                } else {
-                    ToastAlert('Error while deleting record!', 'error')
-                    setOpenPage("home")
-                }
-            })
-        }
+    const handleDelete = () => {
+        const drugTypeId = String(selectedOption[0]?.cwhnumDrugTypeId)
+        fetchUpdateData(`/drugtype/delete/${drugTypeId}`).then(data => {
+            if (data) {
+                ToastAlert("Record Deleted Successfully", "success")
+                fetchListData(1);
+                setSelectedOption([]);
+                setConfirmSave(false);
+                reset();
+                setOpenPage("home")
+            } else {
+                ToastAlert('Error while deleting record!', 'error')
+                setOpenPage("home")
+            }
+        })
+    }
 
 
 
@@ -180,7 +194,7 @@ export const DrugTypeMaster = () => {
                 </div>
 
                 <div>
-                    <GlobalTable column={columns} data={drugs} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null}
+                    <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null}
                         onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
                 </div>
 
@@ -210,7 +224,7 @@ export const DrugTypeMaster = () => {
 
 
             {(openPage === "add" || openPage === 'modify') &&
-                <DrugTypeForm  setValues={setValues} values={values}/>
+                <DrugTypeForm setValues={setValues} values={values} />
             }
 
         </div>
