@@ -13,7 +13,7 @@ const HmisFacilityMasterForm = () => {
     const [recordStatus, setRecordStatus] = useState('1');
     const [singleData, setSingleData] = useState([]);
     const [errors, setErrors] = useState({
-        "programmeNameErr": ""
+        "hmisFacilityErr": ""
     })
 
     // const getSingleData = (id) => {

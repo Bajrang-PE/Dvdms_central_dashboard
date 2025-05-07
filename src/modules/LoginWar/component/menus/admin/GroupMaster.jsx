@@ -10,7 +10,7 @@ import GroupMasterForm from '../forms/admin/GroupMasterForm';
 const GroupMaster = () => {
     const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, getGroupListData,groupListData } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
-    const [recordStatus, setRecordStatus] = useState('Active')
+    const [recordStatus, setRecordStatus] = useState('Active');
     const [filterData, setFilterData] = useState(groupListData);
 
     useEffect(() => {

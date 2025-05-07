@@ -11,7 +11,7 @@ import HmisFacilityMasterForm from '../forms/admin/HmisFacilityMasterForm';
 
 const HmisFacilityMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, getStateListData, stateListData, setConfirmSave, confirmSave, setShowConfirmSave } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, getStateListData, getSteteNameDrpData, stateNameDrpDt,stateListData, setConfirmSave, confirmSave, setShowConfirmSave } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [recordStatus, setRecordStatus] = useState('1');
     const [filterData, setFilterData] = useState(stateListData);
@@ -131,7 +131,7 @@ const HmisFacilityMaster = () => {
                     <div className='row pt-2'>
                         <div className='col-sm-6'>
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                                <label className="col-sm-5 col-form-label fix-label required-label">Country : </label>
+                                <label className="col-sm-5 col-form-label fix-label required-label">State : </label>
                                 <div className="col-sm-7 align-content-center">
                                     <InputSelect
                                         id="hintquestion"
