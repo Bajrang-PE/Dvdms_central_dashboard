@@ -52,7 +52,7 @@ const LoginContextApi = ({ children }) => {
     const getZoneListData = (status) => {
         fetchData(`api/v1/zones/status?status=${status ? status : "1"}`).then((data) => {
             if (data) {
-                setZoneListData(data)
+                setZoneListData(data?.data)
             } else {
                 setZoneListData([])
             }
@@ -94,7 +94,7 @@ const LoginContextApi = ({ children }) => {
     const getGroupListData = (status) => {
         fetchData(`api/v1/Group/status?status=${status ? status : "1"}`).then((data) => {
             if (data) {
-                setGroupListData(data)
+                setGroupListData(data?.data)
             } else {
                 setGroupListData([])
             }
