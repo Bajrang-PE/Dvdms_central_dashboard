@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useContext, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import Exporting from "highcharts/modules/exporting";
-import ExportData from "highcharts/modules/export-data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog, faFileCsv, faFilePdf, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import Parameters from "./Parameters";
@@ -13,7 +11,7 @@ import { getAuthUserData } from "../../../../utils/CommonFunction";
 
 
 const GraphDash = ({ widgetData }) => {
-  const { theme, paramsValues } = useContext(HISContext);
+  const { theme, paramsValues, singleConfigData } = useContext(HISContext);
   const [widParamsValues, setWidParamsValues] = useState();
   const [filteredGraphOptions, setFilteredGraphOptions] = useState([]);
   const [chartType, setChartType] = useState('BAR_GRAPH');
@@ -46,8 +44,8 @@ const GraphDash = ({ widgetData }) => {
   const isDarkTheme = theme === 'Dark';
 
   //procedure
-  const initialRecord = widgetData?.initialRecordNo ;
-  const finalRecord = widgetData?.finalRecordNo ;
+  const initialRecord = widgetData?.initialRecordNo;
+  const finalRecord = widgetData?.finalRecordNo;
   const isPaginationReq = widgetData?.isPaginationReq || "";
 
 
@@ -128,8 +126,9 @@ const GraphDash = ({ widgetData }) => {
   const fetchDataQry = async (query) => {
     if (!query) return;
     try {
-      const data = await fetchQueryData(query);
+      const data = await fetchQueryData(query, singleConfigData?.databaseConfigVO?.jndiForPrimaryServer);
       const seriesData = [];
+      console.log(data,'data')
 
       if (data[0]?.column_3) {
         // Three-column data
@@ -164,6 +163,8 @@ const GraphDash = ({ widgetData }) => {
     }
   };
 
+
+
   // utils/graphFormatter.js
   const formatProcedureDataForGraph = (data) => {
     if (!data || data.length === 0) return { categories: [], seriesData: [] };
@@ -193,7 +194,7 @@ const GraphDash = ({ widgetData }) => {
         paramsValue: ""
       };
     }
-  
+
     return {
       paramsId: Object.keys(paramsObj).join(','),
       paramsValue: Object.values(paramsObj).join(',')
@@ -205,7 +206,7 @@ const GraphDash = ({ widgetData }) => {
       if (!widget?.procedureMode) return;
       try {
         const paramVal = formatParams(paramsValues ? paramsValues : null);
-        
+
         const params = [
           getAuthUserData('hospitalCode')?.toString(), //hospital code===
           "10001", //user id===
@@ -415,7 +416,7 @@ const GraphDash = ({ widgetData }) => {
       },
     },
   };
-console.log(widgetData,'widgetdata')
+  
   return (
     <div className={`high-chart-main ${theme === 'Dark' ? 'dark-theme' : ""}`} style={{ border: `7px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
 

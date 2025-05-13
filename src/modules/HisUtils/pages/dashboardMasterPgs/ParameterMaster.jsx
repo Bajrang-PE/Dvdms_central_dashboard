@@ -126,14 +126,14 @@ const ParameterMaster = () => {
       setLoading(true)
       const val = { "id": selectedOption[0]?.id, "dashboardFor": values?.parameterFor, "masterName": "ParameterMst" };
       fetchPostData("/hisutils/parameterDelete", val).then((data) => {
-        if (data) {
+        if (data?.status === 1) {
           ToastAlert('Deleted Successfully!', 'success');
           getAllParameterData(values?.parameterFor)
           setSelectedOption([]);
           reset();
           setLoading(false)
         } else {
-          ToastAlert('Deletion Failed!', 'error');
+          ToastAlert(data?.message, 'error');
           setLoading(false)
         }
       })
@@ -175,7 +175,7 @@ const ParameterMaster = () => {
     };
 
     fetchPostData("/hisutils/parametersave", val).then((data) => {
-      if (data) {
+      if (data?.status == 1) {
         ToastAlert("Data Saved Successfully", "success");
         getAllParameterData(values?.parameterFor)
         setActionMode('home');
@@ -183,7 +183,7 @@ const ParameterMaster = () => {
         setConfirmSave(false);
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false);
         setLoading(false)
       }
@@ -220,7 +220,7 @@ const ParameterMaster = () => {
     };
 
     fetchPostData("/hisutils/parameterUpdate", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Updated Successfully", "success");
         getAllParameterData(values?.parameterFor)
         reset();
@@ -229,7 +229,7 @@ const ParameterMaster = () => {
         setSelectedOption([])
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false);
         setLoading(false)
       }

@@ -122,7 +122,7 @@ const DataServiceMaster = () => {
     };
 
     fetchPostData("/hisutils/DataServicesave", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Saved Successfully", "success");
         getAllServiceData();
         setActionMode('home');
@@ -130,7 +130,7 @@ const DataServiceMaster = () => {
         setConfirmSave(false)
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false)
         setLoading(false)
       }
@@ -166,7 +166,7 @@ const DataServiceMaster = () => {
     };
 
     fetchPostData("/hisutils/DataServiceUpdate", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Updated Successfully", "success");
         getAllServiceData();
         setActionMode('home');
@@ -174,7 +174,7 @@ const DataServiceMaster = () => {
         setConfirmSave(false)
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false)
         setLoading(false)
       }
@@ -186,14 +186,14 @@ const DataServiceMaster = () => {
       setLoading(true)
       const val = { "id": selectedOption[0]?.id, "dashboardFor": "GLOBAL", "masterName": "DataServiceMst" };
       fetchPostData("/hisutils/DataServiceDelete", val).then((data) => {
-        if (data) {
+        if (data?.status === 1) {
           ToastAlert('Deleted Successfully!', 'success');
           getAllServiceData();
           setSelectedOption([]);
           reset();
           setLoading(false)
         } else {
-          ToastAlert('Deletion Failed!', 'error');
+          ToastAlert(data?.message, 'error');
           setLoading(false)
         }
       })

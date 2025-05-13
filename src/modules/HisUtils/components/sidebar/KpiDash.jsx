@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom';
 import { fetchProcedureData, fetchQueryData } from '../../utils/commonFunction';
 
 const KpiDash = ({ widgetData }) => {
-    const { setActiveTab, allTabsData, setLoading, paramsValues } = useContext(HISContext);
+    const { setActiveTab, allTabsData, setLoading, paramsValues,singleConfigData } = useContext(HISContext);
     const [kpiData, setKpiData] = useState([]);
 
     const formatData = (rawData = []) => {
@@ -23,7 +23,6 @@ const KpiDash = ({ widgetData }) => {
             return formattedItem;
         });
     };
-    console.log(widgetData, 'widget')
     const fetchData = async (widget) => {
         if (widget?.modeOfQuery === "Procedure") {
             if (!widget?.procedureMode) return;
@@ -53,7 +52,7 @@ const KpiDash = ({ widgetData }) => {
         } else {
             // if (!widget?.queryVO?.length > 0) return;
             try {
-                const data = await fetchQueryData(widget?.query);
+                const data = await fetchQueryData(widget?.query,singleConfigData?.databaseConfigVO?.jndiForPrimaryServer);
                 console.log(data, 'data')
                 if (data?.length > 0) {
                     setKpiData(

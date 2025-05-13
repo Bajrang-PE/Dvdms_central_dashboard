@@ -21,7 +21,7 @@ const DashboardMst = () => {
     const getDashboardData = useCallback((groupId, dashFor) => {
         fetchData(`hisutils/singleDashboard/${groupId}/${dashFor}/DashboardGroupingMst`)
             .then((data) => {
-                if (data) setMainDashData(data);
+                if (data?.status === 1) setMainDashData(data?.data);
             });
     }, []);
 

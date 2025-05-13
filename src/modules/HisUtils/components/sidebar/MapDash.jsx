@@ -1,12 +1,14 @@
-import React, { lazy, useEffect, useState } from "react";
+import React, { lazy, useContext, useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import RajasthanMap from '../../localData/mapJson/rajasthan.json';
 import UpMap from '../../localData/mapJson/uttarpradesh.json';
 import { fetchQueryData } from "../../utils/commonFunction";
+import { HISContext } from "../../contextApi/HISContext";
 
 
 const MapDash = ({ widgetData }) => {
+        const { setActiveTab, allTabsData, setLoading, paramsValues,singleConfigData } = useContext(HISContext);
     const [mapData, setMapData] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false)
     const [graphData, setGraphData] = useState([]);
@@ -53,12 +55,10 @@ const MapDash = ({ widgetData }) => {
         };
     }, []);
 
-    console.log(graphData, 'mapdatamap')
-
     const fetchDataQry = async (query) => {
         if (!query) return;
         try {
-            const data = await fetchQueryData(query);
+            const data = await fetchQueryData(query,singleConfigData?.databaseConfigVO?.jndiForPrimaryServer);
             const seriesData = [];
 
             if (data[0]?.column_3) {

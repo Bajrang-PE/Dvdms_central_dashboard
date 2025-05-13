@@ -182,7 +182,7 @@ const TabularDash = ({ widgetData }) => {
     } else {
       // if (!widget?.queryVO?.length > 0) return;
       try {
-        const data = await fetchQueryData(widget?.query);
+        const data = await fetchQueryData(widget?.query,singleConfigData?.databaseConfigVO?.jndiForPrimaryServer);
         console.log(data, 'data')
         if (data?.length > 0) {
           setTableData(

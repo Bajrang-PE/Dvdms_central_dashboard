@@ -105,7 +105,7 @@ const ServiceUserMaster = () => {
     };
 
     fetchPostData("/hisutils/ServiceUsersave", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Saved Successfully", "success");
         getUserServiceData();
         setActionMode('home');
@@ -113,7 +113,7 @@ const ServiceUserMaster = () => {
         setConfirmSave(false);
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false);
         setLoading(false)
       }
@@ -141,7 +141,7 @@ const ServiceUserMaster = () => {
     };
 
     fetchPostData("/hisutils/ServiceUserUpdate", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Updated Successfully", "success");
         getUserServiceData();
         setActionMode('home');
@@ -149,7 +149,7 @@ const ServiceUserMaster = () => {
         setConfirmSave(false);
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false);
         setLoading(false)
       }
@@ -163,14 +163,14 @@ const ServiceUserMaster = () => {
       if (isReset) {
         const val = { "id": selectedOption[0]?.id, "dashboardFor": "GLOBAL", "masterName": "ServiceUserMst" };
         fetchPostData("/hisutils/ServiceUserDelete", val).then((data) => {
-          if (data) {
+          if (data?.status === 1) {
             ToastAlert('Deleted Successfully!', 'success');
             getUserServiceData();
             setSelectedOption([]);
             reset();
             setLoading(false)
           } else {
-            ToastAlert('Deletion Failed!', 'error');
+            ToastAlert(data?.message, 'error');
             setLoading(false)
           }
         })

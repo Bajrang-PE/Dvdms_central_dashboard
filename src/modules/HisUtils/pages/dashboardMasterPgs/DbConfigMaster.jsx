@@ -163,10 +163,10 @@ const DbConfigMaster = () => {
 
     const checkDatabaseConnection = () => {
         fetchData("/hisutils/check-db-connection").then((data) => {
-            if (data) {
-                ToastAlert(data)
+            if (data?.status === 1) {
+                ToastAlert(data?.message)
             } else {
-                console.log('error')
+                ToastAlert(data?.message,'error')
             }
         })
     }
@@ -216,15 +216,15 @@ const DbConfigMaster = () => {
         }
 
         fetchUpdateData("/hisutils/dashboard-config-save", val).then((data) => {
-            if (data) {
-                ToastAlert("Data saved Successfully", "success");
+            if (data?.status === 1) {
+                ToastAlert(data?.message, "success");
                 reset();
                 setConfirmSave(false);
                 setSelectedOption([])
                 setLoading(false)
                 getDashConfigData()
             } else {
-                ToastAlert("Internal Error!", "error");
+                ToastAlert(data?.message, "error");
                 setConfirmSave(false);
                 setLoading(false)
             }

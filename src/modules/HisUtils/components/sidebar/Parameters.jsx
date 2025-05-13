@@ -9,7 +9,7 @@ import { useSearchParams } from "react-router-dom";
 import { fetchPostData } from "../../../../utils/ApiHooks";
 
 const Parameters = ({ params, setParamsValues }) => {
-    const { parameterData, getAllParameterData, theme } = useContext(HISContext);
+    const { parameterData, getAllParameterData, theme, singleConfigData } = useContext(HISContext);
     const [presentParams, setPresentParams] = useState([]);
     const [selectedValues, setSelectedValues] = useState({});
     const [dropdownData, setDropdownData] = useState({});
@@ -79,9 +79,9 @@ const Parameters = ({ params, setParamsValues }) => {
     const fetchDropdownData = async (query, parameterName) => {
         if (!query) return;
         try {
-            const val = { query, params: {} };
+            const val = { query, params: {}, jndi: singleConfigData?.databaseConfigVO?.jndiForPrimaryServer };
             const data = await fetchPostData('/hisutils/GenericApiQry', val);
-            setDropdownData((prev) => ({ ...prev, [parameterName]: data || [] }));
+            setDropdownData((prev) => ({ ...prev, [parameterName]: data?.data || [] }));
         } catch (error) {
             console.error("Error fetching query data:", error);
         }
@@ -117,7 +117,7 @@ const Parameters = ({ params, setParamsValues }) => {
                 }
                 defOpt[param?.id] = defaultOption?.optionValue
             });
-           
+
             setParamsValues(defOpt)
             setSelectedValues(initialSelectedValues);
         }

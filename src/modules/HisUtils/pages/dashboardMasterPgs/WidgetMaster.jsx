@@ -796,7 +796,7 @@ const WidgetMaster = () => {
       }
     };
     fetchPostData("/hisutils/createWidget", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Saved Successfully", "success");
         getAllWidgetData(values?.widgetFor)
         reset();
@@ -804,7 +804,7 @@ const WidgetMaster = () => {
         setActionMode('home');
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false);
         setLoading(false)
       }
@@ -1026,7 +1026,7 @@ const WidgetMaster = () => {
       }
     }
     fetchUpdateData("/hisutils/updateWidget", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Updated Successfully", "success");
         getAllWidgetData(values?.widgetFor)
         reset();
@@ -1034,7 +1034,7 @@ const WidgetMaster = () => {
         setSelectedOption([])
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false);
         setLoading(false)
       }
@@ -1046,7 +1046,7 @@ const WidgetMaster = () => {
       setLoading(true)
       const val = { "id": selectedOption[0]?.rptId, "dashboardFor": values?.widgetFor, "masterName": "DashboardWidgetMst" };
       fetchPostData("/hisutils/widgetDelete", val).then((data) => {
-        if (data) {
+        if (data?.status === 1) {
           ToastAlert('Deleted Successfully!', 'success');
           getAllWidgetData(values?.widgetFor)
           setSelectedOption([]);
@@ -1056,7 +1056,7 @@ const WidgetMaster = () => {
           reset();
           setLoading(false)
         } else {
-          ToastAlert('Deletion Failed!', 'error');
+          ToastAlert(data?.message, 'error');
           setLoading(false)
         }
       })

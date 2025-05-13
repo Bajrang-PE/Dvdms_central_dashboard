@@ -176,7 +176,7 @@ const DashboardMaster = () => {
     }
     // setIsInputChanged(true)
   }
-
+console.log(singleData)
   useEffect(() => {
     if (singleData?.length > 0) {
       setLoading(true)
@@ -311,7 +311,7 @@ const DashboardMaster = () => {
     };
 
     fetchPostData("/hisutils/dashboardSave", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Saved Successfully", "success");
         getAllDashboardData(values?.dashboardFor)
         setActionMode('home');
@@ -319,7 +319,7 @@ const DashboardMaster = () => {
         setConfirmSave(false);
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false);
         setLoading(false)
       }
@@ -400,7 +400,7 @@ const DashboardMaster = () => {
     };
 
     fetchPostData("/hisutils/dashboardUpdate", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Updated Successfully", "success");
         getAllDashboardData(values?.dashboardFor)
         reset();
@@ -408,7 +408,7 @@ const DashboardMaster = () => {
         setConfirmSave(false);
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false);
         setLoading(false)
       }
@@ -420,14 +420,14 @@ const DashboardMaster = () => {
       setLoading(true)
       const val = { "id": selectedOption[0]?.id, "dashboardFor": values?.dashboardFor, "masterName": "DashboardGroupingMst" };
       fetchPostData("/hisutils/dashboardDelete", val).then((data) => {
-        if (data) {
+        if (data?.status === 1) {
           ToastAlert('Deleted Successfully!', 'success');
           getAllDashboardData(values?.dashboardFor)
           setSelectedOption([]);
           reset();
           setLoading(false)
         } else {
-          ToastAlert('Deletion Failed!', 'error');
+          ToastAlert(data?.message, 'error');
           setLoading(false)
         }
       })
@@ -440,19 +440,19 @@ const DashboardMaster = () => {
     let isValid = true;
     let newErrors = {};
     if (!values?.dashboardFor?.trim()) {
-      newErrors.dashboardForErr = "tab for is required";
+      newErrors.dashboardForErr = "Dashboard for is required";
       isValid = false;
     }
     if (!values?.dashNameDisplay?.trim()) {
-      newErrors.dashNameDisplayErr = "tab for is required";
+      newErrors.dashNameDisplayErr = "Display name is required";
       isValid = false;
     }
     if (!values?.dashNameInternal?.trim()) {
-      newErrors.dashNameInternalErr = "tab for is required";
+      newErrors.dashNameInternalErr = "Internal name is required";
       isValid = false;
     }
     if (radioValues?.rptHeaderTypePdfExl === '2' && !values?.rptHeaderbyQuery?.trim()) {
-      newErrors.rptHeaderbyQueryErr = "tab for is required";
+      newErrors.rptHeaderbyQueryErr = "query is required";
       isValid = false;
     }
     setErrors(newErrors);
@@ -526,7 +526,7 @@ const DashboardMaster = () => {
 
   const reset = () => {
     setValues({
-      "dashboardFor": "", "dashNameDisplay": "", "dashNameInternal": "", "menuContainerBgColor": "", "dashTitlefontColor": "", "iconColor": "", "menuContainerBgImage": "", "cachingStatus": '', "dataLoad": "ALL",
+      "dashboardFor": dashFor, "dashNameDisplay": "", "dashNameInternal": "", "menuContainerBgColor": "", "dashTitlefontColor": "", "iconColor": "", "menuContainerBgImage": "", "cachingStatus": '', "dataLoad": "ALL",
       //tab
       "tabDisplayStyle": "TOP", "tabIconType": "IMAGE", "timeInterval": "", "changeIntervalTime": "", "textshadowColor": "", "tabFontColor": "", "tabBgColorOnHover": "", "tabFontColorOnHover": '', "tabMenuWidthBigIcon": "3",
       "tabMenuHeightBigIcon": "", "tabShapesBigIcon": "",

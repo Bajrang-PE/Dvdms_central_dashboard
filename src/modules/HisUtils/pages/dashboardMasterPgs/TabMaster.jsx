@@ -338,7 +338,7 @@ const TabMaster = () => {
     };
 
     fetchPostData("/hisutils/Tabsave", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Saved Successfully", "success");
         getAllTabsData(values?.tabFor)
         setActionMode('home');
@@ -346,7 +346,7 @@ const TabMaster = () => {
         setConfirmSave(false);
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false);
         setLoading(false)
       }
@@ -409,7 +409,7 @@ const TabMaster = () => {
 
 
     fetchPostData("/hisutils/TabUpdate", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Updated Successfully", "success");
         getAllTabsData(values?.tabFor)
         reset();
@@ -418,7 +418,7 @@ const TabMaster = () => {
         setSelectedOption([])
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false);
         setLoading(false)
       }
@@ -430,14 +430,14 @@ const TabMaster = () => {
       setLoading(true)
       const val = { "id": selectedOption[0]?.id, "dashboardFor": values?.tabFor, "masterName": "DashboardMst" };
       fetchPostData("/hisutils/TabDelete", val).then((data) => {
-        if (data) {
+        if (data?.status === 1) {
           ToastAlert('Deleted Successfully!', 'success');
           getAllTabsData(values?.tabFor)
           setSelectedOption([]);
           reset();
           setLoading(false)
         } else {
-          ToastAlert('Deletion Failed!', 'error');
+          ToastAlert(data?.message, 'error');
           setLoading(false)
         }
       })

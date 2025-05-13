@@ -1,6 +1,10 @@
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { fetchPostData } from '../../../utils/ApiHooks';
+import { HISContext } from '../contextApi/HISContext';
+import { useContext } from 'react';
+
+
 
 //FUNCTION TO MANAGE GLOBAL ALERTS
 export const ToastAlert = (message, type) => {
@@ -56,7 +60,7 @@ export const convertToISODate = (dateStr) => {
   return `${formattedYear}-${formattedMonth}-${day}`;
 };
 
-export const fetchQueryData = async (queryVO = []) => {
+export const fetchQueryData = async (queryVO = [], jndiServer) => {
   if (!Array.isArray(queryVO) || queryVO.length === 0) {
     console.error("Invalid or empty queryVO array provided.");
     return [];
@@ -68,18 +72,17 @@ export const fetchQueryData = async (queryVO = []) => {
       console.error("No valid query found in queryVO.");
       return [];
     }
-
-    const requestBody = { query, params: {} };
+    const requestBody = { query, params: {}, jndi: jndiServer };
     const response = await fetchPostData("/hisutils/GenericApiQry", requestBody);
 
-    return response  || [];
+    return response?.data || [];
   } catch (error) {
     console.error("Error fetching query data:", error);
     return [];
   }
 };
 
-export const fetchProcedureData = async (procedure,params) => {
+export const fetchProcedureData = async (procedure, params) => {
   if (!procedure) {
     return [];
   }
@@ -87,11 +90,11 @@ export const fetchProcedureData = async (procedure,params) => {
   try {
     const requestBody = {
       "procedureName": procedure,
-      "parameters":params
+      "parameters": params
     };
     const response = await fetchPostData(`api/procedures/execute`, requestBody);
 
-    return response || [];
+    return response?.data || [];
   } catch (error) {
     console.error("Error fetching query data:", error);
     return [];

@@ -124,7 +124,7 @@ const DbSubmenuMaster = () => {
     };
 
     fetchPostData("/hisutils/DashboardsubMenuSave", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Saved Successfully", "success");
         getDashboardSubmenuData();
         setActionMode('home');
@@ -132,7 +132,7 @@ const DbSubmenuMaster = () => {
         setConfirmSave(false);
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false);
         setLoading(false)
       }
@@ -153,7 +153,7 @@ const DbSubmenuMaster = () => {
     };
 
     fetchPostData("/hisutils/DashboardsubMenuupdate", val).then((data) => {
-      if (data) {
+      if (data?.status === 1) {
         ToastAlert("Data Updated Successfully", "success");
         getDashboardSubmenuData();
         setActionMode('home');
@@ -161,7 +161,7 @@ const DbSubmenuMaster = () => {
         setConfirmSave(false);
         setLoading(false)
       } else {
-        ToastAlert("Internal Error!", "error");
+        ToastAlert(data?.message, "error");
         setConfirmSave(false);
         setLoading(false)
       }
@@ -174,7 +174,7 @@ const DbSubmenuMaster = () => {
       const isReset = window.confirm('Do you want to delete this record ?');
       if (isReset) {
         fetchPostData(`/hisutils/DashboardsubMenudelete/${selectedOption[0]?.subMenuId}`).then((data) => {
-          if (data) {
+          if (data?.status === 1) {
             ToastAlert('Deleted Successfully!', 'success');
             getDashboardSubmenuData();
             setSelectedOption([]);
@@ -182,7 +182,7 @@ const DbSubmenuMaster = () => {
             setConfirmSave(false);
             setLoading(false)
           } else {
-            ToastAlert('Deletion Failed!', 'error');
+            ToastAlert(data?.message, 'error');
             setConfirmSave(false);
             setLoading(false)
           }

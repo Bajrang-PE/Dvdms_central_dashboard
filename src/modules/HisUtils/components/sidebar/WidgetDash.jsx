@@ -6,7 +6,6 @@ import MapDash from './MapDash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { HISContext } from '../../contextApi/HISContext';
-import { fetchQueryData } from '../../utils/commonFunction';
 
 
 const WidgetDash = React.memo(({widgetDetail}) => {
