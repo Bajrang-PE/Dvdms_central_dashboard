@@ -8,6 +8,7 @@ import { fetchProcedureData, fetchQueryData } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import { highchartGraphOptions } from "../../localData/DropDownData";
 import { getAuthUserData } from "../../../../utils/CommonFunction";
+import { generateGraphCSV, generateGraphPDF, generatePDF } from "../commons/advancedPdf";
 
 
 const GraphDash = ({ widgetData }) => {
@@ -30,12 +31,12 @@ const GraphDash = ({ widgetData }) => {
   const xAxisFontSize = parseInt(widgetData?.XAxisFontSize, 10) || 10;
   const yAxisFontSize = parseInt(widgetData?.YAxisFontSize, 10) || 10;
   const annotationFontSize = parseInt(widgetData?.annotationFontSize, 10) || 12;
-  const isDirectDownloadRequired = widgetData?.isDirectDownloadRequired || 'No';
+  const isDirectDownloadRequired = widgetData?.isDirectDownloadRequiredGraph ? widgetData?.isDirectDownloadRequiredGraph : widgetData?.isDirectDownloadRequired || 'No';
 
   const minAxisValue = widgetData?.minValueOfAxis && widgetData?.minValueOfAxis !== '0' ? parseInt(widgetData.minValueOfAxis, 10) : undefined;
   const maxAxisValue = widgetData?.maxValueOfAxis && widgetData?.maxValueOfAxis !== '0' ? parseInt(widgetData.maxValueOfAxis, 10) : undefined;
 
-  const isActionButtonReq = widgetData?.isActionButtonReq || "Yes";
+  const isActionButtonReq = widgetData?.isActionButtonReqGraph ? widgetData?.isActionButtonReqGraph : widgetData?.isActionButtonReq || "Yes";
   const labelRotation = parseInt(widgetData.rotation, 10) || 0;
   const isScrollbarRequired = widgetData.isScrollbarRequired === "Yes";
   const paramsData = widgetData.selFilterIds || "";
@@ -47,6 +48,11 @@ const GraphDash = ({ widgetData }) => {
   const initialRecord = widgetData?.initialRecordNo;
   const finalRecord = widgetData?.finalRecordNo;
   const isPaginationReq = widgetData?.isPaginationReq || "";
+
+  const widgetLimit = widgetData?.limitHTMLFromDb || ''
+  const defLimit = singleConfigData?.databaseConfigVO?.setDefaultLimit || ''
+  const parsedLimit = parseInt(defLimit, 10);
+  const safeLimit = isNaN(parsedLimit) || parsedLimit <= 0 ? null : parsedLimit;
 
 
   useEffect(() => {
@@ -126,20 +132,27 @@ const GraphDash = ({ widgetData }) => {
   const fetchDataQry = async (query) => {
     if (!query) return;
     try {
-      const data = await fetchQueryData(query, singleConfigData?.databaseConfigVO?.jndiForPrimaryServer);
-      const seriesData = [];
-      console.log(data,'data')
+      const data = await fetchQueryData(query, widgetData?.JNDIid);
+      const limit = widgetLimit
+        ? parseInt(widgetLimit)
+        : safeLimit
+          ? parseInt(safeLimit)
+          : data.length;
+      const limitedData = data.slice(0, limit);
 
-      if (data[0]?.column_3) {
-        // Three-column data
-        const categories = [...new Set(data.map(item => item.column_1))];
+      const seriesData = [];
+
+
+      if (limitedData[0]?.column_3) {
+        // Three-column limitedData
+        const categories = [...new Set(limitedData.map(item => item.column_1))];
         const seriesNames = ['column_2', 'column_3'];
 
         seriesNames.forEach(seriesName => {
           seriesData.push({
             name: seriesName,
             data: categories.map(category => {
-              const item = data.find(d => d.column_1 === category);
+              const item = limitedData.find(d => d.column_1 === category);
               return item ? item[seriesName] : null;
             }),
             colorByPoint: true,
@@ -149,10 +162,10 @@ const GraphDash = ({ widgetData }) => {
         setGraphData({ categories, seriesData });
       } else {
         // Two-column data
-        const categories = data.map(item => item.column_1);
+        const categories = limitedData.map(item => item.column_1);
         seriesData.push({
           name: 'column_2',
-          data: data.map(item => item.column_2),
+          data: limitedData.map(item => item.column_2),
           colorByPoint: true,
         });
 
@@ -163,7 +176,7 @@ const GraphDash = ({ widgetData }) => {
     }
   };
 
-
+  console.log(widgetData, widgetData?.rptId)
 
   // utils/graphFormatter.js
   const formatProcedureDataForGraph = (data) => {
@@ -206,6 +219,10 @@ const GraphDash = ({ widgetData }) => {
       if (!widget?.procedureMode) return;
       try {
         const paramVal = formatParams(paramsValues ? paramsValues : null);
+        const widgetLimit = widget?.limitHTMLFromDb || ''
+        const defLimit = singleConfigData?.databaseConfigVO?.setDefaultLimit || ''
+        const parsedLimit = parseInt(defLimit, 10);
+        const safeLimit = isNaN(parsedLimit) || parsedLimit <= 0 ? null : parsedLimit;
 
         const params = [
           getAuthUserData('hospitalCode')?.toString(), //hospital code===
@@ -220,15 +237,21 @@ const GraphDash = ({ widgetData }) => {
           "16-Apr-2025",//from values
           "16-Apr-2025" // to values
         ]
-        const data = await fetchProcedureData(widget?.procedureMode, params);
-        const formattedData = formatProcedureDataForGraph(data?.data);
+        const data = await fetchProcedureData(widget?.procedureMode, params,widgetData?.JNDIid);
+        const limit = widgetLimit
+          ? parseInt(widgetLimit)
+          : safeLimit
+            ? parseInt(safeLimit)
+            : data?.data?.length;
+        const limitedData = data?.data?.slice(0, limit);
+
+        const formattedData = formatProcedureDataForGraph(limitedData);
         setGraphData(formattedData);
       } catch (error) {
         console.error("Error loading query data:", error);
       }
     }
   }
-
 
   useEffect(() => {
     if (widgetData && widgetData?.modeOfQuery === "Procedure") {
@@ -378,7 +401,7 @@ const GraphDash = ({ widgetData }) => {
       },
     },
     exporting: exportingOptions,
-    series: graphData.seriesData,
+    series: graphData?.seriesData,
     lang: {
       noData: "No data available for this graph",
     },
@@ -416,7 +439,7 @@ const GraphDash = ({ widgetData }) => {
       },
     },
   };
-  
+
   return (
     <div className={`high-chart-main ${theme === 'Dark' ? 'dark-theme' : ""}`} style={{ border: `7px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
 
@@ -441,10 +464,14 @@ const GraphDash = ({ widgetData }) => {
               </li>
             </ul>
             <button type="button" className="small-box-btn-dwn"
+              onClick={() => generateGraphPDF(widgetData, graphData, singleConfigData?.databaseConfigVO)}
+              title="PDF"
             >
               <FontAwesomeIcon icon={faFilePdf} className="dropdown-gear-icon" />
             </button>
             <button type="button" className="small-box-btn-dwn"
+              onClick={() => generateGraphCSV(widgetData, graphData, singleConfigData?.databaseConfigVO)}
+              title="CSV"
             >
               <FontAwesomeIcon icon={faFileCsv} className="dropdown-gear-icon" />
             </button>

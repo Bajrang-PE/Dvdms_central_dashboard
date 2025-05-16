@@ -24,7 +24,7 @@ import { fetchPostData, fetchUpdateData } from '../../../../utils/ApiHooks'
 
 const WidgetMaster = () => {
 
-  const { setShowDataTable, allWidgetData, getAllWidgetData, dashboardForDt, getDashboardForDrpData, parameterData, getAllParameterData, widgetDrpData, getAllServiceData, dataServiceData, selectedOption, setSelectedOption, actionMode, setActionMode, parameterDrpData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, getAllTabsData, tabDrpData } = useContext(HISContext);
+  const { setShowDataTable, allWidgetData, getAllWidgetData, dashboardForDt, getDashboardForDrpData, parameterData, getAllParameterData, widgetDrpData, getAllServiceData, dataServiceData, selectedOption, setSelectedOption, actionMode, setActionMode, parameterDrpData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, getAllTabsData, tabDrpData, getDashConfigData, singleConfigData } = useContext(HISContext);
 
   const [values, setValues] = useState({
     "id": "", "widgetFor": "", "widgetType": "columnBased", "widgetNameDisplay": "", "widgetNameInternal": "", "widgetRefreshTime": "", "widgetRefreshDelayTime": "", "cachingStatus": "", "limit": "", "widgetHadingClr": "", "widgetTopMargin": "", "headingBgColor": "", "headingFontColor": "", "headingDisplayStyle": "", "recordsPerPage": "", "pagePerBlock": "", "DataScrollHeight": "", "parentWidget": "", "columnNoToDisplay": "", "leftClmNoToFixed": "", "rightClmNoToFixed": "", "linkedWidget": [], "actionBtnReq": "", "pdfTableFontSize": "", "pdfTableHeadBarClr": "", "pdfTableHeadTxtFontClr": "", "groupClmNoComma": "", "query": "", "webQuery": "", "procedureName": "", "recordsPerPageTreeCh": "", "parameterOption": "", "loadOption": "ONWINDOWLOAD", "paraComboBgColor": "", "paraComboFontColor": "", "paraLabelFontColor": "", "jndiSavingData": "", "stmtTimeOut": "", "lastUpdatedQuery": "", "FooterText": "", "customMsgForNoData": "", "treeChildQuery": "", "treeChildProcedure": "", "popUpDetails": [], "queryLabel": '', "htmlText": '', 'iconName': "",
@@ -47,7 +47,7 @@ const WidgetMaster = () => {
   })
   // console.log(allWidgetData,'allWidgetData')
   const [radioValues, setRadioValues] = useState({
-    widgetViewed: 'Tabular', isWidgetNameVisible: 'Yes', selectedModeQuery: 'Query', widgetPurpose: 'Download',
+    widgetViewed: 'Tabular', isWidgetNameVisible: 'Yes', selectedModeQuery: 'Query', widgetPurpose: 'HTML',
     widgetHeadingAlign: 'left', isRecordLimitReq: 'Yes', isWidgetBorderReq: 'Yes',
 
     isTableHeadingReq: 'Yes',
@@ -109,13 +109,13 @@ const WidgetMaster = () => {
     }
   }, [values?.selFilterIds, parameterDrpData]);
 
-    //to set value of dashboard for auto
-    const dashFor = localStorage.getItem('dfor');
-    useEffect(() => {
-      if (dashFor) {
-        setValues({ ...values, "widgetFor": dashFor })
-      }
-    }, [dashFor])
+  //to set value of dashboard for auto
+  const dashFor = localStorage.getItem('dfor');
+  useEffect(() => {
+    if (dashFor) {
+      setValues({ ...values, "widgetFor": dashFor })
+    }
+  }, [dashFor])
 
   useEffect(() => {
     if (selectedOptions?.length > 0) {
@@ -135,10 +135,9 @@ const WidgetMaster = () => {
     // console.log(localValues, 'bgb')
     if (localValues && localValues !== '') {
       const val = JSON.parse(localValues);
-      console.log(val,'vavavak')
       setValues(val);
       setActionMode(mode);
-      setRows(val?.query);
+      setRows(val?.query && val?.query?.length >0 ? val?.query : val?.queryVO);
 
     }
     if (localRadio && localRadio !== '') {
@@ -159,6 +158,9 @@ const WidgetMaster = () => {
   useEffect(() => {
     if (dashboardForDt?.length === 0) { getDashboardForDrpData(); }
     if (dataServiceData?.length === 0) { getAllServiceData(); }
+    if (!singleConfigData) {
+      getDashConfigData()
+    }
   }, [])
 
 
@@ -299,7 +301,7 @@ const WidgetMaster = () => {
       "sqChildJsonString": []
     });
     setRadioValues({
-      widgetViewed: 'Tabular', isWidgetNameVisible: 'Yes', selectedModeQuery: 'Query', widgetPurpose: 'Download',
+      widgetViewed: 'Tabular', isWidgetNameVisible: 'Yes', selectedModeQuery: 'Query', widgetPurpose: 'HTML',
       widgetHeadingAlign: 'left', isRecordLimitReq: 'Yes', isWidgetBorderReq: 'Yes',
 
       isTableHeadingReq: 'Yes',
@@ -544,7 +546,7 @@ const WidgetMaster = () => {
         // Iframe fields
         isSsoUrl: singleData[0]?.isSSOUrl,//
       });
-      setRows(singleData[0]?.query)
+      setRows(singleData[0]?.query && singleData[0]?.query?.length > 0 ? singleData[0]?.query : singleData[0]?.queryVO)
       setLoading(false)
     }
   }, [singleData]);
@@ -1109,11 +1111,11 @@ const WidgetMaster = () => {
         newErrors.defaultPluginNameErr = "Default plugin name is required";
         isValid = false;
       }
-      if (!values?.alphaGraph3D?.trim()) {
+      if (!values?.alphaGraph3D?.trim() && radioValues?.isThree3D === "Yes") {
         newErrors.alphaGraph3DErr = "Alpha Graph 3D is required";
         isValid = false;
       }
-      if (!values?.betaGraph3D?.trim()) {
+      if (!values?.betaGraph3D?.trim() && radioValues?.isThree3D === "Yes") {
         newErrors.betaGraph3DErr = "Beta Graph 3D is required";
         isValid = false;
       }
@@ -1241,6 +1243,7 @@ const WidgetMaster = () => {
       setShowConfirmSave(true);
     }
   }
+  console.log(errors, 'errors')
 
   useEffect(() => {
     if (confirmSave) {

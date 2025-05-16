@@ -5,7 +5,7 @@ import { LoginContext } from '../context/LoginContext';
 
 
 const GlobalTable = (props) => {
-    const { selectedOption, setSelectedOption } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, setIsShowReport } = useContext(LoginContext);
     const { column, data, onDelete, onReport, setSearchInput, isShowBtn, isAdd, isModify, isDelete, isView, isReport, setOpenPage, isSearch, isRun, onRun, searchInput } = props;
 
     const tableCustomStyles = {
@@ -55,7 +55,7 @@ const GlobalTable = (props) => {
                                             Run Job</button>}
                                 </>)}
                                 {isReport &&
-                                    <button className='btn btn-sm datatable-btns py-0' onClick={onReport}>
+                                    <button className='btn btn-sm datatable-btns py-0' onClick={() => setIsShowReport(true)}>
                                         <i className="fa fa-file me-1 fs-13 text-warning"></i>Report</button>}
                             </>
                         }

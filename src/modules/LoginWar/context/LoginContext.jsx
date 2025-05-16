@@ -10,6 +10,7 @@ const LoginContextApi = ({ children }) => {
     const [showForgotPass, setShowForgotPass] = useState(false);
     const [selectedOption, setSelectedOption] = useState([]);
     const [openPage, setOpenPage] = useState('home')
+    const [isShowReport,setIsShowReport] = useState(false)
 
     //API Data
     const [widgetData, setWidgetData] = useState([]);
@@ -45,8 +46,8 @@ const LoginContextApi = ({ children }) => {
 
     const getWidgetData = () => {
         fetchData('http://10.226.25.164:8024/hisutils/allWidgetConfiguration?dashboardFor=CENTRAL+DASHBOARD').then((data) => {
-            if (data) {
-                setWidgetData(data)
+            if (data?.status === 1) {
+                setWidgetData(data?.data)
             } else {
                 setWidgetData([])
             }
@@ -377,6 +378,7 @@ const LoginContextApi = ({ children }) => {
             testTypeDrpData, getTestTypeDrpData,
             hospNameDrpData, getHospNameDrpData,
             zoneDrpData, getZoneDrpData,
+            isShowReport,setIsShowReport,
 
             //confirm box
             showConfirmSave, setShowConfirmSave, confirmSave, setConfirmSave,

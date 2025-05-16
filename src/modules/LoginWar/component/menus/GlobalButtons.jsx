@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { LoginContext } from '../../context/LoginContext';
 
 const GlobalButtons = (props) => {
-    const { onSave, onClear } = props;
+    const { onSave, onClear,setSearchInput } = props;
     const { openPage, setOpenPage, setSelectedOption } = useContext(LoginContext);
 
     return (
@@ -13,7 +13,7 @@ const GlobalButtons = (props) => {
                         <button className='btn btn-sm datatable-btns py-0' onClick={onSave}>
                             <i className="fa fa-save me-1 fs-13 text-success"></i>Save</button>
 
-                        <button className='btn btn-sm datatable-btns py-0' onClick={() => { setOpenPage('home'); setSelectedOption([]); }}>
+                        <button className='btn btn-sm datatable-btns py-0' onClick={() => { setOpenPage('home'); setSelectedOption([]); setSearchInput('') }}>
                             <i className="fa fa-close me-1 fs-13 text-danger"></i>Cancel</button>
 
                     </>)}

@@ -127,14 +127,14 @@ const DrugMappingMaster = () => {
     const moveToSelected = () => {
         if (itemCategory) {
             const itemsToMove = availableOptions.filter(opt =>
-                selectedAvailable.includes(String(opt.idWithFlag))
+                selectedAvailable.includes(String(opt.cwhnumDrugId))
             );
             const newSelected = itemsToMove.filter(item =>
-                !selectedOptions.some(selected => selected.idWithFlag === item.idWithFlag)
+                !selectedOptions.some(selected => selected.cwhnumDrugId === item.cwhnumDrugId)
             );
             setSelectedOptions(prev => [...prev, ...newSelected]);
             setAvailableOptions(prev => prev.filter(opt =>
-                !selectedAvailable.includes(String(opt.idWithFlag))
+                !selectedAvailable.includes(String(opt.cwhnumDrugId))
             ));
             setSelectedAvailable([]);
         } else {
@@ -145,11 +145,11 @@ const DrugMappingMaster = () => {
     const moveToAvailable = () => {
         if (itemCategory) {
             const itemsToMove = selectedOptions.filter(opt =>
-                selectedSelected.includes(String(opt.idWithFlag))
+                selectedSelected.includes(String(opt.cwhnumDrugId))
             );
             setAvailableOptions(prev => [...prev, ...itemsToMove]);
             setSelectedOptions(prev => prev.filter(opt =>
-                !selectedSelected.includes(String(opt.idWithFlag))
+                !selectedSelected.includes(String(opt.cwhnumDrugId))
             ));
             setSelectedSelected([]);
         } else {
@@ -168,8 +168,7 @@ const DrugMappingMaster = () => {
         { value: "3", label: "All" }
     ];
 
-    console.log(itemNameList, 'itemnamelist')
-    console.log(itemName, 'itemname')
+ 
 
     return (
         <>
@@ -253,7 +252,7 @@ const DrugMappingMaster = () => {
                             }}
                         >
                             {availableOptions.map(opt => (
-                                <option key={opt.idWithFlag} value={opt.idWithFlag}>
+                                <option key={opt.cwhnumDrugId} value={opt.cwhnumDrugId}>
                                     {opt.cwhstrDrugName}
                                 </option>
                             ))}
@@ -298,8 +297,8 @@ const DrugMappingMaster = () => {
                             }}
                         >
                             {selectedOptions.map(opt => (
-                                <option key={opt.idWithFlag} value={opt.idWithFlag}>
-                                    {opt.cwhstrDrugName}
+                                <option key={opt.stateDrugId} value={opt.stateDrugId}>
+                                    {opt.stateDrugName}
                                 </option>
                             ))}
                         </select>

@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { timeOutOptions } from '../../../localData/DropDownData'
 import InputSelect from '../../commons/InputSelect'
+import { HISContext } from '../../../contextApi/HISContext';
 
 const JndiDetails = (props) => {
     const { handleValueChange, handleRadioChange, radioValues, values } = props;
+    const {jndiServerDrpData} = useContext(HISContext)
 
     return (
         <>
@@ -21,7 +23,7 @@ const JndiDetails = (props) => {
                                 id="jndiSavingData"
                                 name="jndiSavingData"
                                 placeholder="Select"
-                                options={[{ value: '2', label: "CDWH" }]}
+                                options={jndiServerDrpData}
                                 className="backcolorinput"
                                 onChange={handleValueChange}
                                 value={values?.jndiSavingData}

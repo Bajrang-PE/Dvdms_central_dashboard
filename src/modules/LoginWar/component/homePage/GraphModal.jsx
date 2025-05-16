@@ -19,7 +19,7 @@ const GraphModal = ({ data, onClose, widgetData }) => {
             type: 'column'
         },
         title: {
-            text: widgetData?.rptDisplayName
+            text: widgetData?.rptName
         },
         xAxis: {
             categories: categories,

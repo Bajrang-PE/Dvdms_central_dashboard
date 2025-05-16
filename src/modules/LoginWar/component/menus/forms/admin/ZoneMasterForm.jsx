@@ -113,7 +113,7 @@ const ZoneMasterForm = ({setSearchInput}) => {
     }
     return (
         <div>
-            <GlobalButtons onSave={handleValidation} onClear={reset} />
+            <GlobalButtons onSave={handleValidation} onClear={reset}/>
             <hr className='my-2' />
             <div className='row pt-2'>
                 <div className='col-sm-6'>

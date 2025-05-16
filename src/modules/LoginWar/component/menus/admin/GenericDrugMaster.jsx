@@ -120,7 +120,7 @@ const GenericDrugMaster = () => {
         },
         {
             name: 'Drug Type',
-            selector: row => row.drugTypeId || "---",
+            selector: row => row.drugTypeName || "---",
             sortable: true,
         },
         {
@@ -189,7 +189,7 @@ const GenericDrugMaster = () => {
                     </div>
 
                     <hr className='my-2' />
-                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={groupId ? true : false} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={groupId ? true : false} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput}/>
 
                     {openPage === 'view' &&
                         <ViewPage data={[{ value: selectedOption[0]?.drugName, label: "Drug Name" }, { value: selectedOption[0]?.drugTypeId, label: "Drug Type" }, { value: selectedOption[0]?.drugCatCode, label: "Category Name" }]} onClose={onClose} title={"Generic Drug Master"} />

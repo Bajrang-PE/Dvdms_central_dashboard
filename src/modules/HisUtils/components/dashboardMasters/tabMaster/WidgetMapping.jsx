@@ -32,6 +32,7 @@ const WidgetMapping = (props) => {
         if (name === "query") {
             const updatedRows = rows.filter((_, i) => i !== index);
             setRows(updatedRows);
+            setValues({ ...values, ['widgetMappingDetail']: updatedRows })
         }
     };
 

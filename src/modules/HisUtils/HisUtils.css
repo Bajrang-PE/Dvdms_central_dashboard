@@ -638,3 +638,27 @@ label {
 .logo-upload-close:hover{
   color: red;
 }
+
+
+/* For desktop - 2 columns */
+@media (min-width: 768px) {
+  .db-connection-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap:0px 25px;
+  }
+  
+  /* This ensures visual grouping matches tab order */
+  /* .db-connection-grid .form-group:nth-child(1) { order: 1; }
+  .db-connection-grid .form-group:nth-child(2) { order: 2; }
+  .db-connection-grid .form-group:nth-child(3) { order: 3; }
+  .db-connection-grid .form-group:nth-child(4) { order: 4; } */
+}
+
+/* For mobile - single column */
+@media (max-width: 767px) {
+  .db-connection-grid {
+      display: flex;
+      flex-direction: column;
+  }
+}

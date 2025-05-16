@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import InputSelect from '../../commons/InputSelect'
 import InputField from '../../commons/InputField'
-import { cachingStatusForWidgetOptions, itemForDashboard, widgetRefreshTimeOptions, widgetTypeOptions } from '../../../localData/DropDownData'
+import { cachingStatusForWidgetOptions, widgetRefreshTimeOptions, widgetTypeOptions } from '../../../localData/DropDownData'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAdd, faEdit, faMinus, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faAdd, faMinus } from '@fortawesome/free-solid-svg-icons'
 
 const AboutWidget = (props) => {
     const { handleValueChange, handleRadioChange, radioValues, values, dashboardForDt, setValues, widgetDrpData, errors, otherLinkData, setOtherLinkData, newRow, setNewRow, setErrors } = props;
@@ -522,7 +522,7 @@ const AboutWidget = (props) => {
                     </div>
 
                     {/* SECTION DEVIDER widget purpose*/}
-                    <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
+                    {/* <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                         <div className='col-sm-6'>
                             <div className="form-group row">
                                 <label className="col-sm-5 col-form-label pe-0">
@@ -560,10 +560,10 @@ const AboutWidget = (props) => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* SECTION DEVIDER LIMIT and record required */}
-                    {radioValues?.widgetPurpose === "HTML" &&
+                    {/* {radioValues?.widgetPurpose === "HTML" && */}
                         <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                             {/* //left columns */}
                             <div className='col-sm-6'>
@@ -623,7 +623,7 @@ const AboutWidget = (props) => {
 
                             </div>
                         </div>
-                    }
+                    {/* } */}
 
                     {/* SECTION DEVIDER heading border margin */}
                     <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>

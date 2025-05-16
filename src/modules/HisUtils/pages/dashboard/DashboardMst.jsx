@@ -43,6 +43,7 @@ const DashboardMst = () => {
             .filter(Boolean);
     }, [allTabsData, mainDashData]);
 
+    
 
     const isTopBarLayout = mainDashData?.jsonData?.tabDisplayStyle === 'TOP';
 

@@ -166,7 +166,7 @@ const DbConfigMaster = () => {
             if (data?.status === 1) {
                 ToastAlert(data?.message)
             } else {
-                ToastAlert(data?.message,'error')
+                ToastAlert(data?.message, 'error')
             }
         })
     }
@@ -309,6 +309,7 @@ const DbConfigMaster = () => {
                     <b><h6 className='header-devider m-0 ps-1'> Configuration Master</h6></b>
                     {/* <form action=""> */}
                     <div className='py-2 px-2'>
+                        
                         {/* SECTION DEVIDER config for and server*/}
                         <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                             {/* //left columns */}
@@ -397,11 +398,11 @@ const DbConfigMaster = () => {
                         {/* SECTION DEVIDER */}
                         {/* IF DB CONNECTION STRING NO */}
                         {isDbConnReq === '0' &&
-                            <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
+                            <div iv className='role-theme db-connection-grid' style={{ paddingBottom: "1px" }}>
                                 {/* //left columns */}
-                                <div className='col-sm-6'>
+                                {/* <div className='col-sm-6'> */}
                                     <div className="form-group row">
-                                        <label className="col-sm-5 col-form-label pe-0 required-label">JNDI for Primary Server : </label>
+                                        <label className="col-sm-5 col-form-label pe-0 required-label align-content-center">JNDI for Primary Server : </label>
                                         <div className="col-sm-7 ps-0 align-content-center">
                                             <InputField
                                                 type="text"
@@ -417,7 +418,7 @@ const DbConfigMaster = () => {
                                         </div>
                                     </div>
                                     <div className="form-group row">
-                                        <label className="col-sm-5 col-form-label pe-0 required-label">JNDI for Secondary Server 1(Reporting Server)  : </label>
+                                        <label className="col-sm-5 col-form-label pe-0 required-label align-content-center">JNDI for Secondary Server 1(Reporting Server) : </label>
                                         <div className="col-sm-7 ps-0 align-content-center">
                                             <InputField
                                                 type="text"
@@ -432,11 +433,11 @@ const DbConfigMaster = () => {
                                             />
                                         </div>
                                     </div>
-                                </div>
+                                {/* </div> */}
                                 {/* right columns */}
-                                <div className='col-sm-6'>
+                                {/* <div className='col-sm-6'> */}
                                     <div className="form-group row">
-                                        <label className="col-sm-5 col-form-label fix-label pe-0">JNDI for Secondary Server 2(Reporting Server) : </label>
+                                        <label className="col-sm-5 col-form-label fix-label pe-0 align-content-center">JNDI for Secondary Server 2(Reporting Server) : </label>
                                         <div className="col-sm-7 ps-0 align-content-center">
                                             <InputField
                                                 type="text"
@@ -450,7 +451,7 @@ const DbConfigMaster = () => {
                                         </div>
                                     </div>
                                     <div className="form-group row">
-                                        <label className="col-sm-5 col-form-label fix-label pe-0">JNDI for Secondary Server 3(Reporting Server) : </label>
+                                        <label className="col-sm-5 col-form-label fix-label pe-0 align-content-center">JNDI for Secondary Server 3(Reporting Server) : </label>
                                         <div className="col-sm-7 ps-0 align-content-center">
                                             <InputField
                                                 type="text"
@@ -463,7 +464,7 @@ const DbConfigMaster = () => {
                                             />
                                         </div>
                                     </div>
-                                </div>
+                                {/* </div> */}
                             </div>
                         }
                         {/* SECTION DEVIDER */}
@@ -699,9 +700,9 @@ const DbConfigMaster = () => {
                         <b><h6 className='header-devider my-1 ps-1'>Header Details</h6></b>
 
                         {/* SECTION DEVIDER static header and report header*/}
-                        <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
+                        <div iv className='role-theme user-form db-connection-grid' style={{ paddingBottom: "1px" }}>
                             {/* //left columns */}
-                            <div className='col-sm-6'>
+                            {/* <div className='col-sm-6'> */}
                                 <div className="form-group row">
                                     <label className="col-sm-5 col-form-label pe-0 required-label">Static Report Header1 : </label>
                                     <div className="col-sm-7 ps-0 align-content-center">
@@ -731,9 +732,9 @@ const DbConfigMaster = () => {
                                         />
                                     </div>
                                 </div>
-                            </div>
+                            {/* </div> */}
                             {/* right columns */}
-                            <div className='col-sm-6'>
+                            {/* <div className='col-sm-6'> */}
                                 <div className="form-group row">
                                     <label className="col-sm-5 col-form-label fix-label pe-0">Static Report Header3 : </label>
                                     <div className="col-sm-7 ps-0 align-content-center">
@@ -783,7 +784,7 @@ const DbConfigMaster = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            {/* </div> */}
                         </div>
 
                         <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>

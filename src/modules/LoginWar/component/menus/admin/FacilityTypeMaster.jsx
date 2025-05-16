@@ -139,7 +139,7 @@ const FacilityTypeMaster = () => {
                     </div>
 
                     <hr className='my-2' />
-                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput}/>
 
                     {openPage === 'view' &&
                         <ViewPage data={[{ value: selectedOption[0]?.facilityTypeName, label: "Facility Type Name" }]} onClose={onClose} title={"Facility Type Master"} />

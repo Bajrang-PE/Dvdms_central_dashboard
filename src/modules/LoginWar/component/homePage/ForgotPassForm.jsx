@@ -35,7 +35,7 @@ const ForgotPassForm = ({ isShow, onClose }) => {
     }
 
     const fetchCaptchaData = () => {
-        fetchData('/api/v1/generateCaptcha').then(data => {
+        fetchData('/api/v1/captcha').then(data => {
             if (data) {
                 setCaptchaImage(data?.captchaImage);
                 setCaptchaToken(data?.captchaToken);

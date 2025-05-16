@@ -55,7 +55,7 @@ const TabularDash = ({ widgetData }) => {
 
   const [columns, setColumns] = useState([]);
 
-  console.log(widgetData, 'widgetData')
+  console.log(widgetData, 'tabular')
 
   //parameter search
   useEffect(() => {
@@ -168,7 +168,7 @@ const TabularDash = ({ widgetData }) => {
           "16-Apr-2025",//from values
           "16-Apr-2025" // to values
         ]
-        const response = await fetchProcedureData(widget?.procedureMode, params);
+        const response = await fetchProcedureData(widget?.procedureMode, params, widget?.JNDIid);
         const formattedData = formatData(response.data || []);
         const generatedColumns = generateColumns(formattedData);
         setColumns(generatedColumns);
@@ -182,8 +182,7 @@ const TabularDash = ({ widgetData }) => {
     } else {
       // if (!widget?.queryVO?.length > 0) return;
       try {
-        const data = await fetchQueryData(widget?.query,singleConfigData?.databaseConfigVO?.jndiForPrimaryServer);
-        console.log(data, 'data')
+        const data = await fetchQueryData(widget?.query, widget?.JNDIid);
         if (data?.length > 0) {
           setTableData(
             data?.length > 0 && data.map((item) => ({
@@ -201,10 +200,9 @@ const TabularDash = ({ widgetData }) => {
 
   useEffect(() => {
     if (widgetData) {
-      fetchData(widgetData);
+      fetchData(widgetData,);
     }
   }, [paramsValues, widgetData]);
-
 
   const headingAlign = widgetData?.tableHeadingAlignment === '1' ? 'center' : 'left';
   const borderReq = widgetData?.isTableBorderRequired || '';
@@ -223,6 +221,8 @@ const TabularDash = ({ widgetData }) => {
   const widgetTopMargin = widgetData.widgetTopMargin || "";
   const initialRecord = widgetData?.initialRecordNo;
   const finalRecord = widgetData?.finalRecordNo;
+
+  const widgetLimit = widgetData?.limitHTMLFromDb || ''
   const defLimit = singleConfigData?.databaseConfigVO?.setDefaultLimit || ''
   const parsedLimit = parseInt(defLimit, 10);
   const safeLimit = isNaN(parsedLimit) || parsedLimit <= 0 ? null : parsedLimit;
@@ -288,10 +288,10 @@ const TabularDash = ({ widgetData }) => {
               <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }}>
                 <FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-2" />Refresh Data
               </li>
-              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generatePDF(widgetData, filterData, singleConfigData?.databaseConfigVO)} title="pdf">
+              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generatePDF(widgetData, widgetLimit ? filterData.slice(0, parseInt(widgetLimit)) : safeLimit ? filterData.slice(0, safeLimit) : filterData, singleConfigData?.databaseConfigVO)} title="pdf">
                 <FontAwesomeIcon icon={faFilePdf} className="dropdown-gear-icon me-2" />Download PDF
               </li>
-              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generateCSV(widgetData, filterData, singleConfigData?.databaseConfigVO)}>
+              <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generateCSV(widgetData, widgetLimit ? filterData.slice(0, parseInt(widgetLimit)) : safeLimit ? filterData.slice(0, safeLimit) : filterData, singleConfigData?.databaseConfigVO)}>
                 <FontAwesomeIcon icon={faFileExcel} className="dropdown-gear-icon me-2" />Download CSV
               </li>
               <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }}>
@@ -340,10 +340,9 @@ const TabularDash = ({ widgetData }) => {
         </div>
       )}
 
-
       <Tabular
         columns={columns}
-        data={safeLimit ? filterData.slice(0, safeLimit) : filterData}
+        data={widgetLimit ? filterData.slice(0, parseInt(widgetLimit)) : safeLimit ? filterData.slice(0, safeLimit) : filterData}
         pagination={isPaginationReq}
         recordsPerPage={recordPerPage}
         fixedHeader={isHeadingFixed}

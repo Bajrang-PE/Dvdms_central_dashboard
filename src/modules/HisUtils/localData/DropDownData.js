@@ -168,7 +168,7 @@ export const kpiBoxClickOptions = [
 export const tabDisplayOptions = [
     { value: 'TOP', label: 'Top Tab' },
     { value: 'SIDE', label: 'Side Tab' },
-    { value: 'BIG_ICON', label: 'Big Icon Tab' },
+    // { value: 'BIG_ICON', label: 'Big Icon Tab' },
 ]
 
 export const dataLoadOptions = [

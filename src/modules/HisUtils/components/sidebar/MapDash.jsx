@@ -58,7 +58,7 @@ const MapDash = ({ widgetData }) => {
     const fetchDataQry = async (query) => {
         if (!query) return;
         try {
-            const data = await fetchQueryData(query,singleConfigData?.databaseConfigVO?.jndiForPrimaryServer);
+            const data = await fetchQueryData(query,widgetData?.JNDIid);
             const seriesData = [];
 
             if (data[0]?.column_3) {

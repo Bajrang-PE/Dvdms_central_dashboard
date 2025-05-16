@@ -82,7 +82,7 @@ export const fetchQueryData = async (queryVO = [], jndiServer) => {
   }
 };
 
-export const fetchProcedureData = async (procedure, params) => {
+export const fetchProcedureData = async (procedure, params, jndiServer) => {
   if (!procedure) {
     return [];
   }
@@ -90,7 +90,8 @@ export const fetchProcedureData = async (procedure, params) => {
   try {
     const requestBody = {
       "procedureName": procedure,
-      "parameters": params
+      "parameters": params,
+      "jndi": jndiServer
     };
     const response = await fetchPostData(`api/procedures/execute`, requestBody);
 

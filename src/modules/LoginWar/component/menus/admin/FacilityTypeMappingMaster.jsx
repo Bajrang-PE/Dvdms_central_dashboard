@@ -229,7 +229,7 @@ const FacilityTypeMappingMaster = () => {
                         >
                             {selectedOptions.map(opt => (
                                 <option key={opt.facilityTypeId} value={opt.facilityTypeId}>
-                                    {opt.facilityTypeName}
+                                    {opt.stateFacilityTypeName}
                                 </option>
                             ))}
                         </select>

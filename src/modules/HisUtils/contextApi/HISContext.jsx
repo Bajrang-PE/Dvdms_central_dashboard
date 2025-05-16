@@ -18,7 +18,7 @@ const HISContextData = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [singleConfigData, setSingleConfigData] = useState();
 
-    const [paramsValues, setParamsValues] = useState();
+  const [paramsValues, setParamsValues] = useState();
 
   // ALL DATA
   const [parameterData, setParameterData] = useState([]);
@@ -36,6 +36,7 @@ const HISContextData = ({ children }) => {
   const [tabDrpData, setTabDrpData] = useState([]);
   const [dataServiceDrpData, setDataServiceDrpData] = useState([]);
   const [serviceCategoryDrpData, setServiceCategoryDrpData] = useState([]);
+  const [jndiServerDrpData, setJndiServerDrpData] = useState([]);
 
   // dropdowns api call
   const getDashboardForDrpData = () => {
@@ -50,7 +51,7 @@ const HISContextData = ({ children }) => {
 
   const getServiceCategoryDrpData = () => {
     fetchData("hisutils/serviceCategory").then((data) => {
-      if (data?.status ===1) {
+      if (data?.status === 1) {
         setServiceCategoryDrpData(data?.data);
       } else {
         setServiceCategoryDrpData([]);
@@ -149,6 +150,26 @@ const HISContextData = ({ children }) => {
     fetchData("/hisutils/dashboard-configurations").then((data) => {
       if (data?.status === 1) {
         setSingleConfigData(data?.data)
+
+        const config = data?.data?.databaseConfigVO;
+        const jndiKeys = [
+          { key: "jndiForPrimaryServer", label: "Primary" },
+          { key: "jndiForSecondaryServer1", label: "Secondary 1" },
+          { key: "jndiForSecondaryServer2", label: "Secondary 2" },
+          { key: "jndiForSecondaryServer3", label: "Secondary 3" }
+        ];
+
+        const jndiServerOptions = jndiKeys
+          .map(({ key, label }) => {
+            const value = config?.[key];
+            return value && value.trim() !== ""
+              ? { value, label: `${label} - ${value}` }
+              : null;
+          })
+          .filter(Boolean);
+
+        setJndiServerDrpData(jndiServerOptions)
+
       } else {
         setSingleConfigData(null)
       }
@@ -167,7 +188,7 @@ const HISContextData = ({ children }) => {
       activeTab, setActiveTab,
       theme, setTheme,
       mainDashData, setMainDashData,
-      singleConfigData, getDashConfigData,
+      singleConfigData, getDashConfigData,jndiServerDrpData,
 
       paramsValues, setParamsValues,
 

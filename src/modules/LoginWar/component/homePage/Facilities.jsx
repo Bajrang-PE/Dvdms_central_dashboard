@@ -83,6 +83,8 @@ const Facilities = () => {
         return total || ''
     }
 
+    console.log(graphWidgets,'bgbgbg')
+
     return (
         <div className="facility row pl-5 pr-5" style={{ padding: "10px" }} id='facilities'>
             <div className={`col-12 p-4`} >

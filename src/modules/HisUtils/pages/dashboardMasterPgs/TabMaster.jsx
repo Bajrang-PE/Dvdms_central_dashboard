@@ -20,7 +20,7 @@ import { fetchPostData } from '../../../../utils/ApiHooks';
 
 const TabMaster = () => {
 
-  const { dashboardForDt, getDashboardForDrpData, widgetDrpData, getAllWidgetData, getAllParameterData, parameterDrpData, getAllTabsData, allTabsData, setShowDataTable, setSelectedOption, selectedOption, actionMode, setActionMode, tabDrpData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(HISContext);
+  const { dashboardForDt, getDashboardForDrpData, widgetDrpData, getAllWidgetData, getAllParameterData, parameterDrpData, getAllTabsData, allTabsData, setShowDataTable, setSelectedOption, selectedOption, actionMode, setActionMode, tabDrpData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave,getDashConfigData,singleConfigData } = useContext(HISContext);
   const [tabIndex, setTabIndex] = useState(1);
   const [tabName, setTabName] = useState({ value: 1, label: "About Tab" });
   const [showTabsTable, setShowTabsTable] = useState(false);
@@ -85,6 +85,9 @@ const TabMaster = () => {
 
   useEffect(() => {
     if (dashboardForDt?.length === 0) { getDashboardForDrpData(); }
+    if (!singleConfigData) {
+      getDashConfigData()
+  }
   }, [])
 
   useEffect(() => {

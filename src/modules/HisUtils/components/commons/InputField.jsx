@@ -17,7 +17,8 @@ const InputField = ({
     errorMessage,
     type,
     onClick,
-    ref
+    ref,
+    acceptType
 
 }) => {
     return (
@@ -26,7 +27,13 @@ const InputField = ({
                 type={type ? type : "text"}
                 id={id}
                 name={name}
-                value={value}
+                value={
+                    acceptType === "number"
+                        ? value?.toString().replace(/[^0-9]/g, '')
+                        : acceptType === "letters"
+                            ? value?.toString().replace(/[^a-zA-Z]/g, '')
+                            : value
+                }
                 placeholder={placeholder}
                 onChange={onChange}
                 onBlur={onBlur}

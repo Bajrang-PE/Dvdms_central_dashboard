@@ -15,7 +15,7 @@ import { fetchPostData } from '../../../../utils/ApiHooks'
 
 const ParameterMaster = () => {
 
-  const { parameterData, getAllParameterData, selectedOption, setSelectedOption, setShowDataTable, dashboardForDt, getDashboardForDrpData, actionMode, setActionMode, parameterDrpData, getAllServiceData, dataServiceData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(HISContext);
+  const { parameterData, getAllParameterData, selectedOption, setSelectedOption, setShowDataTable, dashboardForDt, getDashboardForDrpData, actionMode, setActionMode, parameterDrpData, getAllServiceData, dataServiceData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave,jndiServerDrpData,getDashConfigData,singleConfigData } = useContext(HISContext);
 
   const [rows, setRows] = useState([{ optionValue: "", optionText: "" }]);
   const [showAsLabel, setShowAsLabel] = useState(false);
@@ -59,6 +59,12 @@ const ParameterMaster = () => {
   useEffect(() => {
     if (values?.parameterFor) { getAllParameterData(values?.parameterFor); }
   }, [values?.parameterFor])
+
+  useEffect(() => {
+    if (!singleConfigData) {
+        getDashConfigData()
+    }
+}, [])
 
   useEffect(() => {
     if (dashboardForDt?.length === 0) { getDashboardForDrpData(); }
@@ -500,9 +506,9 @@ const ParameterMaster = () => {
             </div>
 
             {/* SECTION DEVIDER para name and place holder */}
-            <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
+            <div iv className='role-theme user-form db-connection-grid' style={{ paddingBottom: "1px" }}>
               {/* //left columns */}
-              <div className='col-sm-6'>
+              {/* <div className='col-sm-6'> */}
                 <div className="form-group row" style={{ paddingBottom: "1px" }}>
                   <label className="col-sm-5 col-form-label pe-0 required-label">Parameter (For Internal Use) : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
@@ -523,23 +529,6 @@ const ParameterMaster = () => {
                     }
                   </div>
                 </div>
-                <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0">Place Holder  : </label>
-                  <div className="col-sm-7 ps-0 align-content-center">
-                    <InputField
-                      type="text"
-                      className="backcolorinput"
-                      placeholder="Enter value..."
-                      name='placeHolder'
-                      id="placeHolder"
-                      onChange={handleValueChange}
-                      value={values?.placeHolder}
-                    />
-                  </div>
-                </div>
-              </div>
-              {/* right columns */}
-              <div className='col-sm-6'>
                 <div className="form-group row" style={{ paddingBottom: "1px" }}>
                   <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Parameter Name (For Display) : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
@@ -557,6 +546,24 @@ const ParameterMaster = () => {
                         {errors?.parameterDisplayErr}
                       </div>
                     }
+                  </div>
+                </div>
+              {/* </div> */}
+              {/* right columns */}
+              {/* <div className='col-sm-6'> */}
+               
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0">Place Holder  : </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <InputField
+                      type="text"
+                      className="backcolorinput"
+                      placeholder="Enter value..."
+                      name='placeHolder'
+                      id="placeHolder"
+                      onChange={handleValueChange}
+                      value={values?.placeHolder}
+                    />
                   </div>
                 </div>
                 {values?.parameterType === '1' &&
@@ -597,13 +604,13 @@ const ParameterMaster = () => {
                   </div>
                 }
               </div>
-            </div>
+            {/* </div> */}
 
             <b><h6 className='header-devider my-1'>Parameter Layout</h6></b>
             {/* SECTION DEVIDER para width to control alignment*/}
-            <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
+            <div iv className='role-theme user-form db-connection-grid' style={{ paddingBottom: "1px" }}>
               {/* //left columns */}
-              <div className='col-sm-6'>
+              {/* <div className='col-sm-6'> */}
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">Parameter Width : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
@@ -619,37 +626,6 @@ const ParameterMaster = () => {
                   </div>
                 </div>
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0">Parameter Label Width : </label>
-                  <div className="col-sm-7 ps-0 align-content-center">
-                    <InputSelect
-                      id="paraLabelWidth"
-                      name="paraLabelWidth"
-                      placeholder="Select value..."
-                      options={parameterWidth}
-                      className="backcolorinput"
-                      onChange={handleValueChange}
-                      value={values?.paraLabelWidth}
-                    />
-                  </div>
-                </div>
-                <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0">Parameter Control Width : </label>
-                  <div className="col-sm-7 ps-0 align-content-center">
-                    <InputSelect
-                      id="paraControlWidth"
-                      name="paraControlWidth"
-                      placeholder="Select value..."
-                      options={parameterWidth}
-                      className="backcolorinput"
-                      onChange={handleValueChange}
-                      value={values?.paraControlWidth}
-                    />
-                  </div>
-                </div>
-              </div>
-              {/* right columns */}
-              <div className='col-sm-6'>
-                <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">Parameter Alignment : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputSelect
@@ -660,6 +636,21 @@ const ParameterMaster = () => {
                       className="backcolorinput"
                       onChange={handleValueChange}
                       value={values?.parameterAlignment}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0">Parameter Label Width : </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <InputSelect
+                      id="paraLabelWidth"
+                      name="paraLabelWidth"
+                      placeholder="Select value..."
+                      options={parameterWidth}
+                      className="backcolorinput"
+                      onChange={handleValueChange}
+                      value={values?.paraLabelWidth}
                     />
                   </div>
                 </div>
@@ -677,6 +668,26 @@ const ParameterMaster = () => {
                     />
                   </div>
                 </div>
+                
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0">Parameter Control Width : </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <InputSelect
+                      id="paraControlWidth"
+                      name="paraControlWidth"
+                      placeholder="Select value..."
+                      options={parameterWidth}
+                      className="backcolorinput"
+                      onChange={handleValueChange}
+                      value={values?.paraControlWidth}
+                    />
+                  </div>
+                </div>
+              {/* </div> */}
+              {/* right columns */}
+              {/* <div className='col-sm-6'> */}
+               
+                
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">Parameter Control Alignment : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
@@ -692,7 +703,7 @@ const ParameterMaster = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            {/* </div> */}
 
             {/* SECTION DEVIDER mandatory and default*/}
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
@@ -1190,7 +1201,7 @@ const ParameterMaster = () => {
                       id="jndiSavingData"
                       name="jndiSavingData"
                       // placeholder="Select"
-                      options={[{ value: '1', label: "CDWH" }, { value: '2', label: "CDWH" }]}
+                      options={jndiServerDrpData}
                       className="backcolorinput"
                       onChange={handleValueChange}
                       value={values?.jndiSavingData}

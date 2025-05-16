@@ -11,7 +11,7 @@ import GlobalDataTable from '../../components/commons/GlobalDataTable'
 import { fetchPostData } from '../../../../utils/ApiHooks'
 
 const DataServiceMaster = () => {
-  const { setShowDataTable, getAllServiceData, dataServiceData, selectedOption, setSelectedOption, setActionMode, actionMode, parameterData, getAllParameterData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, } = useContext(HISContext);
+  const { setShowDataTable, getAllServiceData, dataServiceData, selectedOption, setSelectedOption, setActionMode, actionMode, parameterData, getAllParameterData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, jndiServerDrpData, getDashConfigData, singleConfigData } = useContext(HISContext);
 
   const [isCacheData, setIsCacheData] = useState(false);
   const [selectedMode, setSelectedMode] = useState("query");
@@ -41,6 +41,9 @@ const DataServiceMaster = () => {
   useEffect(() => {
     if (dataServiceData?.length === 0) { getAllServiceData(); }
     if (parameterData?.length === 0) { getAllParameterData('CENTRAL DASHBOARD'); }
+    if (!singleConfigData) {
+      getDashConfigData()
+    }
   }, [])
 
   useEffect(() => {
@@ -677,7 +680,7 @@ const DataServiceMaster = () => {
                     id="jndiSavingData"
                     name="jndiSavingData"
                     // placeholder="Select"
-                    options={[{ value: 'cdwh', label: "CDWH" }]}
+                    options={jndiServerDrpData}
                     className="backcolorinput"
                     onChange={handleValueChange}
                     value={values?.jndiSavingData}

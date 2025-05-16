@@ -6,10 +6,12 @@ import ZoneMasterForm from '../forms/admin/ZoneMasterForm';
 import ViewPage from '../ViewPage';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import { fetchDeleteData } from '../../../../../utils/ApiHooks';
+import MasterReport from '../../MasterReport';
+import useReportColumns from '../../../hooks/useReportColumns';
 
 const ZoneMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, getZoneListData, zoneListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, getZoneListData, zoneListData, setShowConfirmSave, confirmSave, setConfirmSave, isShowReport, setIsShowReport } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active')
     const [filterData, setFilterData] = useState(zoneListData);
@@ -50,7 +52,7 @@ const ZoneMaster = () => {
 
     const deleteRecord = () => {
         fetchDeleteData(`api/v1/zones/${selectedOption[0]?.cwhnumZoneId}`).then(data => {
-            if (data?.status ===1) {
+            if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getZoneListData();
                 setSelectedOption([]);
@@ -115,16 +117,19 @@ const ZoneMaster = () => {
         setOpenPage('home');
         setSelectedOption([]);
     }
+    const reportColumns = useReportColumns(column);
 
     return (
         <>
             <div className='masters mx-3 my-2'>
-                <div className='masters-header row'>
-                    <span className='col-6'><b>{`Zone Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
-
-                </div>
-                {(openPage === "home" || openPage === 'view' || openPage === 'delete') && (<>
+                {!isShowReport &&
+                    <div className='masters-header row'>
+                        <span className='col-6'><b>{`Zone Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                        {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>
+                        }
+                    </div>
+                }
+                {(openPage === "home" || openPage === 'view' || openPage === 'delete') && !isShowReport && (<>
                     <div className='row pt-2'>
                         <div className='col-sm-6'>
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
@@ -145,16 +150,22 @@ const ZoneMaster = () => {
                     </div>
 
                     <hr className='my-2' />
-                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} />
 
-                    {openPage === 'view' &&
+                    {(openPage === 'view' && !isShowReport) &&
                         <ViewPage data={[{ value: selectedOption[0]?.cwhstrZoneName, label: "Zone Name" }]} onClose={onClose} title={"Zone Master"} />
                     }
                 </>)}
 
-                {(openPage === "add" || openPage === 'modify') && (<>
-                    <ZoneMasterForm setSearchInput={setSearchInput}/>
+                {(openPage === "add" || openPage === 'modify') && !isShowReport && (<>
+                    <ZoneMasterForm setSearchInput={setSearchInput} />
                 </>)}
+
+                {isShowReport &&
+                    <MasterReport title={"Zone Master"} column={reportColumns} data={zoneListData} />
+
+                }
+
             </div>
         </>
     )

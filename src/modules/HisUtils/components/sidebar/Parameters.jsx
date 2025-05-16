@@ -19,6 +19,9 @@ const Parameters = ({ params, setParamsValues }) => {
     const [proParamsVal, setProParamsVal] = useState({});
 
     const dashFor = queryParams.get('dashboardFor');
+    const [errors, setErrors] = useState({
+
+    })
 
     useEffect(() => {
         if (dashFor && parameterData?.length === 0) {
@@ -37,12 +40,18 @@ const Parameters = ({ params, setParamsValues }) => {
     // };
 
     // Function to handle multi-select change
-    const handleMultiSelectChange = (parameterName, selectedOptions) => {
+    const handleMultiSelectChange = (parameterName, selectedOptions, id) => {
         setSelectedValues((prev) => ({
             ...prev,
             [parameterName]: selectedOptions,
         }));
+        setProParamsVal((prev) => ({
+            ...prev,
+            [id]: selectedOptions,
+        }));
+        setErrors(prev => ({ ...prev, [id]: "" }))
     };
+
 
     const handleInputChange = (parameterName, value, id) => {
         setSelectedValues((prev) => ({
@@ -54,8 +63,9 @@ const Parameters = ({ params, setParamsValues }) => {
             ...prev,
             [id]: value,
         }));
-    };
 
+        setErrors(prev => ({ ...prev, [id]: "" }))
+    };
 
     useEffect(() => {
         if (parameterData?.length > 0 && params) {
@@ -76,10 +86,10 @@ const Parameters = ({ params, setParamsValues }) => {
         return "";
     };
 
-    const fetchDropdownData = async (query, parameterName) => {
+    const fetchDropdownData = async (query, parameterName, jndiS) => {
         if (!query) return;
         try {
-            const val = { query, params: {}, jndi: singleConfigData?.databaseConfigVO?.jndiForPrimaryServer };
+            const val = { query, params: {}, jndi: jndiS };
             const data = await fetchPostData('/hisutils/GenericApiQry', val);
             setDropdownData((prev) => ({ ...prev, [parameterName]: data?.data || [] }));
         } catch (error) {
@@ -91,17 +101,42 @@ const Parameters = ({ params, setParamsValues }) => {
     useEffect(() => {
         presentParams.forEach((param) => {
             const query = param?.jsonData?.parameterQuery;
-            if (query) {
-                fetchDropdownData(query, param.jsonData.parameterName);
+            if (query && param?.jsonData?.modeForQuery === "query") {
+                fetchDropdownData(query, param.jsonData.parameterName, param?.jndiIdForGettingData);
             }
         });
     }, [presentParams]);
+
 
     const resetParams = () => {
         setSelectedValues({});
     }
     const searchParams = () => {
-        setParamsValues(proParamsVal)
+        let isValid = true;
+        presentParams?.forEach((param) => {
+            const isReq = param?.jsonData?.isMandatory;
+            const id = param?.jsonData?.parameterId;
+            const parameterType = param?.jsonData?.parameterType;
+            const maxLength = param?.jsonData?.textboxMaxlength;
+            const minLength = param?.jsonData?.textboxMinlength;
+            const validation = param?.jsonData?.textBoxValidation;
+            if (isReq === 'Yes' && !proParamsVal[id]) {
+                setErrors(prev => ({ ...prev, [id]: "required" }))
+                isValid = false;
+            }
+
+            if (parameterType === "2" && (
+                proParamsVal[id]?.length < minLength ||
+                proParamsVal[id]?.length > maxLength
+            )) {
+                setErrors(prev => ({ ...prev, [id]: `required ${minLength} to ${maxLength} charecters` }))
+                isValid = false;
+                alert('bg')
+            }
+        })
+        if (isValid) {
+            setParamsValues(proParamsVal)
+        }
     }
 
     useEffect(() => {
@@ -123,16 +158,18 @@ const Parameters = ({ params, setParamsValues }) => {
         }
     }, [presentParams]);
 
+    console.log(presentParams, 'params')
+    console.log(proParamsVal, 'proParamsVal')
+    console.log(dropdownData, 'errors')
 
     const renderInputField = (param) => {
         const {
             parameterType, parameterDisplayName, parameterName, lstOption, isMandatory, defaultOption,
             parameterParentWidth, parentAlignment,
             parameterLabelWidth, labelAlignment,
-            parameterControlWidth, controlAlignment, isMultipleSelectionRequired, defaultValueIfEmpty, parameterId, shouldBeLessThanField, shouldBeGreaterThanField
+            parameterControlWidth, controlAlignment, isMultipleSelectionRequired, defaultValueIfEmpty, parameterId, shouldBeLessThanField, shouldBeGreaterThanField, placeHolder, textBoxValidation
         } = param?.jsonData || {};
         const options = dropdownData[parameterName] || lstOption || [];
-
 
         return (
             <div
@@ -148,83 +185,120 @@ const Parameters = ({ params, setParamsValues }) => {
                 <div className={`col-${parameterControlWidth || 6} text-${controlAlignment?.toLowerCase() || 'left'}`}>
 
                     {(parameterType === "1" && isMultipleSelectionRequired === 'Yes') &&
-                        <Select
-                            id={parameterId}
-                            name={parameterName}
-                            options={options}
-                            isMulti
-                            // placeholder="Select value..."
-                            className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} react-select-multi`}
-                            getOptionLabel={(e) => e.optionText}
-                            getOptionValue={(e) => e.optionValue}
-                            value={selectedValues[parameterName] || []}
-                            onChange={(selectedOptions) => handleMultiSelectChange(parameterName, selectedOptions)}
-                        />
+                        <>
+                            <Select
+                                id={parameterId}
+                                name={parameterName}
+                                options={options?.map(dt => ({ optionValue: dt?.column_1, optionText: dt?.column_2 }))}
+                                isMulti
+                                placeholder={placeHolder}
+                                className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} react-select-multi`}
+                                getOptionLabel={(e) => e.optionText}
+                                getOptionValue={(e) => e.optionValue}
+                                value={selectedValues[parameterName] || []}
+                                onChange={(selectedOptions) => handleMultiSelectChange(parameterName, selectedOptions, parameterId)}
+                            />
+                            {errors[parameterId] &&
+                                <div className="required-input">
+                                    {errors[parameterId]}
+                                </div>
+                            }
+                        </>
                     }
 
                     {(parameterType === "1" && isMultipleSelectionRequired !== 'Yes') &&
-                        <select
-                            id={parameterId}
-                            name={parameterName}
-                            className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-select form-select-sm`}
-                            value={selectedValues[parameterName] || ''}
-                            onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
-                        >
-                            <option value=''>Select Value</option>
-                            {defaultOption?.optionText !== '' &&
-                                <option value={defaultOption?.optionValue ? defaultOption?.optionValue : ''}>{defaultOption?.optionText ? defaultOption?.optionText : 'Select Value'}</option>
+                        <>
+                            <select
+                                id={parameterId}
+                                name={parameterName}
+                                className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-select form-select-sm`}
+                                value={selectedValues[parameterName] || defaultValueIfEmpty}
+                                onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
+                            >
+                                {placeHolder &&
+                                    <option value=''>{placeHolder}</option>}
+                                {defaultOption?.optionText !== '' &&
+                                    <option value={defaultOption?.optionValue ? defaultOption?.optionValue : ''}>{defaultOption?.optionText ? defaultOption?.optionText : 'Select Value'}</option>
+                                }
+                                {options?.length > 0 && options.map((option, index) => (
+                                    <option key={index} value={option.column_1}>
+                                        {option.column_2}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors[parameterId] &&
+                                <div className="required-input">
+                                    {errors[parameterId]}
+                                </div>
                             }
-                            {options?.length > 0 && options.map((option, index) => (
-                                <option key={index} value={option.column_1}>
-                                    {option.column_2}
-                                </option>
-                            ))}
-                        </select>
+                        </>
                     }
 
                     {parameterType === "2" && (
-                        <InputField
-                            type="text"
-                            className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'}`}
-                            placeholder="Enter value..."
-                            name={parameterName}
-                            id={parameterId}
-                            value={selectedValues[parameterName] || ""}
-                            onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
-                        />
+                        <>
+                            <InputField
+                                type="text"
+                                className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'}`}
+                                placeholder={placeHolder}
+                                name={parameterName}
+                                id={parameterId}
+                                value={selectedValues[parameterName] || defaultValueIfEmpty}
+                                onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
+                                acceptType={textBoxValidation === '2' ? 'number' : textBoxValidation === '4' ? 'letters' : ''}
+                            />
+                            {errors[parameterId] &&
+                                <div className="required-input">
+                                    {errors[parameterId]}
+                                </div>
+                            }
+                        </>
                     )}
 
                     {parameterType === "4" && (
-                        <input
-                            type="date"
-                            className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-control form-control-sm`}
-                            name={parameterName}
-                            id={parameterId}
-                            defaultValue={convertToISODate(defaultValueIfEmpty)}
-                            min={getDateConstraint(shouldBeGreaterThanField)}
-                            max={getDateConstraint(shouldBeLessThanField)}
-                            value={selectedValues[parameterName]}
-                            onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
-                        // onChange={}
-
-                        />
+                        <>
+                            <input
+                                type="date"
+                                placeholder={placeHolder}
+                                className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-control form-control-sm`}
+                                name={parameterName}
+                                id={parameterId}
+                                defaultValue={convertToISODate(defaultValueIfEmpty)}
+                                min={getDateConstraint(shouldBeGreaterThanField)}
+                                max={getDateConstraint(shouldBeLessThanField)}
+                                value={selectedValues[parameterName]}
+                                onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
+                            // onChange={}
+                            />
+                            {errors[parameterId] &&
+                                <div className="required-input">
+                                    {errors[parameterId]}
+                                </div>
+                            }
+                        </>
                     )}
 
                     {/* CheckBox */}
                     {parameterType === "6" && (
-                        <div className="form-check form-check-inline">
-                            <input
-                                type="checkbox"
-                                id={parameterId}
-                                name={parameterName}
-                                className="form-check-input"
-                                checked={selectedValues[parameterName] || false}
-                                onChange={(e) => handleInputChange(parameterName, e.target.checked, parameterId)}
-                            />
-                            <label className="form-check-label" htmlFor={parameterName}>
-                                {defaultOption.optionText}
-                            </label>
-                        </div>
+                        <>
+                            <div className="form-check form-check-inline">
+                                <input
+                                    type="checkbox"
+                                    id={parameterId}
+                                    name={parameterName}
+                                    className="form-check-input"
+                                    checked={selectedValues[parameterName] || false}
+                                    onChange={(e) => handleInputChange(parameterName, e.target.checked, parameterId)}
+                                />
+                                <label className="form-check-label" htmlFor={parameterName}>
+                                    {defaultOption.optionText}
+                                </label>
+                            </div>
+                            {errors[parameterId] &&
+                                <div className="required-input">
+                                    {errors[parameterId]}
+                                </div>
+                            }
+                        </>
                     )}
 
                     {/* Radio Button */}
@@ -239,6 +313,11 @@ const Parameters = ({ params, setParamsValues }) => {
                                 checked={selectedValues[parameterName] === defaultOption?.optionValue}
                                 onChange={(e) => handleInputChange(parameterName, e.target.value)}
                             />
+                            {errors[parameterId] &&
+                                <div className="required-input">
+                                    {errors[parameterId]}
+                                </div>
+                            }
                         </div>
                     )}
                 </div>
