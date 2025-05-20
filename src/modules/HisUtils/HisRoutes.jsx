@@ -3,7 +3,6 @@ import './HisUtils.css'
 import { lazy } from "react";
 import DashboardMst from "./pages/dashboard/DashboardMst";
 import Tabular from "./components/sidebar/Tabular";
-import Auth from "../../Auth";
 
 const DbConfigMaster = lazy(() => import('./pages/dashboardMasterPgs/DbConfigMaster'));
 const ParameterMaster = lazy(() => import('./pages/dashboardMasterPgs/ParameterMaster'));

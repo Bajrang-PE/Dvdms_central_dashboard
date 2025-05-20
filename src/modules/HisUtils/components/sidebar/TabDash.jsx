@@ -1,9 +1,9 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useContext, useEffect, useState } from 'react';
 import WidgetDash from './WidgetDash';
 import { HISContext } from '../../contextApi/HISContext';
-import Parameters from './Parameters';
-import PdfDownload from '../commons/PdfDownload';
-import MapDash from './MapDash';
+
+const PdfDownload = lazy(() => import('../commons/PdfDownload'));
+const Parameters = lazy(() => import('./Parameters'));
 
 const TabDash = React.memo(({ tabData }) => {
     const { allWidgetData, setLoading, loading, activeTab, setParamsValues } = useContext(HISContext);
@@ -41,7 +41,7 @@ const TabDash = React.memo(({ tabData }) => {
                     }
                 }
             });
-            
+
             let seen = new Set();
             let uniqueWidgets = finalWidgets.filter(widget => {
                 if (!seen.has(widget.rptId)) {
@@ -64,13 +64,29 @@ const TabDash = React.memo(({ tabData }) => {
                 <div>
                     {activeTab?.jsonData?.docJsonString && (
                         <div className='help-docs'>
+                            <Suspense
+                                fallback={
+                                    <div className="pt-3 text-center">
+                                        Loading...
+                                    </div>
+                                }
+                            >
                             <PdfDownload docJsonString={activeTab?.jsonData?.docJsonString} />
+                            </Suspense>
                         </div>
                     )}
 
                     {activeTab?.jsonData?.allParameters && (
                         <div className='parameter-box'>
+                            <Suspense
+                                fallback={
+                                    <div className="pt-3 text-center">
+                                        Loading...
+                                    </div>
+                                }
+                            >
                             <Parameters params={activeTab?.jsonData?.allParameters} dashFor={activeTab?.dashboardFor} setParamsValues={handleSetParamsValues} />
+                            </Suspense>
                         </div>
                     )}
 
@@ -79,7 +95,15 @@ const TabDash = React.memo(({ tabData }) => {
                             <React.Fragment key={index}>
                                 {widget &&
                                     <div className={`col-sm-${presentTabs.filter(dt => dt?.rptId === widget?.rptId)[0]?.widgetWidth}`} style={{ padding: "5px 3px" }}>
-                                        <WidgetDash widgetDetail={widget} />
+                                        <Suspense
+                                            fallback={
+                                                <div className="pt-3 text-center">
+                                                    Loading...
+                                                </div>
+                                            }
+                                        >
+                                            <WidgetDash widgetDetail={widget} />
+                                        </Suspense>
                                     </div>
                                 }
                             </React.Fragment>

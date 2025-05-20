@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { ToastAlert } from '../../../utils/commonFunction';
 import { leftCaret, rightCaret } from '../../../utils/commonSVG';
-import InputField from '../../commons/InputField';
-import InputSelect from '../../commons/InputSelect';
+
 import { parameterOptions } from '../../../localData/DropDownData';
+
+const InputSelect = lazy(() => import('../../commons/InputSelect'));
+const InputField = lazy(() => import('../../commons/InputField'));
 
 const ParamsDetail = (props) => {
     const { availableOptions, setAvailableOptions, selectedOptions, setSelectedOptions, handleValueChange, values, pageName } = props;
@@ -61,7 +63,6 @@ const ParamsDetail = (props) => {
         }
     };
 
-console.log(selectedOptions,'selectedOptions')
     return (
         <>
             <b><h6 className='header-devider m-0'>Parameter Details</h6></b>

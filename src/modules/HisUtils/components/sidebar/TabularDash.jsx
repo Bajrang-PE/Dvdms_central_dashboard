@@ -1,13 +1,14 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { lazy, useCallback, useContext, useEffect, useState } from "react";
 import Tabular from "./Tabular";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowCircleLeft, faBarChart, faCog, faFileCsv, faFileExcel, faFilePdf, faRefresh, faSortAmountDesc } from "@fortawesome/free-solid-svg-icons";
+import { faArrowCircleLeft, faBarChart, faCog, faFileExcel, faFilePdf, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import { fetchProcedureData, fetchQueryData } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import InputField from "../commons/InputField";
 import { generateCSV, generatePDF } from "../commons/advancedPdf";
-import Parameters from "./Parameters";
 import { getAuthUserData } from "../../../../utils/CommonFunction";
+
+const Parameters = lazy(() => import('./Parameters'));
 
 const initialStates = [
   { id: 1, name: "Rajasthan" },

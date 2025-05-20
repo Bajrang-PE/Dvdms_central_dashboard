@@ -1,23 +1,26 @@
-import React, { useContext, useRef } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Dropdown } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
-import { useReactToPrint } from 'react-to-print';
-// import { csvFile, pdfFile } from '../../utils/svgFiles';
 import Papa from 'papaparse';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { LoginContext } from '../context/LoginContext';
+import { useReactToPrint } from 'react-to-print';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileCsv, faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import useReportColumns from '../hooks/useReportColumns';
 
 const MasterReport = (props) => {
 
     const { title, column, data } = props;
     const { setIsShowReport, setSelectedOption } = useContext(LoginContext);
+
     const reportRef = useRef()
 
+    const reportColumns = useReportColumns(column);
 
-    //FUNCTION TO PRINT REPORT
     const printReport = useReactToPrint({
-        content: () => reportRef.current,
+        contentRef: reportRef,
         documentTitle: 'DataReport',
         onAfterPrint: () => { console.log('Report Printed!') }
     })
@@ -117,14 +120,15 @@ const MasterReport = (props) => {
                 <button className='btn btn-primary me-2' onClick={() => { setIsShowReport(false); setSelectedOption([]); }}><i className="fa fa-close me-1" style={{ color: "red", fontSize: "large" }}></i> Cancel</button>
                 <Dropdown>
                     <Dropdown.Toggle className='ps-2' variant="primary" id="dropdown-basic">
-                        Download
+                        Action
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                        <Dropdown.Item className='fix-label' href="#" onClick={downloadPDF}>
-                            Download PDF</Dropdown.Item>
+                        <Dropdown.Item className='fix-label' href="#" onClick={() => downloadPDF()}>
+                            <FontAwesomeIcon icon={faFilePdf} className="me-1" />  Download PDF
+                        </Dropdown.Item>
 
-                        <Dropdown.Item className='fix-label' href="#" onClick={downloadCSV}>
-                            Download CSV
+                        <Dropdown.Item className='fix-label' href="#" onClick={() => downloadCSV()}>
+                            <FontAwesomeIcon icon={faFileCsv} className="me-1" />  Download CSV
                         </Dropdown.Item>
                         <Dropdown.Item className='fix-label' href="#" onClick={printReport}><i className="fa fa-print me-1"></i> Print Report</Dropdown.Item>
                     </Dropdown.Menu>
@@ -143,7 +147,7 @@ const MasterReport = (props) => {
                         // fixedHeader
                         persistTableHead={true}
                         customStyles={tableCustomStyles}
-                        columns={column}
+                        columns={reportColumns}
                         data={data}
                         responsive
                         noDataComponent={'There are no data to display'}

@@ -7,11 +7,10 @@ import ViewPage from '../ViewPage';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import { fetchDeleteData } from '../../../../../utils/ApiHooks';
 import MasterReport from '../../MasterReport';
-import useReportColumns from '../../../hooks/useReportColumns';
 
 const ZoneMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, getZoneListData, zoneListData, setShowConfirmSave, confirmSave, setConfirmSave, isShowReport, setIsShowReport } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, getZoneListData, zoneListData, setShowConfirmSave, confirmSave, setConfirmSave, isShowReport } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active')
     const [filterData, setFilterData] = useState(zoneListData);
@@ -21,12 +20,6 @@ const ZoneMaster = () => {
     }, [recordStatus])
 
     const handleRowSelect = (row) => {
-        // setSelectedOption((prev) => {
-        //     if (prev.includes(row?.cwhnumZoneId)) {
-        //         return prev.filter(dt => dt?.cwhnumZoneId !== row?.cwhnumZoneId);
-        //     }
-        //     return [row];
-        // });
 
         setSelectedOption((prev) => {
             if (prev.length > 0 && prev[0]?.cwhnumZoneId === row?.cwhnumZoneId) {
@@ -117,7 +110,6 @@ const ZoneMaster = () => {
         setOpenPage('home');
         setSelectedOption([]);
     }
-    const reportColumns = useReportColumns(column);
 
     return (
         <>
@@ -162,7 +154,7 @@ const ZoneMaster = () => {
                 </>)}
 
                 {isShowReport &&
-                    <MasterReport title={"Zone Master"} column={reportColumns} data={zoneListData} />
+                    <MasterReport title={"Zone Master"} column={column} data={zoneListData} />
 
                 }
 

@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Menu, MenuItem, SubMenu, Sidebar } from "react-pro-sidebar";
 import { FaBars } from "react-icons/fa";
 import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "@fortawesome/fontawesome-free/css/all.min.css";
+
 
 const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData }) => {
 

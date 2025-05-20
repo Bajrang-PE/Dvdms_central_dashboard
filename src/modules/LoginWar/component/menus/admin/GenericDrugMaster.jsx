@@ -7,10 +7,11 @@ import GenericDrugMasterForm from '../forms/admin/GenericDrugMasterForm';
 import { fetchDeleteData } from '../../../../../utils/ApiHooks';
 import ViewPage from '../ViewPage';
 import { categoryOptions } from '../../../localData/HomeData';
+import MasterReport from '../../MasterReport';
 
 const GenericDrugMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, getGroupDrpData, groupDrpData, getSubGroupDrpData, subGroupDrpData, getGenericDrugListData, genericDrugListData, setConfirmSave, confirmSave, setShowConfirmSave } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, getGroupDrpData, groupDrpData, getSubGroupDrpData, subGroupDrpData, getGenericDrugListData, genericDrugListData, setConfirmSave, confirmSave, setShowConfirmSave, isShowReport } = useContext(LoginContext);
 
     const [searchInput, setSearchInput] = useState('');
     const [recordStatus, setRecordStatus] = useState('1');
@@ -133,12 +134,14 @@ const GenericDrugMaster = () => {
     return (
         <>
             <div className='masters mx-3 my-2'>
-                <div className='masters-header row'>
-                    <span className='col-6'><b>{`Generic Drug Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
+                {!isShowReport &&
+                    <div className='masters-header row'>
+                        <span className='col-6'><b>{`Generic Drug Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                        {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
 
-                </div>
-                {(openPage === "home" || openPage === 'view' || openPage === 'delete') && (<>
+                    </div>
+                }
+                {(openPage === "home" || openPage === 'view' || openPage === 'delete') && !isShowReport && (<>
                     <div className='row pt-2'>
                         <div className='col-sm-6'>
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
@@ -189,16 +192,21 @@ const GenericDrugMaster = () => {
                     </div>
 
                     <hr className='my-2' />
-                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={groupId ? true : false} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput}/>
+                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={groupId ? true : false} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} />
 
-                    {openPage === 'view' &&
+                    {(openPage === 'view' && !isShowReport) &&
                         <ViewPage data={[{ value: selectedOption[0]?.drugName, label: "Drug Name" }, { value: selectedOption[0]?.drugTypeId, label: "Drug Type" }, { value: selectedOption[0]?.drugCatCode, label: "Category Name" }]} onClose={onClose} title={"Generic Drug Master"} />
                     }
                 </>)}
 
-                {(openPage === "add" || openPage === 'modify') && (<>
-                    <GenericDrugMasterForm subGrpData={subGroupDrpData} groupData={groupDrpData} groupId={groupId} setSearchInput={setSearchInput}/>
+                {(openPage === "add" || openPage === 'modify') && !isShowReport && (<>
+                    <GenericDrugMasterForm subGrpData={subGroupDrpData} groupData={groupDrpData} groupId={groupId} setSearchInput={setSearchInput} />
                 </>)}
+
+                {isShowReport &&
+                    <MasterReport title={"Generic Drug Master"} column={column} data={genericDrugListData} />
+
+                }
             </div>
         </>
     )

@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, lazy } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog, faFileCsv, faFilePdf, faRefresh } from "@fortawesome/free-solid-svg-icons";
-import Parameters from "./Parameters";
 import { fetchProcedureData, fetchQueryData } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import { highchartGraphOptions } from "../../localData/DropDownData";
 import { getAuthUserData } from "../../../../utils/CommonFunction";
-import { generateGraphCSV, generateGraphPDF, generatePDF } from "../commons/advancedPdf";
+import { generateGraphCSV, generateGraphPDF } from "../commons/advancedPdf";
 
+const Parameters = lazy(() => import('./Parameters'));
 
 const GraphDash = ({ widgetData }) => {
   const { theme, paramsValues, singleConfigData } = useContext(HISContext);

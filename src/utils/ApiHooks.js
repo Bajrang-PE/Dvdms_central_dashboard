@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BaseUrl = 'http://10.226.25.164:8025'; //prSitee
+const BaseUrl = 'http://10.226.25.164:8024'; //prSitee
 // const BaseUrl = 'http://10.226.17.6:8025';  //BG     
 // const BaseUrl = 'http://10.226.29.211:8025/';  //Disha
 //  const BaseUrl = 'http://10.226.29.102:8025/';  //shubham

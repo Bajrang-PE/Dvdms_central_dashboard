@@ -4,11 +4,10 @@ import HighchartsReact from "highcharts-react-official";
 import RajasthanMap from '../../localData/mapJson/rajasthan.json';
 import UpMap from '../../localData/mapJson/uttarpradesh.json';
 import { fetchQueryData } from "../../utils/commonFunction";
-import { HISContext } from "../../contextApi/HISContext";
 
 
 const MapDash = ({ widgetData }) => {
-        const { setActiveTab, allTabsData, setLoading, paramsValues,singleConfigData } = useContext(HISContext);
+      
     const [mapData, setMapData] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false)
     const [graphData, setGraphData] = useState([]);

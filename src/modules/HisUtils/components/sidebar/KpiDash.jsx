@@ -1,10 +1,9 @@
-import { faDownload, faMedkit } from '@fortawesome/free-solid-svg-icons'
+import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import React, { useContext, useEffect, useState } from 'react'
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import { HISContext } from '../../contextApi/HISContext';
-import { useLocation } from 'react-router-dom';
 import { fetchProcedureData, fetchQueryData } from '../../utils/commonFunction';
 
 const KpiDash = ({ widgetData }) => {

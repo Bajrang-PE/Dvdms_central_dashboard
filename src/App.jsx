@@ -12,7 +12,6 @@ import HomePage from './modules/LoginWar/pages/HomePage';
 import ConfirmBoxLogin from './modules/LoginWar/component/ConfirmBoxLogin';
 import "react-datepicker/dist/react-datepicker.css";
 
-
 function App() {
 
   return (

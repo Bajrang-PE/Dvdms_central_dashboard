@@ -3,7 +3,7 @@ import '../headers/NavbarHeader.css';
 import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const TopBar = ({ data, setActiveTab, activeTab, dashboardData }) => {
+const TopBar = ({ data, setActiveTab, dashboardData }) => {
     const [openSubMenu, setOpenSubMenu] = useState(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);

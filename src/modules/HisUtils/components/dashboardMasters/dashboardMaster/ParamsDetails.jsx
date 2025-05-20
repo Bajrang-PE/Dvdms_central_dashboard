@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { ToastAlert } from '../../../utils/commonFunction';
 import { leftCaret, rightCaret } from '../../../utils/commonSVG';
 import { parameterOptions } from '../../../localData/DropDownData';
-import InputSelect from '../../commons/InputSelect';
+
+const InputSelect = lazy(() => import('../../commons/InputSelect'));
 
 const ParamsDetails = (props) => {
     const { availableOptions, setAvailableOptions, selectedOptions, setSelectedOptions, handleValueChange, values } = props;

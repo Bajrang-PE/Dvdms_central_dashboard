@@ -1,36 +1,26 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import KpiDash from './KpiDash';
-import TabularDash from './TabularDash';
-import GraphDash from './GraphDash';
-import MapDash from './MapDash';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
-import { HISContext } from '../../contextApi/HISContext';
+import React, { lazy, Suspense } from 'react'
+
+const KpiDash = lazy(() => import('./KpiDash'));
+const TabularDash = lazy(() => import('./TabularDash'));
+const GraphDash = lazy(() => import('./GraphDash'));
+const MapDash = lazy(() => import('./MapDash'));
 
 
-const WidgetDash = React.memo(({widgetDetail}) => {
-    // const { widgetDetail } = props
-    const { theme } = useContext(HISContext);
-    const [graphData, setGraphData] = useState([]);
-
-    // useEffect(() => {
-    //     console.log(widgetDetail, 'bajrang')
-    // }, [widgetDetail]) 
-
+const WidgetDash = React.memo(({ widgetDetail }) => {
 
     return (
-
-        <>
-            {widgetDetail.reportViewed === 'KPI' && <KpiDash widgetData={widgetDetail}  />}
-            {widgetDetail.reportViewed === 'Tabular' && <TabularDash widgetData={widgetDetail}  />}
-            {widgetDetail.reportViewed === 'Graph' && <GraphDash widgetData={widgetDetail}  />}
-            {widgetDetail.reportViewed === "Criteria_Map" &&
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                    <MapDash widgetData={widgetDetail} />
-                </div>
-            }
-        </>
-
+        <Suspense fallback={<div>Loading widget...</div>}>
+            <>
+                {widgetDetail.reportViewed === 'KPI' && <KpiDash widgetData={widgetDetail} />}
+                {widgetDetail.reportViewed === 'Tabular' && <TabularDash widgetData={widgetDetail} />}
+                {widgetDetail.reportViewed === 'Graph' && <GraphDash widgetData={widgetDetail} />}
+                {widgetDetail.reportViewed === "Criteria_Map" &&
+                    <div style={{ position: 'relative', zIndex: 1 }}>
+                        <MapDash widgetData={widgetDetail} />
+                    </div>
+                }
+            </>
+        </Suspense>
     )
 })
 
