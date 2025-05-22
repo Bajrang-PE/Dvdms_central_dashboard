@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import { decryptData } from './modules/LoginWar/utils/SecurityConfig';
+import { decryptData } from './modules/login-war/utils/SecurityConfig';
 
 
 

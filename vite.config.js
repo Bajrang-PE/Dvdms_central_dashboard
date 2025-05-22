@@ -12,15 +12,15 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          topbar: ['./src/modules/HisUtils/components/sidebar/TopBar.jsx'], 
-          sidebar: ['./src/modules/HisUtils/components/sidebar/Sidebar.jsx'], 
-          tabDash: ['./src/modules/HisUtils/components/sidebar/TabDash.jsx'], 
-          parameters: ['./src/modules/HisUtils/components/sidebar/Parameters.jsx'], 
-          WidgetDash: ['./src/modules/HisUtils/components/sidebar/WidgetDash.jsx'], 
-          GraphDash: ['./src/modules/HisUtils/components/sidebar/GraphDash.jsx'], 
-          TabularDash: ['./src/modules/HisUtils/components/sidebar/TabularDash.jsx'], 
-          KpiDash: ['./src/modules/HisUtils/components/sidebar/KpiDash.jsx'], 
-          MapDash: ['./src/modules/HisUtils/components/sidebar/MapDash.jsx'], 
+          topbar: ['./src/modules/his-utils/components/sidebar/TopBar.jsx'], 
+          sidebar: ['./src/modules/his-utils/components/sidebar/Sidebar.jsx'], 
+          tabDash: ['./src/modules/his-utils/components/sidebar/TabDash.jsx'], 
+          parameters: ['./src/modules/his-utils/components/sidebar/Parameters.jsx'], 
+          WidgetDash: ['./src/modules/his-utils/components/sidebar/WidgetDash.jsx'], 
+          GraphDash: ['./src/modules/his-utils/components/sidebar/GraphDash.jsx'], 
+          TabularDash: ['./src/modules/his-utils/components/sidebar/TabularDash.jsx'], 
+          KpiDash: ['./src/modules/his-utils/components/sidebar/KpiDash.jsx'], 
+          MapDash: ['./src/modules/his-utils/components/sidebar/MapDash.jsx'], 
           fontawesome: ['@fortawesome/free-solid-svg-icons'],
           proSidebar: ['react-pro-sidebar'],
 
