@@ -1,17 +1,17 @@
 import axios from 'axios';
 
 
-const BaseUrl = import.meta.env.VITE_API_BASE_URL
+// const BaseUrl = import.meta.env.VITE_HIS_API_BASE_URL
 
-// const BaseUrl = 'http://10.226.25.164:8025'; //prSitee
+// const BaseUrl = 'http://10.226.25.164:8024'; //prSitee/
 // const BaseUrl = 'http://10.226.17.6:8025';  //BG     
 // const BaseUrl = 'http://10.226.29.211:8025/';  //Disha
 //  const BaseUrl = 'http://10.226.29.102:8025/';  //shubham
 // const BaseUrl = 'http://10.226.30.45:8025/';  //pradeep
 // const BaseUrl = 'http://10.226.26.247:8025/';  //harsh
-// const BaseUrl = 'http://10.226.80.61:8082/';  //server
+const BaseUrl = 'http://10.226.80.61:8024/';  //server
 
-const apiLogin = axios.create({
+const apiHis = axios.create({
   baseURL: BaseUrl
 });
 
@@ -67,10 +67,10 @@ const getCsrfToken = () => {
 export const fetchData = async (url, params) => {
     try {
         if (params) {
-            const response = await apiLogin.get(url, { params: params ? params : '' });
+            const response = await apiHis.get(url, { params: params ? params : '' });
             return response?.data
         } else {
-            const response = await apiLogin.get(url);
+            const response = await apiHis.get(url);
             return response?.data
         }
     } catch (error) {
@@ -80,7 +80,7 @@ export const fetchData = async (url, params) => {
 
 export const fetchPostData = async (url, data) => {
     try {
-        const response = await apiLogin.post(url, data);
+        const response = await apiHis.post(url, data);
         return response.data;
     } catch (error) {
         console.log('API Error:', error);
@@ -90,7 +90,7 @@ export const fetchPostData = async (url, data) => {
 
 export const fetchUpdateData = async (url, data) => {
     try {
-        const response = await apiLogin.put(url, data, {
+        const response = await apiHis.put(url, data, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -105,7 +105,7 @@ export const fetchUpdateData = async (url, data) => {
 
 export const fetchUpdatePostData = async (url, data) => {
     try {
-        const response = await apiLogin.post(url, data, {
+        const response = await apiHis.post(url, data, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -119,17 +119,7 @@ export const fetchUpdatePostData = async (url, data) => {
 
 export const fetchDeleteData = async (url, payload) => {
     try {
-        const response = await apiLogin.delete(url, { data: payload });
-        return response.data;
-    } catch (error) {
-        console.log('API Error:', error);
-        // return error?.response?.data;
-    }
-};
-
-export const fetchPatchData = async (url, payload) => {
-    try {
-        const response = await axios.patch(url, payload);
+        const response = await apiHis.delete(url, { data: payload ? payload : '' });
         return response.data;
     } catch (error) {
         console.log('API Error:', error);
