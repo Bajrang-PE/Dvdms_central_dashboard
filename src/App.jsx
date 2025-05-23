@@ -10,7 +10,7 @@ import ConfirmBox from './modules/HisUtils/components/commons/ConfirmBox';
 import Loader from './modules/HisUtils/components/commons/Loader';
 import HomePage from './modules/LoginWar/pages/HomePage';
 import ConfirmBoxLogin from './modules/LoginWar/component/ConfirmBoxLogin';
-import "react-datepicker/dist/react-datepicker.css";
+import "react-datepicker/dist/react-datepicker.css"; 
 
 
 function App() {

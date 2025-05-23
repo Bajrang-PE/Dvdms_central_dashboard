@@ -36,7 +36,10 @@ const LoginContextApi = ({ children }) => {
     const [testTypeDrpData, setTestTypeDrpData] = useState([]);
     const [hospNameDrpData, setHospNameDrpData] = useState([]);
     const [zoneDrpData, setZoneDrpData] = useState([]);
-
+    const [iphsGroupDrpData, setIphsGroupDrpData] = useState([]);
+    const [iphsSubGroupDrpData, setIphsSubGroupDrpData] = useState([]);
+    const [iphsMedicineDrpData, setIphsMedicineDrpData] = useState([]);
+    const [iphsDrugDrpData, setIphsDrugDrpData] = useState([]);
 
     //confirm alert
     const [confirmSave, setConfirmSave] = useState(false);
@@ -354,6 +357,74 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+    const getIphsGroupDrpData = () => {
+        fetchData(`http://10.226.26.247:8025/api/v1/IphsGroupMaster/getAllGroups?isActive=1`).then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.cwhnumIphsGroupID,
+                        label: dt?.cwhstrIphsGroupName
+                    }
+                    return val;
+                })
+                setIphsGroupDrpData(drpData)
+            } else {
+                setIphsGroupDrpData([])
+            }
+        })
+    }
+
+    const getIphsSubGroupDrpData = (groupId) => {
+        fetchData(`http://10.226.26.247:8025/api/v1/IphsSubGroupMaster/getSubgroupsConditionally?groupID=${groupId}&isActive=1`).then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.cwhnumIphsSubgroupID,
+                        label: dt?.cwhstrIphsSubgroupName
+                    }
+                    return val;
+                })
+                setIphsSubGroupDrpData(drpData)
+            } else {
+                setIphsSubGroupDrpData([])
+            }
+        })
+    }
+
+    const getIphsMedicineDrpData = () => {
+        fetchData(`http://10.226.26.247:8025/api/v1/IphsMoleculeDrugMst/getMedicineNames`).then((data) => {
+            if (data?.status === 200) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.packID,
+                        label: dt?.moleculeName
+                    }
+                    return val;
+                })
+                setIphsMedicineDrpData(drpData)
+            } else {
+                setIphsMedicineDrpData([])
+            }
+        })
+    }
+
+    const getIphsDrugDrpData = () => {
+        fetchData(`http://10.226.26.247:8025/api/v1/IphsDrugMappingMst/getDrugnames`).then((data) => {
+            if (data?.status === 200) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.packID,
+                        label: dt?.moleculeName
+                    }
+                    return val;
+                })
+                setIphsDrugDrpData(drpData)
+            } else {
+                setIphsDrugDrpData([])
+            }
+        })
+    }
+
 
 
 
@@ -377,6 +448,11 @@ const LoginContextApi = ({ children }) => {
             testTypeDrpData, getTestTypeDrpData,
             hospNameDrpData, getHospNameDrpData,
             zoneDrpData, getZoneDrpData,
+            iphsGroupDrpData, getIphsGroupDrpData,
+            iphsSubGroupDrpData, getIphsSubGroupDrpData,
+            iphsMedicineDrpData, getIphsMedicineDrpData,
+            iphsDrugDrpData, getIphsDrugDrpData,
+
 
             //confirm box
             showConfirmSave, setShowConfirmSave, confirmSave, setConfirmSave,

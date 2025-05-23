@@ -120,3 +120,13 @@ export const fetchDeleteData = async (url, payload) => {
         // return error?.response?.data;
     }
 };
+
+export const fetchPatchData = async (url, payload) => {
+    try {
+        const response = await axios.patch(url, payload);
+        return response.data;
+    } catch (error) {
+        console.log('API Error:', error);
+        // return error?.response?.data;
+    }
+};
