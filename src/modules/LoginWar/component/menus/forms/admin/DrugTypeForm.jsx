@@ -5,7 +5,7 @@ import { LoginContext } from '../../../../context/LoginContext';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchUpdateData,fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
 
-const DrugTypeForm = ({setValues,values}) => {
+const DrugTypeForm = ({setValues,values,setSearchInput}) => {
 
     const { openPage,setOpenPage, selectedOption ,setSelectedOption ,setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [drugTypeName, setDrugTypeName] = useState("");
@@ -50,6 +50,7 @@ const DrugTypeForm = ({setValues,values}) => {
                 setOpenPage("home")
                 reset();
                 setConfirmSave(false);
+                setSearchInput('');
 
             }
         }
@@ -76,6 +77,7 @@ const DrugTypeForm = ({setValues,values}) => {
                  reset();
                  setSelectedOption([]);
                  setConfirmSave(false);
+                 setSearchInput('');
             }
         }
 
@@ -100,7 +102,6 @@ const DrugTypeForm = ({setValues,values}) => {
 
     return (
         <div>
-            <div className='text-left w-100 fw-bold p-1 heading-text' >Drug Type Master &gt;&gt; Add</div>
             <GlobalButtons onSave={handleValidation}  onClear={reset}/>
             <hr className='my-2' />
             <div className='row pt-2'>

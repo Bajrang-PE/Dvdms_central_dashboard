@@ -5,16 +5,17 @@ import GlobalTable from '../../GlobalTable'
 import SubGroupMasterForm from '../forms/admin/SubGroupMasterForm'
 import { fetchData, fetchDeleteData, fetchUpdateData } from '../../../../../utils/ApiHooks'
 import { Modal } from 'react-bootstrap';
-import { ToastAlert } from '../../../utils/CommonFunction'
+import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction'
 
 const SubGroupMaster = () => {
     const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
-    const [searchInput, setSearchInput] = useState('');
     const [selectedGroupName, setSelectedGroupName] = useState("");
     const [selectedGroupId, setSelectedGroupId] = useState("");
     const { getSteteNameDrpData, stateNameDrpDt, getGroupDrpData, groupDrpData } = useContext(LoginContext)
     const [listData, setListData] = useState([])
     const [selectAll, setSelectAll] = useState(false);
+    const [searchInput, setSearchInput] = useState('');
+    const [filterData, setFilterData] = useState(listData);
     const [values, setValues] = useState({
         "groupId": "", "recordStatus": "1"
     })
@@ -29,10 +30,26 @@ const SubGroupMaster = () => {
         }
     }, [])
 
+
     useEffect(() => {
-    
+        if (!searchInput) {
+            setFilterData(listData);
+        } else {
+            const lowercasedText = searchInput.toLowerCase();
+            const newFilteredData = listData.filter(row => {
+                const paramName = row?.cwhstrSubgroupName?.toLowerCase() || "";
+
+                return paramName.includes(lowercasedText);
+            });
+            setFilterData(newFilteredData);
+        }
+    }, [searchInput, listData]);
+
+
+    useEffect(() => {
+
         if (values?.recordStatus) {
-            getAllListData(values?.recordStatus,values?.groupId);
+            getAllListData(values?.recordStatus, values?.groupId);
         }
 
     }, [values?.recordStatus, values?.groupId])
@@ -43,7 +60,7 @@ const SubGroupMaster = () => {
         }
     }, [openPage])
 
-    const getAllListData = async (recStatus ,grpId) => {
+    const getAllListData = async (recStatus, grpId) => {
 
 
         if (recStatus && grpId === "") {
@@ -133,14 +150,14 @@ const SubGroupMaster = () => {
         }
     }
 
-     const handleDeleteRecord = () => {
-            if (selectedOption?.length > 0) {
-                setOpenPage('delete');
-                setShowConfirmSave(true);
-            } else {
-                ToastAlert("Please select a record", "warning");
-            }
+    const handleDeleteRecord = () => {
+        if (selectedOption?.length > 0) {
+            setOpenPage('delete');
+            setShowConfirmSave(true);
+        } else {
+            ToastAlert("Please select a record", "warning");
         }
+    }
 
     useEffect(() => {
         if (confirmSave && openPage === 'delete') {
@@ -148,29 +165,33 @@ const SubGroupMaster = () => {
         }
     }, [confirmSave])
 
-     const handleDelete = () => {
-            const subGrpId = String(selectedOption[0]?.cwhnumSubgroupId)
-            fetchDeleteData(`http://10.226.17.20:8025/api/v1/subgroup?groupId=${selectedGroupId}&subGroupId=${subGrpId}&isActive=1`).then(data => {
-                if (data) {
-                       ToastAlert("Record Deleted Successfully", "success")
-                       setSelectedOption([]);
-                       setConfirmSave(false);
-                       getAllListData(values?.recordStatus,values?.groupId);
-                       setOpenPage("home")
-                } else {
-                    ToastAlert('Error while deleting record!', 'error')
-                    setOpenPage("home")
-                }
-            })
-        }
+    const handleDelete = () => {
+        const subGrpId = String(selectedOption[0]?.cwhnumSubgroupId)
+        fetchDeleteData(`http://10.226.17.20:8025/api/v1/subgroup?groupId=${selectedGroupId}&subGroupId=${subGrpId}&isActive=1`).then(data => {
+            if (data) {
+                ToastAlert("Record Deleted Successfully", "success")
+                setSelectedOption([]);
+                setConfirmSave(false);
+                getAllListData(values?.recordStatus, values?.groupId);
+                setOpenPage("home")
+            } else {
+                ToastAlert('Error while deleting record!', 'error')
+                setOpenPage("home")
+            }
+        })
+    }
 
     return (
         <div className="masters mx-3 my-2">
 
-            {(openPage === "home" || openPage === "view" || openPage === 'delete')&&
-                <>
-                    <div className='text-left w-100 fw-bold p-1 heading-text' >Sub Group Master</div>
 
+            <div className='masters-header row'>
+                <span className='col-6'><b>{`Sub Group Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
+            </div>
+
+            {(openPage === "home" || openPage === "view" || openPage === 'delete') &&
+                <>
                     <div className="row">
                         <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
                             <label className="col-sm-4 col-form-label fix-label required-label"> Group </label>
@@ -207,40 +228,39 @@ const SubGroupMaster = () => {
                         </div>
 
                         <div>
-                            <GlobalTable column={columns} data={listData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
-                                onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                            <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
+                                onReport={null} setSearchInput={setSearchInput} searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
                         </div>
-                        
 
-                    {openPage === 'view' &&
-                        <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
-                            <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
-                                <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
-                            </Modal.Header>
-                            <Modal.Body className='px-2 py-1'>
 
-                                <div className='text-center'>
-                                    <label><b>Group Name : </b></label>&nbsp;{selectedGroupName}<br/>
-                                    <label><b>Sub Group Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrSubgroupName}
-                                </div>
+                        {openPage === 'view' &&
+                            <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
+                                <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
+                                    <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
+                                </Modal.Header>
+                                <Modal.Body className='px-2 py-1'>
 
-                                <div className='text-center mt-1'>
+                                    <div className='text-center'>
+                                        <label><b>Group Name : </b></label>&nbsp;{selectedGroupName}<br />
+                                        <label><b>Sub Group Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrSubgroupName}
+                                    </div>
 
-                                    <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
-                                        <i className="fa fa-broom me-1"></i> Close
-                                    </button>
-                                </div>
+                                    <div className='text-center mt-1'>
 
-                            </Modal.Body>
-                        </Modal>
-                    }
+                                        <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
+                                            <i className="fa fa-broom me-1"></i> Close
+                                        </button>
+                                    </div>
+
+                                </Modal.Body>
+                            </Modal>
+                        }
                     </div>
                 </>}
 
-            { (openPage === "add" || openPage === "modify") &&
+            {(openPage === "add" || openPage === "modify") &&
                 <>
-                    <div className='text-left w-100 fw-bold p-1 heading-text' >Sub Group Master </div>
-                    <SubGroupMasterForm selectedGroupName={selectedGroupName} selectedGroupId={selectedGroupId} setValues={setValues} values={values}/>
+                    <SubGroupMasterForm selectedGroupName={selectedGroupName} selectedGroupId={selectedGroupId} setValues={setValues} values={values} setSearchInput={setSearchInput} />
                 </>
             }
         </div>

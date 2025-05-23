@@ -52,12 +52,12 @@ const MenuList = (props) => {
                 {
                     title: 'IPHS Admin',
                     items: [
-                        { dataVal: 'addRole', menuName: 'Iphs Group Master', icon: 'fa-gear' },
-                        { dataVal: 'editRole', menuName: 'Iphs Sub Group Master', icon: 'fa-gear' },
-                        { dataVal: 'editRole', menuName: 'Iphs Medicine Master', icon: 'fa-gear' },
-                        { dataVal: 'editRole', menuName: 'Iphs Molecule Drug Master', icon: 'fa-gear' },
-                        { dataVal: 'editRole', menuName: 'Iphs Medicine Molecule Detail Mapping', icon: 'fa-gear' },
-                        { dataVal: 'editRole', menuName: 'Iphs Drug Mapping Master', icon: 'fa-gear' },
+                        { dataVal: 'addRole', menuName: 'Iphs Group Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-group-master"},
+                        { dataVal: 'editRole', menuName: 'Iphs Sub Group Master', icon: 'fa-gear', link:"/dvdms/menus/iphs-sub-group-master" },
+                        { dataVal: 'editRole', menuName: 'Iphs Medicine Master', icon: 'fa-gear', link:"/dvdms/menus/iphs-medicine-master"},
+                        { dataVal: 'editRole', menuName: 'Iphs Molecule Drug Master', icon: 'fa-gear', link:"/dvdms/menus/iphs-molecule-drug-master" },
+                        { dataVal: 'editRole', menuName: 'Iphs Medicine Molecule Detail Mapping', icon: 'fa-gear', link:"/dvdms/menus/iphs-medicine-molecule-mapping" },
+                        { dataVal: 'editRole', menuName: 'Iphs Drug Mapping Master', icon: 'fa-gear', link:"/dvdms/menus/iphs-drug-mapping-mst" },
                     ],
                 },
             ],

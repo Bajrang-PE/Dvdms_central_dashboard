@@ -21,6 +21,12 @@ import DrugMaster from '../component/menus/admin/DrugMaster'
 import OutsourceMaster from '../component/menus/admin/OutsourceMaster'
 import TestMappingMaster from '../component/menus/admin/TestMappingMaster'
 import DrugMappingMaster from '../component/menus/admin/DrugMappingMaster'
+import IphsGroupMaster from '../component/menus/admin/iphsAdmin/IphsGroupMaster'
+import IphsSubGroupMaster from '../component/menus/admin/iphsAdmin/IphsSubGroupMaster'
+import IphsMedicineMaster from '../component/menus/admin/iphsAdmin/IphsMedicineMaster'
+import IphsMoleculeDrugMaster from '../component/menus/admin/iphsAdmin/IphsMoleculeDrugMaster'
+import MedicineMoleculeMapMst from '../component/menus/admin/iphsAdmin/MedicineMoleculeMapMst'
+import IphsDrugMappingMst from '../component/menus/admin/iphsAdmin/IphsDrugMappingMst'
 
 const Menus = () => {
     return (
@@ -50,6 +56,14 @@ const Menus = () => {
                 <Route path="state-cdb-sync-master" element={<StateCdbSyncMaster />} />
                 <Route path="group-master" element={<GroupMaster />} />
                 <Route path="drug-mapping-master" element={<DrugMappingMaster />} />
+
+                {/* created by Vishal */}
+                <Route path="iphs-group-master" element={<IphsGroupMaster />} />
+                <Route path="iphs-sub-group-master" element={<IphsSubGroupMaster />}/>
+                <Route path="iphs-medicine-master" element={<IphsMedicineMaster />}/>
+                <Route path="iphs-molecule-drug-master" element={<IphsMoleculeDrugMaster />}/>
+                <Route path="iphs-medicine-molecule-mapping" element={<MedicineMoleculeMapMst />} />
+                <Route path="iphs-drug-mapping-mst" element={<IphsDrugMappingMst />}/>
 
                 {/*---------------------------- SERVICES-------------------------------------------- */}
                 <Route path="state-job-details" element={<StateJobDetailsService />} />

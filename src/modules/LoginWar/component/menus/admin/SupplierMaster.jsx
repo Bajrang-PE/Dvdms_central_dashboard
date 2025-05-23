@@ -4,7 +4,7 @@ import InputSelect from '../../InputSelect';
 import GlobalTable from '../../GlobalTable';
 import SupplierMasterForm from '../forms/admin/SupplierMasterForm';
 import { Modal } from 'react-bootstrap';
-import { ToastAlert } from '../../../utils/CommonFunction';
+import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import { fetchUpdateData, fetchData } from '../../../../../utils/ApiHooks';
 
 
@@ -14,10 +14,27 @@ const SupplierMaster = () => {
     const [suppliers, setSuppliers] = useState([]);
     const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [selectAll, setSelectAll] = useState(false);
+    const [searchInput, setSearchInput] = useState('');
+    const [filterData, setFilterData] = useState(suppliers);
+
 
     useEffect(() => {
         getListData(recordStatus);
     }, [recordStatus])
+
+    useEffect(() => {
+        if (!searchInput) {
+            setFilterData(suppliers);
+        } else {
+            const lowercasedText = searchInput.toLowerCase();
+            const newFilteredData = suppliers.filter(row => {
+                const paramName = row?.cwhstrSupplierName?.toLowerCase() || "";
+
+                return paramName.includes(lowercasedText);
+            });
+            setFilterData(newFilteredData);
+        }
+    }, [searchInput, suppliers]);
 
     const handleSelectAll = (isChecked) => {
         setSelectAll(isChecked);
@@ -30,7 +47,7 @@ const SupplierMaster = () => {
     };
 
     const getListData = (isActive) => {
-        fetchData(`/suppliers?isActive=${isActive}`).then((data) => {
+        fetchData(`http://10.226.29.102:8025/suppliers?isActive=${isActive}`).then((data) => {
             setSuppliers(data.data);
         })
 
@@ -54,7 +71,7 @@ const SupplierMaster = () => {
 
     const handleDelete = () => {
         const suppId = String(selectedOption[0]?.cwhnumSupplierId)
-        fetchUpdateData(`/suppliers/delete/${suppId}`).then(data => {
+        fetchUpdateData(`http://10.226.29.102:8025/suppliers/delete/${suppId}`).then(data => {
             if (data) {
                 ToastAlert("Record Deleted Successfully", "success")
                 setSelectedOption([]);
@@ -129,8 +146,14 @@ const SupplierMaster = () => {
     console.log(selectedOption, 'selectedOption')
     return (
         <div className="masters mx-3 my-2">
+
+
+            <div className='masters-header row'>
+                <span className='col-6'><b>{`Supplier Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                {openPage === "home" && <span className='col-6 text-end'>Total Records : {suppliers?.length}</span>}
+            </div>
+
             {(openPage === "home" || openPage === "view" || openPage === "delete") && (<>
-                <div className='text-left w-100 fw-bold p-1 heading-text' >Supplier Master</div>
 
                 <div className="row mt-3">
                     <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
@@ -157,8 +180,8 @@ const SupplierMaster = () => {
                 </div>
 
                 <div>
-                    <GlobalTable column={columns} data={suppliers} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null}
-                        onReport={null} setSearchInput={true} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                    <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null}
+                        onReport={null} setSearchInput={setSearchInput} searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
                 </div>
 
                 {openPage === 'view' &&
@@ -194,7 +217,7 @@ const SupplierMaster = () => {
             }
 
             {(openPage === "add" || openPage === "modify") &&
-                <SupplierMasterForm getData={getListData} recStatus={recordStatus} setRecStatus={setRecordStatus}/>
+                <SupplierMasterForm getData={getListData} recStatus={recordStatus} setRecStatus={setRecordStatus} setSearchInput={setSearchInput} />
             }
 
         </div>

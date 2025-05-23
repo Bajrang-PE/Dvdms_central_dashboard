@@ -362,8 +362,7 @@ const SupplierMappingMaster = () => {
                     </select>
                 </div>
             </div>
-            <div className='w-100 py-1 my-2 opacity-75 rounded-3' style={{ backgroundColor: "#000e4e" }}>
-            </div>
+            <div className='w-100 py-1 my-2 opacity-75 rounded-3' style={{ backgroundColor: "#000e4e" }}></div>
 
             <div className='text-center'>
                 <button className='btn btn-sm new-btn-blue py-0' onClick={handleSave}>
