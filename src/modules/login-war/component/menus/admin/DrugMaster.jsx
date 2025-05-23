@@ -201,7 +201,7 @@ const DrugMaster = () => {
             if(data){
                 ToastAlert('Data deleted successfully', 'success')
                 setConfirmSave(false);
-                selectedOption([]);
+                setSelectedOption([]);
                 setOpenPage("home");
                 getListData(1,1,1);
             }else{

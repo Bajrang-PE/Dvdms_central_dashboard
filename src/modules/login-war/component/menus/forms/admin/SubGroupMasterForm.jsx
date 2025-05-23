@@ -6,7 +6,7 @@ import axios from 'axios'
 import { ToastAlert } from '../../../../utils/CommonFunction'
 import { getAuthUserData } from '../../../../../../utils/CommonFunction'
 
-const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, values}) => {
+const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, values, setSearchInput}) => {
     const { openPage, setOpenPage, selectedOption,setSelectedOption, getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext)
     const [subGroupName, setSubGroupName] = useState("")
     const [groupName, setGroupName] = useState("")
@@ -87,6 +87,7 @@ const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, val
 
     const reset=()=>{
           setSubGroupName("");
+          setSearchInput('');
           setValues({ ...values, "recordStatus": "1" });
     }
 

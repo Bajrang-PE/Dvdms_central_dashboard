@@ -7,7 +7,7 @@ import { fetchUpdateData, fetchUpdatePostData } from '../../../../../../utils/Ap
 import InputField from '../../../InputField';
 
 const SupplierMasterForm = (props) => {
-    const { getData } = props;
+    const { getData,setSearchInput } = props;
     const { recStatus,setRecStatus } = props;
     const { getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext)
     const { openPage,setOpenPage, selectedOption ,setSelectedOption ,setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
@@ -152,7 +152,7 @@ const SupplierMasterForm = (props) => {
                 gnumSeatId: 11111,
             }
   
-            const response = fetchUpdatePostData("/suppliers", data)
+            const response = fetchUpdatePostData("http://10.226.29.102:8025/suppliers", data)
             ToastAlert('Supplier Added successfully', 'success')
 
         }else if(openPage === "modify"){
@@ -174,7 +174,7 @@ const SupplierMasterForm = (props) => {
                 gnumSeatId: 11111,
             }
 
-            const response = fetchUpdateData(`/suppliers/modify/${values?.suppId}`, data)
+            const response = fetchUpdateData(`http://10.226.29.102:8025/suppliers/modify/${values?.suppId}`, data)
             ToastAlert('Supplier updated successfully', 'success')
             setSelectedOption([]);
            
@@ -184,6 +184,7 @@ const SupplierMasterForm = (props) => {
         getData("1")
         setOpenPage("home")
         setRecStatus(1)
+        setSearchInput("")
 
     }
 
@@ -198,12 +199,6 @@ const SupplierMasterForm = (props) => {
 
     return (
         <div>
-            {openPage === "add" &&
-                <div className='text-left w-100 fw-bold p-1 heading-text' >Supplier Master &gt;&gt; Add</div>
-            }
-            {openPage === "modify" &&
-                <div className='text-left w-100 fw-bold p-1 heading-text' >Supplier Master &gt;&gt; Modify</div>
-            }
             <GlobalButtons onSave={handleValidation} onClear={reset} />
             <hr className='my-2' />
 

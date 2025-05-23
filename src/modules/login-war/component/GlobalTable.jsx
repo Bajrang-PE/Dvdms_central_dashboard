@@ -5,8 +5,8 @@ import { LoginContext } from '../context/LoginContext';
 
 
 const GlobalTable = (props) => {
-    const { selectedOption, setSelectedOption, setIsShowReport } = useContext(LoginContext);
-    const { column, data, onDelete, onReport, setSearchInput, isShowBtn, isAdd, isModify, isDelete, isView, isReport, setOpenPage, isSearch, isRun, onRun, searchInput } = props;
+    const { selectedOption, setSelectedOption } = useContext(LoginContext);
+    const { column, data, onDelete, onReport, setSearchInput, isShowBtn, isAdd, isModify, isDelete, isView, isReport, setOpenPage, isSearch, isRun, onRun, searchInput, onValidate } = props;
 
     const tableCustomStyles = {
         headRow: {
@@ -18,6 +18,7 @@ const GlobalTable = (props) => {
             },
         },
     }
+    console.log(onValidate,"bgbg")
 
     return (
 
@@ -30,14 +31,27 @@ const GlobalTable = (props) => {
                             <>
                                 {isAdd &&
                                     <button className='btn btn-sm datatable-btns py-0' onClick={() => {
-                                        setOpenPage('add');
-
+                                        if (onValidate) {
+                                            const isValid = onValidate();
+                                            if (isValid) {
+                                                setOpenPage('add');
+                                            }
+                                        } else {
+                                            setOpenPage('add');
+                                        }
                                     }}>
                                         <i className="fa fa-plus me-1 fs-13 text-success"></i>Add</button>}
                                 {selectedOption?.length > 0 && (<>
                                     {isModify &&
                                         <button className='btn btn-sm datatable-btns py-0' onClick={() => {
-                                            setOpenPage('modify');
+                                            if (onValidate) {
+                                                const isValid = onValidate();
+                                                if (isValid) {
+                                                    setOpenPage('modify');
+                                                }
+                                            } else {
+                                                setOpenPage('modify');
+                                            }
                                         }}>
                                             <i className="fa fa-edit me-1 fs-13 text-warning"></i>Modify</button>}
                                     {isDelete &&

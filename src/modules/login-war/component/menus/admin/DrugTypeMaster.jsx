@@ -4,7 +4,7 @@ import InputSelect from "../../InputSelect";
 import GlobalTable from '../../GlobalTable';
 import { LoginContext } from '../../../context/LoginContext';
 import DrugTypeForm from '../forms/admin/DrugTypeForm';
-import { ToastAlert } from '../../../utils/CommonFunction';
+import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import { Modal } from 'react-bootstrap';
 import { fetchData, fetchUpdateData } from '../../../../../utils/ApiHooks';
 
@@ -14,9 +14,9 @@ export const DrugTypeMaster = () => {
 
     const [stateNameDrpDt, setStateNameDrpDt] = useState([]);
     const [drugs, setDrugs] = useState([]);
-    const [searchInput, setSearchInput] = useState('');
     const [selectedRows, setSelectedRows] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
+    const [searchInput, setSearchInput] = useState('');
     const [filterData, setFilterData] = useState([drugs]);
 
     useEffect(() => {
@@ -61,7 +61,7 @@ export const DrugTypeMaster = () => {
 
     const fetchListData = async (isActive) => {
 
-        fetchData(`/drugtype/getgruglist?isActive=${isActive}`).then((data) => {
+        fetchData(`http://10.226.29.102:8025/drugtype/getgruglist?isActive=${isActive}`).then((data) => {
 
             if (data) {
                 setDrugs(data);
@@ -108,7 +108,7 @@ export const DrugTypeMaster = () => {
 
     const handleDelete = () => {
         const drugTypeId = String(selectedOption[0]?.cwhnumDrugTypeId)
-        fetchUpdateData(`/drugtype/delete/${drugTypeId}`).then(data => {
+        fetchUpdateData(`http://10.226.29.102:8025/drugtype/delete/${drugTypeId}`).then(data => {
             if (data) {
                 ToastAlert("Record Deleted Successfully", "success")
                 fetchListData(1);
@@ -168,8 +168,13 @@ export const DrugTypeMaster = () => {
 
     return (
         <div className="masters mx-3 my-2">
+
+            <div className='masters-header row'>
+                <span className='col-6'><b>{`Drug Type Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                {openPage === "home" && <span className='col-6 text-end'>Total Records : {drugs?.length}</span>}
+            </div>
+
             {(openPage === "home" || openPage === "view" || openPage === 'delete') && (<>
-                <div className='text-left w-100 fw-bold p-1 heading-text' >Drug Type Master</div>
 
                 <div className="row mt-3">
                     <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
@@ -195,7 +200,7 @@ export const DrugTypeMaster = () => {
 
                 <div>
                     <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null}
-                        onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                        onReport={null} setSearchInput={setSearchInput} searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
                 </div>
 
                 {openPage === 'view' &&
@@ -224,7 +229,7 @@ export const DrugTypeMaster = () => {
 
 
             {(openPage === "add" || openPage === 'modify') &&
-                <DrugTypeForm setValues={setValues} values={values} />
+                <DrugTypeForm setValues={setValues} values={values} setSearchInput={setSearchInput} />
             }
 
         </div>
