@@ -1,4 +1,4 @@
-import { decryptData } from "../modules/LoginWar/utils/SecurityConfig";
+import { decryptData } from "../modules/login-war/utils/SecurityConfig";
 
 
 export const getAuthUserData = (key) => {
