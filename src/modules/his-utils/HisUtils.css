@@ -687,12 +687,56 @@ label {
   background: #f4f6fb;
 }
 
-/* @keyframes slide-up {
-  0% {
-    transform: translateY(0);
-  }
+.dropdown-item {
+  touch-action: manipulation;
+  padding: 0.5rem 1rem;
+  /* cursor: pointer; */
+}
 
-  100% {
-    transform: translateY(calc(-100% + 40px));
-  }
-} */
+.fieldSet {
+  margin: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.legend {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  font-weight: bold;
+  background-color: #ffffff;
+}
+
+/* Add to your styles */
+.linked-widget {
+  border-left: 1px solid #eee;
+  margin-left: 10px;
+}
+
+.child-widget {
+  margin-top: 15px;
+  border-top: 1px dashed #ddd;
+  padding-top: 10px;
+}
+
+/* Flex layout for parallel widgets */
+.parallel-widget-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+/* Parent widget styling */
+.parent-widget {
+  position: relative;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 5px;
+}

@@ -1,16 +1,39 @@
-import React, { lazy, useContext, useEffect, useState } from "react";
+import React, { lazy, useContext, useEffect, useMemo, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import RajasthanMap from '../../localData/mapJson/rajasthan.json';
 import UpMap from '../../localData/mapJson/uttarpradesh.json';
 import { fetchQueryData } from "../../utils/commonFunction";
+import { HISContext } from "../../contextApi/HISContext";
 
 
 const MapDash = ({ widgetData }) => {
-      
+    const { theme, mainDashData, singleConfigData, paramsValues, setLoading } = useContext(HISContext);
     const [mapData, setMapData] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false)
     const [graphData, setGraphData] = useState([]);
+
+    const borderReq = useMemo(() => widgetData?.isWidgetBorderRequired || '', [widgetData?.isWidgetBorderRequired]);
+    const headingAlign = useMemo(() => widgetData?.widgetHeadingAlignment || '', [widgetData?.widgetHeadingAlignment]);
+    const widgetHeadingColor = useMemo(() => widgetData?.widgetHeadingColor || '', [widgetData?.widgetHeadingColor]);
+    const isWidgetNameVisible = useMemo(() => widgetData?.isWidgetNameVisible || '', [widgetData?.isWidgetNameVisible]);
+    const isDirectDownloadRequired = useMemo(() => widgetData?.isDirectDownloadRequired || 'No', [widgetData?.isDirectDownloadRequired]);
+    const widgetTopMargin = useMemo(() => widgetData.widgetTopMargin || "", [widgetData.widgetTopMargin]);
+    const footerText = useMemo(() => widgetData.footerText || "", [widgetData.footerText]);
+    const rptDisplayName = useMemo(() => widgetData?.rptDisplayName, [widgetData?.rptDisplayName]);
+    const initialRecord = widgetData?.initialRecordNo;
+    const finalRecord = widgetData?.finalRecordNo;
+
+    const widgetLimit = useMemo(() => widgetData?.limitHTMLFromDb || '', [widgetData?.limitHTMLFromDb]);
+    const mainQuery = useMemo(() => widgetData?.query && widgetData?.query?.length > 0 ? widgetData?.query[0]?.mainQuery : widgetData?.queryVO && widgetData?.queryVO?.length > 0 ? widgetData?.queryVO[0]?.mainQuery : '', [widgetData?.query, widgetData?.queryVO]);
+
+    const rptId = useMemo(() => widgetData?.rptId, [widgetData?.rptId]);
+    const modeOfQuery = useMemo(() => widgetData?.modeOfQuery, [widgetData?.modeOfQuery]);
+    const procedureMode = useMemo(() => widgetData?.procedureMode, [widgetData?.procedureMode]);
+
+    const defLimit = useMemo(() => singleConfigData?.databaseConfigVO?.setDefaultLimit || '', [singleConfigData]);
+    const parsedLimit = useMemo(() => parseInt(defLimit, 10), [defLimit]);
+    const safeLimit = useMemo(() => isNaN(parsedLimit) || parsedLimit <= 0 ? null : parsedLimit, [parsedLimit]);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -57,7 +80,7 @@ const MapDash = ({ widgetData }) => {
     const fetchDataQry = async (query) => {
         if (!query) return;
         try {
-            const data = await fetchQueryData(query,widgetData?.JNDIid);
+            const data = await fetchQueryData(query, widgetData?.JNDIid);
             const seriesData = [];
 
             if (data[0]?.column_3) {
@@ -105,9 +128,9 @@ const MapDash = ({ widgetData }) => {
 
     }, []);
 
-      useEffect(() => {
-          fetchDataQry(widgetData?.queryVO);
-      }, [widgetData]);
+    useEffect(() => {
+        fetchDataQry(widgetData?.queryVO);
+    }, [widgetData]);
 
 
     if (!isLoaded) {
@@ -333,12 +356,39 @@ const MapDash = ({ widgetData }) => {
     };
 
     return (
-        <div style={{ width: "100%", height: "600px" }}>
-            <HighchartsReact
-                highcharts={Highcharts}
-                options={chartOptions}
-                constructorType="mapChart"
-            />
+        <div className={`tabular-box ${theme === 'Dark' ? 'dark-theme' : ''} tabular-box-border ${borderReq === 'No' ? '' : 'tabular-box-border'}`} style={{ border: `1px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
+            <div className="row px-2 py-2 border-bottom" style={{ textAlign: headingAlign, color: widgetHeadingColor }} >
+                {isWidgetNameVisible === "Yes" &&
+                    <div className={` ${isDirectDownloadRequired === 'Yes' ? 'col-md-7' : 'col-md-12'} fw-medium fs-6`} >{rptDisplayName}</div>
+                }
+            </div>
+
+            <div className="px-2 py-2" style={{ marginTop: `${widgetTopMargin}px` }}>
+                <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query : {rptId}</h4>
+                {modeOfQuery === 'Query' &&
+                    <span>{mainQuery}</span>
+                }
+                {modeOfQuery === "Procedure" &&
+                    <span>{procedureMode}</span>
+                }
+            </div>
+
+
+            <div style={{ width: "100%", height: "auto" }}>
+                <HighchartsReact
+                    highcharts={Highcharts}
+                    options={chartOptions}
+                    constructorType="mapChart"
+                />
+            </div>
+            {footerText && footerText.trim() !== '' && (
+                <>
+                    <h6 className='header-devider mt-2 mb-0'></h6>
+                    <div className="px-2 py-2">
+                        <span style={{ fontSize: '12px' }}>{footerText}</span>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

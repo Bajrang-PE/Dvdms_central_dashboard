@@ -30,32 +30,35 @@ const Facilities = () => {
 
     const fetchGraphDataQry = async (fc) => {
         if (!fc?.queryVO) return;
-        setIsLoading(true)
+        setIsLoading(true);
         try {
-            const data = await fetchQueryData(fc?.queryVO);
-            const dtlen = Object?.keys(data[0])
-            if (dtlen?.length === 3) {
-                setGraphData(
-                    data.map((item) => ({
-                        name: item.column_2,
-                        y: item.column_1,
-                    })));
-            } else {
-                setGraphData(
-                    data.map((item) => ({
-                        name: item.column_1,
-                        y: item.column_2,
-                    })));
-            }
-
-            setSingleWidget(fc)
-            setShowGraph(true)
-            setIsLoading(false)
+          const data = await fetchQueryData(fc?.queryVO);
+          const rawItem = data?.[0];
+      
+          if (!rawItem) {
+            setGraphData([]);
+            setIsLoading(false);
+            return;
+          }
+      
+          const keys = Object.keys(rawItem);
+      
+         
+          const graphData = data.map(item => ({
+            name: item[keys[0]],  
+            y: parseFloat(item[keys[1]]) || 0  
+          }));
+      
+          setGraphData(graphData);
+          setSingleWidget(fc);
+          setShowGraph(true);
+          setIsLoading(false);
         } catch (error) {
-            console.error("Error loading query data:", error);
-            setIsLoading(false)
+          console.error("Error loading query data:", error);
+          setIsLoading(false);
         }
-    }
+      };
+      
 
     const onClose = () => {
         setGraphData([]);

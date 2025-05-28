@@ -37,8 +37,9 @@ const GenericDrugMaster = () => {
         } else {
             const lowercasedText = searchInput.toLowerCase();
             const newFilteredData = genericDrugListData.filter(row => {
+                
                 const drugName = row?.drugName?.toLowerCase() || "";
-                const drugType = row?.drugTypeId?.toString() || "";
+                const drugType = row?.drugTypeName?.toString() || "";
                 const drugCat = row?.drugCatCode?.toString() || "";
 
                 return drugName?.includes(lowercasedText) || drugType?.includes(lowercasedText) || drugCat?.includes(lowercasedText);

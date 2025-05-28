@@ -132,74 +132,102 @@ const GraphDash = ({ widgetData }) => {
 
   const fetchDataQry = async (query) => {
     if (!query) return;
+  
     try {
       const data = await fetchQueryData(query, widgetData?.JNDIid);
       const limit = widgetLimit
         ? parseInt(widgetLimit)
         : safeLimit
-          ? parseInt(safeLimit)
-          : data.length;
+        ? parseInt(safeLimit)
+        : data.length;
+  
       const limitedData = data.slice(0, limit);
-
-      const seriesData = [];
-
-
-      if (limitedData[0]?.column_3) {
-        // Three-column limitedData
-        const categories = [...new Set(limitedData.map(item => item.column_1))];
-        const seriesNames = ['column_2', 'column_3'];
-
-        seriesNames.forEach(seriesName => {
-          seriesData.push({
-            name: seriesName,
-            data: categories.map(category => {
-              const item = limitedData.find(d => d.column_1 === category);
-              return item ? item[seriesName] : null;
-            }),
-            colorByPoint: true,
-          });
-        });
-
-        setGraphData({ categories, seriesData });
-      } else {
-        // Two-column data
-        const categories = limitedData.map(item => item.column_1);
-        seriesData.push({
-          name: 'column_2',
-          data: limitedData.map(item => item.column_2),
-          colorByPoint: true,
-        });
-
-        setGraphData({ categories, seriesData });
+  
+      // If no data, do nothing
+      if (!limitedData.length) {
+        setGraphData({ categories: [], seriesData: [] });
+        return;
       }
+  
+      // Get dynamic column names
+      const columnNames = Object.keys(limitedData[0]);
+  
+      if (columnNames.length < 1) {
+        console.warn("Insufficient columns to generate graph");
+        return;
+      }
+  
+      const categoriesKey = columnNames[0]; 
+      const seriesKeys = columnNames.slice(1); 
+  
+      // Extract unique category values
+      const categories = limitedData.map(item => item[categoriesKey]);
+  
+      // Create dynamic series data
+      const seriesData = seriesKeys.map(key => ({
+        name: key,
+        data: limitedData.map(item => item[key]),
+        colorByPoint: true,
+      }));
+  
+      setGraphData({ categories, seriesData });
+  
     } catch (error) {
       console.error("Error loading query data:", error);
     }
   };
 
-  console.log(widgetData, widgetData?.rptId)
-
-  // utils/graphFormatter.js
   const formatProcedureDataForGraph = (data) => {
     if (!data || data.length === 0) return { categories: [], seriesData: [] };
-
+  
     const [firstItem] = data;
     const keys = Object.keys(firstItem);
-
-    const nameKey = keys[0];  // e.g. "State / UT"
-    const valueKey = keys[1]; // e.g. "Base Rate(In INR)"
-
-    const categories = data.map(item => item[nameKey]);
-    const values = data.map(item => parseFloat(item[valueKey]) || 0);
-
-    const seriesData = [{
+  
+    // 1. Find the key with string value (to use as category)
+    const categoryKey = keys.find(k => typeof firstItem[k] === 'string');
+    if (!categoryKey) {
+      console.warn("No string column found for category.");
+      return { categories: [], seriesData: [] };
+    }
+  
+    // 2. Get numeric value keys (series)
+    const valueKeys = keys.filter(k =>
+      k !== categoryKey && typeof firstItem[k] === 'number'
+    );
+  
+    // 3. Format categories and series
+    const categories = data.map(item => item[categoryKey]);
+    const seriesData = valueKeys.map(valueKey => ({
       name: valueKey,
-      data: values,
-      colorByPoint: true
-    }];
-
+      data: data.map(item => parseFloat(item[valueKey]) || 0),
+      colorByPoint: valueKeys.length === 1
+    }));
+  
     return { categories, seriesData };
   };
+  
+
+  // utils/graphFormatter.js
+  // const formatProcedureDataForGraph = (data) => {
+  //   if (!data || data.length === 0) return { categories: [], seriesData: [] };
+
+  //   const [firstItem] = data;
+  //   const keys = Object.keys(firstItem);
+
+  //   const nameKey = keys[0];  // e.g. "State / UT"
+  //   const valueKey = keys[1]; // e.g. "Base Rate(In INR)"
+
+  //   const categories = data.map(item => item[nameKey]);
+  //   const values = data.map(item => parseFloat(item[valueKey]) || 0);
+
+  //   const seriesData = [{
+  //     name: valueKey,
+  //     data: values,
+  //     colorByPoint: true
+  //   }];
+
+  //   return { categories, seriesData };
+  // };
 
   const formatParams = (paramsObj) => {
     if (typeof paramsObj !== 'object' || paramsObj === null || Array.isArray(paramsObj)) {
@@ -258,7 +286,7 @@ const GraphDash = ({ widgetData }) => {
     if (widgetData && widgetData?.modeOfQuery === "Procedure") {
       fetchProcedure(widgetData)
     } else {
-      fetchDataQry(widgetData?.queryVO);
+      fetchDataQry(widgetData?.query?.length > 0 ? widgetData?.query : widgetData?.queryVO);
     }
   }, [paramsValues]);
 
@@ -485,7 +513,7 @@ const GraphDash = ({ widgetData }) => {
         {widgetData?.modeOfQuery === 'Query' &&
           <span>{mainQuery}</span>
         }
-         {widgetData?.modeOfQuery === "Procedure" &&
+        {widgetData?.modeOfQuery === "Procedure" &&
           <span>{widgetData?.procedureMode}</span>
         }
       </div>

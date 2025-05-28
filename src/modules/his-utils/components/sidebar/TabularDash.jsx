@@ -1,7 +1,7 @@
 import React, { lazy, useCallback, useContext, useEffect, useState } from "react";
 import Tabular from "./Tabular";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowCircleLeft, faBarChart, faCog, faFileExcel, faFilePdf, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faArrowCircleLeft, faCog, faFileExcel, faFilePdf, faRefresh, faSortAmountDesc } from "@fortawesome/free-solid-svg-icons";
 import { fetchProcedureData, fetchQueryData } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import InputField from "../commons/InputField";
@@ -10,45 +10,12 @@ import { getAuthUserData } from "../../../../utils/CommonFunction";
 
 const Parameters = lazy(() => import('./Parameters'));
 
-const initialStates = [
-  { id: 1, name: "Rajasthan" },
-  { id: 2, name: "Uttar Pradesh" },
-  { id: 3, name: "Rajasthan" },
-  { id: 4, name: "Uttar Pradesh" },
-  { id: 5, name: "Rajasthan" },
-  { id: 6, name: "Uttar Pradesh" },
-  { id: 7, name: "Rajasthan" },
-  { id: 8, name: "Uttar Pradesh" },
-  { id: 9, name: "Rajasthan" },
-  { id: 11, name: "Uttar Pradesh" },
-  { id: 12, name: "Rajasthan" },
-  { id: 13, name: "Uttar Pradesh" }
-];
-
-const districtData = {
-  1: [
-    { id: 101, name: "Jaipur", stateId: 1 },
-    { id: 102, name: "Jodhpur", stateId: 1 },
-  ],
-  2: [
-    { id: 201, name: "Lucknow", stateId: 2 },
-    { id: 202, name: "Varanasi", stateId: 2 },
-  ],
-};
-
-const hospitalData = {
-  101: [{ id: 1001, name: "Jaipur Hospital" }],
-  102: [{ id: 1002, name: "Jodhpur Hospital" }],
-  201: [{ id: 2001, name: "Lucknow Hospital" }],
-  202: [{ id: 2002, name: "Varanasi Hospital" }],
-};
-
 const TabularDash = ({ widgetData }) => {
 
-  const { theme, mainDashData, singleConfigData, paramsValues, setLoading } = useContext(HISContext);
+  const { theme, singleConfigData, paramsValues, setLoading } = useContext(HISContext);
   const [tableData, setTableData] = useState([]);
   const [currentLevel, setCurrentLevel] = useState("state");
-  const [currentData, setCurrentData] = useState(initialStates);
+  const [currentData, setCurrentData] = useState('');
   const [previousData, setPreviousData] = useState([]);
   const [widParamsValues, setWidParamsValues] = useState();
   const [searchInput, setSearchInput] = useState('');
@@ -74,22 +41,6 @@ const TabularDash = ({ widgetData }) => {
   }, [searchInput, tableData]);
 
 
-  const handleStateClick = useCallback((stateId) => {
-    if (districtData[stateId]) {
-      setPreviousData((prev) => [...prev, { level: currentLevel, data: currentData }]);
-      setCurrentData(districtData[stateId]);
-      setCurrentLevel("district");
-    }
-  }, [currentData, currentLevel]);
-
-  const handleDistrictClick = useCallback((districtId) => {
-    if (hospitalData[districtId]) {
-      setPreviousData((prev) => [...prev, { level: currentLevel, data: currentData }]);
-      setCurrentData(hospitalData[districtId]);
-      setCurrentLevel("hospital");
-    }
-  }, [currentData, currentLevel]);
-
   const handleBack = useCallback(() => {
     if (previousData.length > 0) {
       const lastState = previousData.pop();
@@ -111,28 +62,72 @@ const TabularDash = ({ widgetData }) => {
       return formattedItem;
     });
   };
-
-  const generateColumns = (data) => {
+  const generateColumns = (data, ifDrill) => {
     if (!data || data.length === 0) return [];
 
     const keys = Object.keys(data[0]);
 
-    // Reorder keys so "State" is first
     const reorderedKeys = [
-      ...keys.filter(k => /state/i.test(k)), // Match "State", "State / UT" etc.
+      ...keys.filter(k => /state/i.test(k)),
       ...keys.filter(k => !/state/i.test(k))
     ];
 
-    return reorderedKeys.map((key) => ({
+    const dynamicColumns = reorderedKeys.map((key) => ({
       name: key,
       selector: row => row[key],
       sortable: true,
       wrap: true,
       cell: key.toLowerCase().includes("state")
-        ? row => <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => console.log(row)}>{row[key]?.split('##')[0]}</span>
+        ? row => (
+          <span
+            style={{ color: 'blue', cursor: 'pointer' }}
+            onClick={() => console.log(row)}
+          >
+            {row[key]?.split('##')[0]}
+          </span>
+        )
         : undefined
     }));
+
+    if (ifDrill) {
+      const drillColumn = {
+        name: "Action",
+        cell: (row) => (
+          <button
+            className="rounded-4 border-1"
+            onClick={() => alert('bg')}
+          >
+            <FontAwesomeIcon icon={faSortAmountDesc} />
+          </button>
+        )
+      };
+      return [drillColumn, ...dynamicColumns];
+    }
+
+    return dynamicColumns;
   };
+
+  // const generateColumns = (data, ifDrill) => {
+  //   if (!data || data.length === 0) return [];
+
+  //   const keys = Object.keys(data[0]);
+
+  //   const reorderedKeys = [
+  //     ...keys.filter(k => /state/i.test(k)),
+  //     ...keys.filter(k => !/state/i.test(k))
+  //   ];
+
+  //   return reorderedKeys.map((key) => ({
+  //     name: key,
+  //     selector: row => row[key],
+  //     sortable: true,
+  //     wrap: true,
+  //     cell: key.toLowerCase().includes("state")
+  //       ? row => <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => console.log(row)}>{row[key]?.split('##')[0]}</span>
+  //       : undefined
+  //   }));
+  // };
+
 
   const formatParams = (paramsObj) => {
     if (typeof paramsObj !== 'object' || paramsObj === null || Array.isArray(paramsObj)) {
@@ -169,7 +164,7 @@ const TabularDash = ({ widgetData }) => {
         ]
         const response = await fetchProcedureData(widget?.procedureMode, params, widget?.JNDIid);
         const formattedData = formatData(response.data || []);
-        const generatedColumns = generateColumns(formattedData);
+        const generatedColumns = generateColumns(formattedData, true);
         setColumns(generatedColumns);
         setTableData(formattedData);
         setLoading(false)
@@ -181,10 +176,10 @@ const TabularDash = ({ widgetData }) => {
     } else {
       // if (!widget?.queryVO?.length > 0) return;
       try {
-        const data = await fetchQueryData(widget?.query, widget?.JNDIid);
+        const data = await fetchQueryData(widget?.query?.length > 0 ? widget?.query : widget?.queryVO, widget?.JNDIid);
         if (data?.length > 0) {
           const formattedData = formatData(data); // if you want to keep formatting consistent
-          const generatedColumns = generateColumns(formattedData);
+          const generatedColumns = generateColumns(formattedData, true);
 
           setColumns(generatedColumns);
           setTableData(formattedData);
@@ -192,20 +187,12 @@ const TabularDash = ({ widgetData }) => {
           setColumns([]);
           setTableData([]);
         }
-        // if (data?.length > 0) {
-        //   setTableData(
-        //     data?.length > 0 && data.map((item) => ({
-        //       name: item.column_1,
-        //       y: item.column_2,
-        //     })));
-        // } else {
-        //   setTableData([])
-        // }
       } catch (error) {
         console.error("Error loading query data:", error);
       }
     }
   }
+
 
   useEffect(() => {
     if (widgetData) {
@@ -235,10 +222,9 @@ const TabularDash = ({ widgetData }) => {
   const widgetLimit = widgetData?.limitHTMLFromDb || ''
   const defLimit = singleConfigData?.databaseConfigVO?.setDefaultLimit || ''
   const parsedLimit = parseInt(defLimit, 10);
-  const safeLimit = isNaN(parsedLimit) || parsedLimit <= 0 ? null : parsedLimit;
+  const safeLimit = parsedLimit ? parsedLimit : '';
 
   const mainQuery = widgetData?.query && widgetData?.query?.length > 0 ? widgetData?.query[0]?.mainQuery : widgetData?.queryVO && widgetData?.queryVO?.length > 0 ? widgetData?.queryVO[0]?.mainQuery : ''
-
 
   // const columns = useMemo(() => {
   //   const srNoColumn = isIndexNoReq
@@ -279,7 +265,7 @@ const TabularDash = ({ widgetData }) => {
   //   }
   // }, [currentLevel, handleStateClick, handleDistrictClick]);
 
-  
+
   return (
     <div className={`tabular-box ${theme === 'Dark' ? 'dark-theme' : ''} tabular-box-border ${borderReq === 'No' ? '' : 'tabular-box-border'}`} style={{ border: `1px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
 

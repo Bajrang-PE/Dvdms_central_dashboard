@@ -89,13 +89,29 @@ const Parameters = ({ params, setParamsValues }) => {
     const fetchDropdownData = async (query, parameterName, jndiS) => {
         if (!query) return;
         try {
-            const val = { query, params: {}, jndi: jndiS };
-            const data = await fetchPostData('/hisutils/GenericApiQry', val);
-            setDropdownData((prev) => ({ ...prev, [parameterName]: data?.data || [] }));
+          const val = { query, params: {}, jndi: jndiS };
+          const response = await fetchPostData('/hisutils/GenericApiQry', val);
+          const rawData = response?.data || [];
+      
+          const formattedData = rawData.map(item => {
+            const keys = Object.keys(item);
+            const valueKey = keys[0];
+            const labelKey = keys[1] || keys[0]; 
+            return {
+              value: item[valueKey],
+              label: item[labelKey],
+            };
+          });
+      
+          setDropdownData(prev => ({
+            ...prev,
+            [parameterName]: formattedData,
+          }));
         } catch (error) {
-            console.error("Error fetching query data:", error);
+          console.error("Error fetching query data:", error);
         }
-    };
+      };
+      
 
     // Fetch dropdown data for parameters that have queries
     useEffect(() => {
@@ -158,9 +174,6 @@ const Parameters = ({ params, setParamsValues }) => {
         }
     }, [presentParams]);
 
-    console.log(presentParams, 'params')
-    console.log(proParamsVal, 'proParamsVal')
-    console.log(dropdownData, 'errors')
 
     const renderInputField = (param) => {
         const {
@@ -169,7 +182,7 @@ const Parameters = ({ params, setParamsValues }) => {
             parameterLabelWidth, labelAlignment,
             parameterControlWidth, controlAlignment, isMultipleSelectionRequired, defaultValueIfEmpty, parameterId, shouldBeLessThanField, shouldBeGreaterThanField, placeHolder, textBoxValidation
         } = param?.jsonData || {};
-        const options = dropdownData[parameterName] || lstOption || [];
+        const options = dropdownData[parameterName] || [];
 
         return (
             <div
@@ -189,12 +202,16 @@ const Parameters = ({ params, setParamsValues }) => {
                             <Select
                                 id={parameterId}
                                 name={parameterName}
-                                options={options?.map(dt => ({ optionValue: dt?.column_1, optionText: dt?.column_2 }))}
+                                options={
+                                    options?.length > 0 ?
+                                        options
+                                        : lstOption
+                                }
                                 isMulti
                                 placeholder={placeHolder}
                                 className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} react-select-multi`}
-                                getOptionLabel={(e) => e.optionText}
-                                getOptionValue={(e) => e.optionValue}
+                                // getOptionLabel={(e) => e.optionText}
+                                // getOptionValue={(e) => e.optionValue}
                                 value={selectedValues[parameterName] || []}
                                 onChange={(selectedOptions) => handleMultiSelectChange(parameterName, selectedOptions, parameterId)}
                             />
@@ -221,8 +238,8 @@ const Parameters = ({ params, setParamsValues }) => {
                                     <option value={defaultOption?.optionValue ? defaultOption?.optionValue : ''}>{defaultOption?.optionText ? defaultOption?.optionText : 'Select Value'}</option>
                                 }
                                 {options?.length > 0 && options.map((option, index) => (
-                                    <option key={index} value={option.column_1}>
-                                        {option.column_2}
+                                    <option key={index} value={option.value}>
+                                        {option.label}
                                     </option>
                                 ))}
                             </select>

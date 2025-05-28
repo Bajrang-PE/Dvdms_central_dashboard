@@ -2,13 +2,14 @@ import React, { useContext, useEffect, useState, useMemo, useCallback, Suspense,
 import { HISContext } from "../../contextApi/HISContext";
 import { useSearchParams } from "react-router-dom";
 import { fetchData } from "../../../../utils/HisApiHooks";
+import Parameters from "../../components/sidebar/Parameters";
 
 const DashSidebar = lazy(() => import("../../components/sidebar/Sidebar"));
 const TopBar = lazy(() => import("../../components/sidebar/TopBar"));
 const TabDash = lazy(() => import("../../components/sidebar/TabDash"));
 
 const DashboardMst = () => {
-    const { getAllTabsData, getAllWidgetData, allTabsData, activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData } = useContext(HISContext);
+    const { getAllTabsData, getAllWidgetData, allTabsData, activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData, setParamsValues } = useContext(HISContext);
     const [searchParams] = useSearchParams();
     const groupId = searchParams.get("groupId");
     const dashboardFor = searchParams.get("dashboardFor");
@@ -45,6 +46,7 @@ const DashboardMst = () => {
     }, [allTabsData, mainDashData]);
 
     const isTopBarLayout = mainDashData?.jsonData?.tabDisplayStyle === 'TOP';
+    const parameters = mainDashData?.jsonData?.allSelectedParaList || '';
 
     useEffect(() => {
         setLoading(true);
@@ -52,6 +54,10 @@ const DashboardMst = () => {
             setLoading(false);
         }, 1000);
     }, [])
+
+    const handleSetParamsValues = useCallback((values) => {
+        setParamsValues(values);
+    }, []);
 
 
     return (
@@ -85,7 +91,22 @@ const DashboardMst = () => {
                             />
                         )}
                     </Suspense>
+
                     <main style={{ padding: "10px 20px", flex: 1 }}>
+                        {parameters &&
+                            <div className='parameter-box'>
+                                <Suspense
+                                    fallback={
+                                        <div className="pt-3 text-center">
+                                            Loading...
+                                        </div>
+                                    }
+                                >
+                                    <Parameters params={parameters} dashFor={mainDashData?.dashboardFor} setParamsValues={handleSetParamsValues} />
+                                </Suspense>
+                            </div>
+                        }
+
                         {activeTab &&
                             <Suspense
                                 fallback={

@@ -27,14 +27,14 @@
     font-weight: 500;
     color: #FBC02D !important;
     transition: background-color 0.3s ease, color 0.3s ease;
-    padding: 2px;
+    padding: 2px !important;
 }
 
 .dropdownAnchor:hover {
     background-color: #FFEB3B;
     color: #1e1e1e !important;
     border-radius: 5px;
-    padding: 2px;
+    padding: 2px !important;
 }
 
 .navbar-nav .drpb-menu {

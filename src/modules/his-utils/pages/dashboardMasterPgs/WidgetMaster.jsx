@@ -45,7 +45,6 @@ const WidgetMaster = () => {
     "selFilterIds": ""
 
   })
-  // console.log(allWidgetData,'allWidgetData')
   const [radioValues, setRadioValues] = useState({
     widgetViewed: 'Tabular', isWidgetNameVisible: 'Yes', selectedModeQuery: 'Query', widgetPurpose: 'HTML',
     widgetHeadingAlign: 'left', isRecordLimitReq: 'Yes', isWidgetBorderReq: 'Yes',
@@ -132,7 +131,6 @@ const WidgetMaster = () => {
     const localValues = localStorage.getItem('values');
     const localRadio = localStorage.getItem('radio');
     const mode = localStorage.getItem('mode');
-    // console.log(localValues, 'bgb')
     if (localValues && localValues !== '') {
       const val = JSON.parse(localValues);
       setValues(val);
@@ -337,6 +335,7 @@ const WidgetMaster = () => {
     if (selectedOption?.length > 0) {
       const selectedRow = allWidgetData?.filter(dt => dt?.rptId === selectedOption[0]?.rptId)
       setSingleData(selectedRow);
+      console.log(selectedRow,'single')
       setActionMode('edit');
       // setShowParamsTable(false);
       setShowDataTable(false);
@@ -550,6 +549,7 @@ const WidgetMaster = () => {
       setLoading(false)
     }
   }, [singleData]);
+
 
   //parameter search
   useEffect(() => {
@@ -1155,7 +1155,6 @@ const WidgetMaster = () => {
 
     //  KPI-Specific Validations
     if (radioValues?.widgetViewed === "KPI") {
-      console.log(values?.kpiType,'values?.kpiType')
       if (!values?.kpiType?.trim()) {
         newErrors.kpiTypeErr = "KPI type is required";
         isValid = false;
@@ -1244,7 +1243,6 @@ const WidgetMaster = () => {
       setShowConfirmSave(true);
     }
   }
-  console.log(values, 'errors')
 
   useEffect(() => {
     if (confirmSave) {

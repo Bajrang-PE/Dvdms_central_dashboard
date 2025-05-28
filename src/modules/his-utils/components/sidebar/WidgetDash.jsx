@@ -14,20 +14,20 @@ const WidgetDash = React.memo(({ widgetDetail }) => {
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <>
-                {widgetDetail.reportViewed === 'KPI' && <KpiDash widgetData={widgetDetail} />}
-                {widgetDetail.reportViewed === 'Tabular' && <TabularDash widgetData={widgetDetail} />}
-                {widgetDetail.reportViewed === 'Graph' && <GraphDash widgetData={widgetDetail} />}
-                {widgetDetail.reportViewed === 'Iframe' &&
+                {widgetDetail?.reportViewed === 'KPI' && <KpiDash widgetData={widgetDetail} />}
+                {widgetDetail?.reportViewed === 'Tabular' && <TabularDash widgetData={widgetDetail} />}
+                {widgetDetail?.reportViewed === 'Graph' && <GraphDash widgetData={widgetDetail} />}
+                {widgetDetail?.reportViewed === 'Iframe' &&
                     <IframeDash widgetData={widgetDetail} />
                 }
-                {widgetDetail.reportViewed === 'Other_Link' &&
+                {widgetDetail?.reportViewed === 'Other_Link' &&
                     <OtherLinkDash widgetData={widgetDetail} />
                 }
-                {widgetDetail.reportViewed === 'News_Ticker' &&
+                {widgetDetail?.reportViewed === 'News_Ticker' &&
                     <NewsTickerDash widgetData={widgetDetail} />
                 }
 
-                {widgetDetail.reportViewed === "Criteria_Map" &&
+                {widgetDetail?.reportViewed === "Criteria_Map" &&
                     <div style={{ position: 'relative', zIndex: 1 }}>
                         <MapDash widgetData={widgetDetail} />
                     </div>

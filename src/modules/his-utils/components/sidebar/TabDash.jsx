@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useCallback, useContext, useEffect, useState } from 'react';
 import WidgetDash from './WidgetDash';
 import { HISContext } from '../../contextApi/HISContext';
+import FooterText from '../commons/FooterText';
 
 const PdfDownload = lazy(() => import('../commons/PdfDownload'));
 const Parameters = lazy(() => import('./Parameters'));
@@ -9,6 +10,9 @@ const TabDash = React.memo(({ tabData }) => {
     const { allWidgetData, setLoading, loading, activeTab, setParamsValues } = useContext(HISContext);
     const [presentWidgets, setPresentWidgets] = useState([]);
     const [presentTabs, setPresentTabs] = useState([]);
+    const [widWithoutLinked, setWidWithoutLinked] = useState([]);
+
+    const footerText = tabData?.jsonData?.footerText || "";
 
     const handleSetParamsValues = useCallback((values) => {
         setParamsValues(values);
@@ -51,12 +55,30 @@ const TabDash = React.memo(({ tabData }) => {
                 return false;
             });
 
+            const allLinkedRptIds = new Set(
+                uniqueWidgets
+                    .flatMap(widget => widget?.linkedWidgetRptId?.split(',') || [])
+                    .map(id => id.trim())
+                    .filter(Boolean)
+            );
+            // Keep only widgets whose rptId is NOT in the linkedWidgetRptId list
+            const notLinkedToByOthers = uniqueWidgets.filter(
+                widget => !allLinkedRptIds.has(widget.rptId)
+            );
+
+            setWidWithoutLinked(notLinkedToByOthers);
             setPresentWidgets(uniqueWidgets);
-            setPresentTabs(sortedWidgets)
+            setPresentTabs(sortedWidgets);
+        } else {
+            setPresentWidgets([]);
         }
     }, [tabData, allWidgetData]);
 
-console.log(presentWidgets,'presentWidgets')
+    console.log(presentWidgets, 'presentWidgets')
+    console.log(widWithoutLinked, 'widWithoutLinked')
+
+    console.log(presentWidgets?.filter(dt => dt?.rptId == '355')[0], 'tabdata')
+
     return (
         <>
             {loading ? null : (
@@ -92,42 +114,38 @@ console.log(presentWidgets,'presentWidgets')
                     )}
 
                     <div className='row'>
-                        {presentWidgets?.length > 0 && presentWidgets.map((widget, index) => (
+                        {widWithoutLinked?.length > 0 && widWithoutLinked.map((widget, index) => (
                             <React.Fragment key={index}>
                                 {widget &&
-                                    <div className={`col-sm-${presentTabs.filter(dt => dt?.rptId == widget?.rptId)[0]?.widgetWidth}`} style={{ padding: "5px 3px" }}>
-                                        <Suspense
-                                            fallback={
-                                                <div className="pt-3 text-center">
-                                                    Loading...
-                                                </div>
-                                            }
-                                        >
-                                            <WidgetDash widgetDetail={widget} />
-                                        </Suspense>
-                                    </div>
+                                    <>
+                                        <div className={`col-sm-${presentTabs.filter(dt => dt?.rptId == widget?.rptId)[0]?.widgetWidth}`} style={{ padding: "5px 3px" }}>
+                                            <Suspense
+                                                fallback={
+                                                    <div className="pt-3 text-center">
+                                                        Loading...
+                                                    </div>
+                                                }
+                                            >
+                                                <WidgetDash widgetDetail={widget} />
+                                            </Suspense>
+                                        </div>
+                                        {widget?.linkedWidgetRptId && (
+                                            <div className={`col-sm-${presentTabs.filter(dt => dt?.rptId == widget?.linkedWidgetRptId)[0]?.widgetWidth}`} style={{ padding: "5px 3px" }}>
+                                                <Suspense fallback={<div className="pt-3 text-center">Loading...</div>}>
+                                                    <WidgetDash widgetDetail={presentWidgets?.filter(dt => dt?.rptId == widget?.linkedWidgetRptId)[0]} />
+                                                </Suspense>
+                                            </div>
+                                        )}
+                                    </>
                                 }
                             </React.Fragment>
                         ))
                         }
                     </div>
-
-                    {/* <div className="tab-footer-box" style="" >
-                        <div className="col-sm-12">
-                            <button data-val="show" className="btn btn-xs  bg-navy" value="Hide Legend">Show Legends</button>
-                        </div>
-                        <div className="col-sm-12" id="legand_10" style="border: 1px solid;">
-                            <div className="footertext" align="left">
-                                <span >* Data is for mapped drugs only </span>
-                                <span id="footerTextFromQuery_10"></span>
-                                <span id="footerTextFromQueryByParameter_10"></span>
-                            </div>
-
-                        </div>
-
-                    </div> */}
+                    <FooterText footerText={footerText} />
                 </div>
             )}
+
         </>
     );
 });
