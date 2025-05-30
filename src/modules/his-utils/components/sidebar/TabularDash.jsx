@@ -2,7 +2,7 @@ import React, { lazy, useCallback, useContext, useEffect, useState } from "react
 import Tabular from "./Tabular";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowCircleLeft, faCog, faFileExcel, faFilePdf, faRefresh, faSortAmountDesc } from "@fortawesome/free-solid-svg-icons";
-import { fetchProcedureData, fetchQueryData } from "../../utils/commonFunction";
+import { fetchProcedureData, fetchQueryData, formatParams } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import InputField from "../commons/InputField";
 import { generateCSV, generatePDF } from "../commons/advancedPdf";
@@ -12,14 +12,14 @@ const Parameters = lazy(() => import('./Parameters'));
 
 const TabularDash = ({ widgetData }) => {
 
-  const { theme, singleConfigData, paramsValues, setLoading } = useContext(HISContext);
+  const { theme, singleConfigData, paramsValues, setLoading, setParamsValues, isSearchQuery, setIsSearchQuery } = useContext(HISContext);
   const [tableData, setTableData] = useState([]);
   const [currentLevel, setCurrentLevel] = useState("state");
   const [currentData, setCurrentData] = useState('');
   const [previousData, setPreviousData] = useState([]);
-  const [widParamsValues, setWidParamsValues] = useState();
   const [searchInput, setSearchInput] = useState('');
   const [filterData, setFilterData] = useState(tableData)
+
 
   const [columns, setColumns] = useState([]);
 
@@ -107,47 +107,11 @@ const TabularDash = ({ widgetData }) => {
     return dynamicColumns;
   };
 
-  // const generateColumns = (data, ifDrill) => {
-  //   if (!data || data.length === 0) return [];
-
-  //   const keys = Object.keys(data[0]);
-
-  //   const reorderedKeys = [
-  //     ...keys.filter(k => /state/i.test(k)),
-  //     ...keys.filter(k => !/state/i.test(k))
-  //   ];
-
-  //   return reorderedKeys.map((key) => ({
-  //     name: key,
-  //     selector: row => row[key],
-  //     sortable: true,
-  //     wrap: true,
-  //     cell: key.toLowerCase().includes("state")
-  //       ? row => <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => console.log(row)}>{row[key]?.split('##')[0]}</span>
-  //       : undefined
-  //   }));
-  // };
-
-
-  const formatParams = (paramsObj) => {
-    if (typeof paramsObj !== 'object' || paramsObj === null || Array.isArray(paramsObj)) {
-      return {
-        paramsId: "",
-        paramsValue: ""
-      };
-    }
-
-    return {
-      paramsId: Object.keys(paramsObj).join(','),
-      paramsValue: Object.values(paramsObj).join(',')
-    };
-  };
-
   const fetchData = async (widget) => {
     if (widget?.modeOfQuery === "Procedure") {
       if (!widget?.procedureMode) return;
       try {
-        const paramVal = formatParams(paramsValues ? paramsValues : null);
+        const paramVal = formatParams(paramsValues ? paramsValues : null, widgetData?.rptId || '');
 
         const params = [
           getAuthUserData('hospitalCode')?.toString(), //hospital code===
@@ -168,7 +132,7 @@ const TabularDash = ({ widgetData }) => {
         setColumns(generatedColumns);
         setTableData(formattedData);
         setLoading(false)
-
+       setIsSearchQuery(false)
       } catch (error) {
         console.error("Error loading query data:", error);
         setLoading(false)
@@ -183,6 +147,8 @@ const TabularDash = ({ widgetData }) => {
 
           setColumns(generatedColumns);
           setTableData(formattedData);
+          setLoading(false)
+          setIsSearchQuery(false)
         } else {
           setColumns([]);
           setTableData([]);
@@ -193,12 +159,19 @@ const TabularDash = ({ widgetData }) => {
     }
   }
 
+  console.log(paramsValues, 'paramsValues2')
 
   useEffect(() => {
     if (widgetData) {
       fetchData(widgetData);
     }
-  }, [paramsValues, widgetData]);
+  }, [widgetData,paramsValues]);
+
+  useEffect(() => {
+    if (isSearchQuery && widgetData && paramsValues) {
+      fetchData(widgetData);
+    }
+  }, [isSearchQuery]);
 
   const headingAlign = widgetData?.tableHeadingAlignment === '1' ? 'center' : 'left';
   const borderReq = widgetData?.isTableBorderRequired || '';
@@ -340,13 +313,13 @@ const TabularDash = ({ widgetData }) => {
 
       {paramsData && (
         <div className='parameter-box'>
-          <Parameters params={paramsData} setParamsValues={setWidParamsValues} />
+          <Parameters params={paramsData} scope={'widgetParams'} widgetId={widgetData?.rptId} />
         </div>
       )}
 
       <Tabular
         columns={columns}
-        data={widgetLimit ? filterData.slice(0, parseInt(widgetLimit)) : safeLimit ? filterData.slice(0, safeLimit) : filterData}
+        data={widgetLimit ? filterData?.slice(0, parseInt(widgetLimit)) : safeLimit ? filterData?.slice(0, safeLimit) : filterData}
         pagination={isPaginationReq}
         recordsPerPage={recordPerPage}
         fixedHeader={isHeadingFixed}

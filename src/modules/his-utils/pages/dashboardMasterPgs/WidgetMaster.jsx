@@ -135,7 +135,7 @@ const WidgetMaster = () => {
       const val = JSON.parse(localValues);
       setValues(val);
       setActionMode(mode);
-      setRows(val?.query && val?.query?.length >0 ? val?.query : val?.queryVO);
+      setRows(val?.query && val?.query?.length > 0 ? val?.query : val?.queryVO);
 
     }
     if (localRadio && localRadio !== '') {
@@ -335,7 +335,7 @@ const WidgetMaster = () => {
     if (selectedOption?.length > 0) {
       const selectedRow = allWidgetData?.filter(dt => dt?.rptId === selectedOption[0]?.rptId)
       setSingleData(selectedRow);
-      console.log(selectedRow,'single')
+      console.log(selectedRow, 'single')
       setActionMode('edit');
       // setShowParamsTable(false);
       setShowDataTable(false);
@@ -682,7 +682,7 @@ const WidgetMaster = () => {
         //graph
         graphPluginName: defaultPluginName,
         defaultgraphType: defaultGraphType,
-        graphChangeOptions: graphTypes,
+        graphChangeOptions: graphTypes?.length > 0 ? graphTypes?.map(tp => tp?.value) : [],
         lineGraphColumnName: clmNameForLineGraph,
         colorForBars: colorsForBars,
         graphHeight: graphHeight,
@@ -705,7 +705,7 @@ const WidgetMaster = () => {
         parentReportGraph: parentWidgetGraph,
         isActionButtonReqGraph: isActionBtnReqGraph,
         //kpi
-        kpiType: kpiType ||"rectangle",
+        kpiType: kpiType || "rectangle",
         kpiBorderWidth: kpiBorderWidth,
         kpiBorderColor: kpiBorderColor,
         iconType: kpiIconType,
@@ -912,7 +912,7 @@ const WidgetMaster = () => {
         //graph
         graphPluginName: defaultPluginName,
         defaultgraphType: defaultGraphType,
-        graphChangeOptions: graphTypes,
+        graphChangeOptions: graphTypes?.length > 0 ? graphTypes?.map(tp => tp?.value) : [],
         lineGraphColumnName: clmNameForLineGraph,
         colorForBars: colorsForBars,
         graphHeight: graphHeight,

@@ -18,7 +18,15 @@ const HISContextData = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [singleConfigData, setSingleConfigData] = useState();
 
-  const [paramsValues, setParamsValues] = useState();
+  const [paramsValues, setParamsValues] = useState({
+    tabParams: {},
+    widgetParams: {},
+  });
+  const [paramsValuesPro, setParamsValuesPro] = useState({
+    tabParams: {},
+    widgetParams: {},
+  });
+  const [isSearchQuery, setIsSearchQuery] = useState(false);
 
   // ALL DATA
   const [parameterData, setParameterData] = useState([]);
@@ -202,6 +210,8 @@ const HISContextData = ({ children }) => {
       clearAllCache,
 
       paramsValues, setParamsValues,
+      paramsValuesPro, setParamsValuesPro,
+      isSearchQuery, setIsSearchQuery,
 
       // DROP DOWNS-------------------------------
       // DASHBOARD FOR

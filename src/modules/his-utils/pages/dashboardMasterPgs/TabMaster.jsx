@@ -590,12 +590,12 @@ const TabMaster = () => {
       width: "8%"
     },
     {
-      name: 'Tab Name',
+      name: 'Tab Display Name',
       selector: row => row?.jsonData?.dashboardName || "---",
       sortable: true,
     },
     {
-      name: 'Tab Display Name',
+      name: 'Tab Name',
       selector: row => row?.jsonData?.dashboardActualName || "---",
       sortable: true,
     },
@@ -607,8 +607,6 @@ const TabMaster = () => {
     },
   ]
 
-  // console.log(singleData, 'single')
-  console.log(selectedOptions, 'values')
 
   return (
     <>

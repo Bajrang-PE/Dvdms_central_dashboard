@@ -138,3 +138,24 @@ export const fetchLocalLogoAsBase64 = (filePath) => {
 };
 
 
+  export const formatParams = (allParams, widgetId) => {
+    const tabParams = allParams?.tabParams || {};
+    const widgetSpecificParams = allParams?.widgetParams?.[widgetId] || {};
+
+    const combinedParams = {
+      ...tabParams,
+      ...widgetSpecificParams
+    };
+
+    if (typeof combinedParams !== 'object' || combinedParams === null || Array.isArray(combinedParams)) {
+      return {
+        paramsId: "",
+        paramsValue: ""
+      };
+    }
+
+    return {
+      paramsId: Object.keys(combinedParams).join(','),
+      paramsValue: Object.values(combinedParams).join(',')
+    };
+  };

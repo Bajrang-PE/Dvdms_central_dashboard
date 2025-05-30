@@ -3,7 +3,7 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog, faFileCsv, faFilePdf, faRefresh } from "@fortawesome/free-solid-svg-icons";
-import { fetchProcedureData, fetchQueryData } from "../../utils/commonFunction";
+import { fetchProcedureData, fetchQueryData, formatParams } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import { highchartGraphOptions } from "../../localData/DropDownData";
 import { getAuthUserData } from "../../../../utils/CommonFunction";
@@ -12,11 +12,13 @@ import { generateGraphCSV, generateGraphPDF } from "../commons/advancedPdf";
 const Parameters = lazy(() => import('./Parameters'));
 
 const GraphDash = ({ widgetData }) => {
-  const { theme, paramsValues, singleConfigData } = useContext(HISContext);
+  const { theme, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery } = useContext(HISContext);
   const [widParamsValues, setWidParamsValues] = useState();
   const [filteredGraphOptions, setFilteredGraphOptions] = useState([]);
   const [chartType, setChartType] = useState('BAR_GRAPH');
   const [graphData, setGraphData] = useState([]);
+
+  console.log(widgetData,widgetData?.rptId+"BGBG")
 
   const is3D = widgetData.is3d === "true";
   const xAxisLabel = widgetData.xAxisLabel || "X Axis";
@@ -24,7 +26,6 @@ const GraphDash = ({ widgetData }) => {
   const showLegend = widgetData.showInLegend === "true";
   const dataLabelsEnabled = widgetData.dataLabels === "true";
   const colorList = widgetData.colorForBars ? widgetData.colorForBars.split(",") : ["red", "blue", "green"];
-  // const mainQuery = widgetData.queryVO?.length > 0 ? widgetData.queryVO[0]?.mainQuery : "";
   const mainQuery = widgetData?.query && widgetData?.query?.length > 0 ? widgetData?.query[0]?.mainQuery : widgetData?.queryVO && widgetData?.queryVO?.length > 0 ? widgetData?.queryVO[0]?.mainQuery : ''
   const alpha = widgetData.alpha || 15;
   const beta = widgetData.beta || 15;
@@ -93,7 +94,6 @@ const GraphDash = ({ widgetData }) => {
     };
   }, []);
 
-
   const chartTypeMapping = {
     BAR_GRAPH: "column",
     STACKED_GRAPH: "column",
@@ -116,7 +116,6 @@ const GraphDash = ({ widgetData }) => {
       let opt = [];
       opt = highchartGraphOptions
         .filter(option => availableGraphs.includes(option.value))
-      // .concat(highchartGraphOptions.find(option => option.value === widgetData.defaultgraphType) || []);
 
       if (widgetData.defaultgraphType && !availableGraphs.includes(widgetData.defaultgraphType)) {
         const defaultGraphOption = highchartGraphOptions.find(option => option.value === widgetData.defaultgraphType);
@@ -130,48 +129,51 @@ const GraphDash = ({ widgetData }) => {
     }
   }, [widgetData])
 
+  console.log(widgetData.graphChangeOptions,'filteredGraphOptions')
+
   const fetchDataQry = async (query) => {
     if (!query) return;
-  
+
     try {
       const data = await fetchQueryData(query, widgetData?.JNDIid);
       const limit = widgetLimit
         ? parseInt(widgetLimit)
         : safeLimit
-        ? parseInt(safeLimit)
-        : data.length;
-  
+          ? parseInt(safeLimit)
+          : data.length;
+
       const limitedData = data.slice(0, limit);
-  
+
       // If no data, do nothing
       if (!limitedData.length) {
         setGraphData({ categories: [], seriesData: [] });
         return;
       }
-  
+
       // Get dynamic column names
       const columnNames = Object.keys(limitedData[0]);
-  
+
       if (columnNames.length < 1) {
         console.warn("Insufficient columns to generate graph");
         return;
       }
-  
-      const categoriesKey = columnNames[0]; 
-      const seriesKeys = columnNames.slice(1); 
-  
+
+      const categoriesKey = columnNames[0];
+      const seriesKeys = columnNames.slice(1);
+
       // Extract unique category values
       const categories = limitedData.map(item => item[categoriesKey]);
-  
+
       // Create dynamic series data
       const seriesData = seriesKeys.map(key => ({
         name: key,
         data: limitedData.map(item => item[key]),
         colorByPoint: true,
       }));
-  
+
       setGraphData({ categories, seriesData });
-  
+      setIsSearchQuery(false)
+
     } catch (error) {
       console.error("Error loading query data:", error);
     }
@@ -179,22 +181,22 @@ const GraphDash = ({ widgetData }) => {
 
   const formatProcedureDataForGraph = (data) => {
     if (!data || data.length === 0) return { categories: [], seriesData: [] };
-  
+
     const [firstItem] = data;
     const keys = Object.keys(firstItem);
-  
+
     // 1. Find the key with string value (to use as category)
     const categoryKey = keys.find(k => typeof firstItem[k] === 'string');
     if (!categoryKey) {
       console.warn("No string column found for category.");
       return { categories: [], seriesData: [] };
     }
-  
+
     // 2. Get numeric value keys (series)
     const valueKeys = keys.filter(k =>
       k !== categoryKey && typeof firstItem[k] === 'number'
     );
-  
+
     // 3. Format categories and series
     const categories = data.map(item => item[categoryKey]);
     const seriesData = valueKeys.map(valueKey => ({
@@ -202,10 +204,10 @@ const GraphDash = ({ widgetData }) => {
       data: data.map(item => parseFloat(item[valueKey]) || 0),
       colorByPoint: valueKeys.length === 1
     }));
-  
+
     return { categories, seriesData };
   };
-  
+
 
   // utils/graphFormatter.js
   // const formatProcedureDataForGraph = (data) => {
@@ -229,25 +231,12 @@ const GraphDash = ({ widgetData }) => {
   //   return { categories, seriesData };
   // };
 
-  const formatParams = (paramsObj) => {
-    if (typeof paramsObj !== 'object' || paramsObj === null || Array.isArray(paramsObj)) {
-      return {
-        paramsId: "",
-        paramsValue: ""
-      };
-    }
-
-    return {
-      paramsId: Object.keys(paramsObj).join(','),
-      paramsValue: Object.values(paramsObj).join(',')
-    };
-  };
 
   const fetchProcedure = async (widget) => {
     if (widget?.modeOfQuery === "Procedure") {
       if (!widget?.procedureMode) return;
       try {
-        const paramVal = formatParams(paramsValues ? paramsValues : null);
+        const paramVal = formatParams(paramsValues ? paramsValues : null, widgetData?.rptId || '');
         const widgetLimit = widget?.limitHTMLFromDb || ''
         const defLimit = singleConfigData?.databaseConfigVO?.setDefaultLimit || ''
         const parsedLimit = parseInt(defLimit, 10);
@@ -276,6 +265,7 @@ const GraphDash = ({ widgetData }) => {
 
         const formattedData = formatProcedureDataForGraph(limitedData);
         setGraphData(formattedData);
+        setIsSearchQuery(false)
       } catch (error) {
         console.error("Error loading query data:", error);
       }
@@ -289,6 +279,12 @@ const GraphDash = ({ widgetData }) => {
       fetchDataQry(widgetData?.query?.length > 0 ? widgetData?.query : widgetData?.queryVO);
     }
   }, [paramsValues]);
+
+  useEffect(() => {
+    if (isSearchQuery && widgetData && paramsValues) {
+      fetchProcedure(widgetData);
+    }
+  }, [isSearchQuery]);
 
 
   const exportingOptions = {
@@ -347,12 +343,39 @@ const GraphDash = ({ widgetData }) => {
         },
       },
       labels: {
-        rotation: labelRotation ? parseInt(labelRotation, 10) : -45,
+        //  useHTML: true,
+        y: chartTypeMapping[chartType] !== 'bar' ? 45 : 0,
+        rotation: chartTypeMapping[chartType] === 'bar' ? 0 : (labelRotation ? parseInt(labelRotation, 10) : -45),
+        // rotation: labelRotation ? parseInt(labelRotation, 10) : -45,
         style: {
           fontSize: "10px",
-          color: isDarkTheme ? "#ffffff" : "#000000"
+          color: isDarkTheme ? "#ffffff" : "#000000",
+          textOverflow: 'none'
         },
         step: 1,
+        align: chartTypeMapping[chartType] === 'bar' ? 'right' : 'center',
+        reserveSpace: true,
+        formatter: function () {
+          const maxLength = 15;
+          const value = this.value;
+          if (value.length > maxLength) {
+            const words = value.split(' ');
+            let lines = [''];
+            let lineIndex = 0;
+
+            words.forEach(word => {
+              if ((lines[lineIndex] + word).length > maxLength) {
+                lineIndex++;
+                lines[lineIndex] = word;
+              } else {
+                lines[lineIndex] += (lines[lineIndex].length ? ' ' : '') + word;
+              }
+            });
+
+            return lines.join('<br>');
+          }
+          return value;
+        }
       },
       scrollbar: {
         enabled: isScrollbarRequired,
@@ -369,9 +392,10 @@ const GraphDash = ({ widgetData }) => {
       },
       labels: {
         style: {
-          color: isDarkTheme ? "#ffffff" : "#000000"
+          color: isDarkTheme ? "#ffffff" : "#000000",
         }
       },
+
       gridLineColor: isDarkTheme ? "#444444" : "#e6e6e6",
     },
     legend: {
@@ -509,7 +533,7 @@ const GraphDash = ({ widgetData }) => {
       </div>
 
       <div className="px-2 py-2" style={{ marginTop: `${widgetTopMargin}px` }}>
-        <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query :</h4>
+        <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query :{widgetData?.rptId}</h4>
         {widgetData?.modeOfQuery === 'Query' &&
           <span>{mainQuery}</span>
         }

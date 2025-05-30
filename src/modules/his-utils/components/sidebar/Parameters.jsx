@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { HISContext } from "../../contextApi/HISContext";
 import InputField from "../commons/InputField";
 import Select from "react-select";
@@ -8,50 +8,94 @@ import { faEyeSlash, faReply, faSearch } from "@fortawesome/free-solid-svg-icons
 import { useSearchParams } from "react-router-dom";
 import { fetchPostData } from "../../../../utils/HisApiHooks";
 
-const Parameters = ({ params, setParamsValues }) => {
-    const { parameterData, getAllParameterData, theme, singleConfigData } = useContext(HISContext);
+const Parameters = ({ params, scope, widgetId = null }) => {
+    const { parameterData, getAllParameterData, theme, paramsValues, setParamsValues, paramsValuesPro, setParamsValuesPro, setIsSearchQuery } = useContext(HISContext);
     const [presentParams, setPresentParams] = useState([]);
     const [selectedValues, setSelectedValues] = useState({});
     const [dropdownData, setDropdownData] = useState({});
     const [hideParams, setHideParams] = useState(false)
     const [queryParams] = useSearchParams();
 
-    const [proParamsVal, setProParamsVal] = useState({});
-
     const dashFor = queryParams.get('dashboardFor');
     const [errors, setErrors] = useState({
-
     })
+
+    const handleSetParamsValues = useCallback((values, type, widgetId = null) => {
+        if (type === 'tabParams') {
+            setParamsValues((prev) => ({
+                ...prev,
+                tabParams: {
+                    ...prev?.tabParams,
+                    ...values,
+                },
+            }));
+        } else if (type === 'widgetParams' && widgetId) {
+            setParamsValues((prev) => ({
+                ...prev,
+                widgetParams: {
+                    ...prev.widgetParams,
+                    [widgetId]: {
+                        ...(prev.widgetParams?.[widgetId] || {}),
+                        ...values,
+                    },
+                },
+            }));
+        }
+    }, []);
+
+    const handleSetProParamsValues = useCallback((values, type, widgetId = null) => {
+        if (type === 'tabParams') {
+            setParamsValuesPro((prev) => ({
+                ...prev,
+                tabParams: {
+                    ...prev?.tabParams,
+                    ...values,
+                },
+            }));
+        } else if (type === 'widgetParams' && widgetId) {
+            setParamsValuesPro((prev) => ({
+                ...prev,
+                widgetParams: {
+                    ...prev.widgetParams,
+                    [widgetId]: {
+                        ...(prev.widgetParams?.[widgetId] || {}),
+                        ...values,
+                    },
+                },
+            }));
+        }
+    }, []);
+
 
     useEffect(() => {
         if (dashFor && parameterData?.length === 0) {
             getAllParameterData(dashFor);
-
         }
     }, [dashFor]);
 
-    // Function to get default selected values
-    // const getDefaultValues = (parameterName, lstOption) => {
-    //     setSelectedValues((prev) => ({
-    //         ...prev,
-    //         [parameterName]: lstOption?.filter(option => option.optionValue.includes("#DEFAULT")),
-    //     }));
-    //     return lstOption?.filter(option => option.optionValue.includes("#DEFAULT"));
-    // };
-
-    // Function to handle multi-select change
     const handleMultiSelectChange = (parameterName, selectedOptions, id) => {
         setSelectedValues((prev) => ({
             ...prev,
             [parameterName]: selectedOptions,
         }));
-        setProParamsVal((prev) => ({
-            ...prev,
-            [id]: selectedOptions,
-        }));
-        setErrors(prev => ({ ...prev, [id]: "" }))
-    };
 
+        const sortedString = selectedOptions
+            ?.map(opt => opt.optionValue)
+            .sort((a, b) => {
+                const numA = Number(a);
+                const numB = Number(b);
+
+                const isNumA = !isNaN(numA);
+                const isNumB = !isNaN(numB);
+
+                if (isNumA && isNumB) return numA - numB;
+                return String(a).localeCompare(String(b));
+            })
+            .join('~');
+
+        handleSetProParamsValues({ [id]: sortedString || '' }, scope, widgetId);
+        setErrors(prev => ({ ...prev, [id]: "" }));
+    };
 
     const handleInputChange = (parameterName, value, id) => {
         setSelectedValues((prev) => ({
@@ -59,17 +103,16 @@ const Parameters = ({ params, setParamsValues }) => {
             [parameterName]: value,
         }));
 
-        setProParamsVal((prev) => ({
-            ...prev,
-            [id]: value,
-        }));
-
+        handleSetProParamsValues({ [id]: value }, scope, widgetId);
         setErrors(prev => ({ ...prev, [id]: "" }))
     };
 
     useEffect(() => {
         if (parameterData?.length > 0 && params) {
-            setProParamsVal({})
+            setParamsValuesPro({
+                tabParams: {},
+                widgetParams: {},
+            })
             const dashboardIdsArray = params.split(",")?.map(Number);
             const matchedParams = dashboardIdsArray?.map((id) => parameterData?.find((p) => p.id === id)).filter(Boolean);
             setPresentParams(matchedParams);
@@ -89,46 +132,46 @@ const Parameters = ({ params, setParamsValues }) => {
     const fetchDropdownData = async (query, parameterName, jndiS) => {
         if (!query) return;
         try {
-          const val = { query, params: {}, jndi: jndiS };
-          const response = await fetchPostData('/hisutils/GenericApiQry', val);
-          const rawData = response?.data || [];
-      
-          const formattedData = rawData.map(item => {
-            const keys = Object.keys(item);
-            const valueKey = keys[0];
-            const labelKey = keys[1] || keys[0]; 
-            return {
-              value: item[valueKey],
-              label: item[labelKey],
-            };
-          });
-      
-          setDropdownData(prev => ({
-            ...prev,
-            [parameterName]: formattedData,
-          }));
+            const val = { query, params: {}, jndi: jndiS };
+            const response = await fetchPostData('/hisutils/GenericApiQry', val);
+            const rawData = response?.data || [];
+
+            const formattedData = rawData.map(item => {
+                const keys = Object.keys(item);
+                const valueKey = keys[0];
+                const labelKey = keys[1] || keys[0];
+                return {
+                    optionValue: item[valueKey],
+                    optionText: item[labelKey],
+                };
+            });
+
+            setDropdownData(prev => ({
+                ...prev,
+                [parameterName]: formattedData,
+            }));
         } catch (error) {
-          console.error("Error fetching query data:", error);
+            console.error("Error fetching query data:", error);
         }
-      };
-      
+    };
 
     // Fetch dropdown data for parameters that have queries
     useEffect(() => {
         presentParams.forEach((param) => {
             const query = param?.jsonData?.parameterQuery;
-            if (query && param?.jsonData?.modeForQuery === "query") {
+            if (query) {
                 fetchDropdownData(query, param.jsonData.parameterName, param?.jndiIdForGettingData);
             }
         });
     }, [presentParams]);
 
-
     const resetParams = () => {
         setSelectedValues({});
     }
+
     const searchParams = () => {
         let isValid = true;
+
         presentParams?.forEach((param) => {
             const isReq = param?.jsonData?.isMandatory;
             const id = param?.jsonData?.parameterId;
@@ -136,24 +179,34 @@ const Parameters = ({ params, setParamsValues }) => {
             const maxLength = param?.jsonData?.textboxMaxlength;
             const minLength = param?.jsonData?.textboxMinlength;
             const validation = param?.jsonData?.textBoxValidation;
-            if (isReq === 'Yes' && !proParamsVal[id]) {
-                setErrors(prev => ({ ...prev, [id]: "required" }))
+
+            const scopedParams = paramsValuesPro?.[scope] || {};
+            let value
+
+            if (scope === 'tabParams') {
+                value = scopedParams?.[id];
+            } else if (scope === 'widgetParams') {
+                value = scopedParams?.[widgetId]?.[id];
+            }
+
+            if (isReq === 'Yes' && (value === undefined || value === '')) {
+                setErrors(prev => ({ ...prev, [id]: "required" }));
                 isValid = false;
             }
 
             if (parameterType === "2" && (
-                proParamsVal[id]?.length < minLength ||
-                proParamsVal[id]?.length > maxLength
+                value?.length < minLength || value?.length > maxLength
             )) {
-                setErrors(prev => ({ ...prev, [id]: `required ${minLength} to ${maxLength} charecters` }))
+                setErrors(prev => ({ ...prev, [id]: `required ${minLength} to ${maxLength} characters` }));
                 isValid = false;
-                alert('bg')
             }
-        })
+        });
+
         if (isValid) {
-            setParamsValues(proParamsVal)
+            setParamsValues(paramsValuesPro, scope, widgetId);
+            setIsSearchQuery(true)
         }
-    }
+    };
 
     useEffect(() => {
         if (presentParams.length > 0) {
@@ -161,19 +214,34 @@ const Parameters = ({ params, setParamsValues }) => {
             const defOpt = {};
 
             presentParams.forEach((param) => {
-                const { parameterName, lstOption, defaultOption } = param?.jsonData || {};
-                const defaultOptions = lstOption?.filter(option => option.optionValue.includes("#DEFAULT"));
-                if (defaultOptions?.length > 0) {
-                    initialSelectedValues[parameterName] = defaultOptions;
-                }
-                defOpt[param?.id] = defaultOption?.optionValue
-            });
+                const { parameterName, lstOption, defaultOption, isMultipleSelectionRequired } = param?.jsonData || {};
+                const defaultValStr = defaultOption?.optionValue || "";
+                const defaultTextStr = defaultOption?.optionText || "";
 
-            setParamsValues(defOpt)
+                const isMulti = isMultipleSelectionRequired === "Yes";
+
+                const values = defaultValStr.includes("##") ? defaultValStr.split("##") : [defaultValStr];
+                const texts = defaultTextStr.includes("##") ? defaultTextStr.split("##") : [defaultTextStr];
+
+                if (isMulti) {
+                    const matchedOptions = values.map((val, idx) => ({
+                        optionValue: val,
+                        optionText: texts[idx] || val,
+                    }));
+                    initialSelectedValues[parameterName] = matchedOptions;
+                    defOpt[param?.id] = values.join("~");
+                } else {
+                    initialSelectedValues[parameterName] = values[0] || '';
+                    defOpt[param?.id] = values[0] || '';
+                }
+            });
+            handleSetProParamsValues(defOpt, scope, widgetId);
+            handleSetParamsValues(defOpt, scope, widgetId);
             setSelectedValues(initialSelectedValues);
         }
     }, [presentParams]);
 
+    console.log(presentParams, 'presentParams')
 
     const renderInputField = (param) => {
         const {
@@ -210,8 +278,8 @@ const Parameters = ({ params, setParamsValues }) => {
                                 isMulti
                                 placeholder={placeHolder}
                                 className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} react-select-multi`}
-                                // getOptionLabel={(e) => e.optionText}
-                                // getOptionValue={(e) => e.optionValue}
+                                getOptionLabel={(e) => e.optionText}
+                                getOptionValue={(e) => e.optionValue}
                                 value={selectedValues[parameterName] || []}
                                 onChange={(selectedOptions) => handleMultiSelectChange(parameterName, selectedOptions, parameterId)}
                             />
@@ -232,14 +300,17 @@ const Parameters = ({ params, setParamsValues }) => {
                                 value={selectedValues[parameterName] || defaultValueIfEmpty}
                                 onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
                             >
-                                {placeHolder &&
-                                    <option value=''>{placeHolder}</option>}
+                                {placeHolder ?
+                                    <option value=''>{placeHolder}</option> :
+                                    <option value=''>{'select'}</option>
+
+                                }
                                 {defaultOption?.optionText !== '' &&
                                     <option value={defaultOption?.optionValue ? defaultOption?.optionValue : ''}>{defaultOption?.optionText ? defaultOption?.optionText : 'Select Value'}</option>
                                 }
                                 {options?.length > 0 && options.map((option, index) => (
-                                    <option key={index} value={option.value}>
-                                        {option.label}
+                                    <option key={index} value={option.optionValue}>
+                                        {option.optionText}
                                     </option>
                                 ))}
                             </select>
@@ -284,7 +355,6 @@ const Parameters = ({ params, setParamsValues }) => {
                                 max={getDateConstraint(shouldBeLessThanField)}
                                 value={selectedValues[parameterName]}
                                 onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
-                            // onChange={}
                             />
                             {errors[parameterId] &&
                                 <div className="required-input">

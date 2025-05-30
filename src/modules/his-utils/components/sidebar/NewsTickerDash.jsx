@@ -81,8 +81,8 @@ const NewsTickerDash = ({ widgetData }) => {
                     initialRecord?.toString(), //initial record no.===
                     finalRecord?.toString(), //final record no.===
                     "", //date options
-                    "16-Apr-2025",//from values
-                    "16-Apr-2025" // to values
+                    "29-May-2025",//from values
+                    "29-May-2025" // to values
                 ]
                 const response = await fetchProcedureData(widget?.procedureMode, params, widget?.JNDIid);
                 const formattedData = formatData(response.data || []);

@@ -4,10 +4,10 @@ import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import React, { useContext, useEffect, useState } from 'react'
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import { HISContext } from '../../contextApi/HISContext';
-import { fetchProcedureData, fetchQueryData } from '../../utils/commonFunction';
+import { fetchProcedureData, fetchQueryData, formatParams } from '../../utils/commonFunction';
 
 const KpiDash = ({ widgetData }) => {
-    const { setActiveTab, allTabsData, setLoading, paramsValues, singleConfigData } = useContext(HISContext);
+    const { setActiveTab, allTabsData, setLoading, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery } = useContext(HISContext);
     const [kpiData, setKpiData] = useState([]);
 
     const formatData = (rawData = []) => {
@@ -26,7 +26,7 @@ const KpiDash = ({ widgetData }) => {
         if (widget?.modeOfQuery === "Procedure") {
             if (!widget?.procedureMode) return;
             try {
-                const paramVal = formatParams(paramsValues ? paramsValues : null);
+                const paramVal = formatParams(paramsValues ? paramsValues : null, widgetData?.rptId || '');
 
                 const params = [
                     getAuthUserData('hospitalCode')?.toString(), //hospital code===
@@ -41,10 +41,11 @@ const KpiDash = ({ widgetData }) => {
                     "16-Apr-2025",//from values
                     "16-Apr-2025" // to values
                 ]
-                const response = await fetchProcedureData(widget?.procedureMode, params,widget?.JNDIid);
+                const response = await fetchProcedureData(widget?.procedureMode, params, widget?.JNDIid);
                 const formattedData = formatData(response.data || []);
                 // const generatedColumns = generateColumns(formattedData);
                 setKpiData(formattedData);
+                setIsSearchQuery(false)
             } catch (error) {
                 console.error("Error loading query data:", error);
             }
@@ -58,6 +59,7 @@ const KpiDash = ({ widgetData }) => {
                             name: item.column_1,
                             y: item.column_2,
                         })));
+                    setIsSearchQuery(false)
                 } else {
                     setKpiData([])
                 }
@@ -71,7 +73,13 @@ const KpiDash = ({ widgetData }) => {
         if (widgetData) {
             fetchData(widgetData);
         }
-    }, []);
+    }, [paramsValues]);
+
+    useEffect(() => {
+        if (isSearchQuery && widgetData && paramsValues) {
+            fetchData(widgetData);
+        }
+    }, [isSearchQuery]);
 
 
     const getDynamicIcon = (iconName) => {

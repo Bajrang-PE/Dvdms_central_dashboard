@@ -8,7 +8,7 @@ import { HISContext } from "../../contextApi/HISContext";
 
 
 const MapDash = ({ widgetData }) => {
-    const { theme, mainDashData, singleConfigData, paramsValues, setLoading } = useContext(HISContext);
+    const { theme, mainDashData, singleConfigData, paramsValues, setLoading, isSearchQuery, setIsSearchQuery } = useContext(HISContext);
     const [mapData, setMapData] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false)
     const [graphData, setGraphData] = useState([]);

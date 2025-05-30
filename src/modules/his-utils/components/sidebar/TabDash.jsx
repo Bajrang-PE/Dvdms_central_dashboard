@@ -74,11 +74,6 @@ const TabDash = React.memo(({ tabData }) => {
         }
     }, [tabData, allWidgetData]);
 
-    console.log(presentWidgets, 'presentWidgets')
-    console.log(widWithoutLinked, 'widWithoutLinked')
-
-    console.log(presentWidgets?.filter(dt => dt?.rptId == '355')[0], 'tabdata')
-
     return (
         <>
             {loading ? null : (
@@ -108,7 +103,7 @@ const TabDash = React.memo(({ tabData }) => {
                                     </div>
                                 }
                             >
-                                <Parameters params={activeTab?.jsonData?.allParameters} dashFor={activeTab?.dashboardFor} setParamsValues={handleSetParamsValues} />
+                                <Parameters params={activeTab?.jsonData?.allParameters} dashFor={activeTab?.dashboardFor} scope={'tabParams'} />
                             </Suspense>
                         </div>
                     )}

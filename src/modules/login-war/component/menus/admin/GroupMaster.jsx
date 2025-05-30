@@ -19,7 +19,7 @@ const GroupMaster = () => {
 
     const handleRowSelect = (row) => {
         setSelectedOption((prev) => {
-            if (prev.length > 0 && prev[0]?.groupId === row?.groupId) {
+            if (prev.length > 0 && prev[0]?.cwhnumGroupId === row?.cwhnumGroupId) {
                 return [];
             }
             return [row];
@@ -41,7 +41,7 @@ const GroupMaster = () => {
     }, [searchInput, groupListData]);
 
     const deleteRecord = () => {
-        fetchDeleteData(`api/v1/Group/${selectedOption[0]?.groupId}`).then(data => {
+        fetchDeleteData(`api/v1/Group/${selectedOption[0]?.cwhnumGroupId}`).then(data => {
             if (data.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getGroupListData();
@@ -84,7 +84,7 @@ const GroupMaster = () => {
                     <span className="btn btn-sm text-white px-1 py-0 mr-1" >
                         <input
                             type="checkbox"
-                            checked={selectedOption.length > 0 && selectedOption[0]?.groupId === row?.groupId}
+                            checked={selectedOption.length > 0 && selectedOption[0]?.cwhnumGroupId === row?.cwhnumGroupId}
                             onChange={(e) => { handleRowSelect(row) }}
                         />
                     </span>
@@ -93,7 +93,7 @@ const GroupMaster = () => {
         },
         {
             name: 'Group Name',
-            selector: row => row.groupName,
+            selector: row => row.cwhstrGroupName,
             sortable: true,
         }
     ]
