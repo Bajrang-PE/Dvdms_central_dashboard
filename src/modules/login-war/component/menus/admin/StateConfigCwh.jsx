@@ -4,7 +4,7 @@ import InputSelect from "../../InputSelect";
 import axios from 'axios';
 import { LoginContext } from '../../../context/LoginContext';
 import { fetchData, fetchUpdateData } from '../../../../../utils/ApiHooks';
-import { ToastAlert } from '../../../utils/CommonFunction';
+import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import InputField from '../../InputField';
 
 const StateConfigCwh = () => {
@@ -15,7 +15,9 @@ const StateConfigCwh = () => {
     const [configData, setConfigData] = useState([]);
 
     const [errors, setErrors] = useState({
-        stateDatabaseErr: "", jobForTestingErr: "", dataFetchSizeErr: "", serviceConnTimeoutErr: "", centServiceUrlErr: "", stateServiceUrlErr: ""
+        stateDatabaseErr: "", jobForTestingErr: "", dataFetchSizeErr: "", serviceConnTimeoutErr: "",
+        centServiceUrlErr: "", stateServiceUrlErr: "", dbDrivClassErr: "", dbUrlErr: "", dbUserNameErr: "",
+        dbPassErr: "",
     })
 
 
@@ -60,45 +62,26 @@ const StateConfigCwh = () => {
     const fetchDataByState = async (stateId) => {
         try {
 
-            fetchData(`/state/getStateConfig/${stateId}`).then((data) => {
+            fetchData(`http://10.226.27.173:8025/api/v1/state/getStateConfig/${stateId}`).then((data) => {
 
-                if (data) {
-
-                    // setValues({
-                    //     ...values,
-                    //     strStateId: data?.cwhnumStateId,
-                    //     stateServiceUrl: data?.cwhstrStateUrl,
-                    //     centServiceUrl: data?.cwhstrCentralserverurl,
-                    //     stateServiceUserName: data?.cwhstrStateserviceusername,
-                    //     stateServicePass: data?.cwhstrStateservicepassword,
-                    //     serviceConnTimeout: data?.cwhnumServiceconnecttimeout,
-                    //     dataFetchSize: data?.cwhnumBatchsize,
-                    //     dbDrivClass: data?.cwhstrDatabasedriverclassname,
-                    //     dbUrl: data?.cwhstrDatabaseurl,
-                    //     dbUserName: data?.cwhstrDatabaseusername,
-                    //     dbPass: data?.cwhstrDatabasepassword,
-                    //     stateDatabase: data?.cwhstrDatabaseName,
-                    //     isDbCredAvl: data?.cwhnumIsdbcedentialavailable,
-                    //     insertMethodOnCentralServer: data?.numIsDataInsertByEtlWar 
-
-                    // })
+                if (data?.status === 1) {
 
                     setValues({
                         ...values,
-                        strStateId: data?.cwhnumStateId ?? "",
-                        stateServiceUrl: data?.cwhstrStateUrl ?? "",
-                        centServiceUrl: data?.cwhstrCentralserverurl ?? "",
-                        stateServiceUserName: data?.cwhstrStateserviceusername ?? "",
-                        stateServicePass: data?.cwhstrStateservicepassword ?? "",
-                        serviceConnTimeout: data?.cwhnumServiceconnecttimeout ?? "",
-                        dataFetchSize: data?.cwhnumBatchsize ?? "",
-                        dbDrivClass: data?.cwhstrDatabasedriverclassname ?? "",
-                        dbUrl: data?.cwhstrDatabaseurl ?? "",
-                        dbUserName: data?.cwhstrDatabaseusername ?? "",
-                        dbPass: data?.cwhstrDatabasepassword ?? "",
-                        stateDatabase: data?.cwhstrDatabaseName ?? "",
-                        isDbCredAvl: data?.cwhnumIsdbcedentialavailable ?? "",
-                        insertMethodOnCentralServer: data?.numIsDataInsertByEtlWar ?? ""
+                        strStateId: data.data?.cwhnumStateId ?? "",
+                        stateServiceUrl: data.data?.cwhstrStateUrl ?? "",
+                        centServiceUrl: data.data?.cwhstrCentralserverurl ?? "",
+                        stateServiceUserName: data.data?.cwhstrStateserviceusername ?? "",
+                        stateServicePass: data.data?.cwhstrStateservicepassword ?? "",
+                        serviceConnTimeout: data.data?.cwhnumServiceconnecttimeout ?? "",
+                        dataFetchSize: data.data?.cwhnumBatchsize ?? "",
+                        dbDrivClass: data.data?.cwhstrDatabasedriverclassname ?? "",
+                        dbUrl: data.data?.cwhstrDatabaseurl ?? "",
+                        dbUserName: data.data?.cwhstrDatabaseusername ?? "",
+                        dbPass: data.data?.cwhstrDatabasepassword ?? "",
+                        stateDatabase: data.data?.cwhstrDatabaseName ?? "",
+                        isDbCredAvl: data.data?.cwhnumIsdbcedentialavailable ?? "",
+                        insertMethodOnCentralServer: data.data?.numIsDataInsertByEtlWar ?? ""
                     });
 
 
@@ -112,11 +95,11 @@ const StateConfigCwh = () => {
     };
 
     const getJobDrpData = async (stateId) => {
-        fetchData(`/state/getjob/${stateId}`).then((data) => {
+        fetchData(`http://10.226.27.173:8025/api/v1/state/getjob/${stateId}`).then((data) => {
 
-            if (data) {
+            if (data?.status === 1) {
 
-                const drpData = data?.map((dt) => {
+                const drpData = data?.data?.map((dt) => {
                     const val = {
                         value: dt?.cwhnumJobId,
                         label: dt?.cwhstrJobName
@@ -171,7 +154,25 @@ const StateConfigCwh = () => {
             }
         }
 
+        if(values?.isDbCredAvl == 1){
+            if(!values?.dbDrivClass){
+                setErrors(prev=>({...prev,dbDrivClassErr:"Database driver class is required"}))
+                isValid=false;
+            }
+            if(!values?.dbUrl){
+                setErrors(prev=>({...prev,dbUrlErr:"Database url is required"}))
+                isValid=false;
+            }
+            if(!values?.dbUserName){
+                setErrors(prev=>({...prev,dbUserNameErr:"Database user name is required"}))
+                isValid=false;
+            }
 
+            if(!values?.dbPass){
+                setErrors(prev=>({...prev,dbPassErr:"Database password is required"}))
+                isValid=false;
+            }
+        }
 
         if (isValid) {
             setShowConfirmSave(true)
@@ -204,10 +205,16 @@ const StateConfigCwh = () => {
             cwhstrDatabasepassword: values?.isDbCredAvl == "0" ? '' : values?.dbPass,
         };
 
-        const response = await fetchUpdateData("/state/updateStateConfig", data);
-        ToastAlert('State configuration saved successfully', 'success');
-        setConfirmSave(false);
-        reset();
+        await fetchUpdateData("http://10.226.27.173:8025/api/v1/state", data).then(data => {
+            if (data?.status === 1) {
+                ToastAlert('State configuration saved successfully', 'success');
+                setConfirmSave(false);
+                reset();
+            } else {
+                ToastAlert('Error', 'error');
+            }
+        });
+
 
     }
 
@@ -225,7 +232,9 @@ const StateConfigCwh = () => {
     return (
         <div className="masters mx-3 my-2">
 
-            <div className='text-left w-100 fw-bold p-1 heading-text' >State Configuration Master</div>
+            <div className='masters-header row'>
+                <span className='col-6'><b>{`State Configuration Master`}</b></span>
+            </div>
 
             <div className="row mt-3">
                 <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
@@ -431,13 +440,14 @@ const StateConfigCwh = () => {
                                     <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
                                         <label className="col-sm-4 col-form-label fix-label required-label"> Database Driver Class : </label>
                                         <div className="col-sm-8 align-content-center">
-                                            <input
+                                            <InputField
                                                 type="text"
                                                 className="aliceblue-bg form-control form-control-sm border-dark-subtle"
                                                 name='dbDrivClass'
                                                 id='dbDrivClass'
                                                 onChange={handleValueChange}
                                                 value={values?.dbDrivClass}
+                                                errorMessage={errors?.dbDrivClassErr}
                                             />
                                         </div>
                                     </div>
@@ -446,13 +456,14 @@ const StateConfigCwh = () => {
                                     <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
                                         <label className="col-sm-4 col-form-label fix-label required-label">  Database URL : </label>
                                         <div className="col-sm-8 align-content-center">
-                                            <input
+                                            <InputField
                                                 type="text"
                                                 className="aliceblue-bg form-control form-control-sm border-dark-subtle"
                                                 name='dbUrl'
                                                 id='dbUrl'
                                                 onChange={handleValueChange}
                                                 value={values?.dbUrl}
+                                                errorMessage={errors?.dbUrlErr}
                                             />
                                         </div>
                                     </div>
@@ -471,6 +482,7 @@ const StateConfigCwh = () => {
                                                 id='dbUserName'
                                                 onChange={handleValueChange}
                                                 value={values?.dbUserName}
+                                                errorMessage={errors?.dbUserNameErr}
                                             />
                                         </div>
                                     </div>
@@ -486,6 +498,7 @@ const StateConfigCwh = () => {
                                                 id='dbPass'
                                                 onChange={handleValueChange}
                                                 value={values?.dbPass}
+                                                errorMessage={errors?.dbPassErr}
                                             />
                                         </div>
                                     </div>

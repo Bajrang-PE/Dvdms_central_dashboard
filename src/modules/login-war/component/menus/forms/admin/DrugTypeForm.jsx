@@ -3,11 +3,11 @@ import InputField from '../../../InputField'
 import GlobalButtons from '../../GlobalButtons'
 import { LoginContext } from '../../../../context/LoginContext';
 import { ToastAlert } from '../../../../utils/CommonFunction';
-import { fetchUpdateData,fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
+import { fetchUpdateData, fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
 
-const DrugTypeForm = ({setValues,values,setSearchInput}) => {
+const DrugTypeForm = ({ setValues, values, setSearchInput }) => {
 
-    const { openPage,setOpenPage, selectedOption ,setSelectedOption ,setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const { openPage, setOpenPage, selectedOption, setSelectedOption, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [drugTypeName, setDrugTypeName] = useState("");
     const [recordStatus, setRecordStatus] = useState("");
     const [drugTypeNameErr, setDrugTypeNameErr] = useState("");
@@ -25,11 +25,11 @@ const DrugTypeForm = ({setValues,values,setSearchInput}) => {
         }
     }
 
-     useEffect(() => {
-            if (confirmSave) {
-                save();
-            }
-        }, [confirmSave])
+    useEffect(() => {
+        if (confirmSave) {
+            save();
+        }
+    }, [confirmSave])
 
 
     const save = async () => {
@@ -37,7 +37,7 @@ const DrugTypeForm = ({setValues,values,setSearchInput}) => {
         if (openPage === 'add') {
             let isValid = true
             if (!drugTypeName.trim()) {
-                  ToastAlert('Please enter drug type name', 'warning')
+                ToastAlert('Please enter drug type name', 'warning')
                 isValid = false;
             }
             if (isValid) {
@@ -45,12 +45,14 @@ const DrugTypeForm = ({setValues,values,setSearchInput}) => {
                     cwhstrDrugTypeName: drugTypeName,
                     gnumSeatId: 11111
                 }
-                const response = fetchUpdatePostData("/drugtype/addDrug", data);
-                ToastAlert('Drug Type Added successfully', 'success')
-                setOpenPage("home")
-                reset();
-                setConfirmSave(false);
-                setSearchInput('');
+                fetchUpdatePostData("http://10.226.27.173:8025/api/v1/drug-types", data).then(data => {
+                    if (data && data?.status === 1) {
+                        ToastAlert('Drug Type Added successfully', 'success')
+                        refresh();
+                    } else {
+                        ToastAlert('Error', 'error')
+                    }
+                });
 
             }
         }
@@ -58,7 +60,7 @@ const DrugTypeForm = ({setValues,values,setSearchInput}) => {
         if (openPage === 'modify') {
             let isValid = true
             if (!drugTypeName.trim()) {
-                ToastAlert("Please enter Drug Type Name",'warning')
+                ToastAlert("Please enter Drug Type Name", 'warning')
                 isValid = false;
             }
             if (isValid) {
@@ -66,18 +68,13 @@ const DrugTypeForm = ({setValues,values,setSearchInput}) => {
                     cwhstrDrugTypeName: drugTypeName,
                     gnumSeatId: 11111,
                     gnumIsvalid: recordStatus,
-                    cwhnumDrugTypeId:cwhnumDrugTypeId,
+                    cwhnumDrugTypeId: cwhnumDrugTypeId,
                     gdtEntryDate: '2025-04-09T11:16:04.569Z'
-
                 }
-                const response = await fetchUpdateData(`/drugtype/modify/${cwhnumDrugTypeId}`, data);
-                 ToastAlert('Record Updated Successfully', 'success');
-                // getZoneListData();
-                 setOpenPage('home');
-                 reset();
-                 setSelectedOption([]);
-                 setConfirmSave(false);
-                 setSearchInput('');
+                const response = await fetchUpdateData(`http://10.226.27.173:8025/api/v1/drug-types/${cwhnumDrugTypeId}`, data);
+                ToastAlert('Record Updated Successfully', 'success');
+                refresh();
+                setSelectedOption([]);
             }
         }
 
@@ -88,21 +85,27 @@ const DrugTypeForm = ({setValues,values,setSearchInput}) => {
             setDrugTypeName(selectedOption[0]?.cwhstrDrugTypeName);
             setRecordStatus(String(selectedOption[0]?.gnumIsvalid));
             setCwhnumDrugTypeId(selectedOption[0]?.cwhnumDrugTypeId);
-
         }
 
     }, [selectedOption, openPage])
 
-    const reset = () => {
+    const refresh = () => {
+        setOpenPage('home');
+        setConfirmSave(false);
+        setSearchInput('');
         setDrugTypeName("");
         setRecordStatus('1');
         setConfirmSave(false);
-        setValues({...values,"recordStatus":"1"})
+        setValues({ ...values, "recordStatus": "1" })
+    }
+
+    const reset = () => {
+        setDrugTypeName("");
     }
 
     return (
         <div>
-            <GlobalButtons onSave={handleValidation}  onClear={reset}/>
+            <GlobalButtons onSave={handleValidation} onClear={reset} />
             <hr className='my-2' />
             <div className='row pt-2'>
                 <div className='col-sm-6 row'>
@@ -155,7 +158,7 @@ const DrugTypeForm = ({setValues,values,setSearchInput}) => {
                                         id="recordStatus"
                                         value={'0'}
                                         onChange={(e) => setRecordStatus(e.target.value)}
-                                       checked={recordStatus === "0"}
+                                        checked={recordStatus === "0"}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
                                         InActive

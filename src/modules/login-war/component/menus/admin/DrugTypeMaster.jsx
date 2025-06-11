@@ -6,7 +6,7 @@ import { LoginContext } from '../../../context/LoginContext';
 import DrugTypeForm from '../forms/admin/DrugTypeForm';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import { Modal } from 'react-bootstrap';
-import { fetchData, fetchUpdateData } from '../../../../../utils/ApiHooks';
+import { fetchData, fetchDeleteData, fetchUpdateData } from '../../../../../utils/ApiHooks';
 
 export const DrugTypeMaster = () => {
 
@@ -61,10 +61,12 @@ export const DrugTypeMaster = () => {
 
     const fetchListData = async (isActive) => {
 
-        fetchData(`http://10.226.29.102:8025/drugtype/getgruglist?isActive=${isActive}`).then((data) => {
+        fetchData(`http://10.226.27.173:8025/api/v1/drug-types?isActive=${isActive}`).then((data) => {
 
-            if (data) {
-                setDrugs(data);
+            if (data && data?.status === 1) {
+                setDrugs(data.data);
+            }else{
+                setDrugs([]);
             }
 
         })
@@ -108,7 +110,7 @@ export const DrugTypeMaster = () => {
 
     const handleDelete = () => {
         const drugTypeId = String(selectedOption[0]?.cwhnumDrugTypeId)
-        fetchUpdateData(`http://10.226.29.102:8025/drugtype/delete/${drugTypeId}`).then(data => {
+        fetchDeleteData(`http://10.226.27.173:8025/api/v1/drug-types/${drugTypeId}`).then(data => {
             if (data) {
                 ToastAlert("Record Deleted Successfully", "success")
                 fetchListData(1);
@@ -197,6 +199,8 @@ export const DrugTypeMaster = () => {
                         </div>
                     </div>
                 </div>
+
+                <hr className='my-2' />
 
                 <div>
                     <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null}

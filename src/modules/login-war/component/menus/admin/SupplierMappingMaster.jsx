@@ -248,10 +248,13 @@ const SupplierMappingMaster = () => {
     return (
 
         <div className="masters mx-3 my-2">
-            {/* <GlobalButtons onSave={handleSave} onClear={reset} /> */}
-            <div className='text-left w-100 fw-bold p-1 heading-text'>Supplier Mapping Master</div>
 
-            <div className="row mt-1">
+            <div className='masters-header row'>
+                <span className='col-6'><b>{`Supplier Mapping Master`}</b></span>
+                {/* {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>} */}
+            </div>
+      
+            <div className="row pt-2">
                 <div className="form-group col-sm-6 row">
                     <label className="col-sm-4 col-form-label fix-label required-label">Supplier Name :</label>
                     <div className="col-sm-8">
@@ -295,7 +298,7 @@ const SupplierMappingMaster = () => {
             <div className="d-flex align-items-center my-3">
                 <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
                 <div className="px-1 text-primary fw-bold fs-13">
-                    <span className="text-danger">*</span> State Facility Type
+                    <span className="text-danger">*</span> State Supplier Name
                 </div>
                 <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
             </div>

@@ -24,12 +24,8 @@ const OutsourceMaster = () => {
     const [selectAll, setSelectAll] = useState(false);
     const [selectedState, setSelectedState] = useState("")
     const [selectedFacility, setSelectedFacility] = useState("")
-
-    // useEffect(() => {
-    //     if (openPage === "add" || openPage === "modify") {
-    //         validate()
-    //     }
-    // }, [openPage])
+    const [filterData, setFilterData] = useState(listData);
+ 
 
     const validate = () => {
         let isValid = true;
@@ -52,6 +48,23 @@ const OutsourceMaster = () => {
         getFacilityTypeDrpData()
         getDateDrpData()
     }, [])
+
+    useEffect(() => {
+        if (!searchInput) {
+            setFilterData(listData);
+        } else {
+            const lowercasedText = searchInput.toLowerCase();
+            const newFilteredData = listData.filter(row => {
+                const storeName = row?.storeName?.toLowerCase() || "";
+                const state = row?.stateName?.toLowerCase() || "";
+                const testsRaised = row?.testsRaised?.toString() || "";
+                const date = row?.date?.toString() || "";
+
+                return storeName?.includes(lowercasedText) || state?.includes(lowercasedText) || testsRaised?.includes(lowercasedText) || date?.includes(lowercasedText);
+            });
+            setFilterData(newFilteredData);
+        }
+    }, [searchInput, listData]);
 
     useEffect(() => {
         getListData();
@@ -271,8 +284,8 @@ const OutsourceMaster = () => {
                         <hr className='my-2' />
 
                         <div>
-                            <GlobalTable column={columns} data={listData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
-                                onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} onValidate={validate} />
+                            <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
+                                onReport={null} setSearchInput={setSearchInput} searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} onValidate={validate} />
                         </div>
 
                         {openPage === 'view' &&
@@ -305,7 +318,7 @@ const OutsourceMaster = () => {
 
                 {(openPage === "add" || openPage === "modify") &&
                     <OutsourceMasterForm stateDtl={selectedState} facilityDtl={selectedFacility}
-                        stId={values?.stateId} facilityId={values?.facilityTypeId}
+                        stId={values?.stateId} facilityId={values?.facilityTypeId} getListData={getListData}
                     />
                 }
 

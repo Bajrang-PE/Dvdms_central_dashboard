@@ -64,7 +64,7 @@ const SubGroupMaster = () => {
 
 
         if (recStatus && grpId === "") {
-            fetchData(`http://10.226.17.20:8025/api/v1/subgroup/all?isActive=${recStatus}`).then((data) => {
+            fetchData(`http://10.226.27.173:8025/api/v1/subgroup/all?isActive=${recStatus}`).then((data) => {
 
                 if (data?.status === 1 && Array.isArray(data.data)) {
                     setListData(data.data);
@@ -76,7 +76,7 @@ const SubGroupMaster = () => {
         }
 
         if (recStatus && grpId) {
-            fetchData(`http://10.226.17.20:8025/api/v1/subgroup?groupId=${grpId}&isActive=${recStatus}`).then((data) => {
+            fetchData(`http://10.226.27.173:8025/api/v1/subgroup?groupId=${grpId}&isActive=${recStatus}`).then((data) => {
 
                 if (data?.status === 1 && Array.isArray(data.data)) {
                     setListData(data.data);
@@ -260,7 +260,8 @@ const SubGroupMaster = () => {
 
             {(openPage === "add" || openPage === "modify") &&
                 <>
-                    <SubGroupMasterForm selectedGroupName={selectedGroupName} selectedGroupId={selectedGroupId} setValues={setValues} values={values} setSearchInput={setSearchInput} />
+                    <SubGroupMasterForm selectedGroupName={selectedGroupName} selectedGroupId={selectedGroupId} 
+                    setValues={setValues} values={values} setSearchInput={setSearchInput} getAllListData={getAllListData}/>
                 </>
             }
         </div>

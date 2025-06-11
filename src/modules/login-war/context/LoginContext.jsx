@@ -137,10 +137,10 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getSteteNameDrpData = () => {
-        fetchData('http://10.226.29.102:8025/state/getstate').then((data) => {
+        fetchData('http://10.226.27.173:8025/api/v1/state/getstate').then((data) => {
             if (data) {
 
-                const drpData = data?.map((dt) => {
+                const drpData = data.data?.map((dt) => {
                     const val = {
                         value: dt?.cwhnumStateId,
                         label: dt?.cwhstrStateName
@@ -178,7 +178,7 @@ const LoginContextApi = ({ children }) => {
     };
 
     const getDistrictNameDrpData = (id) => {
-        fetchData('/state/getstate').then((data) => {
+        fetchData('http://10.226.29.102:8025/state/getstate').then((data) => {
             if (data) {
 
                 const drpData = data?.map((dt) => {
@@ -410,7 +410,7 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getIphsDrugDrpData = () => {
-        fetchData(`http://10.226.26.247:8025/api/v1/IphsDrugMappingMst/getDrugnames`).then((data) => {
+        fetchData(`http://10.226.27.173:8025/api/v1/IphsDrugMappingMst/getDrugnames`).then((data) => {
             if (data?.status === 200) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {

@@ -47,14 +47,17 @@ const SupplierMaster = () => {
     };
 
     const getListData = (isActive) => {
-        fetchData(`http://10.226.29.102:8025/suppliers?isActive=${isActive}`).then((data) => {
+        fetchData(`http://10.226.27.173:8025/api/v1/suppliers?isActive=${isActive}`).then((data) => {
+            if(data && data.status === 1){
             setSuppliers(data.data);
+            }else{
+                setSuppliers([])
+            }
         })
 
     }
 
     const handleDeleteRecord = () => {
-        alert("Handle Delete Record")
         if (selectedOption?.length > 0) {
             setOpenPage('delete');
             setShowConfirmSave(true);
@@ -71,13 +74,14 @@ const SupplierMaster = () => {
 
     const handleDelete = () => {
         const suppId = String(selectedOption[0]?.cwhnumSupplierId)
-        fetchUpdateData(`http://10.226.29.102:8025/suppliers/delete/${suppId}`).then(data => {
-            if (data) {
+        fetchUpdateData(`http://10.226.27.173:8025/api/v1/suppliers/del/${suppId}`).then(data => {
+            if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 setSelectedOption([]);
                 setConfirmSave(false);
                 setOpenPage("home")
                 setRecordStatus(1)
+                getListData(recordStatus);
             } else {
                 ToastAlert('Error while deleting record!', 'error')
                 setOpenPage("home")
@@ -217,7 +221,7 @@ const SupplierMaster = () => {
             }
 
             {(openPage === "add" || openPage === "modify") &&
-                <SupplierMasterForm getData={getListData} recStatus={recordStatus} setRecStatus={setRecordStatus} setSearchInput={setSearchInput} />
+                <SupplierMasterForm getListData={getListData} recStatus={recordStatus} setRecStatus={setRecordStatus} setSearchInput={setSearchInput} />
             }
 
         </div>

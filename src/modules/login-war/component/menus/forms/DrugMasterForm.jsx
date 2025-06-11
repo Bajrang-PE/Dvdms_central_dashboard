@@ -8,11 +8,14 @@ import { fetchUpdateData, fetchUpdatePostData } from '../../../../../utils/ApiHo
 
 const DrugMasterForm = (props) => {
 
-    const { selectedGroupName } = props;
-    const { selectedSubGroupName } = props;
-    const { selectedGroupId } = props;
-    const { selectedSubGroupId } = props;
-
+    const {
+        selectedGroupName,
+        selectedSubGroupName,
+        selectedGroupId,
+        selectedSubGroupId,
+        setSearchInput,
+      } = props;
+      
     const { setShowConfirmSave, confirmSave, setConfirmSave, openPage, setOpenPage, selectedOption, setSelectedOption, drugTypeDrpData,getDrugTypeDrpData,
         getGenericDrugDrpData,genericDrugDrpData
     } = useContext(LoginContext)
@@ -102,7 +105,6 @@ const DrugMasterForm = (props) => {
 
             fetchUpdatePostData("http://10.226.17.20:8025/api/v1/drug", val).then(data => {
                 if (data) {
-                    console.log("======addded======",data)
                     ToastAlert("Data saved successfully", "success")
                 } else {
                     ToastAlert("Error", "error")
@@ -133,9 +135,10 @@ const DrugMasterForm = (props) => {
         }
 
         setConfirmSave(false);
-        setOpenPage("home")
-        setSelectedOption([])
+        setOpenPage("home");
+        setSelectedOption([]);
         reset();
+        setSearchInput('');
     }
 
     const reset = () => {
@@ -160,13 +163,8 @@ const DrugMasterForm = (props) => {
 
     return (
         <>
-            {openPage === "add" &&
-                <div className='text-left w-100 fw-bold p-1 heading-text' >Drug Master&gt;&gt;Add</div>
-            }
-            {openPage === "modify" &&
-                <div className='text-left w-100 fw-bold p-1 heading-text' >Drug Master&gt;&gt;Modify</div>
-            }
             <GlobalButtons onSave={validateSave} onClear={reset} />
+            <hr className='my-2' />
             <div className="row">
 
                 <div className="row form-group col-sm-4">

@@ -6,7 +6,7 @@ import axios from 'axios'
 import { ToastAlert } from '../../../../utils/CommonFunction'
 import { getAuthUserData } from '../../../../../../utils/CommonFunction'
 
-const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, values, setSearchInput}) => {
+const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, values, setSearchInput, getAllListData}) => {
     const { openPage, setOpenPage, selectedOption,setSelectedOption, getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext)
     const [subGroupName, setSubGroupName] = useState("")
     const [groupName, setGroupName] = useState("")
@@ -60,7 +60,7 @@ const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, val
             "gnumSeatId": getAuthUserData('userSeatId') || "10001"
         }
 
-        const response = await axios.post("http://10.226.17.20:8025/api/v1/subgroup", data)
+        const response = await axios.post("http://10.226.27.173:8025/api/v1/subgroup", data)
         ToastAlert('Subgroup Added Successfully', 'success');
        }
 
@@ -73,22 +73,21 @@ const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, val
             "gnumSeatId": getAuthUserData('userSeatId') || "10001"
         }
 
-        const response = await axios.put("http://10.226.17.20:8025/api/v1/subgroup", data) 
+        const response = await axios.put("http://10.226.27.173:8025/api/v1/subgroup", data) 
         ToastAlert('Subgroup updated Successfully', 'success');
         setSelectedOption([])
        }
-
-        setOpenPage('home');
-        //getData()
         reset();
         setConfirmSave(false);
-
+        setOpenPage('home');
+        getAllListData("1","");
+       
     }
 
     const reset=()=>{
           setSubGroupName("");
           setSearchInput('');
-          setValues({ ...values, "recordStatus": "1" });
+          setValues({ ...values, "recordStatus": "1","groupId":"" });
     }
 
     return (
