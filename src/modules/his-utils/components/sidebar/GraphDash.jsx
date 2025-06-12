@@ -3,22 +3,23 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog, faFileCsv, faFilePdf, faRefresh } from "@fortawesome/free-solid-svg-icons";
-import { fetchProcedureData, fetchQueryData, formatParams } from "../../utils/commonFunction";
+import { fetchProcedureData, fetchQueryData, formatParams, getOrderedParamValues } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import { highchartGraphOptions } from "../../localData/DropDownData";
 import { getAuthUserData } from "../../../../utils/CommonFunction";
 import { generateGraphCSV, generateGraphPDF } from "../commons/advancedPdf";
+import { useSearchParams } from "react-router-dom";
 
 const Parameters = lazy(() => import('./Parameters'));
 
-const GraphDash = ({ widgetData }) => {
+const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
   const { theme, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery } = useContext(HISContext);
   const [widParamsValues, setWidParamsValues] = useState();
   const [filteredGraphOptions, setFilteredGraphOptions] = useState([]);
   const [chartType, setChartType] = useState('BAR_GRAPH');
   const [graphData, setGraphData] = useState([]);
-
-  console.log(widgetData,widgetData?.rptId+"BGBG")
+  const [queryParams] = useSearchParams();
+  const isPrev = queryParams.get('isPreview');
 
   const is3D = widgetData.is3d === "true";
   const xAxisLabel = widgetData.xAxisLabel || "X Axis";
@@ -26,7 +27,7 @@ const GraphDash = ({ widgetData }) => {
   const showLegend = widgetData.showInLegend === "true";
   const dataLabelsEnabled = widgetData.dataLabels === "true";
   const colorList = widgetData.colorForBars ? widgetData.colorForBars.split(",") : ["red", "blue", "green"];
-  const mainQuery = widgetData?.query && widgetData?.query?.length > 0 ? widgetData?.query[0]?.mainQuery : widgetData?.queryVO && widgetData?.queryVO?.length > 0 ? widgetData?.queryVO[0]?.mainQuery : ''
+  const mainQuery = widgetData?.queryVO && widgetData?.queryVO?.length > 0 ? widgetData?.queryVO[0]?.mainQuery : ''
   const alpha = widgetData.alpha || 15;
   const beta = widgetData.beta || 15;
 
@@ -49,13 +50,14 @@ const GraphDash = ({ widgetData }) => {
   //procedure
   const initialRecord = widgetData?.initialRecordNo;
   const finalRecord = widgetData?.finalRecordNo;
-  const isPaginationReq = widgetData?.isPaginationReq || "";
+  const isPaginationReq = widgetData?.isPaginationReq === 'Yes' ? true : false;
 
   const widgetLimit = widgetData?.limitHTMLFromDb || ''
   const defLimit = singleConfigData?.databaseConfigVO?.setDefaultLimit || ''
   const parsedLimit = parseInt(defLimit, 10);
   const safeLimit = isNaN(parsedLimit) || parsedLimit <= 0 ? null : parsedLimit;
 
+  const customMessage = widgetData?.customMessage || "";
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -129,13 +131,13 @@ const GraphDash = ({ widgetData }) => {
     }
   }, [widgetData])
 
-  console.log(widgetData.graphChangeOptions,'filteredGraphOptions')
 
-  const fetchDataQry = async (query) => {
+  const fetchDataQry = async (widget) => {
+    const query = widget?.queryVO?.length > 0 ? widget?.queryVO : []
     if (!query) return;
-
+    const params = getOrderedParamValues(widget?.queryVO[0]?.mainQuery, paramsValues, widget?.rptId);
     try {
-      const data = await fetchQueryData(query, widgetData?.JNDIid);
+      const data = await fetchQueryData(query, widgetData?.JNDIid, params);
       const limit = widgetLimit
         ? parseInt(widgetLimit)
         : safeLimit
@@ -245,7 +247,7 @@ const GraphDash = ({ widgetData }) => {
         const params = [
           getAuthUserData('hospitalCode')?.toString(), //hospital code===
           "10001", //user id===
-          "", //primary key
+          pkColumn ? pkColumn : '', //primary key
           paramVal.paramsId || "", //parameter ids
           paramVal.paramsValue || "", //parameter values
           isPaginationReq?.toString(), //is pagination required===
@@ -276,13 +278,17 @@ const GraphDash = ({ widgetData }) => {
     if (widgetData && widgetData?.modeOfQuery === "Procedure") {
       fetchProcedure(widgetData)
     } else {
-      fetchDataQry(widgetData?.query?.length > 0 ? widgetData?.query : widgetData?.queryVO);
+      fetchDataQry(widgetData);
     }
-  }, [paramsValues]);
+  }, [paramsValues, widgetData]);
 
   useEffect(() => {
     if (isSearchQuery && widgetData && paramsValues) {
-      fetchProcedure(widgetData);
+      if (widgetData?.modeOfQuery === "Procedure") {
+        fetchProcedure(widgetData);
+      } else {
+        fetchDataQry(widgetData);
+      }
     }
   }, [isSearchQuery]);
 
@@ -456,7 +462,7 @@ const GraphDash = ({ widgetData }) => {
     exporting: exportingOptions,
     series: graphData?.seriesData,
     lang: {
-      noData: "No data available for this graph",
+      noData: customMessage || "No data available for this graph",
     },
     noData: {
       position: {
@@ -534,16 +540,16 @@ const GraphDash = ({ widgetData }) => {
 
       <div className="px-2 py-2" style={{ marginTop: `${widgetTopMargin}px` }}>
         <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query :{widgetData?.rptId}</h4>
-        {widgetData?.modeOfQuery === 'Query' &&
+        {(widgetData?.modeOfQuery === 'Query' && isPrev == 1) &&
           <span>{mainQuery}</span>
         }
-        {widgetData?.modeOfQuery === "Procedure" &&
+        {(widgetData?.modeOfQuery === "Procedure" && isPrev == 1) &&
           <span>{widgetData?.procedureMode}</span>
         }
       </div>
       {paramsData && (
         <div className='parameter-box'>
-          <Parameters params={paramsData} setParamsValues={setWidParamsValues} />
+          <Parameters params={paramsData} setParamsValues={setWidParamsValues} scope={'widgetParams'} widgetId={widgetData?.rptId} />
         </div>
       )}
       <div className="high-chart-box">

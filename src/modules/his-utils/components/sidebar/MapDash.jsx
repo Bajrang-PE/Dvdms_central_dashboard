@@ -3,8 +3,9 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import RajasthanMap from '../../localData/mapJson/rajasthan.json';
 import UpMap from '../../localData/mapJson/uttarpradesh.json';
-import { fetchQueryData } from "../../utils/commonFunction";
+import { fetchQueryData, getOrderedParamValues } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
+import { useSearchParams } from "react-router-dom";
 
 
 const MapDash = ({ widgetData }) => {
@@ -12,6 +13,9 @@ const MapDash = ({ widgetData }) => {
     const [mapData, setMapData] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false)
     const [graphData, setGraphData] = useState([]);
+
+    const [queryParams] = useSearchParams();
+    const isPrev = queryParams.get('isPreview');
 
     const borderReq = useMemo(() => widgetData?.isWidgetBorderRequired || '', [widgetData?.isWidgetBorderRequired]);
     const headingAlign = useMemo(() => widgetData?.widgetHeadingAlignment || '', [widgetData?.widgetHeadingAlignment]);
@@ -25,7 +29,7 @@ const MapDash = ({ widgetData }) => {
     const finalRecord = widgetData?.finalRecordNo;
 
     const widgetLimit = useMemo(() => widgetData?.limitHTMLFromDb || '', [widgetData?.limitHTMLFromDb]);
-    const mainQuery = useMemo(() => widgetData?.query && widgetData?.query?.length > 0 ? widgetData?.query[0]?.mainQuery : widgetData?.queryVO && widgetData?.queryVO?.length > 0 ? widgetData?.queryVO[0]?.mainQuery : '', [widgetData?.query, widgetData?.queryVO]);
+    const mainQuery = widgetData?.queryVO && widgetData?.queryVO?.length > 0 ? widgetData?.queryVO[0]?.mainQuery : ''
 
     const rptId = useMemo(() => widgetData?.rptId, [widgetData?.rptId]);
     const modeOfQuery = useMemo(() => widgetData?.modeOfQuery, [widgetData?.modeOfQuery]);
@@ -77,10 +81,13 @@ const MapDash = ({ widgetData }) => {
         };
     }, []);
 
-    const fetchDataQry = async (query) => {
-        if (!query) return;
+    const fetchDataQry = async (widget) => {
+        if (!widget?.queryVO?.length > 0) return;
+        const params = getOrderedParamValues(widget?.queryVO[0]?.mainQuery, paramsValues, widget?.rptId);
         try {
-            const data = await fetchQueryData(query, widgetData?.JNDIid);
+            const data = await fetchQueryData(widget?.queryVO?.length > 0 ? widget?.queryVO : [], widget?.JNDIid, params);
+
+            console.log(data, 'mapdata')
             const seriesData = [];
 
             if (data[0]?.column_3) {
@@ -128,9 +135,18 @@ const MapDash = ({ widgetData }) => {
 
     }, []);
 
+
     useEffect(() => {
-        fetchDataQry(widgetData?.queryVO);
-    }, [widgetData]);
+        if (widgetData) {
+            fetchDataQry(widgetData);
+        }
+    }, [widgetData, paramsValues]);
+
+    useEffect(() => {
+        if (isSearchQuery && widgetData && paramsValues) {
+            fetchDataQry(widgetData);
+        }
+    }, [isSearchQuery]);
 
 
     if (!isLoaded) {
@@ -152,7 +168,6 @@ const MapDash = ({ widgetData }) => {
                     geometries: mapData.objects[stateKey].geometries.map((geo) => {
                         const districtName = geo.properties.district || geo.properties.name || geo.properties.district_name;
                         const hcKey = districtName?.toLowerCase().replace(/\s+/g, "-");
-                        // console.log(`Generated hc-key for ${districtName}: ${hcKey}`);
 
                         return {
                             ...geo,
@@ -223,7 +238,6 @@ const MapDash = ({ widgetData }) => {
                     if (!e.seriesOptions) {
                         const chart = this;
                         const state = await getStateMatDt(e.point.name);
-                        console.log(e.point.name, 'state key')
 
                         if (state) {
                             chart.showLoading("Loading...");
@@ -365,10 +379,10 @@ const MapDash = ({ widgetData }) => {
 
             <div className="px-2 py-2" style={{ marginTop: `${widgetTopMargin}px` }}>
                 <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query : {rptId}</h4>
-                {modeOfQuery === 'Query' &&
+                {(modeOfQuery === 'Query' && isPrev == 1) &&
                     <span>{mainQuery}</span>
                 }
-                {modeOfQuery === "Procedure" &&
+                {(modeOfQuery === "Procedure" && isPrev == 1) &&
                     <span>{procedureMode}</span>
                 }
             </div>

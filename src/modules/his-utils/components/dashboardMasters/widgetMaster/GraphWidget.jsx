@@ -132,7 +132,7 @@ const GraphWidget = (props) => {
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Graph Type : </label>
+                        <label className="col-sm-5 col-form-label pe-0">Graph Type : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <Select
                                 id='graphTypes'
@@ -147,11 +147,7 @@ const GraphWidget = (props) => {
                                     setErrors(prev => ({ ...prev, 'graphTypesErr': "" }));
                                 }}
                             />
-                            {errors?.graphTypesErr &&
-                                <div className="required-input">
-                                    {errors?.graphTypesErr}
-                                </div>
-                            }
+                            
 
                         </div>
                     </div>

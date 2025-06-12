@@ -28,6 +28,9 @@ const HISContextData = ({ children }) => {
   });
   const [isSearchQuery, setIsSearchQuery] = useState(false);
 
+  const [presentWidgets, setPresentWidgets] = useState([]);
+
+
   // ALL DATA
   const [parameterData, setParameterData] = useState([]);
   const [allWidgetData, setAllWidgetData] = useState([]);
@@ -237,6 +240,8 @@ const HISContextData = ({ children }) => {
       getAllDashboardData, dashboardData,
       //dashboard submenu
       dashboardSubmenuData, getDashboardSubmenuData,
+
+      presentWidgets, setPresentWidgets
     }}>
       {children}
     </HISContext.Provider>

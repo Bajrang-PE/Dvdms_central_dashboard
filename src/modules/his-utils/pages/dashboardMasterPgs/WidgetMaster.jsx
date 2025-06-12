@@ -85,7 +85,7 @@ const WidgetMaster = () => {
   const [procedureRows, setProcedureRows] = useState([{ queryLabel: "", serviceReferenceNumber: "", webserviceName: "", isMultiRowDataTable: "", tableDataDisplay: "horizontal" }]);
 
   const [errors, setErrors] = useState({
-    widgetForErr: "", widgetNameDisplayErr: "", widgetNameInternalErr: "", defaultGraphTypeErr: "", graphTypesErr: "", clmNameForLineGraphErr: "", defaultPluginNameErr: "", noOfNewsVisibleErr: "",
+    widgetForErr: "", widgetNameDisplayErr: "", widgetNameInternalErr: "", defaultGraphTypeErr: "",  clmNameForLineGraphErr: "", defaultPluginNameErr: "", noOfNewsVisibleErr: "",
     alphaGraph3DErr: "", betaGraph3DErr: "", xAxisLabelErr: "", yAxisLabelErr: "", kpiTypeErr: "", kpiIconTypeErr: "", kpiDefaultBgColorErr: "", noOfNewsVisibleErr: "", mapNameErr: "",
 
     modeForSQCHILDColumnNoErr: "", SQCHILDWidgetIdErr: "", otherLinkNameErr: "", otherLinkURLErr: "", mainQueryErr: "", serviceReferenceNumberErr: "", webserviceNameErr: "", procedureNameErr: "",
@@ -135,7 +135,7 @@ const WidgetMaster = () => {
       const val = JSON.parse(localValues);
       setValues(val);
       setActionMode(mode);
-      setRows(val?.query && val?.query?.length > 0 ? val?.query : val?.queryVO);
+      setRows(val?.queryVO && val?.queryVO?.length > 0 ? val?.queryVO : []);
 
     }
     if (localRadio && localRadio !== '') {
@@ -334,8 +334,8 @@ const WidgetMaster = () => {
   const handleUpdateData = () => {
     if (selectedOption?.length > 0) {
       const selectedRow = allWidgetData?.filter(dt => dt?.rptId === selectedOption[0]?.rptId)
+      reset();
       setSingleData(selectedRow);
-      console.log(selectedRow, 'single')
       setActionMode('edit');
       // setShowParamsTable(false);
       setShowDataTable(false);
@@ -400,12 +400,12 @@ const WidgetMaster = () => {
         pdfTableHeadTxtFontClr: singleData[0]?.pdfTableheadingFontColour,//
         groupClmNoComma: singleData[0]?.groupColumnNo,//
 
-        query: singleData[0]?.modeOfQuery !== 'WebSevice' ? singleData[0]?.query : [],//
+        query: singleData[0]?.modeOfQuery !== 'WebSevice' ? singleData[0]?.queryVO : [],//
         webQuery: singleData[0]?.modeOfQuery === 'WebSevice' ? singleData[0]?.queryVO : [],//
         procedureName: singleData[0]?.procedureMode,//
         treeChildQuery: singleData[0]?.treeChildQuery,
         treeChildProcedure: singleData[0]?.treeChildProcedure,
-        popUpDetails: singleData[0]?.drillDownJsonString?.length > 0 ? JSON?.parse(singleData[0]?.drillDownJsonString) : [],//
+        popUpDetails: singleData[0]?.drillDownJsonString && typeof singleData[0]?.drillDownJsonString === "string" ? JSON?.parse(singleData[0]?.drillDownJsonString) : singleData[0]?.drillDownJsonString,//
         queryLabel: singleData[0]?.queryLabel,//
         htmlText: singleData[0]?.htmlText,//
 
@@ -545,7 +545,7 @@ const WidgetMaster = () => {
         // Iframe fields
         isSsoUrl: singleData[0]?.isSSOUrl,//
       });
-      setRows(singleData[0]?.query && singleData[0]?.query?.length > 0 ? singleData[0]?.query : singleData[0]?.queryVO)
+      setRows(singleData[0]?.queryVO && singleData[0]?.queryVO?.length > 0 ? singleData[0]?.queryVO : [])
       setLoading(false)
     }
   }, [singleData]);
@@ -661,13 +661,13 @@ const WidgetMaster = () => {
         pdfTableheaderBarColor: pdfTableHeadBarClr,
         pdfTableheadingFontColour: pdfTableHeadTxtFontClr,
         groupColumnNo: groupClmNoComma,
-        query: selectedModeQuery === 'Query' ? query : selectedModeQuery === 'WebSevice' ? webQuery : [],
+        queryVO: selectedModeQuery === 'Query' ? query : selectedModeQuery === 'WebSevice' ? webQuery : [],
         queryLabel: queryLabel,//
         htmlText: htmlText,//
         procedureMode: procedureName,
         treeChildQuery: treeChildQuery,
         treeChildProcedure: treeChildProcedure,
-        drillDownJsonString: popUpDetails,
+        drillDownJsonString: popUpDetails?.length > 0 ? JSON?.stringify(popUpDetails) : "",
         treeChildrecordPerPage: recordsPerPageTreeCh,
         parameterOptions: parameterOption,
         widgetLoadOption: loadOption,
@@ -891,13 +891,13 @@ const WidgetMaster = () => {
         pdfTableheadingFontColour: pdfTableHeadTxtFontClr,
         groupColumnNo: groupClmNoComma,
         // query: query,
-        query: selectedModeQuery === 'Query' ? query : selectedModeQuery === 'WebSevice' ? webQuery : [],
+        queryVO: selectedModeQuery === 'Query' ? query : selectedModeQuery === 'WebSevice' ? webQuery : [],
         queryLabel: queryLabel,//
         htmlText: htmlText,//
         procedureMode: procedureName,
         treeChildQuery: treeChildQuery,
         treeChildProcedure: treeChildProcedure,
-        drillDownJsonString: popUpDetails,
+        drillDownJsonString: popUpDetails?.length > 0 ? JSON?.stringify(popUpDetails) : "",
         treeChildrecordPerPage: recordsPerPageTreeCh,
         parameterOptions: parameterOption,
         widgetLoadOption: loadOption,
@@ -1099,10 +1099,10 @@ const WidgetMaster = () => {
         newErrors.defaultGraphTypeErr = "Default graph type is required";
         isValid = false;
       }
-      if (values?.graphTypes?.length === 0) {
-        newErrors.graphTypesErr = "Graph type selection is required";
-        isValid = false;
-      }
+      // if (values?.graphTypes?.length === 0) {
+      //   newErrors.graphTypesErr = "Graph type selection is required";
+      //   isValid = false;
+      // }
       if (!values?.clmNameForLineGraph?.trim()) {
         newErrors.clmNameForLineGraphErr = "Column name for Line Graph is required";
         isValid = false;
@@ -1235,7 +1235,7 @@ const WidgetMaster = () => {
       } else if (newErrors.mainQueryErr || newErrors.serviceReferenceNumberErr || newErrors.webserviceNameErr || newErrors.procedureNameErr) {
         setTabIndex(2);
         setTabName({ value: 2, label: "Query Details" });
-      } else if (newErrors.kpiTypeErr || newErrors.kpiIconTypeErr || newErrors.kpiDefaultBgColorErr || newErrors.noOfNewsVisibleErr || newErrors.mapNameErr || newErrors.defaultGraphTypeErr || newErrors.graphTypesErr || newErrors.clmNameForLineGraphErr || newErrors.defaultPluginNameErr || newErrors.defaultPluginNameErr || newErrors.alphaGraph3DErr || newErrors.betaGraph3DErr || newErrors.xAxisLabelErr || newErrors.yAxisLabelErr || newErrors.isThree3DErr || newErrors.isDataLabelsErr || newErrors.isShowLegendErr || newErrors.isDisplayGraphPluginErr || newErrors.isGraphScrollBarReqErr || newErrors.isFullLabelReqErr) {
+      } else if (newErrors.kpiTypeErr || newErrors.kpiIconTypeErr || newErrors.kpiDefaultBgColorErr || newErrors.noOfNewsVisibleErr || newErrors.mapNameErr || newErrors.defaultGraphTypeErr  || newErrors.clmNameForLineGraphErr || newErrors.defaultPluginNameErr || newErrors.defaultPluginNameErr || newErrors.alphaGraph3DErr || newErrors.betaGraph3DErr || newErrors.xAxisLabelErr || newErrors.yAxisLabelErr || newErrors.isThree3DErr || newErrors.isDataLabelsErr || newErrors.isShowLegendErr || newErrors.isDisplayGraphPluginErr || newErrors.isGraphScrollBarReqErr || newErrors.isFullLabelReqErr) {
         setTabIndex(3);
         setTabName({ value: 3, label: "" });
       }

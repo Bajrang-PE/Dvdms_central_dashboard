@@ -50,9 +50,9 @@ const KpiDash = ({ widgetData }) => {
                 console.error("Error loading query data:", error);
             }
         } else {
-            // if (!widget?.queryVO?.length > 0) return;
+            if (!widget?.queryVO?.length > 0) return;
             try {
-                const data = await fetchQueryData(widget?.query, widgetData?.JNDIid);
+                const data = await fetchQueryData(widget?.queryVO, widgetData?.JNDIid);
                 if (data?.length > 0) {
                     setKpiData(
                         data?.length > 0 && data?.map((item) => ({
@@ -105,17 +105,23 @@ const KpiDash = ({ widgetData }) => {
     const onKpiClickDetails = (id) => {
         const tabdt = allTabsData?.filter(tab => tab?.jsonData?.dashboardId === id)
         setActiveTab(tabdt[0])
-        // console.log(, 'ids')
     }
 
+
     return (
-        <div className='small-box-kpi' style={{
+        <div className={`${widgetData?.kpiType === "circle" ? 'small-box-kpi-circle' : 'small-box-kpi'}`} style={{
             backgroundColor: widgetData?.widgetBackgroundColour,
-            height: "150px",
+            // height: "150px",
             color: widgetData?.widgetFontColour,
-            borderWidth: widgetData?.kpiBorderWidth,
-            borderColor: widgetData?.kpiBorderColor,
-            borderStyle: 'solid',
+            // borderWidth: widgetData?.kpiBorderWidth,
+            // borderColor: widgetData?.kpiBorderColor,
+
+            borderTop: `${widgetData?.kpiBorderWidth}px solid ${widgetData?.kpiBorderColor}`,
+            borderBottom: `${widgetData?.kpiBorderWidth}px solid ${widgetData?.kpiBorderColor}`,
+            borderLeft: widgetData?.kpiType === "leftedge" ? `20px solid ${widgetData?.kpiBorderColor}` : `${widgetData?.kpiBorderWidth}px solid ${widgetData?.kpiBorderColor}`,
+            borderRight: widgetData?.kpiType === "rightedge" ? `20px solid ${widgetData?.kpiBorderColor}` : `${widgetData?.kpiBorderWidth}px solid ${widgetData?.kpiBorderColor}`,
+            // borderRadius: "50%",
+            // borderStyle: 'solid',
             boxShadow: widgetData?.isWidgetShadowRequired === 'Yes' ? '5px 5px 10px rgba(0,0,0,0.2)' : 'none',
         }} onMouseEnter={onHover} onMouseLeave={onMouseLeave}>
 
@@ -155,7 +161,7 @@ const KpiDash = ({ widgetData }) => {
                     </ul>
                 </div>
             )}
-            <div className="kpi-details-box">
+            <div className={`kpi-details-box ${widgetData?.kpiType === "circle" ? 'text-center' : ""}`}>
                 <p className="sweet">
                     <b>{widgetData?.rptId}:{widgetData?.rptName}</b>
                 </p>

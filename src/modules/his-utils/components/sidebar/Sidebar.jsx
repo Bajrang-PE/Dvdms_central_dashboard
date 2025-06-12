@@ -77,7 +77,7 @@ const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData }) => {
                         return (
                             <SubMenu
                                 key={tab.id}
-                                label={!collapsed && tab?.jsonData?.dashboardName}
+                                label={!collapsed && tab?.jsonData?.dashboardActualName}
                                 icon={<FontAwesomeIcon icon={getDynamicIcon(tab?.jsonData?.iconName)} />}
                                 className={`submenu-tab-side ${isActive ? 'activeSideTab' : ''}`}
                                 open={activeTab?.jsonData?.parentTabId == tab.id || openSubMenu == tab.id}
@@ -98,7 +98,7 @@ const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData }) => {
                                         onMouseOut={() => handleHover(`menu-tab-item${child.id}`, false)}
                                         style={{ color: tabFont }}
                                     >
-                                        {child?.jsonData?.dashboardName}
+                                        {child?.jsonData?.dashboardActualName}
                                     </MenuItem>
                                 ))}
                             </SubMenu>
@@ -116,7 +116,7 @@ const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData }) => {
                             onMouseOut={() => handleHover(`menu-tab-item${tab.id}`, false)}
                             style={{ color: tabFont }}
                         >
-                            {!collapsed && tab?.jsonData?.dashboardName}
+                            {!collapsed && tab?.jsonData?.dashboardActualName}
                         </MenuItem>
                     );
                 })}

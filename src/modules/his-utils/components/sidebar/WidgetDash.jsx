@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react'
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import OtherLinkDash from './OtherLinkDash';
 import NewsTickerDash from './NewsTickerDash';
 
@@ -8,33 +8,88 @@ const GraphDash = lazy(() => import('./GraphDash'));
 const MapDash = lazy(() => import('./MapDash'));
 const IframeDash = lazy(() => import('./IframeDash'));
 
+const WidgetDash = React.memo(({ widgetDetail, presentWidgets, presentTabs }) => {
 
-const WidgetDash = React.memo(({ widgetDetail }) => {
+    const [widgetData, setWidgetData] = useState({});
+    const [linkedWidget, setLinkedWidget] = useState();
+    const [pkColumn, setPkColumn] = useState('');
+    const [levelData, setLevelData] = useState([]);
+
+    const handleSetPkColumn = (val) => {
+        setPkColumn(val)
+    }
+
+    useEffect(() => {
+        setWidgetData(widgetDetail);
+        setLevelData([{
+            'rptId': widgetDetail?.rptId,
+            'rptName': widgetDetail?.rptName,
+            'rptLevel': 0
+        }])
+    }, [widgetDetail])
+
+    useEffect(() => {
+        if (widgetData) {
+            const linkedWidgetIds = widgetData?.linkedWidgetRptId
+                ?.split(',')
+                ?.map(id => id?.trim())
+                ?.filter(Boolean) || [];
+            setLinkedWidget(linkedWidgetIds)
+        }
+
+    }, [widgetData])
+
+
+
+    const renderWidget = (data) => {
+        switch (data?.reportViewed) {
+            case 'KPI': return <KpiDash widgetData={data} />;
+            case 'Tabular': return <TabularDash widgetData={data} setWidgetData={setWidgetData} levelData={levelData} setLevelData={setLevelData} pkColumn={pkColumn} setPkColumn={handleSetPkColumn} />;
+            case 'Graph': return <GraphDash widgetData={data} setWidgetData={setWidgetData} pkColumn={pkColumn} setPkColumn={handleSetPkColumn} />;
+            case 'Iframe': return <IframeDash widgetData={data} />;
+            case 'Other_Link': return <OtherLinkDash widgetData={data} />;
+            case 'News_Ticker': return <NewsTickerDash widgetData={data} />;
+            case 'Criteria_Map': return (
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                    <MapDash widgetData={data} setWidgetData={setWidgetData} />
+                </div>
+            );
+            default: return null;
+        }
+    };
+
+console.log(widgetData,'widgetDatamain')
+
 
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <>
-                {widgetDetail?.reportViewed === 'KPI' && <KpiDash widgetData={widgetDetail} />}
-                {widgetDetail?.reportViewed === 'Tabular' && <TabularDash widgetData={widgetDetail} />}
-                {widgetDetail?.reportViewed === 'Graph' && <GraphDash widgetData={widgetDetail} />}
-                {widgetDetail?.reportViewed === 'Iframe' &&
-                    <IframeDash widgetData={widgetDetail} />
-                }
-                {widgetDetail?.reportViewed === 'Other_Link' &&
-                    <OtherLinkDash widgetData={widgetDetail} />
-                }
-                {widgetDetail?.reportViewed === 'News_Ticker' &&
-                    <NewsTickerDash widgetData={widgetDetail} />
-                }
+                <div className={`col-sm-${presentTabs?.filter(dt => dt?.rptId == widgetData?.rptId)[0]?.widgetWidth}`}
+                    style={{
+                        padding: "5px 3px"
+                    }}>
+                    {renderWidget(widgetData)}
 
-                {widgetDetail?.reportViewed === "Criteria_Map" &&
-                    <div style={{ position: 'relative', zIndex: 1 }}>
-                        <MapDash widgetData={widgetDetail} />
-                    </div>
-                }
+                </div>
+
+                {/* Render linked widgets if available */}
+                {linkedWidget && linkedWidget.map((id) => {
+
+                    const linked = presentWidgets?.find(w => w.rptId === id);
+                    return linked ?
+
+                        <div className={`col-sm-${presentTabs?.filter(dt => dt?.rptId == linkedWidget[0])[0]?.widgetWidth}`}
+                            style={{
+                                padding: "5px 3px"
+                            }}
+                        >
+                            {renderWidget(linked)}
+                        </div>
+                        : null;
+                })}
             </>
         </Suspense>
-    )
-})
+    );
+});
 
-export default WidgetDash
+export default WidgetDash;

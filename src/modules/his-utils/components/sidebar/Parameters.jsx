@@ -2,18 +2,19 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { HISContext } from "../../contextApi/HISContext";
 import InputField from "../commons/InputField";
 import Select from "react-select";
-import { convertToISODate } from "../../utils/commonFunction";
+import { convertToISODate, formatDate1, formatParams } from "../../utils/commonFunction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEyeSlash, faReply, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useSearchParams } from "react-router-dom";
 import { fetchPostData } from "../../../../utils/HisApiHooks";
 
 const Parameters = ({ params, scope, widgetId = null }) => {
-    const { parameterData, getAllParameterData, theme, paramsValues, setParamsValues, paramsValuesPro, setParamsValuesPro, setIsSearchQuery } = useContext(HISContext);
+    const { parameterData, getAllParameterData, theme, setParamsValues, paramsValuesPro, setParamsValuesPro, setIsSearchQuery, activeTab, isSearchQuery } = useContext(HISContext);
     const [presentParams, setPresentParams] = useState([]);
     const [selectedValues, setSelectedValues] = useState({});
     const [dropdownData, setDropdownData] = useState({});
     const [hideParams, setHideParams] = useState(false)
+    const [defaultValueIfEmpty, setDefaultValueIfEmpty] = useState('');
     const [queryParams] = useSearchParams();
 
     const dashFor = queryParams.get('dashboardFor');
@@ -97,13 +98,21 @@ const Parameters = ({ params, scope, widgetId = null }) => {
         setErrors(prev => ({ ...prev, [id]: "" }));
     };
 
-    const handleInputChange = (parameterName, value, id) => {
-        setSelectedValues((prev) => ({
-            ...prev,
-            [parameterName]: value,
-        }));
+    const handleInputChange = (parameterName, e, id) => {
 
-        handleSetProParamsValues({ [id]: value }, scope, widgetId);
+        const { value, type } = e.target;
+        if (type === 'checkbox') {
+            setSelectedValues((prev) => ({
+                ...prev,
+                [parameterName]: e.target.checked,
+            }));
+        } else {
+            setSelectedValues((prev) => ({
+                ...prev,
+                [parameterName]: value || defaultValueIfEmpty,
+            }));
+        }
+        handleSetProParamsValues({ [id]: type == 'date' ? formatDate1(value) : type == 'checkbox' ? e.target.checked : value || defaultValueIfEmpty }, scope, widgetId);
         setErrors(prev => ({ ...prev, [id]: "" }))
     };
 
@@ -116,9 +125,8 @@ const Parameters = ({ params, scope, widgetId = null }) => {
             const dashboardIdsArray = params.split(",")?.map(Number);
             const matchedParams = dashboardIdsArray?.map((id) => parameterData?.find((p) => p.id === id)).filter(Boolean);
             setPresentParams(matchedParams);
-
         }
-    }, [parameterData, params]);
+    }, [parameterData,activeTab]);
 
     const getDateConstraint = (fieldId) => {
         if (!fieldId) return "";
@@ -129,7 +137,8 @@ const Parameters = ({ params, scope, widgetId = null }) => {
         return "";
     };
 
-    const fetchDropdownData = async (query, parameterName, jndiS) => {
+
+    const fetchDropdownData = async (query, parameterName, jndiS, isDate) => {
         if (!query) return;
         try {
             const val = { query, params: {}, jndi: jndiS };
@@ -141,10 +150,17 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                 const valueKey = keys[0];
                 const labelKey = keys[1] || keys[0];
                 return {
-                    optionValue: item[valueKey],
-                    optionText: item[labelKey],
+                    optionValue: isDate ? convertToISODate(item[valueKey]) : item[valueKey],
+                    optionText: isDate ? convertToISODate(item[labelKey]) : item[labelKey],
                 };
             });
+
+            if (isDate) {
+                setSelectedValues((prev) => ({
+                    ...prev,
+                    [parameterName]: isDate ? formattedData[0]?.optionValue : '',
+                }));
+            }
 
             setDropdownData(prev => ({
                 ...prev,
@@ -158,12 +174,25 @@ const Parameters = ({ params, scope, widgetId = null }) => {
     // Fetch dropdown data for parameters that have queries
     useEffect(() => {
         presentParams.forEach((param) => {
-            const query = param?.jsonData?.parameterQuery;
+            const query = param?.jsonData?.parameterType === '4' ? param?.jsonData?.parameterQueryForDate : param?.jsonData?.parameterQuery;
             if (query) {
-                fetchDropdownData(query, param.jsonData.parameterName, param?.jndiIdForGettingData);
+                fetchDropdownData(query, param.jsonData.parameterName, param?.jndiIdForGettingData, param?.jsonData?.parameterType === '4');
             }
         });
-    }, [presentParams]);
+    }, [presentParams,]);
+
+    // useEffect(() => {
+    //     if (isSearchQuery) {
+    //         presentParams.forEach((param) => {
+    //             const query = param?.jsonData?.parameterType === '4' ? param?.jsonData?.parameterQueryForDate : param?.jsonData?.parameterQuery;
+    //             if (query) {
+    //                 fetchDropdownData(query, param.jsonData.parameterName, param?.jndiIdForGettingData);
+    //             }
+    //         });
+    //     }
+    // }, [isSearchQuery]);
+
+
 
     const resetParams = () => {
         setSelectedValues({});
@@ -194,7 +223,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                 isValid = false;
             }
 
-            if (parameterType === "2" && (
+            if (isReq === 'Yes' && parameterType === "2" && (
                 value?.length < minLength || value?.length > maxLength
             )) {
                 setErrors(prev => ({ ...prev, [id]: `required ${minLength} to ${maxLength} characters` }));
@@ -212,16 +241,17 @@ const Parameters = ({ params, scope, widgetId = null }) => {
         if (presentParams.length > 0) {
             const initialSelectedValues = {};
             const defOpt = {};
-
             presentParams.forEach((param) => {
-                const { parameterName, lstOption, defaultOption, isMultipleSelectionRequired } = param?.jsonData || {};
+                const { parameterName, defaultValueIfEmpty, defaultOption, isMultipleSelectionRequired } = param?.jsonData || {};
                 const defaultValStr = defaultOption?.optionValue || "";
                 const defaultTextStr = defaultOption?.optionText || "";
+                setDefaultValueIfEmpty(defaultValueIfEmpty)
+
 
                 const isMulti = isMultipleSelectionRequired === "Yes";
 
-                const values = defaultValStr.includes("##") ? defaultValStr.split("##") : [defaultValStr];
-                const texts = defaultTextStr.includes("##") ? defaultTextStr.split("##") : [defaultTextStr];
+                const values = defaultValStr?.includes("##") ? defaultValStr?.split("##") : [defaultValStr];
+                const texts = defaultTextStr?.includes("##") ? defaultTextStr?.split("##") : [defaultTextStr];
 
                 if (isMulti) {
                     const matchedOptions = values.map((val, idx) => ({
@@ -232,7 +262,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                     defOpt[param?.id] = values.join("~");
                 } else {
                     initialSelectedValues[parameterName] = values[0] || '';
-                    defOpt[param?.id] = values[0] || '';
+                    defOpt[param?.id] = values[0] || defaultValueIfEmpty;
                 }
             });
             handleSetProParamsValues(defOpt, scope, widgetId);
@@ -241,7 +271,6 @@ const Parameters = ({ params, scope, widgetId = null }) => {
         }
     }, [presentParams]);
 
-    console.log(presentParams, 'presentParams')
 
     const renderInputField = (param) => {
         const {
@@ -298,7 +327,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                                 name={parameterName}
                                 className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-select form-select-sm`}
                                 value={selectedValues[parameterName] || defaultValueIfEmpty}
-                                onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
+                                onChange={(e) => handleInputChange(parameterName, e, parameterId)}
                             >
                                 {placeHolder ?
                                     <option value=''>{placeHolder}</option> :
@@ -331,7 +360,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                                 name={parameterName}
                                 id={parameterId}
                                 value={selectedValues[parameterName] || defaultValueIfEmpty}
-                                onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
+                                onChange={(e) => handleInputChange(parameterName, e, parameterId)}
                                 acceptType={textBoxValidation === '2' ? 'number' : textBoxValidation === '4' ? 'letters' : ''}
                             />
                             {errors[parameterId] &&
@@ -354,7 +383,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                                 min={getDateConstraint(shouldBeGreaterThanField)}
                                 max={getDateConstraint(shouldBeLessThanField)}
                                 value={selectedValues[parameterName]}
-                                onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
+                                onChange={(e) => handleInputChange(parameterName, e, parameterId)}
                             />
                             {errors[parameterId] &&
                                 <div className="required-input">
@@ -374,7 +403,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                                     name={parameterName}
                                     className="form-check-input"
                                     checked={selectedValues[parameterName] || false}
-                                    onChange={(e) => handleInputChange(parameterName, e.target.checked, parameterId)}
+                                    onChange={(e) => handleInputChange(parameterName, e, parameterId)}
                                 />
                                 <label className="form-check-label" htmlFor={parameterName}>
                                     {defaultOption.optionText}
@@ -398,7 +427,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                                 value={defaultOption.optionValue}
                                 className="form-check-input"
                                 checked={selectedValues[parameterName] === defaultOption?.optionValue}
-                                onChange={(e) => handleInputChange(parameterName, e.target.value)}
+                                onChange={(e) => handleInputChange(parameterName, e, parameterId)}
                             />
                             {errors[parameterId] &&
                                 <div className="required-input">
