@@ -13,7 +13,7 @@ const Tabular = ({
     headingAlignment,
     recordsPerPageOptions,
     isTableHeadingRequired,
-    theme,noDataComponent
+    theme, noDataComponent
 }) => {
 
     const customStyles = {
@@ -24,6 +24,12 @@ const Tabular = ({
                 textAlign: headingAlignment,
                 fontWeight: "bold",
                 padding: "10px",
+            },
+        },
+        table: {
+            style: {
+                borderBottom: '1px solid #ccc',
+                overflowX: 'auto',
             },
         },
     };
@@ -42,14 +48,15 @@ const Tabular = ({
                 paginationRowsPerPageOptions={recordsPerPageOptions}
                 highlightOnHover
                 striped
-                customStyles={{
-                    ...customStyles,
-                    table: {
-                        style: {
-                            borderBottom: '1px solid #ccc',
-                        }
-                    }
-                }}
+                // customStyles={{
+                //     ...customStyles,
+                //     table: {
+                //         style: {
+                //             borderBottom: '1px solid #ccc',
+                //         }
+                //     }
+                // }}
+                 customStyles={customStyles}
                 responsive
                 noTableHead={isTableHeadingRequired}
                 theme={theme === 'Dark' ? 'dark' : 'default'}

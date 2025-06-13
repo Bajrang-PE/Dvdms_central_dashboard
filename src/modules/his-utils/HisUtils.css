@@ -568,7 +568,12 @@ label {
   padding: 10px;
   text-shadow: 1px 1px #000000;
   letter-spacing: 1px;
-  color: #ffffff;
+  /* color: #ffffff; */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0s;
+  border-radius: 20px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.12), 0 10px 10px rgba(0, 0, 0, 0.24);
+  border: 0px solid;
+  height: 150px;
 }
 
 @media (max-width: 768px) {
@@ -580,12 +585,18 @@ label {
 
 .small-box-kpi-link-dtl {
   border-radius: 20px;
+  width: 95%;
   font-weight: bold;
+  position: absolute;
+  bottom: 2px;
   text-align: center;
   padding: 3px 0;
   color: rgba(255, 255, 255, 0.8);
+  display: block;
   background: rgba(0, 0, 0, 0.1);
+  text-decoration: none;
   cursor: pointer;
+  font-size: 90%;
 }
 
 .small-box-kpi-link-dtl:hover {
@@ -785,4 +796,27 @@ label {
   height: 150px;
   border-radius: 50% !important;
   flex-direction: column;
+}
+
+.sweet {
+  margin: 0;
+  padding: 0;
+}
+
+.kpi-details-box p,
+.kpi-details-box h1,
+.kpi-details-box h2,
+.kpi-details-box h3,
+.kpi-details-box h4,
+.kpi-details-box h5,
+.kpi-details-box h6 {
+  margin: 0;
+  padding: 0;
+}
+
+.rdt_TableCol .rdt_TableCol_Sortable div {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  word-break: break-word;
 }

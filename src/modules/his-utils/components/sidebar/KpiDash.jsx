@@ -4,11 +4,12 @@ import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import React, { useContext, useEffect, useState } from 'react'
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import { HISContext } from '../../contextApi/HISContext';
-import { fetchProcedureData, fetchQueryData, formatParams } from '../../utils/commonFunction';
+import { fetchProcedureData, fetchQueryData, formatParams, getOrderedParamValues } from '../../utils/commonFunction';
 
 const KpiDash = ({ widgetData }) => {
     const { setActiveTab, allTabsData, setLoading, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery } = useContext(HISContext);
     const [kpiData, setKpiData] = useState([]);
+    const [kpiLoading, setKpiLoading] = useState(false);
 
     const formatData = (rawData = []) => {
         return rawData.map((item) => {
@@ -26,6 +27,7 @@ const KpiDash = ({ widgetData }) => {
         if (widget?.modeOfQuery === "Procedure") {
             if (!widget?.procedureMode) return;
             try {
+                setKpiLoading(true);
                 const paramVal = formatParams(paramsValues ? paramsValues : null, widgetData?.rptId || '');
 
                 const params = [
@@ -46,25 +48,33 @@ const KpiDash = ({ widgetData }) => {
                 // const generatedColumns = generateColumns(formattedData);
                 setKpiData(formattedData);
                 setIsSearchQuery(false)
+                setKpiLoading(false);
             } catch (error) {
                 console.error("Error loading query data:", error);
+
             }
         } else {
             if (!widget?.queryVO?.length > 0) return;
+            setKpiLoading(true);
+            const params = getOrderedParamValues(widget?.queryVO[0]?.mainQuery, paramsValues, widget?.rptId);
             try {
-                const data = await fetchQueryData(widget?.queryVO, widgetData?.JNDIid);
+
+                const data = await fetchQueryData(widget?.queryVO, widgetData?.JNDIid, params);
                 if (data?.length > 0) {
-                    setKpiData(
-                        data?.length > 0 && data?.map((item) => ({
-                            name: item.column_1,
-                            y: item.column_2,
-                        })));
-                    setIsSearchQuery(false)
+                    const firstItem = data[0];
+                    const dynamicKey = Object.keys(firstItem)[0];
+                    const dynamicValue = firstItem[dynamicKey];
+
+                    setKpiData(dynamicValue);
+                    setIsSearchQuery(false);
+                    setKpiLoading(false);
                 } else {
                     setKpiData([])
+                    setKpiLoading(false);
                 }
             } catch (error) {
                 console.error("Error loading query data:", error);
+                setKpiLoading(false);
             }
         }
     }
@@ -162,19 +172,31 @@ const KpiDash = ({ widgetData }) => {
                 </div>
             )}
             <div className={`kpi-details-box ${widgetData?.kpiType === "circle" ? 'text-center' : ""}`}>
-                <p className="sweet">
+                {/* <p className="sweet">
                     <b>{widgetData?.rptId}:{widgetData?.rptName}</b>
                 </p>
                 <h4 style={{ marginTop: "5px" }}>State : Rajasthan</h4>
                 <div style={{ borderBottom: "1px solid #525252", marginTop: "5px", marginBottom: "5px" }}></div>
-                <span className="sweet"><b>Value : 4 Lakh</b></span>
+                <span className="sweet"><b>Value : 4 Lakh</b></span> */}
+                {kpiLoading ?
+                    <>
+                        <span style={{textAlign:"center",color:"white"}}>Loading...</span> </>
+                    :
+                    <>
+                        <div
+                            className='inner'
+                            dangerouslySetInnerHTML={{ __html: kpiData || "" }}
+                        />
 
-                {(widgetData?.onClickOfKPITabId !== '0' && widgetData?.onClickOfKPITabId !== '') &&
-                    <div className='small-box-kpi-link-dtl' style={{ color: widgetData?.kpiLinkFontColor }} onClick={() => onKpiClickDetails(widgetData?.onClickOfKPITabId)}>
-                        <span>{widgetData?.linkTab || 'Click For Details'}</span>
-                        <b><FontAwesomeIcon icon={faSearch} /></b>
-                    </div>
+                        {(widgetData?.onClickOfKPITabId !== '0' && widgetData?.onClickOfKPITabId !== '') &&
+                            <div className='small-box-kpi-link-dtl' style={{ color: widgetData?.kpiLinkFontColor }} onClick={() => onKpiClickDetails(widgetData?.onClickOfKPITabId)}>
+                                <span>{widgetData?.linkTab || 'Click For Details'}</span>
+                                <b><FontAwesomeIcon icon={faSearch} /></b>
+                            </div>
+                        }
+                    </>
                 }
+
             </div>
             {widgetData?.iconType !== 'NOICON' &&
                 <div className="small-box-icon kpi-icon-img">

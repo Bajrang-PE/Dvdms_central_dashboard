@@ -99,7 +99,6 @@ const Parameters = ({ params, scope, widgetId = null }) => {
     };
 
     const handleInputChange = (parameterName, e, id) => {
-
         const { value, type } = e.target;
         if (type === 'checkbox') {
             setSelectedValues((prev) => ({
@@ -126,7 +125,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
             const matchedParams = dashboardIdsArray?.map((id) => parameterData?.find((p) => p.id === id)).filter(Boolean);
             setPresentParams(matchedParams);
         }
-    }, [parameterData,activeTab]);
+    }, [parameterData, activeTab]);
 
     const getDateConstraint = (fieldId) => {
         if (!fieldId) return "";
@@ -138,7 +137,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
     };
 
 
-    const fetchDropdownData = async (query, parameterName, jndiS, isDate) => {
+    const fetchDropdownData = async (query, parameterName, jndiS) => {
         if (!query) return;
         try {
             const val = { query, params: {}, jndi: jndiS };
@@ -150,17 +149,18 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                 const valueKey = keys[0];
                 const labelKey = keys[1] || keys[0];
                 return {
-                    optionValue: isDate ? convertToISODate(item[valueKey]) : item[valueKey],
-                    optionText: isDate ? convertToISODate(item[labelKey]) : item[labelKey],
+                    optionValue: item[valueKey],
+                    optionText: item[labelKey],
                 };
             });
 
-            if (isDate) {
-                setSelectedValues((prev) => ({
-                    ...prev,
-                    [parameterName]: isDate ? formattedData[0]?.optionValue : '',
-                }));
-            }
+            // if (isDate) {
+            //     setSelectedValues((prev) => ({
+            //         ...prev,
+            //         [parameterName]: isDate ? formattedData[0]?.optionValue : '',
+            //     }));
+
+            // }
 
             setDropdownData(prev => ({
                 ...prev,
@@ -174,24 +174,12 @@ const Parameters = ({ params, scope, widgetId = null }) => {
     // Fetch dropdown data for parameters that have queries
     useEffect(() => {
         presentParams.forEach((param) => {
-            const query = param?.jsonData?.parameterType === '4' ? param?.jsonData?.parameterQueryForDate : param?.jsonData?.parameterQuery;
+            const query = param?.jsonData?.parameterQuery;
             if (query) {
-                fetchDropdownData(query, param.jsonData.parameterName, param?.jndiIdForGettingData, param?.jsonData?.parameterType === '4');
+                fetchDropdownData(query, param.jsonData.parameterName, param?.jndiIdForGettingData);
             }
         });
-    }, [presentParams,]);
-
-    // useEffect(() => {
-    //     if (isSearchQuery) {
-    //         presentParams.forEach((param) => {
-    //             const query = param?.jsonData?.parameterType === '4' ? param?.jsonData?.parameterQueryForDate : param?.jsonData?.parameterQuery;
-    //             if (query) {
-    //                 fetchDropdownData(query, param.jsonData.parameterName, param?.jndiIdForGettingData);
-    //             }
-    //         });
-    //     }
-    // }, [isSearchQuery]);
-
+    }, [presentParams]);
 
 
     const resetParams = () => {
@@ -238,38 +226,127 @@ const Parameters = ({ params, scope, widgetId = null }) => {
     };
 
     useEffect(() => {
-        if (presentParams.length > 0) {
-            const initialSelectedValues = {};
-            const defOpt = {};
-            presentParams.forEach((param) => {
-                const { parameterName, defaultValueIfEmpty, defaultOption, isMultipleSelectionRequired } = param?.jsonData || {};
-                const defaultValStr = defaultOption?.optionValue || "";
-                const defaultTextStr = defaultOption?.optionText || "";
-                setDefaultValueIfEmpty(defaultValueIfEmpty)
+        const initializeParams = async () => {
+            if (presentParams.length > 0) {
+                const initialSelectedValues = {};
+                const defOpt = {};
+                for (const param of presentParams) {
+                    const {
+                        parameterName,
+                        defaultValueIfEmpty,
+                        defaultOption,
+                        isMultipleSelectionRequired,
+                        parameterType,
+                        parameterQueryForDate,
+                        jndiIdForGettingData
+                    } = param?.jsonData || {};
 
+                    const defaultValStr = defaultOption?.optionValue || "";
+                    const defaultTextStr = defaultOption?.optionText || "";
+                    setDefaultValueIfEmpty(defaultValueIfEmpty);
 
-                const isMulti = isMultipleSelectionRequired === "Yes";
+                    const isMulti = isMultipleSelectionRequired === "Yes";
+                    const values = defaultValStr?.includes("##") ? defaultValStr.split("##") : [defaultValStr];
+                    const texts = defaultTextStr?.includes("##") ? defaultTextStr.split("##") : [defaultTextStr];
 
-                const values = defaultValStr?.includes("##") ? defaultValStr?.split("##") : [defaultValStr];
-                const texts = defaultTextStr?.includes("##") ? defaultTextStr?.split("##") : [defaultTextStr];
+                    if (parameterType === '4' && parameterQueryForDate) {
+                        const val = { query: parameterQueryForDate, params: {}, jndi: jndiIdForGettingData };
+                        try {
+                            const response = await fetchPostData('/hisutils/GenericApiQry', val);
+                            const rawData = response?.data || [];
 
-                if (isMulti) {
-                    const matchedOptions = values.map((val, idx) => ({
-                        optionValue: val,
-                        optionText: texts[idx] || val,
-                    }));
-                    initialSelectedValues[parameterName] = matchedOptions;
-                    defOpt[param?.id] = values.join("~");
-                } else {
-                    initialSelectedValues[parameterName] = values[0] || '';
-                    defOpt[param?.id] = values[0] || defaultValueIfEmpty;
+                            const formattedData = rawData.map(item => {
+                                const keys = Object.keys(item);
+                                const valueKey = keys[0];
+                                const labelKey = keys[1] || keys[0];
+                                return {
+                                    optionValue: convertToISODate(item[valueKey]),
+                                    optionText: convertToISODate(item[labelKey])
+                                };
+                            });
+
+                            initialSelectedValues[parameterName] = formattedData[0]?.optionValue || '';
+                            defOpt[param?.id] = formatDate1(formattedData[0]?.optionValue) || '';
+                            continue;
+                        } catch (err) {
+                            console.error(`Error fetching date values for param ${parameterName}`, err);
+                        }
+                    }
+
+                    if (isMulti) {
+                        const matchedOptions = values.map((val, idx) => ({
+                            optionValue: val,
+                            optionText: texts[idx] || val,
+                        }));
+                        initialSelectedValues[parameterName] = matchedOptions;
+                        defOpt[param?.id] = values.join("~");
+                    } else {
+                        initialSelectedValues[parameterName] = values[0] || '';
+                        defOpt[param?.id] = values[0] || defaultValueIfEmpty;
+                    }
                 }
-            });
-            handleSetProParamsValues(defOpt, scope, widgetId);
-            handleSetParamsValues(defOpt, scope, widgetId);
-            setSelectedValues(initialSelectedValues);
-        }
+
+                handleSetProParamsValues(defOpt, scope, widgetId);
+                handleSetParamsValues(defOpt, scope, widgetId);
+                setSelectedValues(initialSelectedValues);
+            }
+        };
+
+        initializeParams();
     }, [presentParams]);
+
+
+    // useEffect(() => {
+    //     if (presentParams.length > 0) {
+    //         const initialSelectedValues = {};
+    //         const defOpt = {};
+    //         presentParams.forEach((param) => {
+    //             const { parameterName, defaultValueIfEmpty, defaultOption, isMultipleSelectionRequired, parameterType, parameterQueryForDate } = param?.jsonData || {};
+    //             const defaultValStr = defaultOption?.optionValue || "";
+    //             const defaultTextStr = defaultOption?.optionText || "";
+    //             setDefaultValueIfEmpty(defaultValueIfEmpty)
+
+    //             const isMulti = isMultipleSelectionRequired === "Yes";
+    //             const values = defaultValStr?.includes("##") ? defaultValStr?.split("##") : [defaultValStr];
+    //             const texts = defaultTextStr?.includes("##") ? defaultTextStr?.split("##") : [defaultTextStr];
+
+    //             if (parameterType == '4' && parameterQueryForDate) {
+    //                 const val = { query, params: {}, jndi: jndiS };
+    //                 const response = await fetchPostData('/hisutils/GenericApiQry', val);
+    //                 const rawData = response?.data || [];
+
+    //                 const formattedData = rawData.map(item => {
+    //                     const keys = Object.keys(item);
+    //                     const valueKey = keys[0];
+    //                     const labelKey = keys[1] || keys[0];
+    //                     return {
+    //                         optionValue: convertToISODate(item[valueKey]),
+    //                         optionText: convertToISODate(item[labelKey]),
+    //                     };
+    //                 });
+
+    //                 initialSelectedValues[parameterName] = formattedData[0]?.optionValue || '';
+    //                 defOpt[param?.id] = formattedData[0]?.optionValue || '';
+    //             }
+
+    //             if (isMulti) {
+    //                 const matchedOptions = values.map((val, idx) => ({
+    //                     optionValue: val,
+    //                     optionText: texts[idx] || val,
+    //                 }));
+    //                 initialSelectedValues[parameterName] = matchedOptions;
+    //                 defOpt[param?.id] = values.join("~");
+    //             } else {
+    //                 initialSelectedValues[parameterName] = values[0] || '';
+    //                 defOpt[param?.id] = values[0] || defaultValueIfEmpty;
+    //             }
+
+    //         });
+    //         handleSetProParamsValues(defOpt, scope, widgetId);
+    //         handleSetParamsValues(defOpt, scope, widgetId);
+    //         setSelectedValues(initialSelectedValues);
+    //     }
+    // }, [presentParams]);
 
 
     const renderInputField = (param) => {

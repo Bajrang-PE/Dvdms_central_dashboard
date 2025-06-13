@@ -171,7 +171,11 @@ export const getOrderedParamValues = (query, paramsValues,widgetId) => {
   const regex = /#PARA#(\d+)#PARA#/g;
   let match;
   while ((match = regex.exec(query)) !== null) {
-    paramOrder.push(match[1]);
+    // paramOrder.push(match[1]);
+     const id = match[1];
+    if (!paramOrder.includes(id)) {
+      paramOrder.push(id); // Add only if not already included
+    }
   }
 
   const idToValue = {};
@@ -182,19 +186,25 @@ export const getOrderedParamValues = (query, paramsValues,widgetId) => {
     idToValue[id] = values[index];
   });
 
-  console.log(idToValue,'bgidvl')
+  // return {
+  //   strGroupParaId: Object.keys(idToValue).join(','),
+  //   strGroupParaValue: Object.values(idToValue).join(',')
+  // };
+
+ const filteredIds = [];
+  const filteredValues = [];
+
+  paramOrder.forEach((id) => {
+    if (idToValue.hasOwnProperty(id)) {
+      filteredIds.push(id);
+      filteredValues.push(idToValue[id]);
+    }
+  });
 
   return {
-    strGroupParaId: Object.keys(idToValue).join(','),
-    strGroupParaValue: Object.values(idToValue).join(',')
+    strGroupParaId: filteredIds.join(','),
+    strGroupParaValue: filteredValues.join(',')
   };
-
-  // const params = {};
-  // paramOrder.forEach((id, index) => {
-  //   params[`additionalProp${index + 1}`] = idToValue[id] || null;
-  // });
-
-  // return params;
 };
 
 

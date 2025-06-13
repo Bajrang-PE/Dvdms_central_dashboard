@@ -269,7 +269,6 @@ const TabularDash = (props) => {
     }
   }
 
-  console.log(widgetData, 'widgetDataTabular')
 
   return (
     <>

@@ -129,10 +129,6 @@ const TabDash = React.memo(({ tabData }) => {
                             <React.Fragment key={index}>
                                 {widget &&
                                     <>
-                                        {/* <div className={`col-sm-${presentTabs.filter(dt => dt?.rptId == widget?.rptId)[0]?.widgetWidth}`}
-                                            style={{
-                                                padding: "5px 3px"
-                                            }}> */}
                                             <Suspense
                                                 fallback={
                                                     <div className="pt-3 text-center">
@@ -142,18 +138,6 @@ const TabDash = React.memo(({ tabData }) => {
                                             >
                                                 <WidgetDash widgetDetail={widget} presentWidgets={presentWidgets} presentTabs={presentTabs} />
                                             </Suspense>
-                                        {/* </div> */}
-                                        {/* {widget?.linkedWidgetRptId && (
-                                            <div className={`col-sm-${presentTabs.filter(dt => dt?.rptId == widget?.linkedWidgetRptId)[0]?.widgetWidth}`}
-                                                style={{
-                                                    padding: "5px 3px"
-                                                }}
-                                            >
-                                                <Suspense fallback={<div className="pt-3 text-center">Loading...</div>}>
-                                                    <WidgetDash widgetDetail={presentWidgets?.filter(dt => dt?.rptId == widget?.linkedWidgetRptId)[0]} />
-                                                </Suspense>
-                                            </div>
-                                        )} */}
                                     </>
                                 }
                             </React.Fragment>

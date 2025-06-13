@@ -87,7 +87,6 @@ const MapDash = ({ widgetData }) => {
         try {
             const data = await fetchQueryData(widget?.queryVO?.length > 0 ? widget?.queryVO : [], widget?.JNDIid, params);
 
-            console.log(data, 'mapdata')
             const seriesData = [];
 
             if (data[0]?.column_3) {
