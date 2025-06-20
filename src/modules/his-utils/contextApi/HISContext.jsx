@@ -18,6 +18,8 @@ const HISContextData = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [singleConfigData, setSingleConfigData] = useState();
 
+  const [prevKpiTab,setPrevKpiTab] = useState([]);
+
   const [paramsValues, setParamsValues] = useState({
     tabParams: {},
     widgetParams: {},
@@ -210,7 +212,7 @@ const HISContextData = ({ children }) => {
       theme, setTheme,
       mainDashData, setMainDashData,
       singleConfigData, getDashConfigData, jndiServerDrpData,
-      clearAllCache,
+      clearAllCache,prevKpiTab,setPrevKpiTab,
 
       paramsValues, setParamsValues,
       paramsValuesPro, setParamsValuesPro,

@@ -55,7 +55,7 @@ export const convertToISODate = (dateStr) => {
 
   const [day, month, year] = dateStr.split("-");
   const formattedYear = `20${year}`;
-  const formattedMonth = months[month.toUpperCase()];
+  const formattedMonth = months[month?.toUpperCase()];
 
   return `${formattedYear}-${formattedMonth}-${day}`;
 };

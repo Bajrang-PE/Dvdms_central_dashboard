@@ -8,7 +8,7 @@ const GraphDash = lazy(() => import('./GraphDash'));
 const MapDash = lazy(() => import('./MapDash'));
 const IframeDash = lazy(() => import('./IframeDash'));
 
-const WidgetDash = React.memo(({ widgetDetail, presentWidgets, presentTabs }) => {
+const WidgetDash = React.memo(({ widgetDetail, presentWidgets, presentTabs, pk }) => {
 
     const [widgetData, setWidgetData] = useState({});
     const [linkedWidget, setLinkedWidget] = useState();
@@ -18,6 +18,12 @@ const WidgetDash = React.memo(({ widgetDetail, presentWidgets, presentTabs }) =>
     const handleSetPkColumn = (val) => {
         setPkColumn(val)
     }
+
+    useEffect(() => {
+        if (pk && pk !== '') {
+            handleSetPkColumn(pk)
+        }
+    }, [pk])
 
     useEffect(() => {
         setWidgetData(widgetDetail);
@@ -40,10 +46,9 @@ const WidgetDash = React.memo(({ widgetDetail, presentWidgets, presentTabs }) =>
     }, [widgetData])
 
 
-
     const renderWidget = (data) => {
         switch (data?.reportViewed) {
-            case 'KPI': return <KpiDash widgetData={data} />;
+            case 'KPI': return <KpiDash widgetData={data} presentTabs={presentTabs} />;
             case 'Tabular': return <TabularDash widgetData={data} setWidgetData={setWidgetData} levelData={levelData} setLevelData={setLevelData} pkColumn={pkColumn} setPkColumn={handleSetPkColumn} />;
             case 'Graph': return <GraphDash widgetData={data} setWidgetData={setWidgetData} pkColumn={pkColumn} setPkColumn={handleSetPkColumn} />;
             case 'Iframe': return <IframeDash widgetData={data} />;
@@ -58,20 +63,25 @@ const WidgetDash = React.memo(({ widgetDetail, presentWidgets, presentTabs }) =>
         }
     };
 
-console.log(widgetData,'widgetDatamain')
-
-
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <>
-                <div className={`col-sm-${presentTabs?.filter(dt => dt?.rptId == widgetData?.rptId)[0]?.widgetWidth}`}
-                    style={{
-                        padding: "5px 3px"
-                    }}>
-                    {renderWidget(widgetData)}
+                {widgetData &&
+                    <div className={`col-sm-${presentTabs?.filter(dt => dt?.rptId == widgetData?.rptId)[0]?.widgetWidth}`}
+                        style={{
+                            padding: "5px 3px"
+                        }}>
+                        {/* {widgetData?.widgetType === "singleQueryParent" ?
 
-                </div>
+                        <h1>Hi BG</h1>
+                        :
+                        <> */}
+                        {renderWidget(widgetData)}
+                        {/* </>
+                    } */}
 
+                    </div>
+                }
                 {/* Render linked widgets if available */}
                 {linkedWidget && linkedWidget.map((id) => {
 

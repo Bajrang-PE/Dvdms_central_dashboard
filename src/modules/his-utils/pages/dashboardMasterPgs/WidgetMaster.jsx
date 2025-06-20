@@ -1342,6 +1342,8 @@ const WidgetMaster = () => {
     },
   ]
 
+  console.log(singleData,'singlawid')
+  console.log(values?.sqChildJsonString,'singlawidb')
 
   return (
     <>

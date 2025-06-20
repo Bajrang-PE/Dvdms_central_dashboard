@@ -9,7 +9,7 @@ const TopBar = lazy(() => import("../../components/sidebar/TopBar"));
 const TabDash = lazy(() => import("../../components/sidebar/TabDash"));
 
 const DashboardMst = () => {
-    const { getAllTabsData, getAllWidgetData, allTabsData, activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData, setParamsValues } = useContext(HISContext);
+    const { getAllTabsData, getAllWidgetData, allTabsData, activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData, setParamsValues, setPrevKpiTab } = useContext(HISContext);
     const [searchParams] = useSearchParams();
     const groupId = searchParams.get("groupId");
     const dashboardFor = searchParams.get("dashboardFor");
@@ -81,6 +81,7 @@ const DashboardMst = () => {
                                 setActiveTab={setActiveTab}
                                 activeTab={activeTab}
                                 dashboardData={mainDashData}
+                                setPrevKpiTab={setPrevKpiTab}
                             />
                         ) : (
                             <DashSidebar
@@ -88,6 +89,7 @@ const DashboardMst = () => {
                                 setActiveTab={setActiveTab}
                                 activeTab={activeTab}
                                 dashboardData={mainDashData}
+                                setPrevKpiTab={setPrevKpiTab}
                             />
                         )}
                     </Suspense>
@@ -115,7 +117,7 @@ const DashboardMst = () => {
                                     </div>
                                 }
                             >
-                                <TabDash tabData={activeTab} />
+                                <TabDash />
                             </Suspense>
                         }
                     </main>

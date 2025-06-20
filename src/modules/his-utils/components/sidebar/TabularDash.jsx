@@ -8,6 +8,7 @@ import InputField from "../commons/InputField";
 import { generateCSV, generatePDF } from "../commons/advancedPdf";
 import { getAuthUserData } from "../../../../utils/CommonFunction";
 import { useSearchParams } from "react-router-dom";
+import PopUpWidget from "./PopUpWidget";
 
 const Parameters = lazy(() => import('./Parameters'));
 
@@ -15,7 +16,9 @@ const TabularDash = (props) => {
 
   const { widgetData, setWidgetData, levelData, setLevelData, pkColumn, setPkColumn } = props;
 
-  const { theme, singleConfigData, paramsValues, setLoading, presentWidgets, isSearchQuery, setIsSearchQuery } = useContext(HISContext);
+  const { theme, singleConfigData, paramsValues, setLoading, presentWidgets, isSearchQuery, setIsSearchQuery,prevKpiTab } = useContext(HISContext);
+
+  console.log(widgetData,'tabledd')
 
   const [tableData, setTableData] = useState([]);
   const [currentLevel, setCurrentLevel] = useState(0);
@@ -23,7 +26,8 @@ const TabularDash = (props) => {
   const [filterData, setFilterData] = useState(tableData)
   const [columns, setColumns] = useState([]);
   const [fetching, setFetching] = useState(false);
-
+  const [popupConfig, setPopupConfig] = useState(null);
+  const [showPopUpWidget, setShowPopUpWidget] = useState(false);
 
   const [queryParams] = useSearchParams();
   const isPrev = queryParams.get('isPreview');
@@ -65,6 +69,66 @@ const TabularDash = (props) => {
     });
   };
 
+
+  const getPopupConfig = (widgetIndicator) => {
+    try {
+      if (widgetData?.drillDownJsonString) {
+        const drillDownConfig = JSON.parse(widgetData?.drillDownJsonString || []);
+        const config = drillDownConfig.find(
+          item => item.modeForOpeningPopup === String(widgetIndicator)
+        );
+        return config || null;
+      } else {
+        ToastAlert('No widget mapped', 'warning')
+      }
+
+    } catch (error) {
+      console.error('Error parsing popup config:', error);
+      return null;
+    }
+  };
+
+  const openPopUpWidget = (value) => {
+    try {
+      if (typeof value !== 'string' || !value.includes('##')) {
+        ToastAlert('Invalid data format for popup', 'warning');
+        return;
+      }
+
+      const parts = value.split('##');
+      if (parts.length < 3) {
+        ToastAlert('Insufficient data for popup', 'warning');
+        return;
+      }
+
+      const [displayValue, pkValue, widgetIndicator] = parts;
+      const config = getPopupConfig(widgetIndicator);
+
+      if (!config) {
+        ToastAlert(`No popup config found for indicator ${widgetIndicator}`, 'warning');
+        return;
+      }
+
+      setPopupConfig({
+        widgetId: config.popupWidgetId,
+        pkValue: pkValue,
+        title: config.titleMsg,
+        mode: config.modeForOpeningPopup,
+        widgetName: config?.drillWidgetName
+      });
+      setShowPopUpWidget(true);
+
+    } catch (error) {
+      console.error('Error opening popup:', error);
+      setShowPopUpWidget(false);
+    }
+  };
+
+  const closePopup = () => {
+    setPopupConfig(null);
+    setShowPopUpWidget(false);
+  };
+
   const getFirstValue = (val) => {
     return typeof val === 'string' && val.includes('##') ? val.split('##')[0] : val;
   };
@@ -72,11 +136,14 @@ const TabularDash = (props) => {
   const generateColumns = (data, ifDrill = isChildPresent) => {
     if (!data || data.length === 0) return [];
 
-    const keys = Object.keys(data[0]);
+    // const keys = Object.keys(data[0]);
+    const keys = Object.keys(data[0]).filter(key => key !== 'pkcolumn');
 
     const reorderedKeys = [
+      ...keys.filter(k => /^sno$/i.test(k)),
       ...keys.filter(k => /state/i.test(k)),
-      ...keys.filter(k => !/state/i.test(k))
+      // ...keys.filter(k => !/state/i.test(k))
+      ...keys.filter(k => !/^sno$/i.test(k) && !/state/i.test(k))
     ];
 
     const dynamicColumns = reorderedKeys.map((key) => ({
@@ -84,16 +151,22 @@ const TabularDash = (props) => {
       selector: row => getFirstValue(row[key]),
       sortable: true,
       wrap: true,
-      cell: key.toLowerCase().includes("state")
-        ? row => (
+      width: /^sno$/i.test(key) ? '8%' : undefined,
+      cell: (row) => {
+        const value = row[key];
+        const displayValue = getFirstValue(value);
+
+        return typeof value === 'string' && value.includes("##") ? (
           <span
             style={{ color: 'blue', cursor: 'pointer' }}
-            onClick={() => console.log(row[key], 'bgrow')}
+            onClick={() => openPopUpWidget(value)}
           >
-            {getFirstValue(row[key])}
+            {displayValue}
           </span>
-        )
-        : row => <span>{getFirstValue(row[key])}</span>
+        ) : (
+          <span>{displayValue}</span>
+        );
+      }
     }));
 
     if (ifDrill) {
@@ -114,6 +187,7 @@ const TabularDash = (props) => {
     return dynamicColumns;
   };
 
+
   const fetchData = async (widget) => {
 
     if (widget?.modeOfQuery === "Procedure") {
@@ -132,8 +206,8 @@ const TabularDash = (props) => {
           initialRecord?.toString(), //initial record no.===
           finalRecord?.toString(), //final record no.===
           "", //date options
-          "16-Apr-2025",//from values
-          "16-Apr-2025" // to values
+          "",//from values
+          "" // to values
         ]
         const response = await fetchProcedureData(widget?.procedureMode, params, widget?.JNDIid);
         const formattedData = formatData(response.data || []);
@@ -150,6 +224,7 @@ const TabularDash = (props) => {
       }
     } else {
       if (!widget?.queryVO?.length > 0) return;
+
       const params = getOrderedParamValues(widget?.queryVO[0]?.mainQuery, paramsValues, widget?.rptId);
 
       try {
@@ -174,6 +249,7 @@ const TabularDash = (props) => {
       }
     }
   }
+
 
   useEffect(() => {
     if (widgetData) {
@@ -269,11 +345,11 @@ const TabularDash = (props) => {
     }
   }
 
-
   return (
     <>
       {/* {currentLevel == 0 && */}
       <div className={`tabular-box ${theme === 'Dark' ? 'dark-theme' : ''} tabular-box-border ${borderReq === 'No' ? '' : 'tabular-box-border'}`} style={{ border: `1px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
+
 
         <div className="row px-2 py-2 border-bottom" style={{ textAlign: headingAlign, color: widgetHeadingColor }} >
           {headingReq &&
@@ -343,6 +419,11 @@ const TabularDash = (props) => {
           }
 
         </div>
+         {paramsData && (
+          <div className='parameter-box'>
+            <Parameters params={paramsData} scope={'widgetParams'} widgetId={widgetData?.rptId} />
+          </div>
+        )}
         <div className="px-2 py-2" style={{ marginTop: `${widgetTopMargin}px` }}>
           <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query : {widgetData?.rptId}</h4>
           {(widgetData?.modeOfQuery === 'Query' && isPrev == 1) &&
@@ -367,12 +448,6 @@ const TabularDash = (props) => {
             </div>
           }
         </div>
-
-        {paramsData && (
-          <div className='parameter-box'>
-            <Parameters params={paramsData} scope={'widgetParams'} widgetId={widgetData?.rptId} />
-          </div>
-        )}
 
         {fetching
 
@@ -410,18 +485,10 @@ const TabularDash = (props) => {
         )}
 
       </div>
-      {/* } */}
-      {/* {(childIdShow && currentLevel !== 0) &&
-        <Suspense
-          fallback={
-            <div className="pt-3 text-center">
-              Loading...
-            </div>
-          }
-        >
-          <WidgetDash widgetDetail={presentWidgets?.length > 0 && presentWidgets?.filter(dt => dt?.rptId == childIdShow)[0]} presentWidgets={presentWidgets} />
-        </Suspense>
-      } */}
+
+      {(popupConfig && showPopUpWidget) && (
+        <PopUpWidget {...{ showPopUpWidget, popupConfig, closePopup }} />
+      )}
     </>
   );
 };

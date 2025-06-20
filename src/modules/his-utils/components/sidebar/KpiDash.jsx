@@ -6,10 +6,12 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import { HISContext } from '../../contextApi/HISContext';
 import { fetchProcedureData, fetchQueryData, formatParams, getOrderedParamValues } from '../../utils/commonFunction';
 
-const KpiDash = ({ widgetData }) => {
-    const { setActiveTab, allTabsData, setLoading, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery } = useContext(HISContext);
+const KpiDash = ({ widgetData, presentTabs }) => {
+    const { setActiveTab, allTabsData, setLoading, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery,prevKpiTab,setPrevKpiTab,activeTab } = useContext(HISContext);
     const [kpiData, setKpiData] = useState([]);
     const [kpiLoading, setKpiLoading] = useState(false);
+
+   
 
     const formatData = (rawData = []) => {
         return rawData.map((item) => {
@@ -51,9 +53,10 @@ const KpiDash = ({ widgetData }) => {
                 setKpiLoading(false);
             } catch (error) {
                 console.error("Error loading query data:", error);
+                setKpiData([]);
 
             }
-        } else {
+        } else if (widget?.modeOfQuery === "Query") {
             if (!widget?.queryVO?.length > 0) return;
             setKpiLoading(true);
             const params = getOrderedParamValues(widget?.queryVO[0]?.mainQuery, paramsValues, widget?.rptId);
@@ -75,18 +78,24 @@ const KpiDash = ({ widgetData }) => {
             } catch (error) {
                 console.error("Error loading query data:", error);
                 setKpiLoading(false);
+                setKpiData([]);
             }
+        } else if (widget?.modeOfQuery === "HTMLText") {
+            setKpiData(widget?.htmlText ? widget?.htmlText : "")
+            
         }
     }
 
     useEffect(() => {
         if (widgetData) {
+            setKpiData([]);
             fetchData(widgetData);
         }
-    }, [paramsValues]);
+    }, [paramsValues, widgetData]);
 
     useEffect(() => {
         if (isSearchQuery && widgetData && paramsValues) {
+            setKpiData([]);
             fetchData(widgetData);
         }
     }, [isSearchQuery]);
@@ -114,14 +123,20 @@ const KpiDash = ({ widgetData }) => {
 
     const onKpiClickDetails = (id) => {
         const tabdt = allTabsData?.filter(tab => tab?.jsonData?.dashboardId === id)
-        setActiveTab(tabdt[0])
+        setActiveTab(tabdt[0]);
+        setPrevKpiTab([activeTab]);
     }
+
+    const widheight = presentTabs?.length > 0 && presentTabs?.filter(dt => dt?.rptId == widgetData?.rptId)[0]?.widgetHeight;
+
+
+ console.log(widgetData, 'bgkpidd')
+ console.log(activeTab, 'activeTab')
 
 
     return (
         <div className={`${widgetData?.kpiType === "circle" ? 'small-box-kpi-circle' : 'small-box-kpi'}`} style={{
             backgroundColor: widgetData?.widgetBackgroundColour,
-            // height: "150px",
             color: widgetData?.widgetFontColour,
             // borderWidth: widgetData?.kpiBorderWidth,
             // borderColor: widgetData?.kpiBorderColor,
@@ -171,7 +186,12 @@ const KpiDash = ({ widgetData }) => {
                     </ul>
                 </div>
             )}
-            <div className={`kpi-details-box ${widgetData?.kpiType === "circle" ? 'text-center' : ""}`}>
+            <div className={`kpi-details-box ${widgetData?.kpiType === "circle" ? 'text-center' : ""}`}
+                style={{
+                    height: !widheight || widheight === "0" ? 'auto' : `${widheight}px`,
+                }}
+            >
+                <b>{widgetData?.rptId}:{widgetData?.rptName}</b>
                 {/* <p className="sweet">
                     <b>{widgetData?.rptId}:{widgetData?.rptName}</b>
                 </p>
@@ -180,7 +200,7 @@ const KpiDash = ({ widgetData }) => {
                 <span className="sweet"><b>Value : 4 Lakh</b></span> */}
                 {kpiLoading ?
                     <>
-                        <span style={{textAlign:"center",color:"white"}}>Loading...</span> </>
+                        <span style={{ textAlign: "center", color: "white" }}>Loading...</span> </>
                     :
                     <>
                         <div

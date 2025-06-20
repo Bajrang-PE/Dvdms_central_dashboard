@@ -293,7 +293,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
         };
 
         initializeParams();
-    }, [presentParams]);
+    }, [presentParams, widgetId]);
 
 
     // useEffect(() => {
@@ -388,6 +388,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                                 getOptionValue={(e) => e.optionValue}
                                 value={selectedValues[parameterName] || []}
                                 onChange={(selectedOptions) => handleMultiSelectChange(parameterName, selectedOptions, parameterId)}
+                                isDisabled={hideParams}
                             />
                             {errors[parameterId] &&
                                 <div className="required-input">
@@ -399,27 +400,37 @@ const Parameters = ({ params, scope, widgetId = null }) => {
 
                     {(parameterType === "1" && isMultipleSelectionRequired !== 'Yes') &&
                         <>
-                            <select
-                                id={parameterId}
-                                name={parameterName}
-                                className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-select form-select-sm`}
-                                value={selectedValues[parameterName] || defaultValueIfEmpty}
-                                onChange={(e) => handleInputChange(parameterName, e, parameterId)}
-                            >
-                                {placeHolder ?
-                                    <option value=''>{placeHolder}</option> :
-                                    <option value=''>{'select'}</option>
+                            {!hideParams ?
+                                <select
+                                    id={parameterId}
+                                    name={parameterName}
+                                    className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-select form-select-sm`}
+                                    value={selectedValues[parameterName] || defaultValueIfEmpty}
+                                    onChange={(e) => handleInputChange(parameterName, e, parameterId)}
+                                >
+                                    {placeHolder ?
+                                        <option value=''>{placeHolder}</option> :
+                                        <option value=''>{'select'}</option>
 
-                                }
-                                {defaultOption?.optionText !== '' &&
-                                    <option value={defaultOption?.optionValue ? defaultOption?.optionValue : ''}>{defaultOption?.optionText ? defaultOption?.optionText : 'Select Value'}</option>
-                                }
-                                {options?.length > 0 && options.map((option, index) => (
-                                    <option key={index} value={option.optionValue}>
-                                        {option.optionText}
-                                    </option>
-                                ))}
-                            </select>
+                                    }
+                                    {defaultOption?.optionText !== '' &&
+                                        <option value={defaultOption?.optionValue ? defaultOption?.optionValue : ''}>{defaultOption?.optionText ? defaultOption?.optionText : 'Select Value'}</option>
+                                    }
+                                    {options?.length > 0 && options.map((option, index) => (
+                                        <option key={index} value={option.optionValue}>
+                                            {option.optionText}
+                                        </option>
+                                    ))}
+                                </select>
+                                :
+
+                                <span>
+                                    {
+                                        defaultOption?.optionValue == selectedValues[parameterName] || defaultValueIfEmpty ? defaultOption?.optionText :
+                                            options?.filter((dt => dt?.optionValue == selectedValues[parameterName] || defaultValueIfEmpty))[0]?.optionText
+                                    }
+                                </span>
+                            }
                             {errors[parameterId] &&
                                 <div className="required-input">
                                     {errors[parameterId]}
@@ -430,16 +441,24 @@ const Parameters = ({ params, scope, widgetId = null }) => {
 
                     {parameterType === "2" && (
                         <>
-                            <InputField
-                                type="text"
-                                className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'}`}
-                                placeholder={placeHolder}
-                                name={parameterName}
-                                id={parameterId}
-                                value={selectedValues[parameterName] || defaultValueIfEmpty}
-                                onChange={(e) => handleInputChange(parameterName, e, parameterId)}
-                                acceptType={textBoxValidation === '2' ? 'number' : textBoxValidation === '4' ? 'letters' : ''}
-                            />
+                            {!hideParams ?
+                                <InputField
+                                    type="text"
+                                    className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'}`}
+                                    placeholder={placeHolder}
+                                    name={parameterName}
+                                    id={parameterId}
+                                    value={selectedValues[parameterName] || defaultValueIfEmpty}
+                                    onChange={(e) => handleInputChange(parameterName, e, parameterId)}
+                                    acceptType={textBoxValidation === '2' ? 'number' : textBoxValidation === '4' ? 'letters' : ''}
+                                />
+                                :
+
+                                <span>
+                                    {
+                                        selectedValues[parameterName] || defaultValueIfEmpty
+                                    }
+                                </span>}
                             {errors[parameterId] &&
                                 <div className="required-input">
                                     {errors[parameterId]}
@@ -450,18 +469,25 @@ const Parameters = ({ params, scope, widgetId = null }) => {
 
                     {parameterType === "4" && (
                         <>
-                            <input
-                                type="date"
-                                placeholder={placeHolder}
-                                className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-control form-control-sm`}
-                                name={parameterName}
-                                id={parameterId}
-                                defaultValue={convertToISODate(defaultValueIfEmpty)}
-                                min={getDateConstraint(shouldBeGreaterThanField)}
-                                max={getDateConstraint(shouldBeLessThanField)}
-                                value={selectedValues[parameterName]}
-                                onChange={(e) => handleInputChange(parameterName, e, parameterId)}
-                            />
+                            {!hideParams ?
+                                <input
+                                    type="date"
+                                    placeholder={placeHolder}
+                                    className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-control form-control-sm`}
+                                    name={parameterName}
+                                    id={parameterId}
+                                    defaultValue={convertToISODate(defaultValueIfEmpty)}
+                                    min={getDateConstraint(shouldBeGreaterThanField)}
+                                    max={getDateConstraint(shouldBeLessThanField)}
+                                    value={selectedValues[parameterName]}
+                                    onChange={(e) => handleInputChange(parameterName, e, parameterId)}
+                                />
+                                :
+                                <span>
+                                    {
+                                        selectedValues[parameterName] || defaultValueIfEmpty
+                                    }
+                                </span>}
                             {errors[parameterId] &&
                                 <div className="required-input">
                                     {errors[parameterId]}
@@ -532,13 +558,13 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                     <FontAwesomeIcon icon={faEyeSlash} size="xs" className="dropdown-gear-icon" />
                 </button>
             </div>
-            {!hideParams &&
-                <div className="row">
-                    {presentParams?.length > 0 && presentParams?.map((param, index) =>
-                        renderInputField(param))
-                    }
-                </div>
-            }
+            {/* {!hideParams && */}
+            <div className="row">
+                {presentParams?.length > 0 && presentParams?.map((param, index) =>
+                    renderInputField(param))
+                }
+            </div>
+            {/* } */}
         </div>
     );
 };

@@ -4,7 +4,7 @@ import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DropdownPortal from '../commons/DropdownPortal';
 
-const TopBar = ({ data, setActiveTab, dashboardData }) => {
+const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab }) => {
     const [openSubMenu, setOpenSubMenu] = useState(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
