@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext'
 import InputSelect from '../../InputSelect'
@@ -26,34 +27,68 @@ const OutsourceMasterForm = (props) => {
         [{ test: '', number: '', agency: '' }]
     );
 
-    const addRow = () => {
+    // const addRow = () => {
 
+    //     const hasIncompleteRow = rows.some(
+    //         (row) => !row.test || !row.number || !row.agency
+    //     );
+
+    //     if (hasIncompleteRow) {
+    //         alert('Please complete the existing row before adding a new one.');
+    //         return;
+    //     }
+
+    //     const newRow = { test: '', number: '', agency: '' };
+    //     const updatedRows = [...rows, newRow];
+    //     const isDuplicateExists = updatedRows.some((row, index, self) =>
+    //         self.findIndex(
+    //             (r) =>
+    //                 r.test === row.test &&
+    //                 r.agency.trim().toLowerCase() === row.agency.trim().toLowerCase()
+    //         ) !== index
+    //     );
+    //     if (isDuplicateExists) {
+    //         alert('Duplicate row detected.Please remove duplicate row');
+    //         return;
+    //     }
+
+    //     setRows(updatedRows);
+
+    // };
+
+    const addRow = () => {
+        // Check for any incomplete row before proceeding
         const hasIncompleteRow = rows.some(
             (row) => !row.test || !row.number || !row.agency
         );
-
+    
         if (hasIncompleteRow) {
             alert('Please complete the existing row before adding a new one.');
             return;
         }
-
+    
+        // Add a new empty row
         const newRow = { test: '', number: '', agency: '' };
         const updatedRows = [...rows, newRow];
-        const isDuplicateExists = updatedRows.some((row, index, self) =>
-            self.findIndex(
-                (r) =>
-                    r.test === row.test &&
-                    //r.number === row.number &&
-                    r.agency.trim().toLowerCase() === row.agency.trim().toLowerCase()
-            ) !== index
-        );
+    
+        // Check for duplicates in updatedRows based on 'test' and normalized 'agency'
+        const seen = new Set();
+        const isDuplicateExists = updatedRows.some(row => {
+            const key = `${row.test}|${row.agency.trim().toLowerCase()}`;
+            if (seen.has(key)) return true;
+            seen.add(key);
+            return false;
+        });
+    
         if (isDuplicateExists) {
-            alert('Duplicate row detected.Please remove duplicate row');
+            alert('Duplicate row detected. Please remove duplicate row.');
             return;
         }
+    
+        // If everything is valid, update the state
         setRows(updatedRows);
-        
     };
+    
 
 
     const removeRow = (index) => {
@@ -101,7 +136,7 @@ const OutsourceMasterForm = (props) => {
                 number: item.cwhnumTestRaised,
                 agency: item.cwhstrAgencyName,
             }));
-            setRows(formattedData);      
+            setRows(formattedData);
         }
     }, [singleData])
 
@@ -114,8 +149,18 @@ const OutsourceMasterForm = (props) => {
 
 
     const handleSave = (e) => {
-      
+
         e.preventDefault();
+
+        if(!values?.hospId.trim()){
+            setErrors(prev=>({...prev,"hospIdErr":"Please select hospital name"}))
+            return;
+       }
+
+        if(!values?.date.trim()){
+             setErrors(prev=>({...prev,"dateErr":"Please select date"}))
+             return;
+        }
 
         const hasIncompleteRow = rows.some(
             (row) => !row.test || !row.number || !row.agency
@@ -126,23 +171,35 @@ const OutsourceMasterForm = (props) => {
             return;
         }
 
-        const newRow = { test: '', number: '', agency: '' };
-        const updatedRows = [...rows, newRow];
+        //const newRow = { test: '', number: '', agency: '' };
+        //const updatedRows = [...rows, newRow];
 
-        const isDuplicateExists = updatedRows.some((row, index, self) =>
-            self.findIndex(
-                (r) =>
-                    r.test === row.test &&
-                    //r.number === row.number &&
-                    r.agency.trim().toLowerCase() === row.agency.trim().toLowerCase()
-            ) !== index
-        );
+        //  const isDuplicateExists = rows.some((row, index, self) =>
+        //      self.findIndex(
+        //          (r) =>
+        //              r.test === row.test &&
+        //              r.agency.trim().toLowerCase() === row.agency.trim().toLowerCase()
+        //      ) !== index
+        //  );
+        //  if (isDuplicateExists) {
+        //      alert('Duplicate row detected.Please remove duplicate row');
+        //      return;
+        //  }
+
+        const seen = new Set();
+        const isDuplicateExists = rows.some(row => {
+            const key = `${row.test}|${row.agency.trim().toLowerCase()}`;
+            if (seen.has(key)) return true;
+            seen.add(key);
+            return false;
+        });
+
         if (isDuplicateExists) {
-            alert('Duplicate row detected.Please remove duplicate row');
+            alert('Duplicate row detected. Please remove duplicate row.');
             return;
         }
 
-    
+
         if (openPage === "add") {
             const val = rows?.map(dt => ({
                 "stateID": Number(stateId),
@@ -178,7 +235,7 @@ const OutsourceMasterForm = (props) => {
         //modify
         if (openPage === "modify") {
 
-            const val = rows?.map(dt => ({           
+            const val = rows?.map(dt => ({
                 "stateID": Number(stateId),
                 "hospitalID": Number(values?.hospId),
                 "facilityTypeID": Number(facilityTypeId),
@@ -188,22 +245,18 @@ const OutsourceMasterForm = (props) => {
                 "testsConducted": Number(dt.number),
                 "isValid": 1
             }))
-
-            console.log("================================")
-            console.log(JSON.stringify(val,null,2))
-
-            fetchUpdateData(`http://10.226.26.247:8025/api/v1/outsourceMaster/updateTestData?recordID=${selectedOption[0].recordID}`,val).then(data=>{
-                if(data?.status === 1){
-                    ToastAlert("Data updated successfully","success")
+            fetchUpdateData(`http://10.226.26.247:8025/api/v1/outsourceMaster/updateTestData?recordID=${selectedOption[0].recordID}`, val).then(data => {
+                if (data?.status === 1) {
+                    ToastAlert("Data updated successfully", "success")
                     setOpenPage("home")
                     refresh();
-                }else{
-                    ToastAlert("Error","error")
+                } else {
+                    ToastAlert("Error", "error")
                 }
-               })
+            })
 
         }
-        
+
     }
 
     const refresh = () => {
@@ -263,6 +316,7 @@ const OutsourceMasterForm = (props) => {
                                 options={hospNameDrpData}
                                 onChange={handleValueChange}
                                 value={values?.hospId}
+                                errorMessage={errors?.hospIdErr}
 
                             />
 
@@ -285,6 +339,7 @@ const OutsourceMasterForm = (props) => {
                                 name="date"
                                 onChange={handleValueChange}
                                 value={values?.date}
+                                errorMessage={errors?.dateErr}
                             />
 
                         </div>
