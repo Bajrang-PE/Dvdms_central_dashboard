@@ -95,20 +95,27 @@ const DrugMaster = () => {
         }
     }, [values.groupId]);
 
+     useEffect(() => {
+        if (values.subGroupId === "") {
+            setValues(prev => ({
+                ...prev,
+                subGroupId: "0"
+            }));
+        }
+    }, [values.subGroupId]);
+
+
 
     const getListData = (grpId, sbGrpId, recStatus) => {
 
-        fetchData(`http://10.226.17.20:8025/api/v1/drug/all?groupId=${grpId}&subGroupId=${sbGrpId}&isActive=${recStatus}`).then((data) => {
-            console.log("=====response=====", data)
+        fetchData(`http://10.226.27.173:8025/api/v1/drug-mst?groupId=${grpId}&subGroupId=${sbGrpId}&isActive=${recStatus}`).then((data) => {
+        
             if (data?.status === 1 && Array.isArray(data.data)) {
                 setListData(data.data)
             } else {
                 setListData([])
             }
-
         })
-
-
     }
 
     useEffect(() => {
@@ -168,12 +175,12 @@ const DrugMaster = () => {
         },
         {
             name: 'Drug Type',
-            selector: row => row.cwhnumDrugTypeId,
+            selector: row => row.drugtypeName,
             sortable: true,
         },
         {
             name: 'Drug Code',
-            selector: row => row.cwhstrDrugCategoryCode,
+            selector: row => row.drugCatName,
             sortable: true,
         },
         {
@@ -201,19 +208,13 @@ const DrugMaster = () => {
 
     const handleDelete = () => {
 
-        const val = {
-            cwhnumGroupId: values?.groupId,
-            gnumIsValid: 1,
-            cwhnumSubgroupId: values?.subGroupId,
-        }
-
-        fetchDeleteData(`http://10.226.17.20:8025/api/v1/drug`, val).then(data => {
+        fetchDeleteData(`http://10.226.27.173:8025/api/v1/drug-mst?drugId=${selectedOption[0]?.cwhnumDrugId}`).then(data => {
             if (data) {
                 ToastAlert('Data deleted successfully', 'success')
                 setConfirmSave(false);
                 setSelectedOption([]);
                 setOpenPage("home");
-                getListData(1, 1, 1);
+                getListData(values?.groupId, values?.subGroupId, values?.recordStatus);
             } else {
                 ToastAlert('Error while deleting record!', 'error')
                 setOpenPage("home")
@@ -316,8 +317,8 @@ const DrugMaster = () => {
                                         <label><b>Group Name : </b></label>&nbsp;{selectedGroupName}<br />
                                         <label><b>Subgroup Name : </b></label>&nbsp;{selectedSubGroupName}<br />
                                         <label><b>Drug Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrDrugName}<br />
-                                        <label><b>Drug Type Name : </b></label>&nbsp;{selectedOption[0]?.cwhnumDrugTypeId}<br />
-                                        <label><b>Drug Code : </b></label>&nbsp;{selectedOption[0]?.cwhnumDrugId}<br />
+                                        <label><b>Drug Type Name : </b></label>&nbsp;{selectedOption[0]?.drugtypeName}<br />
+                                        <label><b>Drug Code : </b></label>&nbsp;{selectedOption[0]?.drugCatName}<br />
                                         <label><b>Unit : </b></label>&nbsp;{selectedOption[0]?.cwhstrStrengthName}
                                         {/* //<label><b>Sub Group Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrSubgroupName}<br/> */}
                                     </div>
@@ -338,7 +339,8 @@ const DrugMaster = () => {
 
                 {(openPage === "add" || openPage === "modify") &&
                     <DrugMasterForm selectedGroupName={selectedGroupName} selectedSubGroupName={selectedSubGroupName}
-                        selectedGroupId={selectedGroupId} selectedSubGroupId={selectedSubGroupId} setSearchInput={setSearchInput} />
+                        selectedGroupId={selectedGroupId} selectedSubGroupId={selectedSubGroupId} setSearchInput={setSearchInput}
+                        getListData={getListData} selectedStatus={values?.recordStatus} />
 
                 }
             </div>

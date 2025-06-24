@@ -5,6 +5,7 @@ import { LoginContext } from '../../../../context/LoginContext';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchUpdateData, fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
 import InputField from '../../../InputField';
+import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
 const SupplierMasterForm = (props) => {
     const { getListData, setSearchInput } = props;
@@ -146,8 +147,7 @@ const SupplierMasterForm = (props) => {
                 cwhstrLstNo: values?.lstNo,
                 cwhstrCstNo: values?.cstNo,
                 cwhstrPanNo: values?.panNo,
-                gnumIsvalid: 1,
-                gnumSeatId: 11111,
+                gnumSeatId: getAuthUserData('userSeatId'),
             }
 
             fetchUpdatePostData("http://10.226.27.173:8025/api/v1/suppliers", data).then(data => {
@@ -169,14 +169,14 @@ const SupplierMasterForm = (props) => {
                 cwhstrEmailId: values?.emailId,
                 cwhstrAddress: values?.address,
                 cwhnumPincode: values?.pinCode,
-                cwhnumAddressCountryCode: values?.countryName,
+                cwhnumAddressCountryCode: values?.countryName,   //countryId
                 cwhnumAddressStateCode: values?.stateId,
                 cwhstrCorporateMainGstno: values?.corporateGst,
                 cwhstrLstNo: values?.lstNo,
                 cwhstrCstNo: values?.cstNo,
                 cwhstrPanNo: values?.panNo,
                 gnumIsvalid: recordStatus,
-                gnumSeatId: 11111,
+                gnumSeatId: getAuthUserData('userSeatId'),
             }
 
             fetchUpdateData(`http://10.226.27.173:8025/api/v1/suppliers/${values?.suppId}`, data).then(data => {

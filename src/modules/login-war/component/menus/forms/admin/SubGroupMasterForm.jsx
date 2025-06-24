@@ -16,7 +16,7 @@ const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, val
 
     useEffect(() => {
         setGroupId(selectedGroupId || "")
-        setGroupName(selectedGroupName || "A")
+        setGroupName(selectedGroupName || "")
     }, [selectedGroupId, selectedGroupName])
 
     const saveValidate = () => {
@@ -53,10 +53,8 @@ const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, val
 
         if(openPage === "add"){
         const data = {
-            "cwhnumSubgroupId":101,
             "cwhnumGroupId": groupId,
             "cwhstrSubgroupName": subGroupName,
-            "gnumIsValid": 1,
             "gnumSeatId": getAuthUserData('userSeatId') || "10001"
         }
 
@@ -66,11 +64,11 @@ const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, val
 
        if(openPage === "modify"){
         const data = {
-            "cwhnumSubgroupId":101,
+            "cwhnumSubgroupId":selectedOption[0].cwhnumSubgroupId,
             "cwhnumGroupId": groupId,
             "cwhstrSubgroupName": subGroupName,
             "gnumIsValid": recordStatus,
-            "gnumSeatId": getAuthUserData('userSeatId') || "10001"
+            "gnumSeatId": getAuthUserData('userSeatId') 
         }
 
         const response = await axios.put("http://10.226.27.173:8025/api/v1/subgroup", data) 

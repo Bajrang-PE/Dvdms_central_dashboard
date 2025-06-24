@@ -260,8 +260,8 @@ const SubGroupMaster = () => {
 
             {(openPage === "add" || openPage === "modify") &&
                 <>
-                    <SubGroupMasterForm selectedGroupName={selectedGroupName} selectedGroupId={selectedGroupId} 
-                    setValues={setValues} values={values} setSearchInput={setSearchInput} getAllListData={getAllListData}/>
+                    <SubGroupMasterForm selectedGroupName={selectedGroupName} selectedGroupId={selectedGroupId}
+                        setValues={setValues} values={values} setSearchInput={setSearchInput} getAllListData={getAllListData} />
                 </>
             }
         </div>

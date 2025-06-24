@@ -25,19 +25,17 @@ const OutsourceMaster = () => {
     const [selectedState, setSelectedState] = useState("")
     const [selectedFacility, setSelectedFacility] = useState("")
     const [filterData, setFilterData] = useState(listData);
- 
+
 
     const validate = () => {
         let isValid = true;
         if (!values?.stateId.trim()) {
             setErrors(prev => ({ ...prev, stateIdErr: "Please select state" }));
-            // setOpenPage("home")
             isValid = false
         }
         if (!values?.facilityTypeId.trim()) {
             setErrors(prev => ({ ...prev, facilityTypeIdErr: "Please select facility type" }));
             isValid = false;
-            // setOpenPage("home")
         }
 
         return isValid;
@@ -169,11 +167,6 @@ const OutsourceMaster = () => {
     }, [confirmSave])
 
     const handleDelete = () => {
-
-        // const val={
-        //     recordID:[selectedOption[0].recordID],
-        //     isActive:"0"     
-        // }
 
         fetchPatchData(`http://10.226.26.247:8025/api/v1/outsourceMaster/updateMappingStatus?recordID=${[selectedOption[0].recordID]}&isActive=${0}`).then(data => {
             if (data) {

@@ -4,6 +4,7 @@ import GlobalButtons from '../../GlobalButtons'
 import { LoginContext } from '../../../../context/LoginContext';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchUpdateData, fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
+import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
 const DrugTypeForm = ({ setValues, values, setSearchInput }) => {
 
@@ -43,7 +44,7 @@ const DrugTypeForm = ({ setValues, values, setSearchInput }) => {
             if (isValid) {
                 const data = {
                     cwhstrDrugTypeName: drugTypeName,
-                    gnumSeatId: 11111
+                    gnumSeatId: getAuthUserData('userSeatId')
                 }
                 fetchUpdatePostData("http://10.226.27.173:8025/api/v1/drug-types", data).then(data => {
                     if (data && data?.status === 1) {
@@ -66,10 +67,9 @@ const DrugTypeForm = ({ setValues, values, setSearchInput }) => {
             if (isValid) {
                 const data = {
                     cwhstrDrugTypeName: drugTypeName,
-                    gnumSeatId: 11111,
+                    gnumSeatId: getAuthUserData('userSeatId'),
                     gnumIsvalid: recordStatus,
                     cwhnumDrugTypeId: cwhnumDrugTypeId,
-                    gdtEntryDate: '2025-04-09T11:16:04.569Z'
                 }
                 const response = await fetchUpdateData(`http://10.226.27.173:8025/api/v1/drug-types/${cwhnumDrugTypeId}`, data);
                 ToastAlert('Record Updated Successfully', 'success');

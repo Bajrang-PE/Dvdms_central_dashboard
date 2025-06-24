@@ -48,9 +48,9 @@ const SupplierMaster = () => {
 
     const getListData = (isActive) => {
         fetchData(`http://10.226.27.173:8025/api/v1/suppliers?isActive=${isActive}`).then((data) => {
-            if(data && data.status === 1){
-            setSuppliers(data.data);
-            }else{
+            if (data && data.status === 1) {
+                setSuppliers(data.data);
+            } else {
                 setSuppliers([])
             }
         })
@@ -174,11 +174,6 @@ const SupplierMaster = () => {
                                     setRecordStatus(e.target.value);
                                 }}
                             />
-                            {/* {errors.recordStatusErr &&
-                                <div className="required-input">
-                                    {errors?.recordStatusErr}
-                                </div>
-                            } */}
                         </div>
                     </div>
                 </div>

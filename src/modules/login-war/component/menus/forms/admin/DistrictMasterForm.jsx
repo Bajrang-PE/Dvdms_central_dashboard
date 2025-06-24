@@ -59,7 +59,6 @@ const DistrictMasterForm = ({ setValues, values }) => {
 
             const data = {
                 "gnumSeatid": getAuthUserData('userSeatId'),
-                "cwhnumDistId": 555, // it will gen auto 
                 "cwhstrDistName": distName,
                 "cwhnumStateId": stateId,
                 "cwhstrDistShortName": distName,
@@ -74,7 +73,6 @@ const DistrictMasterForm = ({ setValues, values }) => {
             const data = {
                 "gnumIsvalid": recordStatus,
                 "gnumSeatid": getAuthUserData('userSeatId'),
-                "cwhnumDistId": 555, // it will gen auto 
                 "cwhstrDistName": distName,
                 "cwhnumStateId": stateId,
                 "cwhstrDistShortName": distName,

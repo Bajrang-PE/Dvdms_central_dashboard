@@ -62,32 +62,6 @@ const SupplierMappingMaster = () => {
         });
     };
 
-
-    // const getStateSuppMappedList = () => {
-    //  alert("getSupplierMappedList")
-    //     fetchData(`http://10.226.26.247:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=${suppId}&stateID=${stateId}`).then((data) => {
-    //         if (data) {
-    //             alert("in if")
-    //             const drpData = Array.from(
-    //                 new Map(
-    //                     data.data.map(dt => [
-    //                         dt.supplierID.toString(), // force string key
-    //                         {
-    //                             value: dt.supplierID.toString(), // ensure it's string for <option>
-    //                             label: dt.supplierName,
-    //                         }
-    //                     ])
-    //                 ).values()
-    //             );
-    //             alert("drpData"+drpData)
-    //             setSelectedSelected(drpData);
-    //         } else {
-    //             alert("in else")
-    //             setSelectedSelected([]);
-    //         }
-    //     });
-    // };
-
     const getStateSuppMappedList = () => {
 
         fetchData(`http://10.226.26.247:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=${suppId || 0}&stateID=${stateId || 0}`)
@@ -110,19 +84,6 @@ const SupplierMappingMaster = () => {
             });
     };
 
-
-
-
-    // const moveToSelected = () => {
-    //     const itemsToMove = availableOptions.filter(opt => selectedAvailable.includes(opt.value));
-    //     const newSelected = itemsToMove.filter(item =>
-    //         !selectedOptions.some(selected => selected.value === item.value)
-    //     );
-    //     setSelectedOptions(prev => [...prev, ...newSelected]);
-    //     setAvailableOptions(prev => prev.filter(opt => !selectedAvailable.includes(opt.value)));
-    //     setSelectedAvailable([]);
-    // };
-
     const moveToSelected = () => {
         const itemsToMove = availableOptions.filter(opt => selectedAvailable.includes(opt.value));
 
@@ -140,14 +101,6 @@ const SupplierMappingMaster = () => {
         setAvailableOptions(prev => prev.filter(opt => !selectedAvailable.includes(opt.value)));
         setSelectedAvailable([]);
     };
-
-
-    // const moveToAvailable = () => {
-    //     const itemsToMove = selectedOptions.filter(opt => selectedSelected.includes(opt.value));
-    //     setAvailableOptions(prev => [...prev, ...itemsToMove]);
-    //     setSelectedOptions(prev => prev.filter(opt => !selectedSelected.includes(opt.value)));
-    //     setSelectedSelected([]);
-    // };
 
     const moveToAvailable = () => {
         const itemsToMove = selectedOptions.filter(opt => selectedSelected.includes(opt.value));
@@ -208,7 +161,7 @@ const SupplierMappingMaster = () => {
             const mappedData = addedToRight?.map(dt => ({
                 "stateID": stateId,
                 "stateSupplierID": dt?.value,
-                "seatID": 3424,
+                "seatID": getAuthUserData('userSeatId'),
                 "supplierID": suppId,
                 "supplierName": dt?.label,
 
@@ -225,8 +178,6 @@ const SupplierMappingMaster = () => {
                 "supplierUnmappingMasterDTO": unMappedData?.length > 0 ? unMappedData : [],
 
             }
-
-            console.log(mappedData, 'bbbbbbbbbbbbbbbbbbbb')
 
             if (selectedOptions.length > 0) {
 

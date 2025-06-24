@@ -154,23 +154,23 @@ const StateConfigCwh = () => {
             }
         }
 
-        if(values?.isDbCredAvl == 1){
-            if(!values?.dbDrivClass){
-                setErrors(prev=>({...prev,dbDrivClassErr:"Database driver class is required"}))
-                isValid=false;
+        if (values?.isDbCredAvl == 1) {
+            if (!values?.dbDrivClass) {
+                setErrors(prev => ({ ...prev, dbDrivClassErr: "Database driver class is required" }))
+                isValid = false;
             }
-            if(!values?.dbUrl){
-                setErrors(prev=>({...prev,dbUrlErr:"Database url is required"}))
-                isValid=false;
+            if (!values?.dbUrl) {
+                setErrors(prev => ({ ...prev, dbUrlErr: "Database url is required" }))
+                isValid = false;
             }
-            if(!values?.dbUserName){
-                setErrors(prev=>({...prev,dbUserNameErr:"Database user name is required"}))
-                isValid=false;
+            if (!values?.dbUserName) {
+                setErrors(prev => ({ ...prev, dbUserNameErr: "Database user name is required" }))
+                isValid = false;
             }
 
-            if(!values?.dbPass){
-                setErrors(prev=>({...prev,dbPassErr:"Database password is required"}))
-                isValid=false;
+            if (!values?.dbPass) {
+                setErrors(prev => ({ ...prev, dbPassErr: "Database password is required" }))
+                isValid = false;
             }
         }
 
