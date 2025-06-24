@@ -428,6 +428,28 @@ label {
   background-color: var(--cta-buttons);
 }
 
+.back-button-kpi {
+  background-color: rgba(136, 2, 2, 0.92);
+  color: rgb(255, 255, 255);
+  padding: 1px 8px;
+  border-radius: 60% 10% 10% 60%;
+  border: 1px solid transparent;
+  transition: 
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.back-button-kpi:hover {
+  background-color: rgb(112 3 3 / 92%);
+  color: rgb(255, 255, 255);
+  /* padding: 2px 8px; */
+  border-radius: 60% 10% 10% 60%;
+  border-color: #084d90;
+  transform: scale(1.05);
+}
+
 .global-tab-group .nav-tab-btn:hover {
   padding: 2px 5px;
   border: 1px solid var(--bright-yellow);
@@ -630,12 +652,24 @@ label {
   position: relative;
 }
 
+.small-box-kpi-circle {
+  transition: all 0.3scubic-bezier(0.25, 0.8, 0.25, 1) 0s;
+  border-radius: 50%;
+  /* box-shadow: 0 10px 10px rgba(0, 0, 0, 0.12), 0 10px 10px rgba(0, 0, 0, 0.24); */
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.12), 0 5px 2px rgba(0, 0, 0, 0.24);
+  border: 0px solid;
+  position: relative;
+  flex-direction: column;
+  width: fit-content;
+}
+
 .small-box-kpi:hover {
   /* background-color: #00b7b7 !important; */
   text-decoration: none;
 }
 
-.small-box-kpi:hover .small-box-icon {
+.small-box-kpi:hover .small-box-icon,
+.small-box-kpi-circle:hover .small-box-icon {
   font-size: 90px;
   /* bottom: auto; */
 }
@@ -656,7 +690,7 @@ label {
   color: #fff !important;
   background-color: #001f3f !important;
   margin-top: 5px;
-  margin-right: 10px;
+  margin-right: 5px;
   float: right;
   position: relative;
   z-index: 2;
@@ -679,7 +713,12 @@ label {
   padding: 10px;
   text-shadow: 1px 1px #000000;
   letter-spacing: 1px;
-  color: #ffffff;
+  /* color: #ffffff; */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0s;
+  border-radius: 20px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.12), 0 10px 10px rgba(0, 0, 0, 0.24);
+  border: 0px solid;
+  /* height: 150px; */
 }
 
 @media (max-width: 768px) {
@@ -691,12 +730,18 @@ label {
 
 .small-box-kpi-link-dtl {
   border-radius: 20px;
+  width: 95%;
   font-weight: bold;
+  position: absolute;
+  bottom: 2px;
   text-align: center;
   padding: 3px 0;
   color: rgba(255, 255, 255, 0.8);
+  display: block;
   background: rgba(0, 0, 0, 0.1);
+  text-decoration: none;
   cursor: pointer;
+  font-size: 90%;
 }
 
 .small-box-kpi-link-dtl:hover {
@@ -743,7 +788,7 @@ label {
 }
 
 .help-docs {
-  display: flex;
+  /* display: flex; */
   justify-content: flex-end;
   align-items: center;
   width: 100%;
@@ -807,12 +852,113 @@ label {
   background: #f4f6fb;
 }
 
-/* @keyframes slide-up {
-  0% {
-    transform: translateY(0);
-  }
+.dropdown-item {
+  touch-action: manipulation;
+  padding: 0.5rem 1rem;
+  /* cursor: pointer; */
+}
 
-  100% {
-    transform: translateY(calc(-100% + 40px));
-  }
-} */
+.fieldSet {
+  margin: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.legend {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  font-weight: bold;
+  background-color: #ffffff;
+}
+
+/* Add to your styles */
+.linked-widget {
+  border-left: 1px solid #eee;
+  margin-left: 10px;
+}
+
+.child-widget {
+  margin-top: 15px;
+  border-top: 1px dashed #ddd;
+  padding-top: 10px;
+}
+
+/* Flex layout for parallel widgets */
+.parallel-widget-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+/* Parent widget styling */
+.parent-widget {
+  position: relative;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 5px;
+}
+
+/* KPI PREVIEW */
+
+.kpi-preview-kpi-box {
+  display: flex;
+  padding: 1.5rem;
+  margin: 2px;
+  transition: background-color 0.3s ease;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpi-preview-kpi-icon {
+  font-size: 50px;
+  margin: 0 10px;
+  justify-content: flex-end;
+  /* padding: 0% 0% 5% 40%; */
+}
+
+.kpi-preview-kpi-text {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.kpi-preview-full-icon .kpi-preview-kpi-icon {
+  margin-left: 10px;
+}
+
+.kpi-preview-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50% !important;
+  flex-direction: column;
+}
+
+.sweet {
+  margin: 0;
+  padding: 0;
+}
+
+.kpi-details-box p,
+.kpi-details-box h1,
+.kpi-details-box h2,
+.kpi-details-box h3,
+.kpi-details-box h4,
+.kpi-details-box h5,
+.kpi-details-box h6 {
+  margin: 0;
+  padding: 0;
+}
+
+.rdt_TableCol .rdt_TableCol_Sortable div {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  word-break: break-word;
+}

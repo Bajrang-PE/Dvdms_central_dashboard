@@ -18,7 +18,20 @@ const HISContextData = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [singleConfigData, setSingleConfigData] = useState();
 
-  const [paramsValues, setParamsValues] = useState();
+  const [prevKpiTab,setPrevKpiTab] = useState([]);
+
+  const [paramsValues, setParamsValues] = useState({
+    tabParams: {},
+    widgetParams: {},
+  });
+  const [paramsValuesPro, setParamsValuesPro] = useState({
+    tabParams: {},
+    widgetParams: {},
+  });
+  const [isSearchQuery, setIsSearchQuery] = useState(false);
+
+  const [presentWidgets, setPresentWidgets] = useState([]);
+
 
   // ALL DATA
   const [parameterData, setParameterData] = useState([]);
@@ -199,9 +212,11 @@ const HISContextData = ({ children }) => {
       theme, setTheme,
       mainDashData, setMainDashData,
       singleConfigData, getDashConfigData, jndiServerDrpData,
-      clearAllCache,
+      clearAllCache,prevKpiTab,setPrevKpiTab,
 
       paramsValues, setParamsValues,
+      paramsValuesPro, setParamsValuesPro,
+      isSearchQuery, setIsSearchQuery,
 
       // DROP DOWNS-------------------------------
       // DASHBOARD FOR
@@ -227,6 +242,8 @@ const HISContextData = ({ children }) => {
       getAllDashboardData, dashboardData,
       //dashboard submenu
       dashboardSubmenuData, getDashboardSubmenuData,
+
+      presentWidgets, setPresentWidgets
     }}>
       {children}
     </HISContext.Provider>

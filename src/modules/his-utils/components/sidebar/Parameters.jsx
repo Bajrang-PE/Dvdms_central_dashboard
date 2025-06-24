@@ -1,81 +1,131 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { HISContext } from "../../contextApi/HISContext";
 import InputField from "../commons/InputField";
 import Select from "react-select";
-import { convertToISODate } from "../../utils/commonFunction";
+import { convertToISODate, formatDate1, formatParams } from "../../utils/commonFunction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEyeSlash, faReply, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useSearchParams } from "react-router-dom";
 import { fetchPostData } from "../../../../utils/HisApiHooks";
 
-const Parameters = ({ params, setParamsValues }) => {
-    const { parameterData, getAllParameterData, theme, singleConfigData } = useContext(HISContext);
+const Parameters = ({ params, scope, widgetId = null }) => {
+    const { parameterData, getAllParameterData, theme, setParamsValues, paramsValuesPro, setParamsValuesPro, setIsSearchQuery, activeTab, isSearchQuery } = useContext(HISContext);
     const [presentParams, setPresentParams] = useState([]);
     const [selectedValues, setSelectedValues] = useState({});
     const [dropdownData, setDropdownData] = useState({});
     const [hideParams, setHideParams] = useState(false)
+    const [defaultValueIfEmpty, setDefaultValueIfEmpty] = useState('');
     const [queryParams] = useSearchParams();
-
-    const [proParamsVal, setProParamsVal] = useState({});
 
     const dashFor = queryParams.get('dashboardFor');
     const [errors, setErrors] = useState({
-
     })
+
+    const handleSetParamsValues = useCallback((values, type, widgetId = null) => {
+        if (type === 'tabParams') {
+            setParamsValues((prev) => ({
+                ...prev,
+                tabParams: {
+                    ...prev?.tabParams,
+                    ...values,
+                },
+            }));
+        } else if (type === 'widgetParams' && widgetId) {
+            setParamsValues((prev) => ({
+                ...prev,
+                widgetParams: {
+                    ...prev.widgetParams,
+                    [widgetId]: {
+                        ...(prev.widgetParams?.[widgetId] || {}),
+                        ...values,
+                    },
+                },
+            }));
+        }
+    }, []);
+
+    const handleSetProParamsValues = useCallback((values, type, widgetId = null) => {
+        if (type === 'tabParams') {
+            setParamsValuesPro((prev) => ({
+                ...prev,
+                tabParams: {
+                    ...prev?.tabParams,
+                    ...values,
+                },
+            }));
+        } else if (type === 'widgetParams' && widgetId) {
+            setParamsValuesPro((prev) => ({
+                ...prev,
+                widgetParams: {
+                    ...prev.widgetParams,
+                    [widgetId]: {
+                        ...(prev.widgetParams?.[widgetId] || {}),
+                        ...values,
+                    },
+                },
+            }));
+        }
+    }, []);
+
 
     useEffect(() => {
         if (dashFor && parameterData?.length === 0) {
             getAllParameterData(dashFor);
-
         }
     }, [dashFor]);
 
-    // Function to get default selected values
-    // const getDefaultValues = (parameterName, lstOption) => {
-    //     setSelectedValues((prev) => ({
-    //         ...prev,
-    //         [parameterName]: lstOption?.filter(option => option.optionValue.includes("#DEFAULT")),
-    //     }));
-    //     return lstOption?.filter(option => option.optionValue.includes("#DEFAULT"));
-    // };
-
-    // Function to handle multi-select change
     const handleMultiSelectChange = (parameterName, selectedOptions, id) => {
         setSelectedValues((prev) => ({
             ...prev,
             [parameterName]: selectedOptions,
         }));
-        setProParamsVal((prev) => ({
-            ...prev,
-            [id]: selectedOptions,
-        }));
-        setErrors(prev => ({ ...prev, [id]: "" }))
+
+        const sortedString = selectedOptions
+            ?.map(opt => opt.optionValue)
+            .sort((a, b) => {
+                const numA = Number(a);
+                const numB = Number(b);
+
+                const isNumA = !isNaN(numA);
+                const isNumB = !isNaN(numB);
+
+                if (isNumA && isNumB) return numA - numB;
+                return String(a).localeCompare(String(b));
+            })
+            .join('~');
+
+        handleSetProParamsValues({ [id]: sortedString || '' }, scope, widgetId);
+        setErrors(prev => ({ ...prev, [id]: "" }));
     };
 
-
-    const handleInputChange = (parameterName, value, id) => {
-        setSelectedValues((prev) => ({
-            ...prev,
-            [parameterName]: value,
-        }));
-
-        setProParamsVal((prev) => ({
-            ...prev,
-            [id]: value,
-        }));
-
+    const handleInputChange = (parameterName, e, id) => {
+        const { value, type } = e.target;
+        if (type === 'checkbox') {
+            setSelectedValues((prev) => ({
+                ...prev,
+                [parameterName]: e.target.checked,
+            }));
+        } else {
+            setSelectedValues((prev) => ({
+                ...prev,
+                [parameterName]: value || defaultValueIfEmpty,
+            }));
+        }
+        handleSetProParamsValues({ [id]: type == 'date' ? formatDate1(value) : type == 'checkbox' ? e.target.checked : value || defaultValueIfEmpty }, scope, widgetId);
         setErrors(prev => ({ ...prev, [id]: "" }))
     };
 
     useEffect(() => {
         if (parameterData?.length > 0 && params) {
-            setProParamsVal({})
+            setParamsValuesPro({
+                tabParams: {},
+                widgetParams: {},
+            })
             const dashboardIdsArray = params.split(",")?.map(Number);
             const matchedParams = dashboardIdsArray?.map((id) => parameterData?.find((p) => p.id === id)).filter(Boolean);
             setPresentParams(matchedParams);
-
         }
-    }, [parameterData, params]);
+    }, [parameterData, activeTab]);
 
     const getDateConstraint = (fieldId) => {
         if (!fieldId) return "";
@@ -86,12 +136,36 @@ const Parameters = ({ params, setParamsValues }) => {
         return "";
     };
 
+
     const fetchDropdownData = async (query, parameterName, jndiS) => {
         if (!query) return;
         try {
             const val = { query, params: {}, jndi: jndiS };
-            const data = await fetchPostData('/hisutils/GenericApiQry', val);
-            setDropdownData((prev) => ({ ...prev, [parameterName]: data?.data || [] }));
+            const response = await fetchPostData('/hisutils/GenericApiQry', val);
+            const rawData = response?.data || [];
+
+            const formattedData = rawData.map(item => {
+                const keys = Object.keys(item);
+                const valueKey = keys[0];
+                const labelKey = keys[1] || keys[0];
+                return {
+                    optionValue: item[valueKey],
+                    optionText: item[labelKey],
+                };
+            });
+
+            // if (isDate) {
+            //     setSelectedValues((prev) => ({
+            //         ...prev,
+            //         [parameterName]: isDate ? formattedData[0]?.optionValue : '',
+            //     }));
+
+            // }
+
+            setDropdownData(prev => ({
+                ...prev,
+                [parameterName]: formattedData,
+            }));
         } catch (error) {
             console.error("Error fetching query data:", error);
         }
@@ -101,7 +175,7 @@ const Parameters = ({ params, setParamsValues }) => {
     useEffect(() => {
         presentParams.forEach((param) => {
             const query = param?.jsonData?.parameterQuery;
-            if (query && param?.jsonData?.modeForQuery === "query") {
+            if (query) {
                 fetchDropdownData(query, param.jsonData.parameterName, param?.jndiIdForGettingData);
             }
         });
@@ -111,8 +185,10 @@ const Parameters = ({ params, setParamsValues }) => {
     const resetParams = () => {
         setSelectedValues({});
     }
+
     const searchParams = () => {
         let isValid = true;
+
         presentParams?.forEach((param) => {
             const isReq = param?.jsonData?.isMandatory;
             const id = param?.jsonData?.parameterId;
@@ -120,47 +196,158 @@ const Parameters = ({ params, setParamsValues }) => {
             const maxLength = param?.jsonData?.textboxMaxlength;
             const minLength = param?.jsonData?.textboxMinlength;
             const validation = param?.jsonData?.textBoxValidation;
-            if (isReq === 'Yes' && !proParamsVal[id]) {
-                setErrors(prev => ({ ...prev, [id]: "required" }))
+
+            const scopedParams = paramsValuesPro?.[scope] || {};
+            let value
+
+            if (scope === 'tabParams') {
+                value = scopedParams?.[id];
+            } else if (scope === 'widgetParams') {
+                value = scopedParams?.[widgetId]?.[id];
+            }
+
+            if (isReq === 'Yes' && (value === undefined || value === '')) {
+                setErrors(prev => ({ ...prev, [id]: "required" }));
                 isValid = false;
             }
 
-            if (parameterType === "2" && (
-                proParamsVal[id]?.length < minLength ||
-                proParamsVal[id]?.length > maxLength
+            if (isReq === 'Yes' && parameterType === "2" && (
+                value?.length < minLength || value?.length > maxLength
             )) {
-                setErrors(prev => ({ ...prev, [id]: `required ${minLength} to ${maxLength} charecters` }))
+                setErrors(prev => ({ ...prev, [id]: `required ${minLength} to ${maxLength} characters` }));
                 isValid = false;
-                alert('bg')
             }
-        })
+        });
+
         if (isValid) {
-            setParamsValues(proParamsVal)
+            setParamsValues(paramsValuesPro, scope, widgetId);
+            setIsSearchQuery(true)
         }
-    }
+    };
 
     useEffect(() => {
-        if (presentParams.length > 0) {
-            const initialSelectedValues = {};
-            const defOpt = {};
+        const initializeParams = async () => {
+            if (presentParams.length > 0) {
+                const initialSelectedValues = {};
+                const defOpt = {};
+                for (const param of presentParams) {
+                    const {
+                        parameterName,
+                        defaultValueIfEmpty,
+                        defaultOption,
+                        isMultipleSelectionRequired,
+                        parameterType,
+                        parameterQueryForDate,
+                        jndiIdForGettingData
+                    } = param?.jsonData || {};
 
-            presentParams.forEach((param) => {
-                const { parameterName, lstOption, defaultOption } = param?.jsonData || {};
-                const defaultOptions = lstOption?.filter(option => option.optionValue.includes("#DEFAULT"));
-                if (defaultOptions?.length > 0) {
-                    initialSelectedValues[parameterName] = defaultOptions;
+                    const defaultValStr = defaultOption?.optionValue || "";
+                    const defaultTextStr = defaultOption?.optionText || "";
+                    setDefaultValueIfEmpty(defaultValueIfEmpty);
+
+                    const isMulti = isMultipleSelectionRequired === "Yes";
+                    const values = defaultValStr?.includes("##") ? defaultValStr.split("##") : [defaultValStr];
+                    const texts = defaultTextStr?.includes("##") ? defaultTextStr.split("##") : [defaultTextStr];
+
+                    if (parameterType === '4' && parameterQueryForDate) {
+                        const val = { query: parameterQueryForDate, params: {}, jndi: jndiIdForGettingData };
+                        try {
+                            const response = await fetchPostData('/hisutils/GenericApiQry', val);
+                            const rawData = response?.data || [];
+
+                            const formattedData = rawData.map(item => {
+                                const keys = Object.keys(item);
+                                const valueKey = keys[0];
+                                const labelKey = keys[1] || keys[0];
+                                return {
+                                    optionValue: convertToISODate(item[valueKey]),
+                                    optionText: convertToISODate(item[labelKey])
+                                };
+                            });
+
+                            initialSelectedValues[parameterName] = formattedData[0]?.optionValue || '';
+                            defOpt[param?.id] = formatDate1(formattedData[0]?.optionValue) || '';
+                            continue;
+                        } catch (err) {
+                            console.error(`Error fetching date values for param ${parameterName}`, err);
+                        }
+                    }
+
+                    if (isMulti) {
+                        const matchedOptions = values.map((val, idx) => ({
+                            optionValue: val,
+                            optionText: texts[idx] || val,
+                        }));
+                        initialSelectedValues[parameterName] = matchedOptions;
+                        defOpt[param?.id] = values.join("~");
+                    } else {
+                        initialSelectedValues[parameterName] = values[0] || '';
+                        defOpt[param?.id] = values[0] || defaultValueIfEmpty;
+                    }
                 }
-                defOpt[param?.id] = defaultOption?.optionValue
-            });
 
-            setParamsValues(defOpt)
-            setSelectedValues(initialSelectedValues);
-        }
-    }, [presentParams]);
+                handleSetProParamsValues(defOpt, scope, widgetId);
+                handleSetParamsValues(defOpt, scope, widgetId);
+                setSelectedValues(initialSelectedValues);
+            }
+        };
 
-    console.log(presentParams, 'params')
-    console.log(proParamsVal, 'proParamsVal')
-    console.log(dropdownData, 'errors')
+        initializeParams();
+    }, [presentParams, widgetId]);
+
+
+    // useEffect(() => {
+    //     if (presentParams.length > 0) {
+    //         const initialSelectedValues = {};
+    //         const defOpt = {};
+    //         presentParams.forEach((param) => {
+    //             const { parameterName, defaultValueIfEmpty, defaultOption, isMultipleSelectionRequired, parameterType, parameterQueryForDate } = param?.jsonData || {};
+    //             const defaultValStr = defaultOption?.optionValue || "";
+    //             const defaultTextStr = defaultOption?.optionText || "";
+    //             setDefaultValueIfEmpty(defaultValueIfEmpty)
+
+    //             const isMulti = isMultipleSelectionRequired === "Yes";
+    //             const values = defaultValStr?.includes("##") ? defaultValStr?.split("##") : [defaultValStr];
+    //             const texts = defaultTextStr?.includes("##") ? defaultTextStr?.split("##") : [defaultTextStr];
+
+    //             if (parameterType == '4' && parameterQueryForDate) {
+    //                 const val = { query, params: {}, jndi: jndiS };
+    //                 const response = await fetchPostData('/hisutils/GenericApiQry', val);
+    //                 const rawData = response?.data || [];
+
+    //                 const formattedData = rawData.map(item => {
+    //                     const keys = Object.keys(item);
+    //                     const valueKey = keys[0];
+    //                     const labelKey = keys[1] || keys[0];
+    //                     return {
+    //                         optionValue: convertToISODate(item[valueKey]),
+    //                         optionText: convertToISODate(item[labelKey]),
+    //                     };
+    //                 });
+
+    //                 initialSelectedValues[parameterName] = formattedData[0]?.optionValue || '';
+    //                 defOpt[param?.id] = formattedData[0]?.optionValue || '';
+    //             }
+
+    //             if (isMulti) {
+    //                 const matchedOptions = values.map((val, idx) => ({
+    //                     optionValue: val,
+    //                     optionText: texts[idx] || val,
+    //                 }));
+    //                 initialSelectedValues[parameterName] = matchedOptions;
+    //                 defOpt[param?.id] = values.join("~");
+    //             } else {
+    //                 initialSelectedValues[parameterName] = values[0] || '';
+    //                 defOpt[param?.id] = values[0] || defaultValueIfEmpty;
+    //             }
+
+    //         });
+    //         handleSetProParamsValues(defOpt, scope, widgetId);
+    //         handleSetParamsValues(defOpt, scope, widgetId);
+    //         setSelectedValues(initialSelectedValues);
+    //     }
+    // }, [presentParams]);
+
 
     const renderInputField = (param) => {
         const {
@@ -169,7 +356,7 @@ const Parameters = ({ params, setParamsValues }) => {
             parameterLabelWidth, labelAlignment,
             parameterControlWidth, controlAlignment, isMultipleSelectionRequired, defaultValueIfEmpty, parameterId, shouldBeLessThanField, shouldBeGreaterThanField, placeHolder, textBoxValidation
         } = param?.jsonData || {};
-        const options = dropdownData[parameterName] || lstOption || [];
+        const options = dropdownData[parameterName] || [];
 
         return (
             <div
@@ -189,7 +376,11 @@ const Parameters = ({ params, setParamsValues }) => {
                             <Select
                                 id={parameterId}
                                 name={parameterName}
-                                options={options?.map(dt => ({ optionValue: dt?.column_1, optionText: dt?.column_2 }))}
+                                options={
+                                    options?.length > 0 ?
+                                        options
+                                        : lstOption
+                                }
                                 isMulti
                                 placeholder={placeHolder}
                                 className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} react-select-multi`}
@@ -197,6 +388,7 @@ const Parameters = ({ params, setParamsValues }) => {
                                 getOptionValue={(e) => e.optionValue}
                                 value={selectedValues[parameterName] || []}
                                 onChange={(selectedOptions) => handleMultiSelectChange(parameterName, selectedOptions, parameterId)}
+                                isDisabled={hideParams}
                             />
                             {errors[parameterId] &&
                                 <div className="required-input">
@@ -208,24 +400,37 @@ const Parameters = ({ params, setParamsValues }) => {
 
                     {(parameterType === "1" && isMultipleSelectionRequired !== 'Yes') &&
                         <>
-                            <select
-                                id={parameterId}
-                                name={parameterName}
-                                className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-select form-select-sm`}
-                                value={selectedValues[parameterName] || defaultValueIfEmpty}
-                                onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
-                            >
-                                {placeHolder &&
-                                    <option value=''>{placeHolder}</option>}
-                                {defaultOption?.optionText !== '' &&
-                                    <option value={defaultOption?.optionValue ? defaultOption?.optionValue : ''}>{defaultOption?.optionText ? defaultOption?.optionText : 'Select Value'}</option>
-                                }
-                                {options?.length > 0 && options.map((option, index) => (
-                                    <option key={index} value={option.column_1}>
-                                        {option.column_2}
-                                    </option>
-                                ))}
-                            </select>
+                            {!hideParams ?
+                                <select
+                                    id={parameterId}
+                                    name={parameterName}
+                                    className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-select form-select-sm`}
+                                    value={selectedValues[parameterName] || defaultValueIfEmpty}
+                                    onChange={(e) => handleInputChange(parameterName, e, parameterId)}
+                                >
+                                    {/* {placeHolder ?
+                                        <option value=''>{placeHolder}</option> : */}
+                                        <option value=''>{'Select value'}</option>
+
+                                    {/* } */}
+                                    {defaultOption?.optionText !== '' &&
+                                        <option value={defaultOption?.optionValue ? defaultOption?.optionValue : ''}>{defaultOption?.optionText}</option>
+                                    }
+                                    {options?.length > 0 && options.map((option, index) => (
+                                        <option key={index} value={option.optionValue}>
+                                            {option.optionText}
+                                        </option>
+                                    ))}
+                                </select>
+                                :
+
+                                <span>
+                                    {
+                                        defaultOption?.optionValue == selectedValues[parameterName] || defaultValueIfEmpty ? defaultOption?.optionText :
+                                            options?.filter((dt => dt?.optionValue == selectedValues[parameterName] || defaultValueIfEmpty))[0]?.optionText
+                                    }
+                                </span>
+                            }
                             {errors[parameterId] &&
                                 <div className="required-input">
                                     {errors[parameterId]}
@@ -236,16 +441,24 @@ const Parameters = ({ params, setParamsValues }) => {
 
                     {parameterType === "2" && (
                         <>
-                            <InputField
-                                type="text"
-                                className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'}`}
-                                placeholder={placeHolder}
-                                name={parameterName}
-                                id={parameterId}
-                                value={selectedValues[parameterName] || defaultValueIfEmpty}
-                                onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
-                                acceptType={textBoxValidation === '2' ? 'number' : textBoxValidation === '4' ? 'letters' : ''}
-                            />
+                            {!hideParams ?
+                                <InputField
+                                    type="text"
+                                    className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'}`}
+                                    placeholder={placeHolder}
+                                    name={parameterName}
+                                    id={parameterId}
+                                    value={selectedValues[parameterName] || defaultValueIfEmpty}
+                                    onChange={(e) => handleInputChange(parameterName, e, parameterId)}
+                                    acceptType={textBoxValidation === '2' ? 'number' : textBoxValidation === '4' ? 'letters' : ''}
+                                />
+                                :
+
+                                <span>
+                                    {
+                                        selectedValues[parameterName] || defaultValueIfEmpty
+                                    }
+                                </span>}
                             {errors[parameterId] &&
                                 <div className="required-input">
                                     {errors[parameterId]}
@@ -256,19 +469,25 @@ const Parameters = ({ params, setParamsValues }) => {
 
                     {parameterType === "4" && (
                         <>
-                            <input
-                                type="date"
-                                placeholder={placeHolder}
-                                className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-control form-control-sm`}
-                                name={parameterName}
-                                id={parameterId}
-                                defaultValue={convertToISODate(defaultValueIfEmpty)}
-                                min={getDateConstraint(shouldBeGreaterThanField)}
-                                max={getDateConstraint(shouldBeLessThanField)}
-                                value={selectedValues[parameterName]}
-                                onChange={(e) => handleInputChange(parameterName, e.target.value, parameterId)}
-                            // onChange={}
-                            />
+                            {!hideParams ?
+                                <input
+                                    type="date"
+                                    placeholder={placeHolder}
+                                    className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-control form-control-sm`}
+                                    name={parameterName}
+                                    id={parameterId}
+                                    defaultValue={convertToISODate(defaultValueIfEmpty)}
+                                    min={getDateConstraint(shouldBeGreaterThanField)}
+                                    max={getDateConstraint(shouldBeLessThanField)}
+                                    value={selectedValues[parameterName]}
+                                    onChange={(e) => handleInputChange(parameterName, e, parameterId)}
+                                />
+                                :
+                                <span>
+                                    {
+                                        selectedValues[parameterName] || defaultValueIfEmpty
+                                    }
+                                </span>}
                             {errors[parameterId] &&
                                 <div className="required-input">
                                     {errors[parameterId]}
@@ -287,7 +506,7 @@ const Parameters = ({ params, setParamsValues }) => {
                                     name={parameterName}
                                     className="form-check-input"
                                     checked={selectedValues[parameterName] || false}
-                                    onChange={(e) => handleInputChange(parameterName, e.target.checked, parameterId)}
+                                    onChange={(e) => handleInputChange(parameterName, e, parameterId)}
                                 />
                                 <label className="form-check-label" htmlFor={parameterName}>
                                     {defaultOption.optionText}
@@ -311,7 +530,7 @@ const Parameters = ({ params, setParamsValues }) => {
                                 value={defaultOption.optionValue}
                                 className="form-check-input"
                                 checked={selectedValues[parameterName] === defaultOption?.optionValue}
-                                onChange={(e) => handleInputChange(parameterName, e.target.value)}
+                                onChange={(e) => handleInputChange(parameterName, e, parameterId)}
                             />
                             {errors[parameterId] &&
                                 <div className="required-input">
@@ -339,13 +558,13 @@ const Parameters = ({ params, setParamsValues }) => {
                     <FontAwesomeIcon icon={faEyeSlash} size="xs" className="dropdown-gear-icon" />
                 </button>
             </div>
-            {!hideParams &&
-                <div className="row">
-                    {presentParams?.length > 0 && presentParams?.map((param, index) =>
-                        renderInputField(param))
-                    }
-                </div>
-            }
+            {/* {!hideParams && */}
+            <div className="row">
+                {presentParams?.length > 0 && presentParams?.map((param, index) =>
+                    renderInputField(param))
+                }
+            </div>
+            {/* } */}
         </div>
     );
 };

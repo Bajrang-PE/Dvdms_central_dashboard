@@ -30,7 +30,6 @@ const DistrictMaster = () => {
         if (name === "stateId") {
             const selectedOption = stateNameDrpDt.find(opt => opt.value.toString() === value.toString());
             const selectedStateLabel = selectedOption?.label || "";
-            console.log("Selected Option: ", selectedOption);
             setSelectedStateName(selectedStateLabel);
         }
 
@@ -76,19 +75,19 @@ const DistrictMaster = () => {
     const getListData = async (recStatus, state) => {
         try {
             const response = await axios.get(`http://10.226.17.6:8025/api/v1/districts/all?isActive=${recStatus}&stateId=${state ? state : 0}`);
-           
+
             if (response.data && response.data.status === 1 && Array.isArray(response.data.data)) {
                 setListData(response.data.data);
             } else {
-                setListData([]); 
+                setListData([]);
             }
         } catch (error) {
-            setListData([]); 
+            setListData([]);
         }
     };
 
 
-    
+
     const handleDeleteRecord = () => {
         if (selectedOption?.length > 0) {
             setOpenPage('delete');
@@ -126,7 +125,7 @@ const DistrictMaster = () => {
         {
             name: (
                 <input
-                    type="checkbox"    
+                    type="checkbox"
                     checked={selectAll}
                     onChange={(e) => handleSelectAll(e.target.checked)}
                     disabled={listData.length === 0}
@@ -220,33 +219,32 @@ const DistrictMaster = () => {
                     </div>
 
                     {openPage === 'view' &&
-                    <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
-                        <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
-                            <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
-                        </Modal.Header>
-                        <Modal.Body className='px-2 py-1'>
+                        <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
+                            <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
+                                <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
+                            </Modal.Header>
+                            <Modal.Body className='px-2 py-1'>
 
-                            <div className='text-center'>
-                                <label><b>State Name : </b></label>&nbsp;{selectedStateName}<br/>    
-                                <label><b>District Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrDistName}
-                            </div>
+                                <div className='text-center'>
+                                    <label><b>State Name : </b></label>&nbsp;{selectedStateName}<br />
+                                    <label><b>District Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrDistName}
+                                </div>
 
-                            <div className='text-center mt-1'>
+                                <div className='text-center mt-1'>
 
-                                <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
-                                    <i className="fa fa-broom me-1"></i> Close
-                                </button>
-                            </div>
+                                    <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
+                                        <i className="fa fa-broom me-1"></i> Close
+                                    </button>
+                                </div>
 
-                        </Modal.Body>
-                    </Modal>
-                }
+                            </Modal.Body>
+                        </Modal>
+                    }
 
                 </>}
 
-
             {(openPage === "add" || openPage === 'modify') &&
-                <DistrictMasterForm setValues={setValues} values={values}/>
+                <DistrictMasterForm setValues={setValues} values={values} />
             }
 
         </div>

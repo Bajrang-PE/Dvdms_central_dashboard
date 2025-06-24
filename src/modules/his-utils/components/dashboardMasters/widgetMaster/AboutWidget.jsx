@@ -13,7 +13,7 @@ const AboutWidget = (props) => {
 
 
     const handleInputChange = (field, e) => {
-        const selectedOption = widgetDrpData.find(option => option.value === e.target.value);
+        const selectedOption = widgetDrpData.find(option => option.value == e.target.value);
         const selectedLabel = selectedOption ? selectedOption.label : "";
         if (e.target.name === 'SQCHILDWidgetId') {
             setNewRow({ ...newRow, [field]: e.target.value, ['drillSQCHILDWidgetName']: selectedLabel })
@@ -94,6 +94,8 @@ const AboutWidget = (props) => {
         setRows(updatedRows);
         setValues({ ...values, ['sqChildJsonString']: updatedRows })
     };
+
+    console.log(rows)
 
     return (
         <>

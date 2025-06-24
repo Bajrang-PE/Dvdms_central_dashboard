@@ -16,8 +16,8 @@ const FacilityTypeMasterForm = () => {
 
     const saveFacilityTypeData = () => {
         const val = {
-            "seatId": getAuthUserData('userSeatId'),
-            "facilityTypeName": facilityName,
+            "gnumSeatId": getAuthUserData('userSeatId'),
+            "cwhstrFacilityTypeName": facilityName,
             "status": "Active"
         }
         fetchPostData(`api/v1/Facility/create`, val).then(data => {
@@ -36,15 +36,15 @@ const FacilityTypeMasterForm = () => {
 
     const updateFacilityTypeData = () => {
         const val = {
-            "seatId": getAuthUserData('userSeatId'),
-            "facilityTypeName": facilityName,
+            "gnumSeatId": getAuthUserData('userSeatId'),
+            "cwhstrFacilityTypeName": facilityName,
             "status": recordStatus,
-            "facilityTypeId": selectedOption[0]?.facilityTypeId,
-            "facilityTypeShortName": "",
-            "ninFacilityTypeId": 0,
-            "order": 0,
+            "cwhnumFacilityTypeId": selectedOption[0]?.cwhnumFacilityTypeId,
+            "cwhstrFacilityTypeShortName": "",
+            "cwhnumNinFacilityTypeId": 0,
+            "cwhnumOrder": 0,
         }
-        fetchUpdateData(`api/v1/Facility/${selectedOption[0]?.facilityTypeId}`, val).then(data => {
+        fetchUpdateData(`api/v1/Facility/${selectedOption[0]?.cwhnumFacilityTypeId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record Updated Successfully', 'success');
                 getFacilityTypeListData();
@@ -83,7 +83,7 @@ const FacilityTypeMasterForm = () => {
 
     useEffect(() => {
         if (selectedOption?.length > 0) {
-            setFacilityName(selectedOption[0]?.facilityTypeName)
+            setFacilityName(selectedOption[0]?.cwhstrFacilityTypeName)
             setRecordStatus(selectedOption[0]?.status)
         }
     }, [selectedOption])

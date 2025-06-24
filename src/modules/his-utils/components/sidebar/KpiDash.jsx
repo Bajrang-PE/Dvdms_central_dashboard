@@ -4,12 +4,14 @@ import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import React, { useContext, useEffect, useState } from 'react'
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import { HISContext } from '../../contextApi/HISContext';
-import { fetchProcedureData, fetchQueryData } from '../../utils/commonFunction';
+import { fetchProcedureData, fetchQueryData, formatParams, getOrderedParamValues } from '../../utils/commonFunction';
 
-const KpiDash = ({ widgetData }) => {
-    const { setActiveTab, allTabsData, setLoading, paramsValues, singleConfigData } = useContext(HISContext);
+const KpiDash = ({ widgetData, presentTabs, injectedData, injectedColumns }) => {
+    const { setActiveTab, allTabsData, setLoading, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery, prevKpiTab, setPrevKpiTab, activeTab } = useContext(HISContext);
     const [kpiData, setKpiData] = useState([]);
+    const [kpiLoading, setKpiLoading] = useState(false);
 
+    
     const formatData = (rawData = []) => {
         return rawData.map((item) => {
             const formattedItem = {};
@@ -26,7 +28,8 @@ const KpiDash = ({ widgetData }) => {
         if (widget?.modeOfQuery === "Procedure") {
             if (!widget?.procedureMode) return;
             try {
-                const paramVal = formatParams(paramsValues ? paramsValues : null);
+                setKpiLoading(true);
+                const paramVal = formatParams(paramsValues ? paramsValues : null, widgetData?.rptId || '');
 
                 const params = [
                     getAuthUserData('hospitalCode')?.toString(), //hospital code===
@@ -41,37 +44,60 @@ const KpiDash = ({ widgetData }) => {
                     "16-Apr-2025",//from values
                     "16-Apr-2025" // to values
                 ]
-                const response = await fetchProcedureData(widget?.procedureMode, params,widget?.JNDIid);
+                const response = await fetchProcedureData(widget?.procedureMode, params, widget?.JNDIid);
                 const formattedData = formatData(response.data || []);
                 // const generatedColumns = generateColumns(formattedData);
                 setKpiData(formattedData);
+                setIsSearchQuery(false)
+                setKpiLoading(false);
             } catch (error) {
                 console.error("Error loading query data:", error);
+                setKpiData([]);
+
             }
-        } else {
-            // if (!widget?.queryVO?.length > 0) return;
+        } else if (widget?.modeOfQuery === "Query") {
+            if (!widget?.queryVO?.length > 0) return;
+            setKpiLoading(true);
+            const params = getOrderedParamValues(widget?.queryVO[0]?.mainQuery, paramsValues, widget?.rptId);
             try {
-                const data = await fetchQueryData(widget?.query, widgetData?.JNDIid);
+
+                const data = await fetchQueryData(widget?.queryVO, widgetData?.JNDIid, params);
                 if (data?.length > 0) {
-                    setKpiData(
-                        data?.length > 0 && data?.map((item) => ({
-                            name: item.column_1,
-                            y: item.column_2,
-                        })));
+                    const firstItem = data[0];
+                    const dynamicKey = Object.keys(firstItem)[0];
+                    const dynamicValue = firstItem[dynamicKey];
+
+                    setKpiData(dynamicValue);
+                    setIsSearchQuery(false);
+                    setKpiLoading(false);
                 } else {
                     setKpiData([])
+                    setKpiLoading(false);
                 }
             } catch (error) {
                 console.error("Error loading query data:", error);
+                setKpiLoading(false);
+                setKpiData([]);
             }
+        } else if (widget?.modeOfQuery === "HTMLText") {
+            setKpiData(widget?.htmlText ? widget?.htmlText : "")
+
         }
     }
 
     useEffect(() => {
         if (widgetData) {
+            setKpiData([]);
             fetchData(widgetData);
         }
-    }, []);
+    }, [paramsValues, widgetData]);
+
+    useEffect(() => {
+        if (isSearchQuery && widgetData && paramsValues) {
+            setKpiData([]);
+            fetchData(widgetData);
+        }
+    }, [isSearchQuery]);
 
 
     const getDynamicIcon = (iconName) => {
@@ -96,18 +122,27 @@ const KpiDash = ({ widgetData }) => {
 
     const onKpiClickDetails = (id) => {
         const tabdt = allTabsData?.filter(tab => tab?.jsonData?.dashboardId === id)
-        setActiveTab(tabdt[0])
-        // console.log(, 'ids')
+        setActiveTab(tabdt[0]);
+        setPrevKpiTab([activeTab]);
     }
 
+    const widheight = presentTabs?.length > 0 && presentTabs?.filter(dt => dt?.rptId == widgetData?.rptId)[0]?.widgetHeight;
+
+
+
     return (
-        <div className='small-box-kpi' style={{
+        <div className={`${widgetData?.kpiType === "circle" ? 'small-box-kpi-circle' : 'small-box-kpi'}`} style={{
             backgroundColor: widgetData?.widgetBackgroundColour,
-            height: "150px",
             color: widgetData?.widgetFontColour,
-            borderWidth: widgetData?.kpiBorderWidth,
-            borderColor: widgetData?.kpiBorderColor,
-            borderStyle: 'solid',
+            // borderWidth: widgetData?.kpiBorderWidth,
+            // borderColor: widgetData?.kpiBorderColor,
+
+            borderTop: `${widgetData?.kpiBorderWidth}px solid ${widgetData?.kpiBorderColor}`,
+            borderBottom: `${widgetData?.kpiBorderWidth}px solid ${widgetData?.kpiBorderColor}`,
+            borderLeft: widgetData?.kpiType === "leftedge" ? `20px solid ${widgetData?.kpiBorderColor}` : `${widgetData?.kpiBorderWidth}px solid ${widgetData?.kpiBorderColor}`,
+            borderRight: widgetData?.kpiType === "rightedge" ? `20px solid ${widgetData?.kpiBorderColor}` : `${widgetData?.kpiBorderWidth}px solid ${widgetData?.kpiBorderColor}`,
+            // borderRadius: "50%",
+            // borderStyle: 'solid',
             boxShadow: widgetData?.isWidgetShadowRequired === 'Yes' ? '5px 5px 10px rgba(0,0,0,0.2)' : 'none',
         }} onMouseEnter={onHover} onMouseLeave={onMouseLeave}>
 
@@ -147,31 +182,50 @@ const KpiDash = ({ widgetData }) => {
                     </ul>
                 </div>
             )}
-            <div className="kpi-details-box">
-                <p className="sweet">
+            <div className={`kpi-details-box ${widgetData?.kpiType === "circle" ? 'text-center' : ""}`}
+                style={{
+                    height: !widheight || widheight === "0" ? 'auto' : `${widheight}px`,
+                }}
+            >
+                <b>{widgetData?.rptId}:{widgetData?.rptName}</b>
+                {/* <p className="sweet">
                     <b>{widgetData?.rptId}:{widgetData?.rptName}</b>
                 </p>
                 <h4 style={{ marginTop: "5px" }}>State : Rajasthan</h4>
                 <div style={{ borderBottom: "1px solid #525252", marginTop: "5px", marginBottom: "5px" }}></div>
-                <span className="sweet"><b>Value : 4 Lakh</b></span>
+                <span className="sweet"><b>Value : 4 Lakh</b></span> */}
+                {kpiLoading ?
+                    <>
+                        <span style={{ textAlign: "center", color: "white" }}>Loading...</span> </>
+                    :
+                    <>
+                        <div
+                            className='inner'
+                            dangerouslySetInnerHTML={{ __html: kpiData || "" }}
+                        />
 
-                {(widgetData?.onClickOfKPITabId !== '0' && widgetData?.onClickOfKPITabId !== '') &&
-                    <div className='small-box-kpi-link-dtl' style={{ color: widgetData?.kpiLinkFontColor }} onClick={() => onKpiClickDetails(widgetData?.onClickOfKPITabId)}>
-                        <span>{widgetData?.linkTab || 'Click For Details'}</span>
-                        <b><FontAwesomeIcon icon={faSearch} /></b>
+                        {(widgetData?.onClickOfKPITabId !== '0' && widgetData?.onClickOfKPITabId !== '') &&
+                            <div className='small-box-kpi-link-dtl' style={{ color: widgetData?.kpiLinkFontColor }} onClick={() => onKpiClickDetails(widgetData?.onClickOfKPITabId)}>
+                                <span>{widgetData?.linkTab || 'Click For Details'}</span>
+                                <b><FontAwesomeIcon icon={faSearch} /></b>
+                            </div>
+                        }
+                    </>
+                }
+
+                {widgetData?.iconType !== 'NOICON' &&
+                    <div className="small-box-icon kpi-icon-img">
+                        {widgetData?.iconType === 'IMAGE' ?
+                            <img src="https://uatcdash.dcservices.in/HISUtilities/dashboard/images/Icon_images/default-icon.png" alt="image" className='dropdown-gear-icon' />
+                            :
+                            <FontAwesomeIcon icon={getDynamicIcon(widgetData?.iconName)} color={widgetData?.widgetIconColour} />
+                        }
+                        {/* <i className='fa fa-balance-scale'></i> */}
                     </div>
                 }
+
             </div>
-            {widgetData?.iconType !== 'NOICON' &&
-                <div className="small-box-icon kpi-icon-img">
-                    {widgetData?.iconType === 'IMAGE' ?
-                        <img src="https://uatcdash.dcservices.in/HISUtilities/dashboard/images/Icon_images/default-icon.png" alt="image" className='dropdown-gear-icon' />
-                        :
-                        <FontAwesomeIcon icon={getDynamicIcon(widgetData?.iconName)} color={widgetData?.widgetIconColour} />
-                    }
-                    {/* <i className='fa fa-balance-scale'></i> */}
-                </div>
-            }
+
             <a href="#" className="small-box-footer" style={{ display: 'none' }}>
                 More info <i className="fa fa-search"></i>
             </a>
