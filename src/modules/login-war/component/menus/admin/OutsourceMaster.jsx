@@ -24,24 +24,18 @@ const OutsourceMaster = () => {
     const [selectAll, setSelectAll] = useState(false);
     const [selectedState, setSelectedState] = useState("")
     const [selectedFacility, setSelectedFacility] = useState("")
+    const [filterData, setFilterData] = useState(listData);
 
-    // useEffect(() => {
-    //     if (openPage === "add" || openPage === "modify") {
-    //         validate()
-    //     }
-    // }, [openPage])
 
     const validate = () => {
         let isValid = true;
         if (!values?.stateId.trim()) {
             setErrors(prev => ({ ...prev, stateIdErr: "Please select state" }));
-            // setOpenPage("home")
             isValid = false
         }
         if (!values?.facilityTypeId.trim()) {
             setErrors(prev => ({ ...prev, facilityTypeIdErr: "Please select facility type" }));
             isValid = false;
-            // setOpenPage("home")
         }
 
         return isValid;
@@ -52,6 +46,23 @@ const OutsourceMaster = () => {
         getFacilityTypeDrpData()
         getDateDrpData()
     }, [])
+
+    useEffect(() => {
+        if (!searchInput) {
+            setFilterData(listData);
+        } else {
+            const lowercasedText = searchInput.toLowerCase();
+            const newFilteredData = listData.filter(row => {
+                const storeName = row?.storeName?.toLowerCase() || "";
+                const state = row?.stateName?.toLowerCase() || "";
+                const testsRaised = row?.testsRaised?.toString() || "";
+                const date = row?.date?.toString() || "";
+
+                return storeName?.includes(lowercasedText) || state?.includes(lowercasedText) || testsRaised?.includes(lowercasedText) || date?.includes(lowercasedText);
+            });
+            setFilterData(newFilteredData);
+        }
+    }, [searchInput, listData]);
 
     useEffect(() => {
         getListData();
@@ -156,11 +167,6 @@ const OutsourceMaster = () => {
     }, [confirmSave])
 
     const handleDelete = () => {
-
-        // const val={
-        //     recordID:[selectedOption[0].recordID],
-        //     isActive:"0"     
-        // }
 
         fetchPatchData(`http://10.226.26.247:8025/api/v1/outsourceMaster/updateMappingStatus?recordID=${[selectedOption[0].recordID]}&isActive=${0}`).then(data => {
             if (data) {
@@ -271,8 +277,8 @@ const OutsourceMaster = () => {
                         <hr className='my-2' />
 
                         <div>
-                            <GlobalTable column={columns} data={listData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
-                                onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} onValidate={validate} />
+                            <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
+                                onReport={null} setSearchInput={setSearchInput} searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} onValidate={validate} />
                         </div>
 
                         {openPage === 'view' &&
@@ -305,7 +311,7 @@ const OutsourceMaster = () => {
 
                 {(openPage === "add" || openPage === "modify") &&
                     <OutsourceMasterForm stateDtl={selectedState} facilityDtl={selectedFacility}
-                        stId={values?.stateId} facilityId={values?.facilityTypeId}
+                        stId={values?.stateId} facilityId={values?.facilityTypeId} getListData={getListData}
                     />
                 }
 

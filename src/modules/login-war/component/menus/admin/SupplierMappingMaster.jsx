@@ -62,32 +62,6 @@ const SupplierMappingMaster = () => {
         });
     };
 
-
-    // const getStateSuppMappedList = () => {
-    //  alert("getSupplierMappedList")
-    //     fetchData(`http://10.226.26.247:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=${suppId}&stateID=${stateId}`).then((data) => {
-    //         if (data) {
-    //             alert("in if")
-    //             const drpData = Array.from(
-    //                 new Map(
-    //                     data.data.map(dt => [
-    //                         dt.supplierID.toString(), // force string key
-    //                         {
-    //                             value: dt.supplierID.toString(), // ensure it's string for <option>
-    //                             label: dt.supplierName,
-    //                         }
-    //                     ])
-    //                 ).values()
-    //             );
-    //             alert("drpData"+drpData)
-    //             setSelectedSelected(drpData);
-    //         } else {
-    //             alert("in else")
-    //             setSelectedSelected([]);
-    //         }
-    //     });
-    // };
-
     const getStateSuppMappedList = () => {
 
         fetchData(`http://10.226.26.247:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=${suppId || 0}&stateID=${stateId || 0}`)
@@ -110,19 +84,6 @@ const SupplierMappingMaster = () => {
             });
     };
 
-
-
-
-    // const moveToSelected = () => {
-    //     const itemsToMove = availableOptions.filter(opt => selectedAvailable.includes(opt.value));
-    //     const newSelected = itemsToMove.filter(item =>
-    //         !selectedOptions.some(selected => selected.value === item.value)
-    //     );
-    //     setSelectedOptions(prev => [...prev, ...newSelected]);
-    //     setAvailableOptions(prev => prev.filter(opt => !selectedAvailable.includes(opt.value)));
-    //     setSelectedAvailable([]);
-    // };
-
     const moveToSelected = () => {
         const itemsToMove = availableOptions.filter(opt => selectedAvailable.includes(opt.value));
 
@@ -140,14 +101,6 @@ const SupplierMappingMaster = () => {
         setAvailableOptions(prev => prev.filter(opt => !selectedAvailable.includes(opt.value)));
         setSelectedAvailable([]);
     };
-
-
-    // const moveToAvailable = () => {
-    //     const itemsToMove = selectedOptions.filter(opt => selectedSelected.includes(opt.value));
-    //     setAvailableOptions(prev => [...prev, ...itemsToMove]);
-    //     setSelectedOptions(prev => prev.filter(opt => !selectedSelected.includes(opt.value)));
-    //     setSelectedSelected([]);
-    // };
 
     const moveToAvailable = () => {
         const itemsToMove = selectedOptions.filter(opt => selectedSelected.includes(opt.value));
@@ -208,7 +161,7 @@ const SupplierMappingMaster = () => {
             const mappedData = addedToRight?.map(dt => ({
                 "stateID": stateId,
                 "stateSupplierID": dt?.value,
-                "seatID": 3424,
+                "seatID": getAuthUserData('userSeatId'),
                 "supplierID": suppId,
                 "supplierName": dt?.label,
 
@@ -225,8 +178,6 @@ const SupplierMappingMaster = () => {
                 "supplierUnmappingMasterDTO": unMappedData?.length > 0 ? unMappedData : [],
 
             }
-
-            console.log(mappedData, 'bbbbbbbbbbbbbbbbbbbb')
 
             if (selectedOptions.length > 0) {
 
@@ -248,10 +199,13 @@ const SupplierMappingMaster = () => {
     return (
 
         <div className="masters mx-3 my-2">
-            {/* <GlobalButtons onSave={handleSave} onClear={reset} /> */}
-            <div className='text-left w-100 fw-bold p-1 heading-text'>Supplier Mapping Master</div>
 
-            <div className="row mt-1">
+            <div className='masters-header row'>
+                <span className='col-6'><b>{`Supplier Mapping Master`}</b></span>
+                {/* {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>} */}
+            </div>
+      
+            <div className="row pt-2">
                 <div className="form-group col-sm-6 row">
                     <label className="col-sm-4 col-form-label fix-label required-label">Supplier Name :</label>
                     <div className="col-sm-8">
@@ -295,7 +249,7 @@ const SupplierMappingMaster = () => {
             <div className="d-flex align-items-center my-3">
                 <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
                 <div className="px-1 text-primary fw-bold fs-13">
-                    <span className="text-danger">*</span> State Facility Type
+                    <span className="text-danger">*</span> State Supplier Name
                 </div>
                 <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
             </div>

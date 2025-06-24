@@ -5,24 +5,25 @@ import { LoginContext } from '../../../../context/LoginContext';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchUpdateData, fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
 import InputField from '../../../InputField';
+import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
 const SupplierMasterForm = (props) => {
-    const { getData,setSearchInput } = props;
-    const { recStatus,setRecStatus } = props;
+    const { getListData, setSearchInput } = props;
+    const { recStatus, setRecStatus } = props;
     const { getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext)
-    const { openPage,setOpenPage, selectedOption ,setSelectedOption ,setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const { openPage, setOpenPage, selectedOption, setSelectedOption, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [recordStatus, setRecordStatus] = useState("");
 
     const [values, setValues] = useState({
         "suppName": "", "suppType": "10", "contactNo": "", "emailId": "admin_disha", "address": "",
         "pinCode": "", "countryName": "101", "stateId": "", "corporateGst": "", "lstNo": "", "cstNo": "",
-        "panNo": "D@shboard_2024", "showPan": "", "suppId":"",
+        "panNo": "D@shboard_2024", "showPan": "", "suppId": "",
     })
 
     const [errors, setErrors] = useState({
         "suppNameErr": "", "suppTypeErr": "", "contactNoErr": "", "emailIdErr": "", "addressErr": "",
         "pinCodeErr": "", "countryNameErr": "", "stateIdErr": "", "corporateGstErr": "", "lstNoErr": "", "cstNoErr": "",
-        "panNoErr": "", "showPanErr": "", "suppIdErr":"",
+        "panNoErr": "", "showPanErr": "", "suppIdErr": "",
     })
 
     const handleValueChange = (e) => {
@@ -43,15 +44,15 @@ const SupplierMasterForm = (props) => {
     useEffect(() => {
         if (selectedOption?.length > 0 && openPage === 'modify') {
 
-            if(selectedOption[0]?.cwhnumSupplierType === 'Supplier'){
+            if (selectedOption[0]?.cwhnumSupplierType === 'Supplier') {
                 setValues(prevValues => ({ ...prevValues, suppType: "10" }));
-            }else if(selectedOption[0]?.cwhnumSupplierType === 'Manufacturer'){        
+            } else if (selectedOption[0]?.cwhnumSupplierType === 'Manufacturer') {
                 setValues(prevValues => ({ ...prevValues, suppType: "11" }));
-            }else if(selectedOption[0]?.cwhnumSupplierType === 'Supplier/Manufacturer'){
+            } else if (selectedOption[0]?.cwhnumSupplierType === 'Supplier/Manufacturer') {
                 setValues(prevValues => ({ ...prevValues, suppType: "12" }));
-            }else{setValues(prevValues => ({ ...prevValues, suppType: "10" }));}
+            } else { setValues(prevValues => ({ ...prevValues, suppType: "10" })); }
 
-            setValues(prevValues => ({ ...prevValues, suppName: selectedOption[0]?.cwhstrSupplierName }));       
+            setValues(prevValues => ({ ...prevValues, suppName: selectedOption[0]?.cwhstrSupplierName }));
             setValues(prevValues => ({ ...prevValues, contactNo: selectedOption[0]?.cwhstrContactNo }));
             setValues(prevValues => ({ ...prevValues, emailId: selectedOption[0]?.cwhstrEmailId }));
             setValues(prevValues => ({ ...prevValues, address: selectedOption[0]?.cwhstrAddress }));
@@ -62,7 +63,7 @@ const SupplierMasterForm = (props) => {
             setValues(prevValues => ({ ...prevValues, lstNo: selectedOption[0]?.cwhstrLstNo }));
             setValues(prevValues => ({ ...prevValues, cstNo: selectedOption[0]?.cwhstrCstNo }));
             setValues(prevValues => ({ ...prevValues, panNo: selectedOption[0]?.cwhstrPanNo }));
-            setValues(prevValues => ({ ...prevValues, suppId: selectedOption[0]?.cwhnumSupplierId}));
+            setValues(prevValues => ({ ...prevValues, suppId: selectedOption[0]?.cwhnumSupplierId }));
             setRecordStatus(selectedOption[0]?.gnumIsvalid)
 
         }
@@ -79,7 +80,7 @@ const SupplierMasterForm = (props) => {
             setErrors(prev => ({ ...prev, suppTypeErr: "Please enter supplier type " }));
             isValid = false;
         }
-        if (!values?.contactNo.trim()) {
+        if (!values?.contactNo || !values?.contactNo.trim()) {
             setErrors(prev => ({ ...prev, contactNoErr: "Please enter contact no " }));
             isValid = false;
         }
@@ -122,18 +123,16 @@ const SupplierMasterForm = (props) => {
         }
     }
 
-        useEffect(() => {
-                if (confirmSave) {
-                    save();
-                }
-            }, [confirmSave])
+    useEffect(() => {
+        if (confirmSave) {
+            save();
+        }
+    }, [confirmSave])
 
 
-    const save = async() => {
+    const save = async () => {
 
-        
-
-        if(openPage === "add"){
+        if (openPage === "add") {
 
             const data = {
                 cwhstrSupplierName: values?.suppName,
@@ -148,14 +147,20 @@ const SupplierMasterForm = (props) => {
                 cwhstrLstNo: values?.lstNo,
                 cwhstrCstNo: values?.cstNo,
                 cwhstrPanNo: values?.panNo,
-                gnumIsvalid: 1,
-                gnumSeatId: 11111,
+                gnumSeatId: getAuthUserData('userSeatId'),
             }
-  
-            const response = fetchUpdatePostData("http://10.226.29.102:8025/suppliers", data)
-            ToastAlert('Supplier Added successfully', 'success')
 
-        }else if(openPage === "modify"){
+            fetchUpdatePostData("http://10.226.27.173:8025/api/v1/suppliers", data).then(data => {
+                if (data?.status === 1) {
+                    ToastAlert('Supplier Added successfully', 'success');
+                    refresh();
+                } else {
+                    ToastAlert('Error', 'error');
+                }
+            })
+
+
+        } else if (openPage === "modify") {
 
             const data = {
                 cwhstrSupplierName: values?.suppName,
@@ -164,35 +169,42 @@ const SupplierMasterForm = (props) => {
                 cwhstrEmailId: values?.emailId,
                 cwhstrAddress: values?.address,
                 cwhnumPincode: values?.pinCode,
-                cwhnumAddressCountryCode: values?.countryName,
+                cwhnumAddressCountryCode: values?.countryName,   //countryId
                 cwhnumAddressStateCode: values?.stateId,
                 cwhstrCorporateMainGstno: values?.corporateGst,
                 cwhstrLstNo: values?.lstNo,
                 cwhstrCstNo: values?.cstNo,
                 cwhstrPanNo: values?.panNo,
                 gnumIsvalid: recordStatus,
-                gnumSeatId: 11111,
+                gnumSeatId: getAuthUserData('userSeatId'),
             }
 
-            const response = fetchUpdateData(`http://10.226.29.102:8025/suppliers/modify/${values?.suppId}`, data)
-            ToastAlert('Supplier updated successfully', 'success')
-            setSelectedOption([]);
-           
+            fetchUpdateData(`http://10.226.27.173:8025/api/v1/suppliers/${values?.suppId}`, data).then(data => {
+                if (data?.status === 1) {
+                    ToastAlert('Supplier updated successfully', 'success')
+                    setSelectedOption([]);
+                    refresh();
+                } else {
+                    ToastAlert('Error', 'error')
+                }
+            })
         }
+
+    }
+
+    const refresh = () => {
         setConfirmSave(false);
-        reset();
-        getData("1")
         setOpenPage("home")
+        getListData("1")
         setRecStatus(1)
         setSearchInput("")
-
     }
 
     const reset = () => {
         setValues({
             "suppName": "", "suppType": "10", "contactNo": "", "emailId": "admin_disha", "address": "",
             "pinCode": "", "countryName": "101", "stateId": "", "corporateGst": "", "lstNo": "", "cstNo": "",
-            "panNo": "D@shboard_2024", "showPan": "","suppId":"",
+            "panNo": "D@shboard_2024", "showPan": "", "suppId": "",
         });
     }
 

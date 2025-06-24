@@ -12,6 +12,7 @@ const OutsourceMasterForm = (props) => {
     const facilityName = props.facilityDtl;
     const stateId = props.stId;
     const facilityTypeId = props.facilityId;
+    const getListData = props.getListData;
 
     const { openPage, setOpenPage, selectedOption, setSelectedOption, testTypeDrpData, getTestTypeDrpData, hospNameDrpData, getHospNameDrpData } = useContext(LoginContext)
     const [singleData, setSingleData] = useState([]);
@@ -27,50 +28,21 @@ const OutsourceMasterForm = (props) => {
         [{ test: '', number: '', agency: '' }]
     );
 
-    // const addRow = () => {
-
-    //     const hasIncompleteRow = rows.some(
-    //         (row) => !row.test || !row.number || !row.agency
-    //     );
-
-    //     if (hasIncompleteRow) {
-    //         alert('Please complete the existing row before adding a new one.');
-    //         return;
-    //     }
-
-    //     const newRow = { test: '', number: '', agency: '' };
-    //     const updatedRows = [...rows, newRow];
-    //     const isDuplicateExists = updatedRows.some((row, index, self) =>
-    //         self.findIndex(
-    //             (r) =>
-    //                 r.test === row.test &&
-    //                 r.agency.trim().toLowerCase() === row.agency.trim().toLowerCase()
-    //         ) !== index
-    //     );
-    //     if (isDuplicateExists) {
-    //         alert('Duplicate row detected.Please remove duplicate row');
-    //         return;
-    //     }
-
-    //     setRows(updatedRows);
-
-    // };
-
     const addRow = () => {
         // Check for any incomplete row before proceeding
         const hasIncompleteRow = rows.some(
             (row) => !row.test || !row.number || !row.agency
         );
-    
+
         if (hasIncompleteRow) {
             alert('Please complete the existing row before adding a new one.');
             return;
         }
-    
+
         // Add a new empty row
         const newRow = { test: '', number: '', agency: '' };
         const updatedRows = [...rows, newRow];
-    
+
         // Check for duplicates in updatedRows based on 'test' and normalized 'agency'
         const seen = new Set();
         const isDuplicateExists = updatedRows.some(row => {
@@ -79,16 +51,16 @@ const OutsourceMasterForm = (props) => {
             seen.add(key);
             return false;
         });
-    
+
         if (isDuplicateExists) {
-            alert('Duplicate row detected. Please remove duplicate row.');
+            alert('Duplicate test name and agency detected.');
             return;
         }
-    
+
         // If everything is valid, update the state
         setRows(updatedRows);
     };
-    
+
 
 
     const removeRow = (index) => {
@@ -152,14 +124,14 @@ const OutsourceMasterForm = (props) => {
 
         e.preventDefault();
 
-        if(!values?.hospId.trim()){
-            setErrors(prev=>({...prev,"hospIdErr":"Please select hospital name"}))
+        if (!values?.hospId.trim() && openPage === "add") {
+            setErrors(prev => ({ ...prev, "hospIdErr": "Please select hospital name" }))
             return;
-       }
+        }
 
-        if(!values?.date.trim()){
-             setErrors(prev=>({...prev,"dateErr":"Please select date"}))
-             return;
+        if (!values?.date.trim() && openPage === "add") {
+            setErrors(prev => ({ ...prev, "dateErr": "Please select date" }))
+            return;
         }
 
         const hasIncompleteRow = rows.some(
@@ -171,21 +143,6 @@ const OutsourceMasterForm = (props) => {
             return;
         }
 
-        //const newRow = { test: '', number: '', agency: '' };
-        //const updatedRows = [...rows, newRow];
-
-        //  const isDuplicateExists = rows.some((row, index, self) =>
-        //      self.findIndex(
-        //          (r) =>
-        //              r.test === row.test &&
-        //              r.agency.trim().toLowerCase() === row.agency.trim().toLowerCase()
-        //      ) !== index
-        //  );
-        //  if (isDuplicateExists) {
-        //      alert('Duplicate row detected.Please remove duplicate row');
-        //      return;
-        //  }
-
         const seen = new Set();
         const isDuplicateExists = rows.some(row => {
             const key = `${row.test}|${row.agency.trim().toLowerCase()}`;
@@ -195,7 +152,7 @@ const OutsourceMasterForm = (props) => {
         });
 
         if (isDuplicateExists) {
-            alert('Duplicate row detected. Please remove duplicate row.');
+            alert('Duplicate test name and agency detected.');
             return;
         }
 
@@ -234,10 +191,9 @@ const OutsourceMasterForm = (props) => {
 
         //modify
         if (openPage === "modify") {
-
             const val = rows?.map(dt => ({
                 "stateID": Number(stateId),
-                "hospitalID": Number(values?.hospId),
+                "hospitalID": Number(singleData[0]?.hstnumStoreId),
                 "facilityTypeID": Number(facilityTypeId),
                 "date": selectedOption[0].date,
                 "testID": Number(dt.test),
@@ -257,13 +213,16 @@ const OutsourceMasterForm = (props) => {
 
         }
 
+        refresh();
+
     }
 
     const refresh = () => {
         setRows([{ test: '', number: '', agency: '' }]);
         setValues({ ...values, "hospId": "", "date": "" });
         setSelectedOption([]);
-        //setOpenPage("home");
+        setOpenPage("home");
+        getListData();
     }
 
     useEffect(() => {
