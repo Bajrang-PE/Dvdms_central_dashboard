@@ -16,8 +16,8 @@ const GroupMasterForm = ({ setSearchInput }) => {
 
     const saveGroupData = () => {
         const val = {
-            "seatId": getAuthUserData('userSeatId'),
-            "groupName": groupName,
+            "gnumSeatId": getAuthUserData('userSeatId'),
+            "cwhstrGroupName": groupName,
             "status": "Active"
         }
         fetchPostData(`api/v1/Group`, val).then(data => {
@@ -36,13 +36,13 @@ const GroupMasterForm = ({ setSearchInput }) => {
 
     const updateGroupData = () => {
         const val = {
-            "seatId": getAuthUserData('userSeatId'),
-            "groupName": groupName,
+            "gnumSeatId": getAuthUserData('userSeatId'),
+            "cwhstrGroupName": groupName,
             "status": recordStatus,
-            "groupId": selectedOption[0]?.groupId,
-            "isValid": 1,
+            "cwhnumGroupId": selectedOption[0]?.cwhnumGroupId,
+            "gnumIsValid": 1,
         }
-        fetchUpdateData(`api/v1/Group/${selectedOption[0]?.groupId}`, val).then(data => {
+        fetchUpdateData(`api/v1/Group/${selectedOption[0]?.cwhnumGroupId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record Updated Successfully', 'success');
                 getGroupListData();
@@ -82,7 +82,7 @@ const GroupMasterForm = ({ setSearchInput }) => {
 
     useEffect(() => {
         if (selectedOption?.length > 0) {
-            setGroupName(selectedOption[0]?.groupName)
+            setGroupName(selectedOption[0]?.cwhstrGroupName)
             setRecordStatus(selectedOption[0]?.status)
         }
     }, [selectedOption])

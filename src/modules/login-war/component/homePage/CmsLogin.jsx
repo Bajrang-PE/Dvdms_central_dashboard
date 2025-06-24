@@ -80,7 +80,6 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
             fetchPostData("/api/v1/auth/login", val).then(data => {
                 if (data) {
                     if (!data?.message && data?.accessToken) {
-                        console.log(data, 'data')
                         ToastAlert("Login successful", 'success')
                         const { gnumSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode, } = data;
                         const auth = {
@@ -100,7 +99,6 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                         ToastAlert(data?.message, 'error');
                     }
                 } else {
-                    console.log("Request Failed!")
                     ToastAlert('login failed!', 'error')
                 }
             })

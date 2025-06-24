@@ -591,7 +591,7 @@ const DashboardMaster = () => {
       name: 'Group Name',
       selector: row => row?.jsonData?.groupName || "---",
       cell: row => <a
-        href={`/dvdms/HIS_dashboard/dashboard?groupId=${row.id}&dashboardFor=${row?.dashboardFor}&data=${""}`}
+        href={`/dvdms/HIS_dashboard/dashboard?groupId=${row.id}&dashboardFor=${row?.dashboardFor}&data=${""}&isPreview=1`}
         target="_blank"
         rel="noopener noreferrer"
         className='text-decoration-none'

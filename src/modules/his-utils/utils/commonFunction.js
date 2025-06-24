@@ -55,12 +55,12 @@ export const convertToISODate = (dateStr) => {
 
   const [day, month, year] = dateStr.split("-");
   const formattedYear = `20${year}`;
-  const formattedMonth = months[month.toUpperCase()];
+  const formattedMonth = months[month?.toUpperCase()];
 
   return `${formattedYear}-${formattedMonth}-${day}`;
 };
 
-export const fetchQueryData = async (queryVO = [], jndiServer) => {
+export const fetchQueryData = async (queryVO = [], jndiServer, params,pkColumn) => {
   if (!Array.isArray(queryVO) || queryVO.length === 0) {
     console.error("Invalid or empty queryVO array provided.");
     return [];
@@ -72,7 +72,14 @@ export const fetchQueryData = async (queryVO = [], jndiServer) => {
       console.error("No valid query found in queryVO.");
       return [];
     }
-    const requestBody = { query, params: {}, jndi: jndiServer };
+    const requestBody = {
+      query, params: {},
+      jndi: jndiServer,
+      strGroupParaId: params?.strGroupParaId,
+      strGroupParaValue: params?.strGroupParaValue,
+       popupId: "#PK0#",
+      popupValue: pkColumn?.toString()
+    };
     const response = await fetchPostData("/hisutils/GenericApiQry", requestBody);
 
     return response?.data || [];
@@ -138,3 +145,79 @@ export const fetchLocalLogoAsBase64 = (filePath) => {
 };
 
 
+export const formatParams = (allParams, widgetId) => {
+  const tabParams = allParams?.tabParams || {};
+  const widgetSpecificParams = allParams?.widgetParams?.[widgetId] || {};
+
+  const combinedParams = {
+    ...tabParams,
+    ...widgetSpecificParams
+  };
+
+  if (typeof combinedParams !== 'object' || combinedParams === null || Array.isArray(combinedParams)) {
+    return {
+      paramsId: "",
+      paramsValue: ""
+    };
+  }
+
+  return {
+    paramsId: Object.keys(combinedParams).join(','),
+    paramsValue: Object.values(combinedParams).join(',')
+  };
+};
+
+
+export const getOrderedParamValues = (query, paramsValues, widgetId) => {
+  const paramVal = formatParams(paramsValues ? paramsValues : null, widgetId || '');
+
+  const paramOrder = [];
+  const regex = /#PARA#(\d+)#PARA#/g;
+  let match;
+  while ((match = regex.exec(query)) !== null) {
+    // paramOrder.push(match[1]);
+    const id = match[1];
+    if (!paramOrder.includes(id)) {
+      paramOrder.push(id); // Add only if not already included
+    }
+  }
+
+  const idToValue = {};
+  const ids = paramVal?.paramsId.split(',');
+  const values = paramVal?.paramsValue.split(',');
+
+  ids.forEach((id, index) => {
+    idToValue[id] = values[index];
+  });
+
+  // return {
+  //   strGroupParaId: Object.keys(idToValue).join(','),
+  //   strGroupParaValue: Object.values(idToValue).join(',')
+  // };
+
+  const filteredIds = [];
+  const filteredValues = [];
+
+  paramOrder.forEach((id) => {
+    if (idToValue.hasOwnProperty(id)) {
+      filteredIds.push(id);
+      filteredValues.push(idToValue[id]);
+    }
+  });
+
+  return {
+    strGroupParaId: filteredIds.join(','),
+    strGroupParaValue: filteredValues.join(',')
+  };
+};
+
+
+export const formatDate1 = (isoDate) => {
+  const dateObject = new Date(isoDate);
+  // dateObject.setUTCHours(dateObject.getUTCHours() + dateObject.getTimezoneOffset() / 60);
+
+  const day = dateObject.getUTCDate().toString().padStart(2, '0');
+  const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dateObject.getUTCMonth()];
+  const year = dateObject.getUTCFullYear();
+  return `${day}-${month}-${year.toString().slice(-2)}`;
+}

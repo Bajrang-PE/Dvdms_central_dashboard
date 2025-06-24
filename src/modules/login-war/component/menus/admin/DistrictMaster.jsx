@@ -30,7 +30,6 @@ const DistrictMaster = () => {
         if (name === "stateId") {
             const selectedOption = stateNameDrpDt.find(opt => opt.value.toString() === value.toString());
             const selectedStateLabel = selectedOption?.label || "";
-            console.log("Selected Option: ", selectedOption);
             setSelectedStateName(selectedStateLabel);
         }
 
@@ -249,7 +248,6 @@ const DistrictMaster = () => {
                     }
 
                 </>}
-
 
             {(openPage === "add" || openPage === 'modify') &&
                 <DistrictMasterForm setValues={setValues} values={values} />

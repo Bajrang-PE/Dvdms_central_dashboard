@@ -138,9 +138,9 @@ const LoginContextApi = ({ children }) => {
 
     const getSteteNameDrpData = () => {
         fetchData('http://10.226.27.173:8025/api/v1/state/getstate').then((data) => {
-            if (data) {
+            if (data?.status === 1) {
 
-                const drpData = data.data?.map((dt) => {
+                const drpData = data?.data?.map((dt) => {
                     const val = {
                         value: dt?.cwhnumStateId,
                         label: dt?.cwhstrStateName

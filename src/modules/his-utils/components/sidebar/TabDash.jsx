@@ -1,41 +1,46 @@
 import React, { lazy, Suspense, useCallback, useContext, useEffect, useState } from 'react';
 import WidgetDash from './WidgetDash';
 import { HISContext } from '../../contextApi/HISContext';
+import FooterText from '../commons/FooterText';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faBackward } from '@fortawesome/free-solid-svg-icons';
 
 const PdfDownload = lazy(() => import('../commons/PdfDownload'));
 const Parameters = lazy(() => import('./Parameters'));
 
-const TabDash = React.memo(({ tabData }) => {
-    const { allWidgetData, setLoading, loading, activeTab, setParamsValues } = useContext(HISContext);
-    const [presentWidgets, setPresentWidgets] = useState([]);
+const TabDash = React.memo(() => {
+    const { allWidgetData, setLoading, loading, activeTab, setParamsValues, presentWidgets, setPresentWidgets, prevKpiTab, setActiveTab, setPrevKpiTab } = useContext(HISContext);
     const [presentTabs, setPresentTabs] = useState([]);
+    const [widWithoutLinked, setWidWithoutLinked] = useState([]);
 
-    const handleSetParamsValues = useCallback((values) => {
-        setParamsValues(values);
-    }, []);
-
+    const footerText = activeTab?.jsonData?.footerText || "";
 
     useEffect(() => {
-        if (tabData?.jsonData?.lstDashboardWidgetMapping?.length > 0) {
-            const widgetIds = tabData?.jsonData?.lstDashboardWidgetMapping;
+        if (activeTab?.jsonData?.lstDashboardWidgetMapping?.length > 0) {
+            setLoading(true)
+            setParamsValues({
+                tabParams: {},
+                widgetParams: {},
+            })
+            const widgetIds = activeTab?.jsonData?.lstDashboardWidgetMapping;
 
             const sortedWidgets = [...widgetIds].sort((a, b) => parseInt(a.displayOrder) - parseInt(b.displayOrder));
             const availableWidgets = sortedWidgets
-                .map(wid => allWidgetData.find(widget => widget?.rptId == wid?.rptId))
-                .filter(widget => widget);
+                ?.map(wid => allWidgetData?.find(widget => widget?.rptId == wid?.rptId))
+                ?.filter(widget => widget);
 
             let finalWidgets = [];
 
-            sortedWidgets.forEach(wid => {
+            sortedWidgets?.forEach(wid => {
                 const parentWidget = availableWidgets?.find(widget => widget?.rptId == wid?.rptId);
                 if (parentWidget) {
-                    finalWidgets.push(parentWidget);
+                    finalWidgets?.push(parentWidget);
                     if (parentWidget?.linkedWidgetRptId) {
-                        const linkedWidgetIds = parentWidget.linkedWidgetRptId.split(',');
-                        linkedWidgetIds.forEach(linkedId => {
+                        const linkedWidgetIds = parentWidget.linkedWidgetRptId?.split(',');
+                        linkedWidgetIds?.forEach(linkedId => {
                             const linkedWidget = availableWidgets?.find(widget => widget?.rptId == linkedId);
                             if (linkedWidget) {
-                                finalWidgets.push(linkedWidget);
+                                finalWidgets?.push(linkedWidget);
                             }
                         });
                     }
@@ -43,7 +48,7 @@ const TabDash = React.memo(({ tabData }) => {
             });
 
             let seen = new Set();
-            let uniqueWidgets = finalWidgets.filter(widget => {
+            let uniqueWidgets = finalWidgets?.filter(widget => {
                 if (!seen.has(widget.rptId)) {
                     seen.add(widget.rptId);
                     return true;
@@ -51,31 +56,97 @@ const TabDash = React.memo(({ tabData }) => {
                 return false;
             });
 
-            setPresentWidgets(uniqueWidgets);
-            setPresentTabs(sortedWidgets)
-        }
-    }, [tabData, allWidgetData]);
 
-console.log(presentWidgets,'presentWidgets')
+            uniqueWidgets?.forEach((parent) => {
+                parent.children = uniqueWidgets
+                    .filter((child) => child.parentReport === parent.rptId)
+                    .map((child) => child.rptId);
+            });
+
+            const singleQueryChilds = uniqueWidgets?.filter(widget => widget.widgetType === "singleQueryParent")
+
+            const allSQChildWidgetIds = new Set();
+
+            singleQueryChilds.forEach(widget => {
+                const childJson = widget.sqChildJsonString && JSON.parse(widget.sqChildJsonString || '[]');
+                childJson.forEach(entry => {
+                    if (entry?.SQCHILDWidgetId) {
+                        allSQChildWidgetIds.add((entry.SQCHILDWidgetId)?.toString());
+                    }
+                });
+            });
+
+
+            const childWidgetIds = new Set(
+                uniqueWidgets
+                    .filter(widget => uniqueWidgets.some(parent => widget.parentReport === parent.rptId))
+                    .map(widget => widget.rptId)
+            );
+            const allLinkedRptIds = new Set(
+                uniqueWidgets
+                    .flatMap(widget => widget?.linkedWidgetRptId?.split(',') || [])
+                    ?.map(id => id?.trim())
+                    ?.filter(Boolean)
+            );
+
+
+            const standaloneAndParentsOnly = uniqueWidgets?.filter(
+                widget => !childWidgetIds.has(widget.rptId)
+                    && !allLinkedRptIds.has(widget.rptId)
+                    && !allSQChildWidgetIds.has(String(widget.rptId))
+            );
+
+            setWidWithoutLinked(standaloneAndParentsOnly);
+            setPresentWidgets(uniqueWidgets);
+            setPresentTabs(sortedWidgets);
+            setLoading(false)
+        } else {
+            setPresentWidgets([]);
+            setWidWithoutLinked([]);
+            setParamsValues({
+                tabParams: {},
+                widgetParams: {},
+            })
+            setLoading(false)
+        }
+    }, [activeTab, allWidgetData]);
+
+    const onPrevClick = () => {
+        setActiveTab(prevKpiTab[0])
+        setPrevKpiTab([])
+    }
+
+    console.log(presentWidgets, 'presentWidgets')
+
     return (
         <>
             {loading ? null : (
                 <div>
-                    {(activeTab?.jsonData?.docJsonString && JSON.parse(activeTab?.jsonData?.docJsonString)?.length > 0) && (
-                        <div className='help-docs'>
-                            <Suspense
-                                fallback={
-                                    <div className="pt-3 text-center">
-                                        Loading...
-                                    </div>
-                                }
-                            >
-                                <PdfDownload docJsonString={activeTab?.jsonData?.docJsonString} />
-                            </Suspense>
+                    {prevKpiTab?.length > 0 &&
+                        <div className=''>
+                            <button className='btn btn-sm me-1 back-button-kpi' onClick={onPrevClick}>
+                                <FontAwesomeIcon icon={faArrowLeft}
+                                    className="me-1" />Back</button>
                         </div>
+                    }
+                    {(activeTab?.jsonData?.docJsonString && JSON.parse(activeTab?.jsonData?.docJsonString)?.length > 0) && (
+                        <>
+
+                            <div className='help-docs'>
+                                <Suspense
+                                    fallback={
+                                        <div className="pt-3 text-center">
+                                            Loading...
+                                        </div>
+                                    }
+                                >
+                                    <PdfDownload docJsonString={activeTab?.jsonData?.docJsonString} />
+                                </Suspense>
+                            </div>
+                        </>
                     )}
 
-                    <h4 className='text-center'>{tabData?.jsonData?.dashboardName}</h4>
+                    <h4 className='text-center'>{activeTab?.jsonData?.dashboardName}</h4>
 
                     {activeTab?.jsonData?.allParameters && (
                         <div className='parameter-box'>
@@ -86,16 +157,16 @@ console.log(presentWidgets,'presentWidgets')
                                     </div>
                                 }
                             >
-                                <Parameters params={activeTab?.jsonData?.allParameters} dashFor={activeTab?.dashboardFor} setParamsValues={handleSetParamsValues} />
+                                <Parameters params={activeTab?.jsonData?.allParameters} dashFor={activeTab?.dashboardFor} scope={'tabParams'} />
                             </Suspense>
                         </div>
                     )}
 
                     <div className='row'>
-                        {presentWidgets?.length > 0 && presentWidgets.map((widget, index) => (
+                        {widWithoutLinked?.length > 0 && widWithoutLinked.map((widget, index) => (
                             <React.Fragment key={index}>
                                 {widget &&
-                                    <div className={`col-sm-${presentTabs.filter(dt => dt?.rptId == widget?.rptId)[0]?.widgetWidth}`} style={{ padding: "5px 3px" }}>
+                                    <>
                                         <Suspense
                                             fallback={
                                                 <div className="pt-3 text-center">
@@ -103,31 +174,18 @@ console.log(presentWidgets,'presentWidgets')
                                                 </div>
                                             }
                                         >
-                                            <WidgetDash widgetDetail={widget} />
+                                            <WidgetDash widgetDetail={widget} presentWidgets={presentWidgets} presentTabs={presentTabs} />
                                         </Suspense>
-                                    </div>
+                                    </>
                                 }
                             </React.Fragment>
                         ))
                         }
                     </div>
-
-                    {/* <div className="tab-footer-box" style="" >
-                        <div className="col-sm-12">
-                            <button data-val="show" className="btn btn-xs  bg-navy" value="Hide Legend">Show Legends</button>
-                        </div>
-                        <div className="col-sm-12" id="legand_10" style="border: 1px solid;">
-                            <div className="footertext" align="left">
-                                <span >* Data is for mapped drugs only </span>
-                                <span id="footerTextFromQuery_10"></span>
-                                <span id="footerTextFromQueryByParameter_10"></span>
-                            </div>
-
-                        </div>
-
-                    </div> */}
+                    <FooterText footerText={footerText} />
                 </div>
             )}
+
         </>
     );
 });

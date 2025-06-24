@@ -4,7 +4,7 @@ import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DropdownPortal from '../commons/DropdownPortal';
 
-const TopBar = ({ data, setActiveTab, dashboardData }) => {
+const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab }) => {
     const [openSubMenu, setOpenSubMenu] = useState(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
@@ -103,6 +103,7 @@ const TopBar = ({ data, setActiveTab, dashboardData }) => {
                                                 e.preventDefault();
                                                 setActiveTab(tab);
                                                 setOpenSubMenu(openSubMenu === tab.id ? null : tab.id);
+                                                setPrevKpiTab([]);
                                             }}
                                         >
                                             <FontAwesomeIcon icon={getDynamicIcon(tab?.jsonData?.iconName)} className="me-2 dropdown-gear-icon" />
@@ -121,6 +122,7 @@ const TopBar = ({ data, setActiveTab, dashboardData }) => {
                                                                     e.preventDefault();
                                                                     setActiveTab(child);
                                                                     setOpenSubMenu(null);
+                                                                    setPrevKpiTab([]);
                                                                 }}
                                                             >
                                                                 <FontAwesomeIcon icon={getDynamicIcon(child?.jsonData?.iconName)} className="me-2 dropdown-gear-icon" />

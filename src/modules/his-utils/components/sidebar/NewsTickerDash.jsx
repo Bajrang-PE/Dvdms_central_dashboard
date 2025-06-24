@@ -81,8 +81,8 @@ const NewsTickerDash = ({ widgetData }) => {
                     initialRecord?.toString(), //initial record no.===
                     finalRecord?.toString(), //final record no.===
                     "", //date options
-                    "16-Apr-2025",//from values
-                    "16-Apr-2025" // to values
+                    "29-May-2025",//from values
+                    "29-May-2025" // to values
                 ]
                 const response = await fetchProcedureData(widget?.procedureMode, params, widget?.JNDIid);
                 const formattedData = formatData(response.data || []);
@@ -211,6 +211,7 @@ const NewsTickerDash = ({ widgetData }) => {
                     </div>
                 }
             </div>
+            
             <div className="px-2 py-2" style={{ marginTop: `${widgetTopMargin}px` }}>
                 <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query : {rptId}</h4>
                 {modeOfQuery === 'Query' &&
@@ -255,6 +256,7 @@ const NewsTickerDash = ({ widgetData }) => {
                     ))}
                 </div>
             </div>
+
             {footerText && footerText.trim() !== '' && (
                 <>
                     <h6 className='header-devider mt-2 mb-0'></h6>

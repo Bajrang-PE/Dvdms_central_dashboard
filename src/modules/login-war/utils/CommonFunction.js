@@ -44,3 +44,14 @@ export const capitalizeFirstLetter = (str) => {
   if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
+
+
+export const formatDate1 = (isoDate) => {
+  const dateObject = new Date(isoDate);
+  // dateObject.setUTCHours(dateObject.getUTCHours() + dateObject.getTimezoneOffset() / 60);
+
+  const day = dateObject.getUTCDate().toString().padStart(2, '0');
+  const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dateObject.getUTCMonth()];
+  const year = dateObject.getUTCFullYear();
+  return `${day}-${month}-${year.toString().slice(-2)}`;
+}
