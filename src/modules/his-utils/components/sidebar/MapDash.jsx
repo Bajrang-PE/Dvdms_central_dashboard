@@ -3,16 +3,22 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import RajasthanMap from '../../localData/mapJson/rajasthan.json';
 import UpMap from '../../localData/mapJson/uttarpradesh.json';
-import { fetchQueryData, getOrderedParamValues } from "../../utils/commonFunction";
+import { fetchProcedureData, fetchQueryData, formatParams, getOrderedParamValues } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import { useSearchParams } from "react-router-dom";
+import { getAuthUserData } from "../../../../utils/CommonFunction";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSortAmountDesc } from "@fortawesome/free-solid-svg-icons";
 
 
-const MapDash = ({ widgetData }) => {
+const MapDash = ({ widgetData, pkColumn }) => {
     const { theme, mainDashData, singleConfigData, paramsValues, setLoading, isSearchQuery, setIsSearchQuery } = useContext(HISContext);
     const [mapData, setMapData] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false)
     const [graphData, setGraphData] = useState([]);
+    const [columns, setColumns] = useState([]);
+    const [tableData, setTableData] = useState([]);
+
 
     const [queryParams] = useSearchParams();
     const isPrev = queryParams.get('isPreview');
@@ -38,6 +44,7 @@ const MapDash = ({ widgetData }) => {
     const defLimit = useMemo(() => singleConfigData?.databaseConfigVO?.setDefaultLimit || '', [singleConfigData]);
     const parsedLimit = useMemo(() => parseInt(defLimit, 10), [defLimit]);
     const safeLimit = useMemo(() => isNaN(parsedLimit) || parsedLimit <= 0 ? null : parsedLimit, [parsedLimit]);
+    const isPaginationReq = widgetData?.isPaginationReq === 'Yes' ? true : false;
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -81,46 +88,129 @@ const MapDash = ({ widgetData }) => {
         };
     }, []);
 
-    const fetchDataQry = async (widget) => {
-        if (!widget?.queryVO?.length > 0) return;
-        const params = getOrderedParamValues(widget?.queryVO[0]?.mainQuery, paramsValues, widget?.rptId);
-        try {
-            const data = await fetchQueryData(widget?.queryVO?.length > 0 ? widget?.queryVO : [], widget?.JNDIid, params);
 
-            const seriesData = [];
+    const formatData = (rawData = []) => {
+        return rawData.map((item) => {
+            const formattedItem = {};
+            Object.entries(item).forEach(([key, value]) => {
 
-            if (data[0]?.column_3) {
-                // Three-column data
-                const categories = [...new Set(data.map(item => item.column_1))];
-                const seriesNames = ['column_2', 'column_3'];
+                const formattedKey = key.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 
-                seriesNames.forEach(seriesName => {
-                    seriesData.push({
-                        name: seriesName,
-                        data: categories.map(category => {
-                            const item = data.find(d => d.column_1 === category);
-                            return item ? item[seriesName] : null;
-                        }),
-                        colorByPoint: true,
-                    });
-                });
-
-                setGraphData({ categories, seriesData });
-            } else {
-                // Two-column data
-                const categories = data.map(item => item.column_1);
-                seriesData.push({
-                    name: 'column_2',
-                    data: data.map(item => item.column_2),
-                    colorByPoint: true,
-                });
-
-                setGraphData({ categories, seriesData });
-            }
-        } catch (error) {
-            console.error("Error loading query data:", error);
-        }
+                formattedItem[formattedKey] = formattedKey.includes("State") ? value : value;
+            });
+            return formattedItem;
+        });
     };
+
+
+    const generateColumns = (data, ifDrill = isChildPresent) => {
+        if (!data || data.length === 0) return [];
+
+        // const keys = Object.keys(data[0]);
+        const keys = Object.keys(data[0]).filter(key => key !== 'pkcolumn');
+
+        const reorderedKeys = [
+            ...keys.filter(k => /^sno$/i.test(k)),
+            ...keys.filter(k => /state/i.test(k)),
+            // ...keys.filter(k => !/state/i.test(k))
+            ...keys.filter(k => !/^sno$/i.test(k) && !/state/i.test(k))
+        ];
+
+        const dynamicColumns = reorderedKeys.map((key) => ({
+            name: key,
+            selector: row => getFirstValue(row[key]),
+            sortable: true,
+            wrap: true,
+            width: /^sno$/i.test(key) ? '8%' : undefined,
+            cell: (row) => {
+                const value = row[key];
+                const displayValue = getFirstValue(value);
+
+                return typeof value === 'string' && value.includes("##") ? (
+                    <span
+                        style={{ color: 'blue', cursor: 'pointer' }}
+                    // onClick={() => openPopUpWidget(value)}
+                    >
+                        {displayValue}
+                    </span>
+                ) : (
+                    <span>{displayValue}</span>
+                );
+            }
+        }));
+
+        if (ifDrill) {
+            const drillColumn = {
+                name: "Action",
+                cell: (row) => (
+                    <button
+                        className="rounded-4 border-1"
+                    // onClick={() => onDrillDown(row?.pkcolumn)}
+                    >
+                        <FontAwesomeIcon icon={faSortAmountDesc} />
+                    </button>
+                )
+            };
+            return [drillColumn, ...dynamicColumns];
+        }
+
+        return dynamicColumns;
+    };
+
+    const fetchData = async (widget) => {
+
+        if (widget?.modeOfQuery === "Procedure") {
+            if (!widget?.procedureMode) return;
+            try {
+                const paramVal = formatParams(paramsValues ? paramsValues : null, widgetData?.rptId || '');
+
+                const params = [
+                    getAuthUserData('hospitalCode')?.toString(), //hospital code===
+                    "10001", //user id===
+                    pkColumn ? pkColumn?.toString() : '', //primary key
+                    paramVal.paramsId || "", //parameter ids
+                    paramVal.paramsValue || "", //parameter values
+                    isPaginationReq?.toString(), //is pagination required===
+                    initialRecord?.toString(), //initial record no.===
+                    finalRecord?.toString(), //final record no.===
+                    "", //date options
+                    "",//from values
+                    "" // to values
+                ]
+                const response = await fetchProcedureData(widget?.procedureMode, params, widget?.JNDIid);
+                const formattedData = formatData(response.data || []);
+                const generatedColumns = generateColumns(formattedData, isChildPresent);
+                setColumns(generatedColumns);
+                setTableData(formattedData);
+                setLoading(false)
+                setIsSearchQuery(false)
+            } catch (error) {
+                console.error("Error loading query data:", error);
+                setLoading(false)
+            }
+        } else {
+            if (!widget?.queryVO?.length > 0) return;
+
+            const params = getOrderedParamValues(widget?.queryVO[0]?.mainQuery, paramsValues, widget?.rptId);
+
+            try {
+                const data = await fetchQueryData(widget?.queryVO?.length > 0 ? widget?.queryVO : [], widget?.JNDIid, params);
+                if (data?.length > 0) {
+                    const formattedData = formatData(data);
+                    const generatedColumns = generateColumns(formattedData, isChildPresent);
+                    setColumns(generatedColumns);
+                    setTableData(formattedData);
+                    setLoading(false)
+                    setIsSearchQuery(false)
+                } else {
+                    setColumns([]);
+                    setTableData([]);
+                }
+            } catch (error) {
+                console.error("Error loading query data:", error);
+            }
+        }
+    }
 
     useEffect(() => {
         fetch("https://code.highcharts.com/mapdata/countries/in/in-all.geo.json")
@@ -134,16 +224,17 @@ const MapDash = ({ widgetData }) => {
 
     }, []);
 
+    console.log(widgetData, 'mapwiddt')
 
     useEffect(() => {
         if (widgetData) {
-            fetchDataQry(widgetData);
+            fetchData(widgetData);
         }
     }, [widgetData, paramsValues]);
 
     useEffect(() => {
         if (isSearchQuery && widgetData && paramsValues) {
-            fetchDataQry(widgetData);
+            fetchData(widgetData);
         }
     }, [isSearchQuery]);
 

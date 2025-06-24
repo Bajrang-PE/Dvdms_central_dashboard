@@ -408,13 +408,13 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                                     value={selectedValues[parameterName] || defaultValueIfEmpty}
                                     onChange={(e) => handleInputChange(parameterName, e, parameterId)}
                                 >
-                                    {placeHolder ?
-                                        <option value=''>{placeHolder}</option> :
-                                        <option value=''>{'select'}</option>
+                                    {/* {placeHolder ?
+                                        <option value=''>{placeHolder}</option> : */}
+                                        <option value=''>{'Select value'}</option>
 
-                                    }
+                                    {/* } */}
                                     {defaultOption?.optionText !== '' &&
-                                        <option value={defaultOption?.optionValue ? defaultOption?.optionValue : ''}>{defaultOption?.optionText ? defaultOption?.optionText : 'Select Value'}</option>
+                                        <option value={defaultOption?.optionValue ? defaultOption?.optionValue : ''}>{defaultOption?.optionText}</option>
                                     }
                                     {options?.length > 0 && options.map((option, index) => (
                                         <option key={index} value={option.optionValue}>

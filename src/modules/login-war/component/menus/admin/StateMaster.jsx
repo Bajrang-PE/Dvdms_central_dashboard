@@ -22,7 +22,7 @@ const StateMaster = () => {
    
     const handleRowSelect = (row) => {
         setSelectedOption((prev) => {
-            if (prev.length > 0 && prev[0]?.stateId === row?.stateId) {
+            if (prev.length > 0 && prev[0]?.cwhnumStateId === row?.cwhnumStateId) {
                 return [];
             }
             return [row];
@@ -45,7 +45,7 @@ const StateMaster = () => {
     }, [searchInput, stateListData]);
 
     const deleteRecord = () => {
-        fetchDeleteData(`api/v1/State/${selectedOption[0]?.stateId}`).then(data => {
+        fetchDeleteData(`api/v1/State/${selectedOption[0]?.cwhnumStateId}`).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getStateListData();
@@ -89,7 +89,7 @@ const StateMaster = () => {
                     <span className="btn btn-sm text-white px-1 py-0 mr-1" >
                         <input
                             type="checkbox"
-                            checked={selectedOption.length > 0 && selectedOption[0]?.stateId === row?.stateId}
+                            checked={selectedOption.length > 0 && selectedOption[0]?.cwhnumStateId === row?.cwhnumStateId}
                             onChange={(e) => { handleRowSelect(row) }}
                         />
                     </span>
@@ -98,12 +98,12 @@ const StateMaster = () => {
         },
         {
             name: 'State Name',
-            selector: row => row.stateName,
+            selector: row => row.cwhstrStateName,
             sortable: true,
         },
         {
             name: 'State Short Name',
-            selector: row => row.stateShortName,
+            selector: row => row.cwhstrStateShortName,
             sortable: true,
         },
     ]
@@ -164,7 +164,7 @@ const StateMaster = () => {
                 </>)}
 
                 {openPage === 'view' &&
-                    <ViewPage data={[{ value: 'India', label: "Country" }, { value: selectedOption[0]?.stateName, label: "State Name" }, { value: selectedOption[0]?.stateShortName, label: "State ShortName" }, { value: selectedOption[0]?.isValid == 1 ? "Active" : "InActive", label: "Record Status" }]} onClose={onClose} title={"State Master"} />
+                    <ViewPage data={[{ value: 'India', label: "Country" }, { value: selectedOption[0]?.cwhstrStateName, label: "State Name" }, { value: selectedOption[0]?.cwhstrStateShortName, label: "State ShortName" }, { value: selectedOption[0]?.gnumIsValid == 1 ? "Active" : "InActive", label: "Record Status" }]} onClose={onClose} title={"State Master"} />
                 }
 
                 {(openPage === "add" || openPage === 'modify') && (<>

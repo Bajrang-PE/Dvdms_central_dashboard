@@ -9,53 +9,53 @@ import DrugMasterForm from '../forms/DrugMasterForm';
 
 const DrugMaster = () => {
 
-    const {selectedOption,setSelectedOption,groupDrpData,getGroupDrpData,subGroupDrpData,getSubGroupDrpData,openPage, setOpenPage,
-        setConfirmSave,confirmSave,setShowConfirmSave
+    const { selectedOption, setSelectedOption, groupDrpData, getGroupDrpData, subGroupDrpData, getSubGroupDrpData, openPage, setOpenPage,
+        setConfirmSave, confirmSave, setShowConfirmSave
     } = useContext(LoginContext);
 
-     const [values, setValues] = useState({
-            "groupId":"0","subGroupId":"0","recordStatus":"1"
-        })
+    const [values, setValues] = useState({
+        "groupId": "0", "subGroupId": "0", "recordStatus": "1"
+    })
 
-          const [errors, setErrors] = useState({
-                groupIdErr: "",subGroupIdErr:""
-            })
+    const [errors, setErrors] = useState({
+        groupIdErr: "", subGroupIdErr: ""
+    })
 
-        const [listData ,setListData]=useState([])
-        const [selectAll, setSelectAll] = useState(false);
-        const [selectedGroupName,setSelectedGroupName]=useState("")
-        const [selectedSubGroupName,setSelectedSubGroupName]=useState("")
-        const [selectedGroupId,setSelectedGroupId]=useState("")
-        const [selectedSubGroupId,setSelectedSubGroupId]=useState("")
+    const [listData, setListData] = useState([])
+    const [selectAll, setSelectAll] = useState(false);
+    const [selectedGroupName, setSelectedGroupName] = useState("")
+    const [selectedSubGroupName, setSelectedSubGroupName] = useState("")
+    const [selectedGroupId, setSelectedGroupId] = useState("")
+    const [selectedSubGroupId, setSelectedSubGroupId] = useState("")
 
-    useEffect(()=>{
+    useEffect(() => {
         getGroupDrpData();
-    },[])
+    }, [])
 
-    useEffect(()=>{    
+    useEffect(() => {
         getSubGroupDrpData(values?.groupId);
-    },[values?.groupId])
+    }, [values?.groupId])
 
-    useEffect(()=>{
-        getListData(values?.groupId,values?.subGroupId,values?.recordStatus);
-    },[values?.groupId,values?.subGroupId,values?.recordStatus])
+    useEffect(() => {
+        getListData(values?.groupId, values?.subGroupId, values?.recordStatus);
+    }, [values?.groupId, values?.subGroupId, values?.recordStatus])
 
-    const handleValueChange=(e)=>{
+    const handleValueChange = (e) => {
         const { name, value } = e.target;
-        const errName=name+"Err";
+        const errName = name + "Err";
         if (name === "groupId") {
             const selectOptionGrp = groupDrpData.find(opt => String(opt.value) === String(value));
             setSelectedGroupName(selectOptionGrp?.label || "");
-            setSelectedGroupId(selectOptionGrp?.value || "")         
+            setSelectedGroupId(selectOptionGrp?.value || "")
         }
         if (name === "subGroupId") {
             const selectOptionSubGrp = subGroupDrpData.find(opt => String(opt.value) === String(value));
             setSelectedSubGroupName(selectOptionSubGrp?.label || "");
             setSelectedSubGroupId(selectOptionSubGrp?.value || "")
         }
-        if(name){
-        setValues({ ...values, [name]: value });
-        setErrors({ ...errors, [errName]: "" });
+        if (name) {
+            setValues({ ...values, [name]: value });
+            setErrors({ ...errors, [errName]: "" });
         }
 
     }
@@ -63,36 +63,34 @@ const DrugMaster = () => {
 
     useEffect(() => {
         setValues(prev => ({
-          ...prev,
-          subGroupId: "0"
+            ...prev,
+            subGroupId: "0"
         }));
 
-        if(values.groupId === ""){
+        if (values.groupId === "") {
             setValues(prev => ({
                 ...prev,
                 groupId: "0"
-              }));
+            }));
         }
-      }, [values.groupId]);
+    }, [values.groupId]);
 
- 
-    const getListData=(grpId,sbGrpId,recStatus)=>{
-      
+
+    const getListData = (grpId, sbGrpId, recStatus) => {
+
         // const val = {
         //     cwhnumGroupId:grpId,
         //     gnumIsValid:recStatus,
         //     cwhnumSubgroupId:sbGrpId
-            
+
         // }
         //alert("====grpId======"+grpId+"====sbGrpId====="+sbGrpId+"=====recStatus===="+recStatus)
 
-         fetchData(`http://10.226.17.20:8025/api/v1/drug/all?groupId=${grpId}&subGroupId=${sbGrpId}&isActive=${recStatus}`).then((data) => {
-            console.log("=====response=====",data)
+        fetchData(`http://10.226.17.20:8025/api/v1/drug/all?groupId=${grpId}&subGroupId=${sbGrpId}&isActive=${recStatus}`).then((data) => {
+
             if (data?.status === 1 && Array.isArray(data.data)) {
-                //alert("Data avl")
                 setListData(data.data)
             } else {
-                //alert("Data not avl")
                 setListData([])
             }
 
@@ -173,163 +171,163 @@ const DrugMaster = () => {
         },
     ];
 
-   
-        const handleDeleteRecord = () => {
-               if (selectedOption?.length > 0) {
-                   setOpenPage('delete');
-                   setShowConfirmSave(true);
-               } else {
-                   ToastAlert("Please select a record", "warning");
-               }
-           }
-   
-       useEffect(() => {
-           if (confirmSave && openPage === 'delete') {
-               handleDelete();
-           }
-       }, [confirmSave])
 
-    const handleDelete=()=>{
+    const handleDeleteRecord = () => {
+        if (selectedOption?.length > 0) {
+            setOpenPage('delete');
+            setShowConfirmSave(true);
+        } else {
+            ToastAlert("Please select a record", "warning");
+        }
+    }
 
-          const val = {
-            cwhnumGroupId:values?.groupId,
-            gnumIsValid:1,
-            cwhnumSubgroupId:values?.subGroupId,
+    useEffect(() => {
+        if (confirmSave && openPage === 'delete') {
+            handleDelete();
+        }
+    }, [confirmSave])
+
+    const handleDelete = () => {
+
+        const val = {
+            cwhnumGroupId: values?.groupId,
+            gnumIsValid: 1,
+            cwhnumSubgroupId: values?.subGroupId,
         }
 
-        fetchDeleteData(`http://10.226.17.20:8025/api/v1/drug`,val).then( data => {
-            if(data){
+        fetchDeleteData(`http://10.226.17.20:8025/api/v1/drug`, val).then(data => {
+            if (data) {
                 ToastAlert('Data deleted successfully', 'success')
                 setConfirmSave(false);
                 setSelectedOption([]);
                 setOpenPage("home");
-                getListData(1,1,1);
-            }else{
+                getListData(1, 1, 1);
+            } else {
                 ToastAlert('Error while deleting record!', 'error')
                 setOpenPage("home")
             }
 
         })
-        
+
     }
 
 
 
-  return (
-    <>
-    <div className="masters mx-3 my-2">
-    {(openPage === "home" || openPage === "view" || openPage === 'delete')&&
-                <>
-    <div className='text-left w-100 fw-bold p-1 heading-text' >Drug Master</div>
-    <div className="row">
+    return (
+        <>
+            <div className="masters mx-3 my-2">
+                {(openPage === "home" || openPage === "view" || openPage === 'delete') &&
+                    <>
+                        <div className='text-left w-100 fw-bold p-1 heading-text' >Drug Master</div>
+                        <div className="row">
 
-        <div className="form-group col-sm-4 row pt-1">
-            <label className="col-sm-4 col-form-label fix-label required-label">Group</label>
-           
-                      <div className="col-sm-8 align-content-center">
-                          <InputSelect
-                              className="aliceblue-bg form-control form-control-sm border-dark-subtle"
-                              name='groupId'
-                              id='groupId'
-                              placeholder={"Select Value"}
-                              options={groupDrpData}
-                              value={values?.groupId}
-                              onChange={handleValueChange}
-                              errorMessage={errors?.groupIdErr}
+                            <div className="form-group col-sm-4 row pt-1">
+                                <label className="col-sm-4 col-form-label fix-label required-label">Group</label>
 
-                          />
+                                <div className="col-sm-8 align-content-center">
+                                    <InputSelect
+                                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                        name='groupId'
+                                        id='groupId'
+                                        placeholder={"Select Value"}
+                                        options={groupDrpData}
+                                        value={values?.groupId}
+                                        onChange={handleValueChange}
+                                        errorMessage={errors?.groupIdErr}
 
-
-                      </div>
-
-        </div>
-
-        <div className="form-group col-sm-4 row">
-            <label className="col-sm-4 col-form-label fix-label required-label">Subgroup</label>
-            <div className="col-sm-8 align-content-center">
-                          <InputSelect
-                              className="aliceblue-bg form-control form-control-sm border-dark-subtle"
-                              name='subGroupId'
-                              id='subGroupId'
-                              placeholder={"Select Value"}
-                              options={subGroupDrpData}
-                              value={values?.subGroupId}
-                              onChange={handleValueChange}
-                              errorMessage={errors?.subGroupIdErr}
-
-                          />
+                                    />
 
 
-                      </div>
-
-
-        </div>
-
-        <div className="form-group col-sm-4 row"> 
-            <label className="col-sm-4 col-form-label fix-label required-label">Record Status</label>
-            <div className="col-sm-8 align-content-center">
-                          <InputSelect
-                              className="aliceblue-bg form-control form-control-sm border-dark-subtle"
-                              name='recordStatus'
-                              id='recordStatus'
-                              options={[{label:"Active",value:"1"},{label:"Inactive",value:"0"}]}
-                              value={values?.recordStatus}
-                              onChange={handleValueChange}
-                            //   errorMessage={errors?.groupIdErr}
-
-                          />
-
-
-                      </div>
-
-
-        </div>
-
-        <div>
-                      <GlobalTable column={columns} data={listData} onDelete={handleDeleteRecord}
-                          onReport={null} setSearchInput={null} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
-        </div>
-
-        
-        {openPage === 'view' &&
-                        <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
-                            <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
-                                <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
-                            </Modal.Header>
-                            <Modal.Body className='px-2 py-1'>
-
-                                <div className='text-left'>
-                                    <label><b>Group Name : </b></label>&nbsp;{selectedGroupName}<br/>
-                                    <label><b>Subgroup Name : </b></label>&nbsp;{selectedSubGroupName}<br/>
-                                    <label><b>Drug Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrDrugName}<br/>
-                                    <label><b>Drug Type Name : </b></label>&nbsp;{selectedOption[0]?.cwhnumDrugTypeId}<br/>
-                                    <label><b>Drug Code : </b></label>&nbsp;{selectedOption[0]?.cwhnumDrugId}<br/>
-                                    <label><b>Unit : </b></label>&nbsp;{selectedOption[0]?.cwhstrStrengthName}
-                                       {/* //<label><b>Sub Group Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrSubgroupName}<br/> */}
                                 </div>
 
-                                <div className='text-center mt-1'>
+                            </div>
 
-                                    <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
-                                        <i className="fa fa-broom me-1"></i> Close
-                                    </button>
+                            <div className="form-group col-sm-4 row">
+                                <label className="col-sm-4 col-form-label fix-label required-label">Subgroup</label>
+                                <div className="col-sm-8 align-content-center">
+                                    <InputSelect
+                                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                        name='subGroupId'
+                                        id='subGroupId'
+                                        placeholder={"Select Value"}
+                                        options={subGroupDrpData}
+                                        value={values?.subGroupId}
+                                        onChange={handleValueChange}
+                                        errorMessage={errors?.subGroupIdErr}
+
+                                    />
+
+
                                 </div>
 
-                            </Modal.Body>
-                        </Modal>
-         }
 
-    </div>
-    </>}
+                            </div>
 
-    { (openPage === "add" || openPage === "modify") &&
-       <DrugMasterForm selectedGroupName={selectedGroupName} selectedSubGroupName={selectedSubGroupName}
-       selectedGroupId={selectedGroupId} selectedSubGroupId={selectedSubGroupId} />
-       
-    }
-    </div>
-    </>
-  )
+                            <div className="form-group col-sm-4 row">
+                                <label className="col-sm-4 col-form-label fix-label required-label">Record Status</label>
+                                <div className="col-sm-8 align-content-center">
+                                    <InputSelect
+                                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                        name='recordStatus'
+                                        id='recordStatus'
+                                        options={[{ label: "Active", value: "1" }, { label: "Inactive", value: "0" }]}
+                                        value={values?.recordStatus}
+                                        onChange={handleValueChange}
+                                    //   errorMessage={errors?.groupIdErr}
+
+                                    />
+
+
+                                </div>
+
+
+                            </div>
+
+                            <div>
+                                <GlobalTable column={columns} data={listData} onDelete={handleDeleteRecord}
+                                    onReport={null} setSearchInput={null} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                            </div>
+
+
+                            {openPage === 'view' &&
+                                <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
+                                    <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
+                                        <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
+                                    </Modal.Header>
+                                    <Modal.Body className='px-2 py-1'>
+
+                                        <div className='text-left'>
+                                            <label><b>Group Name : </b></label>&nbsp;{selectedGroupName}<br />
+                                            <label><b>Subgroup Name : </b></label>&nbsp;{selectedSubGroupName}<br />
+                                            <label><b>Drug Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrDrugName}<br />
+                                            <label><b>Drug Type Name : </b></label>&nbsp;{selectedOption[0]?.cwhnumDrugTypeId}<br />
+                                            <label><b>Drug Code : </b></label>&nbsp;{selectedOption[0]?.cwhnumDrugId}<br />
+                                            <label><b>Unit : </b></label>&nbsp;{selectedOption[0]?.cwhstrStrengthName}
+                                            {/* //<label><b>Sub Group Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrSubgroupName}<br/> */}
+                                        </div>
+
+                                        <div className='text-center mt-1'>
+
+                                            <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
+                                                <i className="fa fa-broom me-1"></i> Close
+                                            </button>
+                                        </div>
+
+                                    </Modal.Body>
+                                </Modal>
+                            }
+
+                        </div>
+                    </>}
+
+                {(openPage === "add" || openPage === "modify") &&
+                    <DrugMasterForm selectedGroupName={selectedGroupName} selectedSubGroupName={selectedSubGroupName}
+                        selectedGroupId={selectedGroupId} selectedSubGroupId={selectedSubGroupId} />
+
+                }
+            </div>
+        </>
+    )
 }
 
 export default DrugMaster

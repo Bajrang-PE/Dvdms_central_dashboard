@@ -14,11 +14,10 @@ const Parameters = lazy(() => import('./Parameters'));
 
 const TabularDash = (props) => {
 
-  const { widgetData, setWidgetData, levelData, setLevelData, pkColumn, setPkColumn } = props;
+  const { widgetData, setWidgetData, levelData, setLevelData, pkColumn, setPkColumn, injectedData, injectedColumns } = props;
 
-  const { theme, singleConfigData, paramsValues, setLoading, presentWidgets, isSearchQuery, setIsSearchQuery,prevKpiTab } = useContext(HISContext);
+  const { theme, singleConfigData, paramsValues, setLoading, presentWidgets, isSearchQuery, setIsSearchQuery, prevKpiTab } = useContext(HISContext);
 
-  console.log(widgetData,'tabledd')
 
   const [tableData, setTableData] = useState([]);
   const [currentLevel, setCurrentLevel] = useState(0);
@@ -229,7 +228,7 @@ const TabularDash = (props) => {
 
       try {
         setFetching(true)
-        const data = await fetchQueryData(widget?.queryVO?.length > 0 ? widget?.queryVO : [], widget?.JNDIid, params);
+        const data = await fetchQueryData(widget?.queryVO?.length > 0 ? widget?.queryVO : [], widget?.JNDIid, params, pkColumn);
         if (data?.length > 0) {
           const formattedData = formatData(data); // if you want to keep formatting consistent
           const generatedColumns = generateColumns(formattedData, isChildPresent);
@@ -250,6 +249,14 @@ const TabularDash = (props) => {
     }
   }
 
+
+
+  useEffect(() => {
+    if (injectedData && injectedColumns) {
+      setTableData(injectedData);
+      setColumns(injectedColumns);
+    }
+  }, [injectedData, injectedColumns]);
 
   useEffect(() => {
     if (widgetData) {
@@ -419,7 +426,7 @@ const TabularDash = (props) => {
           }
 
         </div>
-         {paramsData && (
+        {paramsData && (
           <div className='parameter-box'>
             <Parameters params={paramsData} scope={'widgetParams'} widgetId={widgetData?.rptId} />
           </div>
