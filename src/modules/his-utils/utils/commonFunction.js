@@ -60,7 +60,7 @@ export const convertToISODate = (dateStr) => {
   return `${formattedYear}-${formattedMonth}-${day}`;
 };
 
-export const fetchQueryData = async (queryVO = [], jndiServer, params,pkColumn) => {
+export const fetchQueryData = async (queryVO = [], jndiServer, params, pkColumn) => {
   if (!Array.isArray(queryVO) || queryVO.length === 0) {
     console.error("Invalid or empty queryVO array provided.");
     return [];
@@ -72,13 +72,18 @@ export const fetchQueryData = async (queryVO = [], jndiServer, params,pkColumn) 
       console.error("No valid query found in queryVO.");
       return [];
     }
+
+    const popupIds = [...query?.matchAll(/#(PK\d+)#/g)]?.map(match => match[1]);
+    const popupIdStr = popupIds?.join(",");
+
     const requestBody = {
       query, params: {},
       jndi: jndiServer,
       strGroupParaId: params?.strGroupParaId,
       strGroupParaValue: params?.strGroupParaValue,
-       popupId: "#PK0#",
-      popupValue: pkColumn?.toString()
+      popupId: popupIdStr ? popupIdStr : "",
+      popupValue: pkColumn ? pkColumn?.toString() : ""
+      // popupValue: "22@2020@"
     };
     const response = await fetchPostData("/hisutils/GenericApiQry", requestBody);
 
@@ -168,7 +173,7 @@ export const formatParams = (allParams, widgetId) => {
 };
 
 
-export const getOrderedParamValues = (query, paramsValues, widgetId) => {
+export const getOrderedParamValues = (query, paramsValues,widgetId) => {
   const paramVal = formatParams(paramsValues ? paramsValues : null, widgetId || '');
 
   const paramOrder = [];
@@ -176,7 +181,7 @@ export const getOrderedParamValues = (query, paramsValues, widgetId) => {
   let match;
   while ((match = regex.exec(query)) !== null) {
     // paramOrder.push(match[1]);
-    const id = match[1];
+     const id = match[1];
     if (!paramOrder.includes(id)) {
       paramOrder.push(id); // Add only if not already included
     }
@@ -195,7 +200,7 @@ export const getOrderedParamValues = (query, paramsValues, widgetId) => {
   //   strGroupParaValue: Object.values(idToValue).join(',')
   // };
 
-  const filteredIds = [];
+ const filteredIds = [];
   const filteredValues = [];
 
   paramOrder.forEach((id) => {

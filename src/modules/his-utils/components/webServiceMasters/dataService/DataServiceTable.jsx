@@ -128,7 +128,7 @@ const DataServiceTable = (props) => {
                     </div>
                 </div>
 
-                <div className='datatable-btns row mx-3 my-1 '>
+                <div className='datatable-btns-his row mx-3 my-1 '>
                     <div className='col-6 m-0 p-0 align-content-center'>
                         {isShowBtn &&
                             <>

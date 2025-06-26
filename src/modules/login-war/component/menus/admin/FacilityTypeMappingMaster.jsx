@@ -31,14 +31,13 @@ const FacilityTypeMappingMaster = () => {
     }, [stateId]);
 
     useEffect(() => {
-        if (facilityTypeId && stateId) {
+        if (stateId && facilityTypeId) {
             getMappedList();
-            getUnmappedList();
         }
     }, [stateId, facilityTypeId])
 
     const getUnmappedList = () => {
-        fetchData(`http://10.226.17.20:8025/api/v1/facilityMap/unmappedFcility?facilityTypeId=${facilityTypeId}&stateId=${stateId}`).then(data => {
+        fetchData(`api/v1/unmappedFacilities/${stateId}`).then(data => {
             if (data?.status === 1) {
                 setAvailableOptions(data?.data)
             } else {
@@ -49,7 +48,7 @@ const FacilityTypeMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`http://10.226.17.20:8025/api/v1/facilityMap/mapped?facilityTypeId=${facilityTypeId}&stateId=${47}`).then(data => {
+        fetchData(`api/v1/mapped/${facilityTypeId}/${stateId}`).then(data => {
             if (data.status === 1) {
                 setSelectedOptions(data?.data)
             } else {
@@ -70,7 +69,7 @@ const FacilityTypeMappingMaster = () => {
             // "order": 0
         }
 
-        fetchPostData(`http://10.226.17.20:8025/api/v1/facilityMap/saveFacilityMap`, val).then(data => {
+        fetchPostData(`api/v1/facility-type`, val).then(data => {
             if (data?.status === 1) {
                 console.log(data?.data)
             } else {
@@ -116,8 +115,6 @@ const FacilityTypeMappingMaster = () => {
         setFacilityTypeId('')
         setStateId('')
     }
-
-
 
 
     return (

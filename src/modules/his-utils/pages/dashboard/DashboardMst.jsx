@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useMemo, useCallback, Suspense, lazy } from "react";
 import { HISContext } from "../../contextApi/HISContext";
 import { useSearchParams } from "react-router-dom";
-import { fetchData } from "../../../../utils/HisApiHooks";
+import { fetchData, fetchPostData } from "../../../../utils/HisApiHooks";
 import Parameters from "../../components/sidebar/Parameters";
 
 const DashSidebar = lazy(() => import("../../components/sidebar/Sidebar"));
@@ -9,14 +9,16 @@ const TopBar = lazy(() => import("../../components/sidebar/TopBar"));
 const TabDash = lazy(() => import("../../components/sidebar/TabDash"));
 
 const DashboardMst = () => {
-    const { getAllTabsData, getAllWidgetData, allTabsData, activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData, setParamsValues, setPrevKpiTab } = useContext(HISContext);
+    const { getAllWidgetData, activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData, setParamsValues, setPrevKpiTab } = useContext(HISContext);
+
     const [searchParams] = useSearchParams();
     const groupId = searchParams.get("groupId");
     const dashboardFor = searchParams.get("dashboardFor");
+    const [presentTabs, setPresentTabs] = useState([]);
 
     useEffect(() => {
         if (!singleConfigData) {
-            getDashConfigData()
+            getDashConfigData();
         }
     }, [])
 
@@ -27,33 +29,53 @@ const DashboardMst = () => {
             });
     }, []);
 
+    const getAllAvailableTabs = useCallback(async (idArr, dashFor) => {
+        try {
+            const val = {
+                ids: idArr || [],
+                dashboardFor: dashFor || 'CENTRAL DASHBOARD',
+                masterName: "DashboardMst"
+            };
+            const data = await fetchPostData("hisutils/gettabsMultipleData", val);
+            if (data?.status === 1) {
+                setPresentTabs(data.data);
+            } else {
+                setPresentTabs([]);
+            }
+        } catch (error) {
+            console.error("Error fetching tabs data", error);
+        }
+    }, []);
+
+
     useEffect(() => {
         if (dashboardFor && groupId) {
-            getAllTabsData(dashboardFor);
+            // getAllTabsData(dashboardFor);
+            setLoading(true);
             getDashboardData(groupId, dashboardFor);
-            getAllWidgetData(dashboardFor);
+             getAllWidgetData(dashboardFor);
         }
     }, [searchParams]);
 
-    const presentTabs = useMemo(() => {
-        if (!mainDashData || !allTabsData?.length) return [];
-        const dashboardIdsArray = mainDashData?.jsonData?.dashboardIds?.split(',').map(Number) || [];
-        const themes = mainDashData?.jsonData?.dashboardTheme || 'Default'
-        setTheme(themes);
-        return dashboardIdsArray
-            .map(id => allTabsData.find(tab => tab.id === id))
-            .filter(Boolean);
-    }, [allTabsData, mainDashData]);
+
+    useEffect(() => {
+        if (mainDashData) {
+            const ids = mainDashData.jsonData.dashboardIds.split(',').map(Number) || [];
+            const themes = mainDashData?.jsonData?.dashboardTheme || 'Default'
+            setTheme(themes);
+            getAllAvailableTabs(ids, dashboardFor).finally(() => setLoading(false));
+        }
+    }, [mainDashData]);
 
     const isTopBarLayout = mainDashData?.jsonData?.tabDisplayStyle === 'TOP';
     const parameters = mainDashData?.jsonData?.allSelectedParaList || '';
 
-    useEffect(() => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-        }, 1000);
-    }, [])
+    // useEffect(() => {
+    //     setLoading(true);
+    //     setTimeout(() => {
+    //         setLoading(false);
+    //     }, 1000);
+    // }, [])
 
     const handleSetParamsValues = useCallback((values) => {
         setParamsValues(values);

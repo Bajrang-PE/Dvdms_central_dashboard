@@ -12,7 +12,7 @@ import { useSearchParams } from "react-router-dom";
 
 const Parameters = lazy(() => import('./Parameters'));
 
-const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedColumns }) => {
+const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
   const { theme, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery } = useContext(HISContext);
   const [widParamsValues, setWidParamsValues] = useState();
   const [filteredGraphOptions, setFilteredGraphOptions] = useState([]);
@@ -181,25 +181,6 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedCo
     }
   };
 
-  useEffect(() => {
-    if (injectedData && injectedColumns) {
-
-      const columnNames = Object.keys(injectedData[0])
-
-      const categoriesKey = columnNames[1];
-      const seriesKeys = columnNames.slice(0);
-
-      const categories = injectedData.map(item => item[categoriesKey]);
-      const seriesData = seriesKeys.map(key => ({
-        name: key,
-        data: injectedData.map(item => item[key]),
-        colorByPoint: true,
-      }));
-      setGraphData({ categories, seriesData });
-    }
-  }, [injectedData, injectedColumns]);
-
-
   const formatProcedureDataForGraph = (data) => {
     if (!data || data.length === 0) return { categories: [], seriesData: [] };
 
@@ -292,6 +273,7 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedCo
       }
     }
   }
+
   useEffect(() => {
     if (widgetData && widgetData?.modeOfQuery === "Procedure") {
       fetchProcedure(widgetData)

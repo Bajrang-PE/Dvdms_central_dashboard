@@ -103,7 +103,6 @@ const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab }) => {
                                                 e.preventDefault();
                                                 setActiveTab(tab);
                                                 setOpenSubMenu(openSubMenu === tab.id ? null : tab.id);
-                                                setPrevKpiTab([]);
                                             }}
                                         >
                                             <FontAwesomeIcon icon={getDynamicIcon(tab?.jsonData?.iconName)} className="me-2 dropdown-gear-icon" />
@@ -122,7 +121,6 @@ const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab }) => {
                                                                     e.preventDefault();
                                                                     setActiveTab(child);
                                                                     setOpenSubMenu(null);
-                                                                    setPrevKpiTab([]);
                                                                 }}
                                                             >
                                                                 <FontAwesomeIcon icon={getDynamicIcon(child?.jsonData?.iconName)} className="me-2 dropdown-gear-icon" />

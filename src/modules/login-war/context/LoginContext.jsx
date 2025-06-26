@@ -137,10 +137,10 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getSteteNameDrpData = () => {
-        fetchData('http://10.226.27.173:8025/api/v1/state/getstate').then((data) => {
-            if (data?.status === 1) {
+        fetchData('http://10.226.29.102:8025/state/getstate').then((data) => {
+            if (data) {
 
-                const drpData = data?.data?.map((dt) => {
+                const drpData = data?.map((dt) => {
                     const val = {
                         value: dt?.cwhnumStateId,
                         label: dt?.cwhstrStateName
@@ -284,8 +284,8 @@ const LoginContextApi = ({ children }) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
-                        value: dt?.cwhnumSubgroupId,
-                        label: dt?.cwhstrSubgroupName
+                        value: dt?.subgroupId,
+                        label: dt?.subgroupName
                     }
                     return val;
                 })

@@ -6,12 +6,13 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import { HISContext } from '../../contextApi/HISContext';
 import { fetchProcedureData, fetchQueryData, formatParams, getOrderedParamValues } from '../../utils/commonFunction';
 
-const KpiDash = ({ widgetData, presentTabs, injectedData, injectedColumns }) => {
-    const { setActiveTab, allTabsData, setLoading, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery, prevKpiTab, setPrevKpiTab, activeTab } = useContext(HISContext);
+const KpiDash = ({ widgetData, presentTabs }) => {
+    const { setActiveTab, allTabsData, setLoading, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery,prevKpiTab,setPrevKpiTab,activeTab } = useContext(HISContext);
     const [kpiData, setKpiData] = useState([]);
     const [kpiLoading, setKpiLoading] = useState(false);
 
-    
+   
+
     const formatData = (rawData = []) => {
         return rawData.map((item) => {
             const formattedItem = {};
@@ -81,7 +82,7 @@ const KpiDash = ({ widgetData, presentTabs, injectedData, injectedColumns }) => 
             }
         } else if (widget?.modeOfQuery === "HTMLText") {
             setKpiData(widget?.htmlText ? widget?.htmlText : "")
-
+            
         }
     }
 
@@ -128,6 +129,9 @@ const KpiDash = ({ widgetData, presentTabs, injectedData, injectedColumns }) => 
 
     const widheight = presentTabs?.length > 0 && presentTabs?.filter(dt => dt?.rptId == widgetData?.rptId)[0]?.widgetHeight;
 
+
+ console.log(widgetData, 'bgkpidd')
+ console.log(activeTab, 'activeTab')
 
 
     return (
@@ -213,19 +217,17 @@ const KpiDash = ({ widgetData, presentTabs, injectedData, injectedColumns }) => 
                     </>
                 }
 
-                {widgetData?.iconType !== 'NOICON' &&
-                    <div className="small-box-icon kpi-icon-img">
-                        {widgetData?.iconType === 'IMAGE' ?
-                            <img src="https://uatcdash.dcservices.in/HISUtilities/dashboard/images/Icon_images/default-icon.png" alt="image" className='dropdown-gear-icon' />
-                            :
-                            <FontAwesomeIcon icon={getDynamicIcon(widgetData?.iconName)} color={widgetData?.widgetIconColour} />
-                        }
-                        {/* <i className='fa fa-balance-scale'></i> */}
-                    </div>
-                }
-
             </div>
-
+            {widgetData?.iconType !== 'NOICON' &&
+                <div className="small-box-icon kpi-icon-img">
+                    {widgetData?.iconType === 'IMAGE' ?
+                        <img src="https://uatcdash.dcservices.in/HISUtilities/dashboard/images/Icon_images/default-icon.png" alt="image" className='dropdown-gear-icon' />
+                        :
+                        <FontAwesomeIcon icon={getDynamicIcon(widgetData?.iconName)} color={widgetData?.widgetIconColour} />
+                    }
+                    {/* <i className='fa fa-balance-scale'></i> */}
+                </div>
+            }
             <a href="#" className="small-box-footer" style={{ display: 'none' }}>
                 More info <i className="fa fa-search"></i>
             </a>

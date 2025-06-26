@@ -1,239 +1,79 @@
-import React, { useContext, useEffect, useReducer, useState } from "react";
-import NavbarHeader from "../../components/headers/NavbarHeader";
-import InputField from "../../components/commons/InputField";
-import InputSelect from "../../components/commons/InputSelect";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAdd,
-  faDatabase,
-  faEdit,
-  faFile,
-  faRefresh,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { motion, AnimatePresence } from "framer-motion";
-import { ToastAlert } from "../../utils/commonFunction";
-import { HISContext } from "../../contextApi/HISContext";
-import { fetchUpdateData } from "../../../../utils/HisApiHooks";
-import LogoUploader from "../../components/commons/LogoUploader";
-import {
-  DatabaseSelector,
-  DBConfigForm,
-} from "../../components/dashboardMasters/dashboardMaster/DatabaseSelector";
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import NavbarHeader from '../../components/headers/NavbarHeader'
+import InputField from '../../components/commons/InputField'
+import InputSelect from '../../components/commons/InputSelect'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faAdd, faDatabase, faEdit, faFile, faRefresh, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { serverName } from '../../localData/DropDownData'
+import { ToastAlert } from '../../utils/commonFunction'
+import { HISContext } from '../../contextApi/HISContext'
+import { fetchData, fetchUpdateData } from '../../../../utils/HisApiHooks'
+import LogoUploader from '../../components/commons/LogoUploader'
 
 const DbConfigMaster = () => {
-  const {
-    setSelectedOption,
-    setLoading,
-    setShowConfirmSave,
-    confirmSave,
-    setConfirmSave,
-    singleConfigData,
-    getDashConfigData,
-    clearAllCache,
-  } = useContext(HISContext);
+  const { dashboardForDt, getDashboardForDrpData, setSelectedOption, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, singleConfigData, getDashConfigData, clearAllCache } = useContext(HISContext);
 
   const [values, setValues] = useState({
-    staticReportHead1: "",
-    staticReportHead2: "",
-    staticReportHead3: "",
-    reportHeaderByQuery: "",
-    logoImageUrl: "",
-    staticDefaultLimit: "",
-    logoImageUrl1: "",
-    logoImageUrl2: "",
-    logoImageUrl3: "",
-  });
-
-  const [errors, setErrors] = useState({
-    staticReportHead1Err: "",
-    reportHeaderByQueryErr: "",
-  });
+    "configurationFor": '', "serverName": "WEBSPHERE", "jndiServer": '', "jndiServer1": '', "jndiServer2": '', "jndiServer3": '', "driverClass": "", "userName": "", "connectionURL": "", "password": "", "staticReportHead1": "", "staticReportHead2": "", "staticReportHead3": "", "reportHeaderByQuery": "", "logoImageUrl": "", "staticDefaultLimit": "", "logoImageUrl1": "", "logoImageUrl2": "", "logoImageUrl3": ""
+  })
 
   const [rows, setRows] = useState([]);
   const [newRow, setNewRow] = useState({
-    serviceReferenceNo: "",
-    serviceReferenceName: "",
-    serviceInitialServerURL: "",
-    defaultMethod: "1",
+    "serviceReferenceNo": '',
+    "serviceReferenceName": "",
+    "serviceInitialServerURL": "",
+    "serviceUserName": "",
+    "servicePassword": "",
+    "defaultMethod": "1"
   });
   // FOR RADIO BUTTONS
-  const [isDbConnReq, setIsDbConnReq] = useState("1");
-  const [isDashboardCached, setIsDashboardCached] = useState("Yes");
-  const [isConsoleReq, setIsConsoleReq] = useState("Yes");
-  const [isAccessReq, setIsAccessReq] = useState("No");
-  const [isErrorReq, setIsErrorReq] = useState("Yes");
-  const [isLogoReq, setIsLogoReq] = useState("Yes");
+  const [isDbConnReq, setIsDbConnReq] = useState('1');
+  const [isDashboardCached, setIsDashboardCached] = useState('Yes');
+  const [isConsoleReq, setIsConsoleReq] = useState('Yes');
+  const [isAccessReq, setIsAccessReq] = useState('No');
+  const [isErrorReq, setIsErrorReq] = useState('Yes');
+  const [isLogoReq, setIsLogoReq] = useState('Yes');
   const [logoPosition, setLogoPosition] = useState({
-    logo1Position: "left",
-    logo2Position: "right",
-    logo3Position: "top",
+    "logo1Position": "left", "logo2Position": "right", "logo3Position": "top"
   });
   const [headingAlignment, setHeadingAlignment] = useState("Left");
-  const [isLimitRecReq, setIsLimitRecReq] = useState("No");
-  const [isHeadByQueryReq, setIsHeadByQueryReq] = useState("No");
-  const [logoCounts, setLogoCounts] = useState("1");
+  const [isLimitRecReq, setIsLimitRecReq] = useState('No');
+  const [isHeadByQueryReq, setIsHeadByQueryReq] = useState('No');
+  const [logoCounts, setLogoCounts] = useState('1');
   const [isEditing, setIsEditing] = useState(null);
 
-  const initialDBFormState = {
-    postgresForm: false,
-    oracleForm: false,
-    edbForm: false,
-    hostname: "",
-    port: 0,
-    serviceName: "",
-    userName: "",
-    password: "",
-    schema: "",
-    currentDB: "",
-  };
-
-  function dbFormHandlerReducer(state, action) {
-    switch (action.type) {
-      case "postgres":
-        return {
-          ...state,
-          postgresForm: !state.postgresForm,
-          oracleForm: false,
-          edbForm: false,
-          currentDB: action.type,
-        };
-      case "oracle":
-        return {
-          ...state,
-          oracleForm: !state.oracleForm,
-          postgresForm: false,
-          edbForm: false,
-          currentDB: action.type,
-        };
-
-      case "edb":
-        return {
-          ...state,
-          edbForm: !state.edbForm,
-          oracleForm: false,
-          postgresForm: false,
-          currentDB: action.type,
-        };
-
-      case "updateHostname":
-        return {
-          ...state,
-          hostname: action.payload,
-        };
-
-      case "updatePort":
-        return {
-          ...state,
-          port: action.payload,
-        };
-
-      case "updateSID":
-        return {
-          ...state,
-          serviceName: action.payload,
-        };
-
-      case "updateUsername":
-        return {
-          ...state,
-          userName: action.payload,
-        };
-
-      case "updatePassword":
-        return {
-          ...state,
-          password: action.payload,
-        };
-
-      case "updateSchema":
-        return {
-          ...state,
-          schema: action.payload,
-        };
-
-      case "reset":
-        return {
-          ...initialDBFormState,
-        };
-
-      default:
-        return state;
-    }
-  }
-
-  const [dbFormState, dispatcher] = useReducer(
-    dbFormHandlerReducer,
-    initialDBFormState
-  );
-  async function checkDBConnection(e) {
-    e.preventDefault();
-
-    if (
-      dbFormState.hostname === "" ||
-      dbFormState.port === 0 ||
-      dbFormState.serviceName === "" ||
-      dbFormState.userName === "" ||
-      dbFormState.password === "" ||
-      dbFormState.schema === ""
-    ) {
-      ToastAlert(
-        "Please fill all the fields in Database form and then proceed",
-        "failed"
-      );
-      return;
-    }
-
-    const requestData = {
-      hostname: dbFormState.hostname,
-      port: dbFormState.port,
-      serviceName: dbFormState.serviceName,
-      username: dbFormState.userName,
-      password: dbFormState.password,
-      dbType: dbFormState.currentDB,
-    };
-
-    try {
-      const response = await fetch(
-        "http://localhost:8024/hisutils/TestDatabaseConnection",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestData),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data?.status == 1) {
-        ToastAlert(data?.message, "success");
-      } else {
-        ToastAlert(data?.message, "failed");
-      }
-    } catch (error) {
-      console.error("Error connecting to DB:", error);
-    }
-  }
+  const [errors, setErrors] = useState({
+    "configurationForErr": '', "serverNameErr": '', "driverClassErr": '', "connectionURLErr": '', "userNameErr": '', "passwordErr": '', "staticReportHead1Err": '', "reportHeaderByQueryErr": '', "jndiServerErr": '', "jndiServer1Err": '', "isDashboardCachedErr": '',
+  })
 
   //to set value of dashboard for auto
-  const dashFor = localStorage.getItem("dfor");
+  const dashFor = localStorage.getItem('dfor');
   useEffect(() => {
     if (dashFor) {
-      setValues({ ...values, configurationFor: dashFor });
+      setValues({ ...values, "configurationFor": dashFor })
     }
-  }, [dashFor]);
+  }, [dashFor])
+
+  useEffect(() => {
+    if (dashboardForDt?.length === 0) { getDashboardForDrpData(); }
+    getDashConfigData();
+  }, [])
 
   useEffect(() => {
     if (singleConfigData) {
       const dtd = singleConfigData?.databaseConfigVO;
       setValues({
         ...values,
+        configurationFor: dtd?.dashboardFor,
+        serverName: dtd?.serverName || "WEBSPHERE",
+        jndiServer: dtd?.jndiForPrimaryServer,
+        jndiServer1: dtd?.jndiForSecondaryServer1,
+        jndiServer2: dtd?.jndiForSecondaryServer2,
+        jndiServer3: dtd?.jndiForSecondaryServer3,
+        driverClass: dtd?.driverClassName,
+        userName: dtd?.userName,
+        connectionURL: dtd?.url,
+        password: dtd?.password,
         staticReportHead1: dtd?.reportHeader1,
         staticReportHead2: dtd?.reportHeader2,
         staticReportHead3: dtd?.reportHeader3,
@@ -243,7 +83,7 @@ const DbConfigMaster = () => {
         logoImageUrl2: dtd?.logos[1]?.image,
         logoImageUrl3: dtd?.logos[2]?.image,
         staticDefaultLimit: dtd?.setDefaultLimit,
-      });
+      })
       setIsDbConnReq(dtd?.isDbConnectionReq || "1");
       setIsDashboardCached(dtd?.isDashboardConfigurationCached || "Yes");
       setIsConsoleReq(dtd?.isLogAllMsgs || "Yes");
@@ -251,32 +91,33 @@ const DbConfigMaster = () => {
       setIsErrorReq(dtd?.isLogAllError || "Yes");
       setIsLogoReq(dtd?.isLogoRequired || "Yes");
       setLogoPosition({
-        logo1Position: dtd?.logos[0]?.position || "left",
-        logo2Position: dtd?.logos[1]?.position || "right",
-        logo3Position: dtd?.logos[2]?.position || "top",
+        "logo1Position": dtd?.logos[0]?.position || 'left',
+        "logo2Position": dtd?.logos[1]?.position || "right",
+        "logo3Position": dtd?.logos[2]?.position || "top"
       });
       setHeadingAlignment(dtd?.headingAlignment || "Left");
       setIsLimitRecReq(dtd?.isLimitRequired || "No");
-      setRows(dtd?.lstWebServiceClientConfigVO || []);
-      setLogoCounts(dtd?.logoCounts || "1");
-      setIsHeadByQueryReq(dtd?.isHeadByQueryReq || "No");
+      setRows(dtd?.lstWebServiceClientConfigVO || [])
+      setLogoCounts(dtd?.logoCounts || '1')
+      setIsHeadByQueryReq(dtd?.isHeadByQueryReq || "No")
     }
-  }, [singleConfigData]);
+  }, [singleConfigData])
 
   const handleValueChange = (e) => {
     const { name, value } = e.target;
-    const error = name + "Err";
+    const error = name + 'Err'
     if (name) {
-      setValues({ ...values, [name]: value });
+      setValues({ ...values, [name]: value })
     }
     if (error && name) {
-      setErrors({ ...errors, [error]: "" });
+      setErrors({ ...errors, [error]: '' })
     }
-  };
+  }
 
   const handleLogoChange = (name, base64String) => {
     setValues((prev) => ({ ...prev, [name]: base64String }));
   };
+
 
   const handleEditRow = (index) => {
     setIsEditing(index);
@@ -288,21 +129,16 @@ const DbConfigMaster = () => {
     setRows(updatedRows);
   };
 
-  function handleInputChange(field, value) {
+  const handleInputChange = (field, value) => {
+    const err = field + 'Err'
     setNewRow({ ...newRow, [field]: value });
-  }
+    // setErrors(prev => ({ ...prev, [err]: "" }));
+  };
 
   const clearRow = () => {
-    setNewRow({
-      serviceReferenceNo: "",
-      serviceReferenceName: "",
-      serviceInitialServerURL: "",
-      serviceUserName: "",
-      servicePassword: "",
-      defaultMethod: "1",
-    });
+    setNewRow({ "serviceReferenceNo": '', "serviceReferenceName": "", "serviceInitialServerURL": "", "serviceUserName": "", "servicePassword": "", "defaultMethod": "1" });
     setIsEditing(null);
-  };
+  }
 
   const handleAddRow = () => {
     if (isEditing !== null) {
@@ -321,238 +157,561 @@ const DbConfigMaster = () => {
       // oldDt?.push(newRow)
       // setValues({ ...values, ['helpDocs']: oldDt })
     }
-    setNewRow({
-      serviceReferenceNo: "",
-      serviceReferenceName: "",
-      serviceInitialServerURL: "",
-      serviceUserName: "",
-      servicePassword: "",
-      defaultMethod: "1",
-    });
+    setNewRow({ "serviceReferenceNo": '', "serviceReferenceName": "", "serviceInitialServerURL": "", "serviceUserName": "", "servicePassword": "", "defaultMethod": "1" });
   };
 
-  function saveConfiguration() {
-    if (
-      !dbFormState.oracleForm &&
-      !dbFormState.postgresForm &&
-      !dbFormState.edbForm
-    ) {
-      return;
-    }
-    setLoading(true);
 
-    const {
-      staticReportHead1,
-      staticReportHead2,
-      staticReportHead3,
-      reportHeaderByQuery,
-      staticDefaultLimit,
-      logoImageUrl1,
-      logoImageUrl2,
-      logoImageUrl3,
-    } = values;
+  const checkDatabaseConnection = () => {
+    fetchData("/hisutils/check-db-connection").then((data) => {
+      if (data?.status === 1) {
+        ToastAlert(data?.message)
+      } else {
+        ToastAlert(data?.message, 'error')
+      }
+    })
+  }
+
+
+  const saveConfiguration = () => {
+    setLoading(true);
+    const { configurationFor, serverName, jndiServer, jndiServer1, jndiServer2, jndiServer3, driverClass, userName, connectionURL, password, staticReportHead1, staticReportHead2, staticReportHead3, reportHeaderByQuery, logoImageUrl, staticDefaultLimit, logoImageUrl1, logoImageUrl2, logoImageUrl3 } = values;
 
     const val = {
-      databaseConfigVO: {
-        hostname: dbFormState.hostname,
-        port: dbFormState.port,
-        serviceName: dbFormState.serviceName,
-        userName: dbFormState.userName,
-        password: dbFormState.password,
-        schema: dbFormState.schema,
-        isDbConnectionReq: isDbConnReq,
-        reportHeader1: staticReportHead1,
-        reportHeader2: staticReportHead2,
-        reportHeader3: staticReportHead3,
-        reportHeaderByQuery: reportHeaderByQuery,
-        logos: [
+      "databaseConfigVO": {
+        "dashboardFor": configurationFor,
+        "driverClassName": driverClass,
+        "userName": userName,
+        "url": connectionURL,
+        "password": password,
+        "serverName": serverName,
+        "jndiForPrimaryServer": jndiServer,
+        "jndiForSecondaryServer1": jndiServer1,
+        "jndiForSecondaryServer2": jndiServer2,
+        "jndiForSecondaryServer3": jndiServer3,
+        "isDbConnectionReq": isDbConnReq,
+        "reportHeader1": staticReportHead1,
+        "reportHeader2": staticReportHead2,
+        "reportHeader3": staticReportHead3,
+        "reportHeaderByQuery": reportHeaderByQuery,
+        // "logoImage": logoImageUrl,
+        "logos": [
           { image: logoImageUrl1, position: logoPosition?.logo1Position },
           { image: logoImageUrl2, position: logoPosition?.logo2Position },
           { image: logoImageUrl3, position: logoPosition?.logo3Position },
         ].slice(0, parseInt(logoCounts)),
-        isDashboardConfigurationCached: isDashboardCached,
-        maxServiceReferenceNo: 2,
-        lstWebServiceClientConfigVO: rows?.length > 0 ? rows : [],
-        isLogoRequired: isLogoReq,
-        headingAlignment: headingAlignment,
-        isLogAllAccess: isAccessReq,
-        isLogAllError: isErrorReq,
-        isLogAllMsgs: isConsoleReq,
-        isLimitRequired: isLimitRecReq,
-        setDefaultLimit: staticDefaultLimit,
-        logoCounts: logoCounts,
-        isHeadByQueryReq: isHeadByQueryReq,
-      },
-    };
+        "isDashboardConfigurationCached": isDashboardCached,
+        "maxServiceReferenceNo": 2,
+        "lstWebServiceClientConfigVO": rows?.length > 0 ? rows : [],
+        "isLogoRequired": isLogoReq,
+        // "logoPosition": logoPosition,
+        "headingAlignment": headingAlignment,
+        "isLogAllAccess": isAccessReq,
+        "isLogAllError": isErrorReq,
+        "isLogAllMsgs": isConsoleReq,
+        "isLimitRequired": isLimitRecReq,
+        "setDefaultLimit": staticDefaultLimit,
+        "logoCounts": logoCounts,
+        "isHeadByQueryReq": isHeadByQueryReq
+      }
+    }
 
     fetchUpdateData("/hisutils/dashboard-config-save", val).then((data) => {
       if (data?.status === 1) {
         ToastAlert(data?.message, "success");
         reset();
         setConfirmSave(false);
-        setSelectedOption([]);
-        setLoading(false);
+        setSelectedOption([])
+        setLoading(false)
+        getDashConfigData()
       } else {
         ToastAlert(data?.message, "error");
         setConfirmSave(false);
-        setLoading(false);
+        setLoading(false)
       }
     });
   }
 
-  function handleSaveConfig(e) {
-    e.preventDefault();
-    if (
-      dbFormState.hostname === "" ||
-      dbFormState.port === 0 ||
-      dbFormState.serviceName === "" ||
-      dbFormState.userName === "" ||
-      dbFormState.password === "" ||
-      dbFormState.schema === ""
-    ) {
-      ToastAlert(
-        "Please fill all the fields in Database form and then proceed",
-        "failed"
-      );
-      return;
+  const handleSaveConfig = () => {
+    let isValid = true;
+    if (!values?.configurationFor?.trim()) {
+      setErrors(prev => ({ ...prev, 'configurationForErr': "configuration for is required" }));
+      isValid = false;
+    }
+    if (!values?.serverName?.trim()) {
+      setErrors(prev => ({ ...prev, 'serverNameErr': "server name is required" }));
+      isValid = false;
+    }
+
+    if (isDbConnReq === '1' && !values?.driverClass?.trim()) {
+      setErrors(prev => ({ ...prev, 'driverClassErr': "driver class is required" }));
+      isValid = false;
+    }
+    if (isDbConnReq === '1' && !values?.connectionURL?.trim()) {
+      setErrors(prev => ({ ...prev, 'connectionURLErr': "connection url is required" }));
+      isValid = false;
+    }
+    if (isDbConnReq === '1' && !values?.userName?.trim()) {
+      setErrors(prev => ({ ...prev, 'userNameErr': "user name is required" }));
+      isValid = false;
+    }
+    if (isDbConnReq === '1' && !values?.password?.trim()) {
+      setErrors(prev => ({ ...prev, 'passwordErr': "password is required" }));
+      isValid = false;
+    }
+    if (isDbConnReq === '0' && !values?.jndiServer?.trim()) {
+      setErrors(prev => ({ ...prev, 'jndiServerErr': "primary server is required" }));
+      isValid = false;
+    }
+    if (isDbConnReq === '0' && !values?.jndiServer1?.trim()) {
+      setErrors(prev => ({ ...prev, 'jndiServer1Err': "secondary server is required" }));
+      isValid = false;
     }
 
     if (!values?.staticReportHead1?.trim()) {
-      setErrors((prev) => ({
-        ...prev,
-        staticReportHead1Err: "report header is required",
-      }));
-      return;
+      setErrors(prev => ({ ...prev, 'staticReportHead1Err': "report header is required" }));
+      isValid = false;
     }
-    if (!values?.reportHeaderByQuery?.trim() && isHeadByQueryReq === "Yes") {
-      setErrors((prev) => ({
-        ...prev,
-        reportHeaderByQueryErr: "this field is required",
-      }));
-      return;
+    if (!values?.reportHeaderByQuery?.trim() && isHeadByQueryReq === 'Yes') {
+      setErrors(prev => ({ ...prev, 'reportHeaderByQueryErr': "this field is required" }));
+      isValid = false;
+    }
+    if (!isDashboardCached?.trim()) {
+      setErrors(prev => ({ ...prev, 'isDashboardCachedErr': "this field is required" }));
+      isValid = false;
     }
 
-    setShowConfirmSave(true);
+    if (isValid) {
+      setShowConfirmSave(true)
+    }
   }
 
-  function reset() {
-    //Reset Database Form
-    dispatcher({ type: "reset" });
-
-    setValues({
-      staticReportHead1: "",
-      staticReportHead2: "",
-      staticReportHead3: "",
-      reportHeaderByQuery: "",
-      logoImageUrl: "",
-      staticDefaultLimit: "",
-      logoImageUrl1: "",
-      logoImageUrl2: "",
-      logoImageUrl3: "",
-    });
-
-    setErrors({
-      staticReportHead1Err: "",
-      reportHeaderByQueryErr: "",
-      isDashboardCachedErr: "",
-    });
-    setLoading(false);
-    setRows([]);
-    setLogoPosition({
-      logo1Position: "left",
-      logo2Position: "right",
-      logo3Position: "top",
-    });
-  }
-
-  useEffect(
-    function () {
+  useEffect(() => {
+    if (confirmSave) {
       saveConfiguration();
-    },
-    [confirmSave]
-  );
+    }
+  }, [confirmSave])
+
+  const reset = () => {
+    setValues({ "configurationFor": '', "serverName": "WEBSPHERE", "jndiServer": '', "jndiServer1": '', "jndiServer2": '', "jndiServer3": '', "driverClass": "", "userName": "", "connectionURL": "", "password": "", "staticReportHead1": "", "staticReportHead2": "", "staticReportHead3": "", "reportHeaderByQuery": "", "logoImageUrl": "", "staticDefaultLimit": "", "logoImageUrl1": "", "logoImageUrl2": "", "logoImageUrl3": "" });
+
+    setErrors({ "configurationForErr": '', "serverNameErr": '', "driverClassErr": '', "connectionURLErr": '', "userNameErr": '', "passwordErr": '', "staticReportHead1Err": '', "reportHeaderByQueryErr": '', "jndiServerErr": '', "jndiServer1Err": '', "isDashboardCachedErr": '', });
+    setLoading(false)
+    setRows([])
+    setLogoPosition({ "logo1Position": "left", "logo2Position": "right", "logo3Position": "top" })
+  }
+
 
   return (
     <>
       <NavbarHeader />
-      <div className="main-master-page">
-        <div className="form-card m-auto p-2">
-          <b>
-            <h6 className="header-devider m-0 ps-1"> Configuration Master</h6>
-          </b>
+      <div className='main-master-page'>
+        <div className='form-card m-auto p-2'>
+          <b><h6 className='header-devider m-0 ps-1'> Configuration Master</h6></b>
           {/* <form action=""> */}
-          <div className="py-2 px-2">
-            <h4>Please Select DB To Continue</h4>
-            <DatabaseSelector dispatcher={dispatcher} />
-            <AnimatePresence>
-              {dbFormState.postgresForm && (
-                <motion.div
-                  key="postgres"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <DBConfigForm
-                    formState={dbFormState}
-                    dispatcher={dispatcher}
-                    dbType={"postgres"}
-                  />
-                </motion.div>
-              )}
-              {dbFormState.oracleForm && (
-                <motion.div
-                  key="postgres"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <DBConfigForm
-                    formState={dbFormState}
-                    dispatcher={dispatcher}
-                    dbType={"oracle"}
-                  />
-                </motion.div>
-              )}
-              {dbFormState.edbForm && (
-                <motion.div
-                  key="postgres"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <DBConfigForm
-                    formState={dbFormState}
-                    dispatcher={dispatcher}
-                    dbType={"postgres"}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <b>
-              <h6 className="header-devider my-1 ps-1">Header Details</h6>
-            </b>
+          <div className='py-2 px-2'>
+
+            {/* SECTION DEVIDER config for and server*/}
+            <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
+              {/* //left columns */}
+              <div className='col-sm-6'>
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0 required-label">Configuration For : </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <InputSelect
+                      id="configurationFor"
+                      name="configurationFor"
+                      placeholder="Select value..."
+                      options={dashboardForDt}
+                      className="backcolorinput"
+                      value={values?.configurationFor}
+                      onChange={(e) => { handleValueChange(e); localStorage?.setItem("dfor", e.target.value) }}
+                      errorMessage={errors?.configurationForErr}
+                    />
+                  </div>
+                </div>
+              </div>
+              {/* right columns */}
+              <div className='col-sm-6'>
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0 required-label">Server Name : </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <InputSelect
+                      className="backcolorinput"
+                      // placeholder="Select value..."
+                      id="serverName"
+                      name="serverName"
+                      options={serverName}
+                      value={values?.serverName}
+                      onChange={handleValueChange}
+                      errorMessage={errors?.serverNameErr}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION DEVIDER is dbconn req */}
+            <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
+              {/* //left columns */}
+              <div className='col-sm-6'>
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0">
+                    Is DB Connection String Required:
+                  </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="isDbConnReq"
+                        id="isDbConnReqYes"
+                        value={isDbConnReq}
+                        onChange={(e) => setIsDbConnReq('1')}
+                        checked={isDbConnReq === "1"}
+                      />
+                      <label className="form-check-label" htmlFor="dbYes">
+                        Yes
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="isDbConnReq"
+                        id="isDbConnReqNo"
+                        value={isDbConnReq}
+                        onChange={(e) => setIsDbConnReq('0')}
+                        checked={isDbConnReq === '0'}
+                      />
+                      <label className="form-check-label" htmlFor="dbNo">
+                        No
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* right columns */}
+              {/* <div className='col-sm-6'>
+                                </div> */}
+            </div>
+
+            {/* SECTION DEVIDER */}
+            {/* IF DB CONNECTION STRING NO */}
+            {isDbConnReq === '0' &&
+              <div iv className='role-theme db-connection-grid' style={{ paddingBottom: "1px" }}>
+                {/* //left columns */}
+                {/* <div className='col-sm-6'> */}
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0 required-label align-content-center">JNDI for Primary Server : </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <InputField
+                      type="text"
+                      className="backcolorinput"
+                      placeholder="For Saving Dashboard Master,Running Data service"
+                      name='jndiServer'
+                      id='jndiServer'
+                      value={values?.jndiServer}
+                      onChange={handleValueChange}
+                      errorMessage={errors?.jndiServerErr}
+
+                    />
+                  </div>
+                </div>
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0 required-label align-content-center">JNDI for Secondary Server 1(Reporting Server) : </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <InputField
+                      type="text"
+                      className="backcolorinput"
+                      placeholder="For Running Dashboard"
+                      name='jndiServer1'
+                      id='jndiServer1'
+                      value={values?.jndiServer1}
+                      onChange={handleValueChange}
+                      errorMessage={errors?.jndiServer1Err}
+
+                    />
+                  </div>
+                </div>
+                {/* </div> */}
+                {/* right columns */}
+                {/* <div className='col-sm-6'> */}
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label fix-label pe-0 align-content-center">JNDI for Secondary Server 2(Reporting Server) : </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <InputField
+                      type="text"
+                      className="backcolorinput"
+                      placeholder="For Running Dashboard"
+                      name='jndiServer2'
+                      id='jndiServer2'
+                      value={values?.jndiServer2}
+                      onChange={handleValueChange}
+                    />
+                  </div>
+                </div>
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label fix-label pe-0 align-content-center">JNDI for Secondary Server 3(Reporting Server) : </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <InputField
+                      type="text"
+                      className="backcolorinput"
+                      placeholder="For Running Dashboard"
+                      name='jndiServer3'
+                      id='jndiServer3'
+                      value={values?.jndiServer3}
+                      onChange={handleValueChange}
+                    />
+                  </div>
+                </div>
+                {/* </div> */}
+              </div>
+            }
+            {/* SECTION DEVIDER */}
+            {/* IF DB CONNECTION STRING YES */}
+            {isDbConnReq === '1' &&
+              <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
+                {/* //left columns */}
+                <div className='col-sm-6'>
+                  <div className="form-group row">
+                    <label className="col-sm-5 col-form-label pe-0 required-label">Driver Class Name : </label>
+                    <div className="col-sm-7 ps-0 align-content-center">
+                      <InputField
+                        type="text"
+                        className="backcolorinput"
+                        placeholder="Enter value..."
+                        name='driverClass'
+                        id='driverClass'
+                        value={values?.driverClass}
+                        onChange={handleValueChange}
+                        errorMessage={errors?.driverClassErr}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group row">
+                    <label className="col-sm-5 col-form-label pe-0 required-label">UserName  : </label>
+                    <div className="col-sm-7 ps-0 align-content-center">
+                      <InputField
+                        type="text"
+                        className="backcolorinput"
+                        placeholder="Enter value..."
+                        name='userName'
+                        id='userName'
+                        value={values?.userName}
+                        onChange={handleValueChange}
+                        errorMessage={errors?.userNameErr}
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* right columns */}
+                <div className='col-sm-6'>
+                  <div className="form-group row">
+                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Connection URL : </label>
+                    <div className="col-sm-7 ps-0 align-content-center">
+                      <InputField
+                        type="text"
+                        className="backcolorinput"
+                        placeholder="Enter value..."
+                        name='connectionURL'
+                        id='connectionURL'
+                        value={values?.connectionURL}
+                        onChange={handleValueChange}
+                        errorMessage={errors?.connectionURLErr}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group row">
+                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Password : </label>
+                    <div className="col-sm-7 ps-0 align-content-center">
+                      <InputField
+                        type="password"
+                        className="backcolorinput"
+                        placeholder="Enter value..."
+                        name='password'
+                        id='password'
+                        value={values?.password}
+                        onChange={handleValueChange}
+                        errorMessage={errors?.passwordErr}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+
+            {/* SECTION DEVIDER 4 logs radio*/}
+            <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
+              {/* //left columns */}
+              <div className='col-sm-6'>
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0 required-label">
+                    Is Dashboard Configuration Cached :
+                  </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="isDashboardCachedYes"
+                        name="isDashboardCached"
+                        value={isDashboardCached}
+                        onChange={(e) => setIsDashboardCached('Yes')}
+                        checked={isDashboardCached === 'Yes'}
+                      />
+                      <label className="form-check-label" htmlFor="dbYes">
+                        Yes
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="isDashboardCachedNo"
+                        name="isDashboardCached"
+                        value={isDashboardCached}
+                        onChange={(e) => setIsDashboardCached('No')}
+                        checked={isDashboardCached === 'No'}
+                      />
+                      <label className="form-check-label" htmlFor="dbNo">
+                        No
+                      </label>
+                    </div>
+                    {errors?.isDashboardCachedErr &&
+                      <div className="required-input">
+                        {errors?.isDashboardCachedErr}
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0">
+                    Is Access Log Required :
+                  </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="isAccessReqYes"
+                        name="isAccessReq"
+                        value={isAccessReq}
+                        onChange={(e) => setIsAccessReq('Yes')}
+                        checked={isAccessReq === 'Yes'}
+                      />
+                      <label className="form-check-label" htmlFor="dbYes">
+                        Yes
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="isAccessReqNo"
+                        name="isAccessReq"
+                        value={isAccessReq}
+                        onChange={(e) => setIsAccessReq('No')}
+                        checked={isAccessReq === 'No'}
+                      />
+                      <label className="form-check-label" htmlFor="dbNo">
+                        No
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* right columns */}
+              <div className='col-sm-6'>
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0">
+                    Is Console Log Required :
+                  </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="isConsoleReqYes"
+                        name="isConsoleReq"
+                        value={isConsoleReq}
+                        onChange={(e) => setIsConsoleReq('Yes')}
+                        checked={isConsoleReq === 'Yes'}
+                      />
+                      <label className="form-check-label" htmlFor="dbYes">
+                        Yes
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="isConsoleReqNo"
+                        name="isConsoleReq"
+                        value={isConsoleReq}
+                        onChange={(e) => setIsConsoleReq('No')}
+                        checked={isConsoleReq === 'No'}
+                      />
+                      <label className="form-check-label" htmlFor="dbNo">
+                        No
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0">
+                    Is Error Log Required :
+                  </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="isErrorReqYes"
+                        name="isErrorReq"
+                        value={isErrorReq}
+                        onChange={(e) => setIsErrorReq('Yes')}
+                        checked={isErrorReq === 'Yes'}
+                      />
+                      <label className="form-check-label" htmlFor="dbYes">
+                        Yes
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="isErrorReqNo"
+                        name="isErrorReq"
+                        value={isErrorReq}
+                        onChange={(e) => setIsErrorReq('No')}
+                        checked={isErrorReq === 'No'}
+                      />
+                      <label className="form-check-label" htmlFor="dbNo">
+                        No
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <b><h6 className='header-devider my-1 ps-1'>Header Details</h6></b>
+
             {/* SECTION DEVIDER static header and report header*/}
-            <div
-              iv
-              className="role-theme user-form db-connection-grid"
-              style={{ paddingBottom: "1px" }}
-            >
+            <div iv className='role-theme user-form db-connection-grid' style={{ paddingBottom: "1px" }}>
               {/* //left columns */}
               {/* <div className='col-sm-6'> */}
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0 required-label">
-                  Static Report Header1 :{" "}
-                </label>
+                <label className="col-sm-5 col-form-label pe-0 required-label">Static Report Header1 : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="text"
                     className="backcolorinput"
                     placeholder="Enter value..."
-                    name="staticReportHead1"
-                    id="staticReportHead1"
+                    name='staticReportHead1'
+                    id='staticReportHead1'
                     value={values?.staticReportHead1}
                     onChange={handleValueChange}
                     errorMessage={errors?.staticReportHead1Err}
@@ -560,16 +719,14 @@ const DbConfigMaster = () => {
                 </div>
               </div>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0">
-                  Static Report Header2 :{" "}
-                </label>
+                <label className="col-sm-5 col-form-label pe-0">Static Report Header2  : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="text"
                     className="backcolorinput"
                     placeholder="Enter value..."
-                    name="staticReportHead2"
-                    id="staticReportHead2"
+                    name='staticReportHead2'
+                    id='staticReportHead2'
                     value={values?.staticReportHead2}
                     onChange={handleValueChange}
                   />
@@ -577,16 +734,14 @@ const DbConfigMaster = () => {
               </div>
 
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label fix-label pe-0">
-                  Static Report Header3 :{" "}
-                </label>
+                <label className="col-sm-5 col-form-label fix-label pe-0">Static Report Header3 : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="text"
                     className="backcolorinput"
                     placeholder="Enter value..."
-                    name="staticReportHead3"
-                    id="staticReportHead3"
+                    name='staticReportHead3'
+                    id='staticReportHead3'
                     value={values?.staticReportHead3}
                     onChange={handleValueChange}
                   />
@@ -597,6 +752,7 @@ const DbConfigMaster = () => {
                   Heading Alignment:
                 </label>
                 <div className="col-sm-7 ps-0 align-content-center">
+
                   <div className="form-check form-check-inline">
                     <input
                       className="form-check-input"
@@ -604,7 +760,7 @@ const DbConfigMaster = () => {
                       id="headingAlignmentLeft"
                       name="headingAlignment"
                       value={headingAlignment}
-                      onChange={() => setHeadingAlignment("Left")}
+                      onChange={(e) => setHeadingAlignment("Left")}
                       checked={headingAlignment === "Left"}
                     />
                     <label className="form-check-label" htmlFor="dbNo">
@@ -618,7 +774,7 @@ const DbConfigMaster = () => {
                       id="headingAlignmentRight"
                       name="headingAlignment"
                       value={headingAlignment}
-                      onChange={() => setHeadingAlignment("right")}
+                      onChange={(e) => setHeadingAlignment("right")}
                       checked={headingAlignment === "right"}
                     />
                     <label className="form-check-label" htmlFor="dbNo">
@@ -632,7 +788,7 @@ const DbConfigMaster = () => {
                       id="headingAlignmentCenter"
                       name="headingAlignment"
                       value={headingAlignment}
-                      onChange={() => setHeadingAlignment("Center")}
+                      onChange={(e) => setHeadingAlignment("Center")}
                       checked={headingAlignment === "Center"}
                     />
                     <label className="form-check-label" htmlFor="dbYes">
@@ -643,13 +799,10 @@ const DbConfigMaster = () => {
               </div>
               {/* </div> */}
             </div>
-            <div
-              iv
-              className="row role-theme user-form"
-              style={{ paddingBottom: "1px" }}
-            >
+
+            <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
               {/* //left columns */}
-              <div className="col-sm-6">
+              <div className='col-sm-6'>
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">
                     Is Header By Query Required:
@@ -662,8 +815,8 @@ const DbConfigMaster = () => {
                         id="isHeadByQueryReqYes"
                         name="isHeadByQueryReq"
                         value={isHeadByQueryReq}
-                        onChange={() => setIsHeadByQueryReq("Yes")}
-                        checked={isHeadByQueryReq === "Yes"}
+                        onChange={(e) => setIsHeadByQueryReq('Yes')}
+                        checked={isHeadByQueryReq === 'Yes'}
                       />
                       <label className="form-check-label" htmlFor="dbYes">
                         Yes
@@ -676,8 +829,8 @@ const DbConfigMaster = () => {
                         id="isHeadByQueryReqNo"
                         name="isHeadByQueryReq"
                         value={isHeadByQueryReq}
-                        onChange={() => setIsHeadByQueryReq("No")}
-                        checked={isHeadByQueryReq === "No"}
+                        onChange={(e) => setIsHeadByQueryReq('No')}
+                        checked={isHeadByQueryReq === 'No'}
                       />
                       <label className="form-check-label" htmlFor="dbNo">
                         No
@@ -687,47 +840,36 @@ const DbConfigMaster = () => {
                 </div>
               </div>
               {/* right columns */}
-              <div className="col-sm-6">
-                {isHeadByQueryReq === "Yes" && (
+              <div className='col-sm-6'>
+                {isHeadByQueryReq === "Yes" &&
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">
-                      Report Header By Query :{" "}
-                    </label>
+                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Report Header By Query : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <textarea
                         className="form-control backcolorinput"
                         placeholder="Enter value..."
                         rows="1"
-                        name="reportHeaderByQuery"
-                        id="reportHeaderByQuery"
+                        name='reportHeaderByQuery'
+                        id='reportHeaderByQuery'
                         value={values?.reportHeaderByQuery}
                         onChange={handleValueChange}
                       ></textarea>
-                      {errors?.reportHeaderByQueryErr && (
+                      {errors?.reportHeaderByQueryErr &&
                         <div className="required-input">
                           {errors?.reportHeaderByQueryErr}
                         </div>
-                      )}
+                      }
                     </div>
                   </div>
-                )}
+                }
               </div>
             </div>
-            <b>
-              <h6 className="header-devider my-1 ps-1">
-                Logo Details -{" "}
-                <span className="required-label">
-                  <i>click on icon to uplaod logos</i>
-                </span>
-              </h6>
-            </b>
+
+            <b><h6 className='header-devider my-1 ps-1'>Logo Details -  <span className='required-label'><i>click on icon to uplaod logos</i></span></h6></b>
             {/* SECTION DEVIDER logo details*/}
-            <div
-              className="row role-theme user-form"
-              style={{ paddingBottom: "1px" }}
-            >
+            <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
               {/* //left columns */}
-              <div className="col-sm-6">
+              <div className='col-sm-6'>
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">
                     Is Logo Required:
@@ -740,8 +882,8 @@ const DbConfigMaster = () => {
                         id="isLogoReqYes"
                         name="isLogoReq"
                         value={isLogoReq}
-                        onChange={() => setIsLogoReq("Yes")}
-                        checked={isLogoReq === "Yes"}
+                        onChange={(e) => setIsLogoReq('Yes')}
+                        checked={isLogoReq === 'Yes'}
                       />
                       <label className="form-check-label" htmlFor="dbYes">
                         Yes
@@ -754,8 +896,8 @@ const DbConfigMaster = () => {
                         id="isLogoReqNo"
                         name="isLogoReq"
                         value={isLogoReq}
-                        onChange={() => setIsLogoReq("No")}
-                        checked={isLogoReq === "No"}
+                        onChange={(e) => setIsLogoReq('No')}
+                        checked={isLogoReq === 'No'}
                       />
                       <label className="form-check-label" htmlFor="dbNo">
                         No
@@ -765,8 +907,8 @@ const DbConfigMaster = () => {
                 </div>
               </div>
               {/* right columns */}
-              {isLogoReq === "Yes" && (
-                <div className="col-sm-6">
+              {isLogoReq === 'Yes' &&
+                <div className='col-sm-6'>
                   <div className="form-group row">
                     <label className="col-sm-5 col-form-label pe-0">
                       Logo Counts:
@@ -779,7 +921,7 @@ const DbConfigMaster = () => {
                           id="logoPositionTop"
                           name="logoCounts"
                           value={logoCounts}
-                          onChange={() => setLogoCounts("1")}
+                          onChange={(e) => setLogoCounts("1")}
                           checked={logoCounts === "1"}
                         />
                         <label className="form-check-label" htmlFor="dbYes">
@@ -793,7 +935,7 @@ const DbConfigMaster = () => {
                           id="logoPositionLeft"
                           name="logoPosition"
                           value={logoCounts}
-                          onChange={() => setLogoCounts("2")}
+                          onChange={(e) => setLogoCounts("2")}
                           checked={logoCounts === "2"}
                         />
                         <label className="form-check-label" htmlFor="dbNo">
@@ -807,7 +949,7 @@ const DbConfigMaster = () => {
                           id="logoPositionLeft"
                           name="logoPosition"
                           value={logoCounts}
-                          onChange={() => setLogoCounts("3")}
+                          onChange={(e) => setLogoCounts("3")}
                           checked={logoCounts === "3"}
                         />
                         <label className="form-check-label" htmlFor="dbNo">
@@ -817,22 +959,16 @@ const DbConfigMaster = () => {
                     </div>
                   </div>
                 </div>
-              )}
+              }
             </div>
-            {isLogoReq === "Yes" && (
-              <div
-                className="row role-theme user-form"
-                style={{ paddingBottom: "1px" }}
-              >
+
+            {isLogoReq === 'Yes' &&
+              <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
-                <div className="col-sm-6">
-                  {(logoCounts === "1" ||
-                    logoCounts === "2" ||
-                    logoCounts === "3") && (
+                <div className='col-sm-6'>
+                  {(logoCounts === "1" || logoCounts === "2" || logoCounts === "3") &&
                     <div className="form-group row">
-                      <label className="col-sm-5 col-form-label pe-0">
-                        Logo 1 File :{" "}
-                      </label>
+                      <label className="col-sm-5 col-form-label pe-0">Logo 1 File : </label>
                       <div className="col-sm-7 ps-0 align-content-center">
                         <LogoUploader
                           name="logoImageUrl1"
@@ -841,12 +977,10 @@ const DbConfigMaster = () => {
                         />
                       </div>
                     </div>
-                  )}
-                  {(logoCounts === "2" || logoCounts === "3") && (
+                  }
+                  {(logoCounts === "2" || logoCounts === "3") &&
                     <div className="form-group row">
-                      <label className="col-sm-5 col-form-label pe-0">
-                        Logo 2 File :{" "}
-                      </label>
+                      <label className="col-sm-5 col-form-label pe-0">Logo 2 File : </label>
                       <div className="col-sm-7 ps-0 align-content-center">
                         <LogoUploader
                           name="logoImageUrl2"
@@ -855,28 +989,24 @@ const DbConfigMaster = () => {
                         />
                       </div>
                     </div>
-                  )}
-                  {logoCounts === "3" && (
+                  }
+                  {logoCounts === "3" &&
                     <div className="form-group row">
-                      <label className="col-sm-5 col-form-label pe-0">
-                        Logo 3 File :{" "}
-                      </label>
+                      <label className="col-sm-5 col-form-label pe-0">Logo 3 File : </label>
                       <div className="col-sm-7 ps-0 align-content-center">
                         <LogoUploader
-                          name="logoImageUrl3"
+                          name='logoImageUrl3'
                           value={values.logoImageUrl3}
                           onChange={handleLogoChange}
                         />
                       </div>
                     </div>
-                  )}
+                  }
                 </div>
                 {/* right columns */}
 
-                <div className="col-sm-6">
-                  {(logoCounts === "1" ||
-                    logoCounts === "2" ||
-                    logoCounts === "3") && (
+                <div className='col-sm-6'>
+                  {(logoCounts === "1" || logoCounts === "2" || logoCounts === "3") &&
                     <div className="form-group row">
                       <label className="col-sm-5 col-form-label pe-0">
                         Logo 1 Position:
@@ -889,12 +1019,7 @@ const DbConfigMaster = () => {
                             id="logo1PositionLeft"
                             name="logo1Position"
                             value={logoPosition?.logo1Position}
-                            onChange={() =>
-                              setLogoPosition({
-                                ...logoPosition,
-                                logo1Position: "left",
-                              })
-                            }
+                            onChange={(e) => setLogoPosition({ ...logoPosition, "logo1Position": "left" })}
                             checked={logoPosition?.logo1Position === "left"}
                           />
                           <label className="form-check-label" htmlFor="dbNo">
@@ -909,12 +1034,7 @@ const DbConfigMaster = () => {
                             id="logo1PositionTop"
                             name="logo1Position"
                             value={logoPosition?.logo1Position}
-                            onChange={() =>
-                              setLogoPosition({
-                                ...logoPosition,
-                                logo1Position: "top",
-                              })
-                            }
+                            onChange={(e) => setLogoPosition({ ...logoPosition, "logo1Position": "top" })}
                             checked={logoPosition?.logo1Position === "top"}
                           />
                           <label className="form-check-label" htmlFor="dbYes">
@@ -929,12 +1049,7 @@ const DbConfigMaster = () => {
                             id="logo1PositionRight"
                             name="logo1Position"
                             value={logoPosition?.logo1Position}
-                            onChange={() =>
-                              setLogoPosition({
-                                ...logoPosition,
-                                logo1Position: "right",
-                              })
-                            }
+                            onChange={(e) => setLogoPosition({ ...logoPosition, "logo1Position": "right" })}
                             checked={logoPosition?.logo1Position === "right"}
                           />
                           <label className="form-check-label" htmlFor="dbNo">
@@ -943,8 +1058,8 @@ const DbConfigMaster = () => {
                         </div>
                       </div>
                     </div>
-                  )}
-                  {(logoCounts === "2" || logoCounts === "3") && (
+                  }
+                  {(logoCounts === "2" || logoCounts === "3") &&
                     <div className="form-group row">
                       <label className="col-sm-5 col-form-label pe-0">
                         Logo 2 Position:
@@ -957,12 +1072,7 @@ const DbConfigMaster = () => {
                             id="logo2PositionLeft"
                             name="logo2Position"
                             value={logoPosition?.logo2Position}
-                            onChange={() =>
-                              setLogoPosition({
-                                ...logoPosition,
-                                logo2Position: "left",
-                              })
-                            }
+                            onChange={(e) => setLogoPosition({ ...logoPosition, "logo2Position": "left" })}
                             checked={logoPosition?.logo2Position === "left"}
                           />
                           <label className="form-check-label" htmlFor="dbNo">
@@ -976,12 +1086,7 @@ const DbConfigMaster = () => {
                             id="logo2PositionTop"
                             name="logo2Position"
                             value={logoPosition?.logo2Position}
-                            onChange={() =>
-                              setLogoPosition({
-                                ...logoPosition,
-                                logo2Position: "top",
-                              })
-                            }
+                            onChange={(e) => setLogoPosition({ ...logoPosition, "logo2Position": "top" })}
                             checked={logoPosition?.logo2Position === "top"}
                           />
                           <label className="form-check-label" htmlFor="dbYes">
@@ -996,12 +1101,7 @@ const DbConfigMaster = () => {
                             id="logo2PositionRight"
                             name="logo2Position"
                             value={logoPosition?.logo2Position}
-                            onChange={() =>
-                              setLogoPosition({
-                                ...logoPosition,
-                                logo2Position: "right",
-                              })
-                            }
+                            onChange={(e) => setLogoPosition({ ...logoPosition, "logo2Position": "right" })}
                             checked={logoPosition?.logo2Position === "right"}
                           />
                           <label className="form-check-label" htmlFor="dbNo">
@@ -1010,13 +1110,14 @@ const DbConfigMaster = () => {
                         </div>
                       </div>
                     </div>
-                  )}
-                  {logoCounts === "3" && (
+                  }
+                  {logoCounts === "3" &&
                     <div className="form-group row">
                       <label className="col-sm-5 col-form-label pe-0">
                         Logo 3 Position:
                       </label>
                       <div className="col-sm-7 ps-0 align-content-center">
+
                         <div className="form-check form-check-inline">
                           <input
                             className="form-check-input"
@@ -1024,12 +1125,7 @@ const DbConfigMaster = () => {
                             id="logo3PositionLeft"
                             name="logo3Position"
                             value={logoPosition?.logo3Position}
-                            onChange={() =>
-                              setLogoPosition({
-                                ...logoPosition,
-                                logo3Position: "left",
-                              })
-                            }
+                            onChange={(e) => setLogoPosition({ ...logoPosition, "logo3Position": "left" })}
                             checked={logoPosition?.logo3Position === "left"}
                           />
                           <label className="form-check-label" htmlFor="dbNo">
@@ -1044,12 +1140,7 @@ const DbConfigMaster = () => {
                             id="logo3PositionTop"
                             name="logo3Position"
                             value={logoPosition?.logo3Position}
-                            onChange={() =>
-                              setLogoPosition({
-                                ...logoPosition,
-                                logo3Position: "top",
-                              })
-                            }
+                            onChange={(e) => setLogoPosition({ ...logoPosition, "logo3Position": "top" })}
                             checked={logoPosition?.logo3Position === "top"}
                           />
                           <label className="form-check-label" htmlFor="dbYes">
@@ -1064,12 +1155,7 @@ const DbConfigMaster = () => {
                             id="logo3PositionRight"
                             name="logo3Position"
                             value={logoPosition?.logo3Position}
-                            onChange={() =>
-                              setLogoPosition({
-                                ...logoPosition,
-                                logo3Position: "right",
-                              })
-                            }
+                            onChange={(e) => setLogoPosition({ ...logoPosition, "logo3Position": "right" })}
                             checked={logoPosition?.logo3Position === "right"}
                           />
                           <label className="form-check-label" htmlFor="dbNo">
@@ -1078,17 +1164,15 @@ const DbConfigMaster = () => {
                         </div>
                       </div>
                     </div>
-                  )}
+                  }
                 </div>
               </div>
-            )}
+            }
+
             {/* SECTION DEVIDER default limits*/}
-            <div
-              className="row role-theme user-form"
-              style={{ paddingBottom: "1px" }}
-            >
+            <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
               {/* //left columns */}
-              <div className="col-sm-6">
+              <div className='col-sm-6'>
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">
                     "Limit Records" Feature Required:
@@ -1101,8 +1185,8 @@ const DbConfigMaster = () => {
                         id="isLimitRecReqYes"
                         name="isLimitRecReq"
                         value={isLimitRecReq}
-                        onChange={() => setIsLimitRecReq("Yes")}
-                        checked={isLimitRecReq === "Yes"}
+                        onChange={(e) => setIsLimitRecReq('Yes')}
+                        checked={isLimitRecReq === 'Yes'}
                       />
                       <label className="form-check-label" htmlFor="dbYes">
                         Yes
@@ -1115,8 +1199,8 @@ const DbConfigMaster = () => {
                         id="isLimitRecReqNo"
                         name="isLimitRecReq"
                         value={isLimitRecReq}
-                        onChange={() => setIsLimitRecReq("No")}
-                        checked={isLimitRecReq === "No"}
+                        onChange={(e) => setIsLimitRecReq('No')}
+                        checked={isLimitRecReq === 'No'}
                       />
                       <label className="form-check-label" htmlFor="dbNo">
                         No
@@ -1126,31 +1210,30 @@ const DbConfigMaster = () => {
                 </div>
               </div>
               {/* right columns */}
-              {isLimitRecReq === "Yes" && (
-                <div className="col-sm-6">
+              {isLimitRecReq === 'Yes' &&
+                <div className='col-sm-6'>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label pe-0">
-                      Static Set Default Limit :{" "}
-                    </label>
+                    <label className="col-sm-5 col-form-label pe-0">Static Set Default Limit : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputField
                         type="text"
                         className="backcolorinput"
                         placeholder="Enter value..."
-                        name="staticDefaultLimit"
-                        id="staticDefaultLimit"
+                        name='staticDefaultLimit'
+                        id='staticDefaultLimit'
                         value={values?.staticDefaultLimit}
                         onChange={handleValueChange}
                       />
                     </div>
                   </div>
                 </div>
-              )}
+              }
             </div>
+
             <div className="table-responsive row pt-1">
               <table className="table table-borderless text-center mb-0">
                 <thead className="text-white">
-                  <tr className="header-devider m-0">
+                  <tr className='header-devider m-0'>
                     <th style={{ width: "15%" }}>Service Reference Name</th>
                     <th style={{ width: "25%" }}>Server URL</th>
                     <th style={{ width: "15%" }}>Default Method</th>
@@ -1165,57 +1248,43 @@ const DbConfigMaster = () => {
                       <InputField
                         type="text"
                         className="backcolorinput"
-                        name="serviceReferenceName"
-                        id="serviceReferenceName"
+                        name='serviceReferenceName'
+                        id='serviceReferenceName'
                         value={newRow?.serviceReferenceName}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "serviceReferenceName",
-                            e.target.value
-                          )
-                        }
+                        onChange={(e) => handleInputChange("serviceReferenceName", e.target.value)}
+
+
                       />
                     </td>
                     <td>
                       <InputField
                         type="text"
                         className="backcolorinput"
-                        name="serviceInitialServerURL"
-                        id="serviceInitialServerURL"
+                        name='serviceInitialServerURL'
+                        id='serviceInitialServerURL'
                         value={newRow?.serviceInitialServerURL}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "serviceInitialServerURL",
-                            e.target.value
-                          )
-                        }
+                        onChange={(e) => handleInputChange("serviceInitialServerURL", e.target.value)}
                       />
                     </td>
                     <td>
                       <InputSelect
                         className="backcolorinput"
-                        options={[
-                          { value: 1, label: "GET" },
-                          { value: 2, label: "POST" },
-                        ]}
+                        options={[{ value: 1, label: "GET" }, { value: 2, label: "POST" }]}
                         id="defaultMethod"
                         name="defaultMethod"
                         value={newRow?.defaultMethod}
-                        onChange={(e) =>
-                          handleInputChange("defaultMethod", e.target.value)
-                        }
-                      ></InputSelect>
+                        onChange={(e) => handleInputChange("defaultMethod", e.target.value)}
+                      >
+                      </InputSelect>
                     </td>
                     <td>
                       <InputField
                         type="text"
                         className="backcolorinput"
                         name="serviceUserName"
-                        id="serviceUserName"
+                        id='serviceUserName'
                         value={newRow?.serviceUserName}
-                        onChange={(e) =>
-                          handleInputChange("serviceUserName", e.target.value)
-                        }
+                        onChange={(e) => handleInputChange("serviceUserName", e.target.value)}
                       />
                     </td>
                     <td>
@@ -1223,69 +1292,37 @@ const DbConfigMaster = () => {
                         type="password"
                         className="backcolorinput"
                         name="servicePassword"
-                        id="servicePassword"
+                        id='servicePassword'
                         value={newRow?.servicePassword}
-                        onChange={(e) =>
-                          handleInputChange("servicePassword", e.target.value)
-                        }
+                        onChange={(e) => handleInputChange("servicePassword", e.target.value)}
                       />
                     </td>
-                    <td className="px-0 action-buttons">
-                      <button
-                        className="btn btn-sm me-1 py-0 px-0"
-                        style={{ background: "#34495e", color: "white" }}
-                        onClick={() => handleAddRow()}
-                      >
-                        <FontAwesomeIcon
-                          icon={faAdd}
-                          className="dropdown-gear-icon"
-                          size="sm"
-                        />
-                        {isEditing !== null ? "Modify" : "Add"}
-                      </button>
+                    <td className='px-0 action-buttons'>
+                      <button className='btn btn-sm me-1 py-0 px-0' style={{ background: "#34495e", color: "white" }} onClick={() => handleAddRow()}><FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size='sm' />{isEditing !== null ? "Modify" : "Add"}</button>
 
-                      <button
-                        className="btn btn-sm ms-1 py-0 px-0"
-                        style={{ background: "#34495e", color: "white" }}
-                        onClick={() => clearRow()}
-                      >
-                        <FontAwesomeIcon
-                          icon={faRefresh}
-                          className="dropdown-gear-icon"
-                          size="sm"
-                        />
-                        Clear
-                      </button>
+                      <button className='btn btn-sm ms-1 py-0 px-0' style={{ background: "#34495e", color: "white" }} onClick={() => clearRow()}><FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon" size='sm' />Clear</button>
                     </td>
                   </tr>
                   {rows?.map((row, index) => (
-                    <tr className="table-row-form text-start" key={index}>
+                    <tr className='table-row-form text-start' key={index}>
                       <td>{row?.serviceReferenceName || "---"}</td>
                       <td>{row?.serviceInitialServerURL || "---"}</td>
                       <td>{row?.defaultMethod || "---"}</td>
                       <td>{row?.serviceUserName || "---"}</td>
                       <td>{row?.servicePassword || "---"}</td>
-                      <td className="">
-                        <div className="text-center">
+                      <td className=''>
+                        <div className='text-center'>
                           <button
                             className="btn btn-warning btn-sm me-1 py-0 px-1"
                             onClick={() => handleEditRow(index)}
                           >
-                            <FontAwesomeIcon
-                              icon={faEdit}
-                              className="dropdown-gear-icon"
-                              size="xs"
-                            />
+                            <FontAwesomeIcon icon={faEdit} className="dropdown-gear-icon" size='xs' />
                           </button>
                           <button
                             className="btn btn-danger btn-sm ms-1 py-0 px-1"
                             onClick={() => handleRemoveRow(index)}
                           >
-                            <FontAwesomeIcon
-                              icon={faTrash}
-                              className="dropdown-gear-icon"
-                              size="xs"
-                            />
+                            <FontAwesomeIcon icon={faTrash} className="dropdown-gear-icon" size='xs' />
                           </button>
                         </div>
                       </td>
@@ -1296,53 +1333,20 @@ const DbConfigMaster = () => {
             </div>
           </div>
           {/* </form> */}
-          <div className="text-center py-1 rounded-2 configuration-buttons">
-            <button className="btn btn-sm me-1" onClick={handleSaveConfig}>
-              <FontAwesomeIcon
-                icon={faFile}
-                className="dropdown-gear-icon me-1"
-              />
-              Save
-            </button>
-            <button
-              className="btn btn-sm ms-1 me-1"
-              onClick={checkDBConnection}
-            >
-              <FontAwesomeIcon
-                icon={faDatabase}
-                className="dropdown-gear-icon me-1"
-              />
-              Test DB Connection
-            </button>
-            <button className="btn btn-sm ms-1 me-1" onClick={reset}>
-              <FontAwesomeIcon
-                icon={faRefresh}
-                className="dropdown-gear-icon me-1"
-              />
-              Reset
-            </button>
-            <button
-              className="btn btn-sm ms-1 me-1"
-              onClick={getDashConfigData}
-            >
-              <FontAwesomeIcon
-                icon={faDatabase}
-                className="dropdown-gear-icon me-1"
-              />
-              Refresh Data
-            </button>
-            <button className="btn btn-sm ms-1" onClick={clearAllCache}>
-              <FontAwesomeIcon
-                icon={faDatabase}
-                className="dropdown-gear-icon me-1"
-              />
+          <div className='text-center py-1 rounded-2 configuration-buttons'>
+            <button className='btn btn-sm me-1' onClick={() => handleSaveConfig()}><FontAwesomeIcon icon={faFile} className="dropdown-gear-icon me-1" />Save</button>
+            <button className='btn btn-sm ms-1 me-1' onClick={() => checkDatabaseConnection()}><FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />Test DB Connection</button>
+            <button className='btn btn-sm ms-1 me-1' onClick={reset}><FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-1" />Reset</button>
+            <button className='btn btn-sm ms-1 me-1' onClick={getDashConfigData}><FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />Refresh Data</button>
+            <button className='btn btn-sm ms-1' onClick={clearAllCache}>
+              <FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />
               Clear All Cached Data
             </button>
           </div>
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default DbConfigMaster;
+export default DbConfigMaster

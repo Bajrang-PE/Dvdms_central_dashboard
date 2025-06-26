@@ -63,20 +63,6 @@ const TabDash = React.memo(() => {
                     .map((child) => child.rptId);
             });
 
-            const singleQueryChilds = uniqueWidgets?.filter(widget => widget.widgetType === "singleQueryParent")
-
-            const allSQChildWidgetIds = new Set();
-
-            singleQueryChilds.forEach(widget => {
-                const childJson = widget.sqChildJsonString && JSON.parse(widget.sqChildJsonString || '[]');
-                childJson.forEach(entry => {
-                    if (entry?.SQCHILDWidgetId) {
-                        allSQChildWidgetIds.add((entry.SQCHILDWidgetId)?.toString());
-                    }
-                });
-            });
-
-
             const childWidgetIds = new Set(
                 uniqueWidgets
                     .filter(widget => uniqueWidgets.some(parent => widget.parentReport === parent.rptId))
@@ -93,7 +79,7 @@ const TabDash = React.memo(() => {
             const standaloneAndParentsOnly = uniqueWidgets?.filter(
                 widget => !childWidgetIds.has(widget.rptId)
                     && !allLinkedRptIds.has(widget.rptId)
-                    && !allSQChildWidgetIds.has(String(widget.rptId))
+                    && widget.widgetType !== "singleQueryChild"
             );
 
             setWidWithoutLinked(standaloneAndParentsOnly);
@@ -116,6 +102,7 @@ const TabDash = React.memo(() => {
         setPrevKpiTab([])
     }
 
+    console.log(activeTab, 'activetab')
     console.log(presentWidgets, 'presentWidgets')
 
     return (

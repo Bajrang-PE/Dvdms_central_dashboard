@@ -135,7 +135,7 @@ const GroupMaster = () => {
                     <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
 
                     {openPage === 'view' &&
-                        <ViewPage data={[{ value: selectedOption[0]?.cwhstrGroupName, label: "Group Name" }]} onClose={onClose} title={"Group Master"} />
+                        <ViewPage data={[{ value: selectedOption[0]?.groupName, label: "Group Name" }]} onClose={onClose} title={"Group Master"} />
                     }
                 </>)}
 

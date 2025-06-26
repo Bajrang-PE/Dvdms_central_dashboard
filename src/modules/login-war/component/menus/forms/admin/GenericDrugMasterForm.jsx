@@ -36,14 +36,14 @@ const GenericDrugMasterForm = (props) => {
 
     const saveGenericDrugData = () => {
         const val = {
-            "gnumSeatId": getAuthUserData('userSeatId'),
-            "cwhstrCentraldrugName": values?.drugname,
-            "cwhnumGroupId": groupId,
-            "cwhnumSubgroupId": values?.subGroupName,
-            "cwhnumDrugTypeId": values?.drugtype,
-            "cwhstrDrugCatCode": values?.categoryName,
-            "cwhnumDrugVedCode": values?.VEDType,
-            "gnumIsValid": recordStatus,
+            "seatId": getAuthUserData('userSeatId'),
+            "drugName": values?.drugname,
+            "groupId": groupId,
+            "subgroupId": values?.subGroupName,
+            "drugTypeId": values?.drugtype,
+            "drugCatCode": values?.categoryName,
+            "drugVedCode": values?.VEDType,
+            "isValid": recordStatus,
             "isMotherHealth": 0
         }
         fetchPostData(`api/v1/drugs`, val).then(data => {
@@ -64,18 +64,18 @@ const GenericDrugMasterForm = (props) => {
 
     const updateGenericDrugData = () => {
         const val = {
-            "cwhnumCentralDrugId": selectedOption[0]?.cwhnumCentralDrugId,
-            "gnumSeatId": getAuthUserData('userSeatId'),
-            "cwhstrCentraldrugName": values?.drugname,
-            "cwhnumGroupId": groupId,
-            "cwhnumSubgroupId": values?.subGroupName,
-            "cwhnumDrugTypeId": values?.drugtype,
-            "cwhstrDrugCatCode": values?.categoryName,
-            "cwhnumDrugVedCode": values?.VEDType,
-            "gnumIsValid": recordStatus,
+            "centralDrugId": selectedOption[0]?.centralDrugId,
+            "seatId": getAuthUserData('userSeatId'),
+            "drugName": values?.drugname,
+            "groupId": groupId,
+            "subgroupId": values?.subGroupName,
+            "drugTypeId": values?.drugtype,
+            "drugCatCode": values?.categoryName,
+            "drugVedCode": values?.VEDType,
+            "isValid": recordStatus,
             "isMotherHealth": 0
         }
-        fetchUpdateData(`api/v1/drugs/${selectedOption[0]?.cwhnumCentralDrugId}`, val).then(data => {
+        fetchUpdateData(`api/v1/drugs/${selectedOption[0]?.centralDrugId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
                 getGenericDrugListData(groupId, values?.subGroupName, recordStatus);
@@ -132,7 +132,7 @@ const GenericDrugMasterForm = (props) => {
         if (selectedOption?.length > 0) {
             setValues({
                 ...values,
-                "groupName": selectedOption[0]?.cwhnumGroupId, "subGroupName": selectedOption[0]?.cwhnumSubgroupId, "drugtype": selectedOption[0]?.cwhnumDrugTypeId, "VEDType": selectedOption[0]?.cwhnumDrugVedCode, "categoryName": selectedOption[0]?.cwhstrDrugCatCode, "drugname": selectedOption[0]?.cwhstrCentraldrugName
+                "groupName": selectedOption[0]?.groupId, "subGroupName": selectedOption[0]?.subgroupId, "drugtype": selectedOption[0]?.drugTypeId, "VEDType": selectedOption[0]?.drugVedCode, "categoryName": selectedOption[0]?.drugCatCode, "drugname": selectedOption[0]?.drugName
             })
         }
     }, [selectedOption])

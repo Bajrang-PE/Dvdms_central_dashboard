@@ -26,7 +26,7 @@ const StateMasterForm = ({setSearchInput}) => {
     const handleValueChange = (e) => {
         const { value, name } = e.target;
         const errName = name + "Err";
-        if (name) {
+        if (name && value) {
             setValues({ ...values, [name]: value });
             setErrors({ ...errors, [errName]: "" });
         }
@@ -36,10 +36,10 @@ const StateMasterForm = ({setSearchInput}) => {
         const { stateName, stShortName, zoneName, recStatus } = values;
 
         const val = {
-            "gnumSeatId": getAuthUserData('userSeatId'),
-            "cwhstrStateName": stateName,
-            "cwhstrStateShortName": stShortName,
-            "cwhnumZoneId": zoneName,
+            "seatId": getAuthUserData('userSeatId'),
+            "stateName": stateName,
+            "stateShortName": stShortName,
+            "zoneId": zoneName,
         }
         fetchPostData(`api/v1/State`, val).then(data => {
             if (data?.status === 1) {
@@ -57,28 +57,28 @@ const StateMasterForm = ({setSearchInput}) => {
     const updateStateListData = () => {
         const { stateName, stShortName, zoneName, recStatus } = values;
         const val = {
-            "gnumSeatId": getAuthUserData('userSeatId'),
-            "cwhstrStateName": stateName,
-            "cwhstrStateShortName": stShortName,
-            "cwhnumZoneId": zoneName,
-            "gnumIsValid": recStatus,
-            "cwhnumStateId": selectedOption[0]?.cwhnumStateId,
+            "seatId": getAuthUserData('userSeatId'),
+            "stateName": stateName,
+            "stateShortName": stShortName,
+            "zoneId": zoneName,
+            "isValid": recStatus,
+            "stateId": selectedOption[0]?.stateId,
             "backgroundColor": "",
             "fontColor": "",
             "graphColor": "",
-            "cwhnumOrder": '',
-            "cwhnumIsDataEntryState": '',
-            "cwhnumOldStateId": "",
-            "cwhnumZoneIdByNhm": "",
-            "cwhstrImplementationAgency": "",
-            "cwhdtMouDate": "",
-            "cwhdtGoLiveDate": "",
-            "cwhnumNinStateId": '',
-            "cwhnumStateGroup": '',
-            "cwhnumLgdCode": ''
+            "order": '',
+            "isDataEntryState": '',
+            "oldStateId": "",
+            "zoneIdByNhm": "",
+            "implementationAgency": "",
+            "mouDate": "",
+            "goLiveDate": "",
+            "ninStateId": '',
+            "stateGroup": '',
+            "lgdCode": ''
 
         }
-        fetchUpdateData(`api/v1/State/${selectedOption[0]?.cwhnumStateId}`, val).then(data => {
+        fetchUpdateData(`api/v1/State/${selectedOption[0]?.stateId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
                 getStateListData();
@@ -131,7 +131,7 @@ const StateMasterForm = ({setSearchInput}) => {
         if (selectedOption?.length > 0) {
             setValues({
                 ...values,
-                "stateName": selectedOption[0]?.cwhstrStateName, "stShortName": selectedOption[0]?.cwhstrStateShortName, "zoneName": selectedOption[0]?.cwhnumZoneId?.toString(), "recStatus": selectedOption[0]?.gnumIsValid?.toString()
+                "stateName": selectedOption[0]?.stateName, "stShortName": selectedOption[0]?.stateShortName, "zoneName": selectedOption[0]?.zoneId?.toString(), "recStatus": selectedOption[0]?.isValid?.toString()
             })
         }
     }, [selectedOption])
