@@ -12,6 +12,7 @@ const DrugMappingMaster = () => {
     const [itemName, setItemName] = useState(null);
     const [stateId, setStateId] = useState("");
     const [itemNameList, setItemNameList] = useState([]);
+    const [drugItemObject, setDrugItemObject] = useState(null);
 
     const [availableOptions, setAvailableOptions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState([]);
@@ -65,7 +66,7 @@ const DrugMappingMaster = () => {
                     label: item.cwhstrDrugName,
                 }));
 
-                setItemNameList(options);
+                setItemNameList(data?.data);
             } else {
                 setItemNameList([]);
                 setItemName({});
@@ -168,7 +169,8 @@ const DrugMappingMaster = () => {
         { value: "3", label: "All" }
     ];
 
- 
+    console.log(drugItemObject, 'drugItemObject')
+    console.log(itemNameList, 'itemNameList')
 
     return (
         <>
@@ -201,15 +203,28 @@ const DrugMappingMaster = () => {
                                 <Select
                                     id='itemName'
                                     name='itemName'
-                                    options={itemNameList}
+                                    options={itemNameList?.map(item => ({
+                                        value: item.cwhnumDrugId,
+                                        label: item.cwhstrDrugName,
+                                    }))}
                                     isMulti={false}
                                     className="aliceblue-bg border-dark-subtle react-select-login"
                                     value={itemName}
-                                    onChange={(e) => setItemName(e)}
+                                    onChange={(e) => {
+                                        setItemName(e);
+                                        const itemObj = itemNameList?.find(dt => dt?.cwhnumDrugId === e?.value)
+                                        setDrugItemObject(itemObj)
+                                    }}
                                     isSearchable={true}
                                     isDisabled={itemNameList?.length > 0 ? false : true}
                                     placeholder="select value"
                                 />
+                            </div>
+                        </div>
+                        <div className="form-group" style={{ paddingBottom: "1px" }}>
+                            <label className="col-sm-5 col-form-label fix-label required-label">Generic Drug Name : </label>
+                            <div className="col-sm-7 align-content-center">
+                                {drugItemObject}
                             </div>
                         </div>
                     </div>

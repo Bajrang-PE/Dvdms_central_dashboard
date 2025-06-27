@@ -79,7 +79,7 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
-    const getGenericDrugListData = (grpId, sbGrpId, status) => {
+    const getGenericDrugListData = (grpId, sbGrpId, status,categoryOptions) => {
         const params = {
             groupId: grpId ? grpId : '0',
             subgroupId: sbGrpId ? sbGrpId : "0",
@@ -136,11 +136,11 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
-    const getSteteNameDrpData = () => {
-        fetchData('http://10.226.29.102:8025/state/getstate').then((data) => {
-            if (data) {
+     const getSteteNameDrpData = () => {
+        fetchData('http://10.226.27.173:8025/api/v1/state/getstate').then((data) => {
+            if (data?.status === 1) {
 
-                const drpData = data?.map((dt) => {
+                const drpData = data?.data?.map((dt) => {
                     const val = {
                         value: dt?.cwhnumStateId,
                         label: dt?.cwhstrStateName
@@ -283,9 +283,9 @@ const LoginContextApi = ({ children }) => {
         fetchData(`http://10.226.25.164:8025/api/v1/SubGrpDrpDwn/${grpId}`).then((data) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
-                    const val = {
-                        value: dt?.subgroupId,
-                        label: dt?.subgroupName
+                     const val = {
+                        value: dt?.cwhnumSubgroupId,
+                        label: dt?.cwhstrSubgroupName
                     }
                     return val;
                 })

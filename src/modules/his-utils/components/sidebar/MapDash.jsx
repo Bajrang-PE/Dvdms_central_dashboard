@@ -3,7 +3,7 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import RajasthanMap from '../../localData/mapJson/rajasthan.json';
 import UpMap from '../../localData/mapJson/uttarpradesh.json';
-import { fetchProcedureData, fetchQueryData, formatParams, getOrderedParamValues, ToastAlert } from "../../utils/commonFunction";
+import { fetchProcedureData, fetchQueryData, formatDateFullYear, formatParams, getOrderedParamValues, ToastAlert } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import { useSearchParams } from "react-router-dom";
 import { getAuthUserData } from "../../../../utils/CommonFunction";
@@ -14,7 +14,7 @@ import Parameters from "./Parameters";
 
 
 const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, setLevelData }) => {
-    const { theme, mainDashData, singleConfigData, paramsValues, setLoading, isSearchQuery, setIsSearchQuery, presentWidgets } = useContext(HISContext);
+    const { theme, setSearchScope, singleConfigData, paramsValues, setLoading, isSearchQuery, setIsSearchQuery, presentWidgets, searchScope } = useContext(HISContext);
     const [mapData, setMapData] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false)
     const [stateName, setStateName] = useState([]);
@@ -25,10 +25,6 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
 
     const [queryParams] = useSearchParams();
     const isPrev = queryParams.get('isPreview');
-
-    console.log(levelData, 'level')
-    console.log(widgetData, 'mapwiddt')
-    console.log(tableData, 'tableData')
 
 
     const isChildPresent = widgetData?.children && widgetData?.children?.length > 0;
@@ -168,7 +164,7 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
                 return typeof value === 'string' && value.includes("##") ? (
                     <span
                         style={{ color: 'blue', cursor: 'pointer' }}
-                        // onClick={() => openPopUpWidget(value)}
+                    // onClick={() => openPopUpWidget(value)}
                     >
                         {displayValue}
                     </span>
@@ -184,7 +180,7 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
                 cell: (row) => (
                     <button
                         className="rounded-4 border-1"
-                        // onClick={() => onDrillDown(row?.pkcolumn)}
+                    // onClick={() => onDrillDown(row?.pkcolumn)}
                     >
                         <FontAwesomeIcon icon={faSortAmountDesc} />
                     </button>
@@ -215,8 +211,8 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
                     initialRecord?.toString(), //initial record no.===
                     finalRecord?.toString(), //final record no.===
                     "", //date options
-                    "",//from values
-                    "" // to values
+                    formatDateFullYear(new Date()),//from values
+                    formatDateFullYear(new Date()) // to values
                 ]
                 const response = await fetchProcedureData(widget?.procedureMode, params, widget?.JNDIid);
                 const formattedData = formatData(response.data || []);
@@ -225,6 +221,7 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
                 setTableData(formattedData);
                 setLoading(false)
                 setIsSearchQuery(false)
+                setSearchScope({ scope: "", id: "" })
             } catch (error) {
                 console.error("Error loading query data:", error);
                 setLoading(false)
@@ -243,6 +240,7 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
                     setTableData(formattedData);
                     setLoading(false)
                     setIsSearchQuery(false)
+                    setSearchScope({ scope: "", id: "" })
                 } else {
                     setColumns([]);
                     setTableData([]);
@@ -267,13 +265,15 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
 
 
     useEffect(() => {
-        if (widgetData) {
+        if (widgetData && !isSearchQuery) {
             fetchData(widgetData);
         }
     }, [widgetData, paramsValues]);
 
     useEffect(() => {
-        if (isSearchQuery && widgetData && paramsValues) {
+        if (isSearchQuery && searchScope?.scope === "widgetParams" && searchScope?.id == widgetData?.rptId) {
+            fetchData(widgetData);
+        } else if (isSearchQuery && searchScope?.scope !== "" && searchScope?.scope !== "widgetParams") {
             fetchData(widgetData);
         }
     }, [isSearchQuery]);

@@ -9,7 +9,7 @@ import { useSearchParams } from "react-router-dom";
 import { fetchPostData } from "../../../../utils/HisApiHooks";
 
 const Parameters = ({ params, scope, widgetId = null }) => {
-    const { parameterData, getAllParameterData, theme, setParamsValues, paramsValuesPro, setParamsValuesPro, setIsSearchQuery, activeTab, isSearchQuery } = useContext(HISContext);
+    const { parameterData, getAllParameterData, theme, setParamsValues, paramsValuesPro, setParamsValuesPro, setIsSearchQuery, activeTab, isSearchQuery, searchScope, setSearchScope } = useContext(HISContext);
     const [presentParams, setPresentParams] = useState([]);
     const [selectedValues, setSelectedValues] = useState({});
     const [dropdownData, setDropdownData] = useState({});
@@ -117,10 +117,10 @@ const Parameters = ({ params, scope, widgetId = null }) => {
 
     useEffect(() => {
         if (parameterData?.length > 0 && params) {
-            setParamsValuesPro({
-                tabParams: {},
-                widgetParams: {},
-            })
+            // setParamsValuesPro({
+            //     tabParams: {},
+            //     widgetParams: {},
+            // })
             const dashboardIdsArray = params.split(",")?.map(Number);
             const matchedParams = dashboardIdsArray?.map((id) => parameterData?.find((p) => p.id === id)).filter(Boolean);
             setPresentParams(matchedParams);
@@ -222,6 +222,9 @@ const Parameters = ({ params, scope, widgetId = null }) => {
         if (isValid) {
             setParamsValues(paramsValuesPro, scope, widgetId);
             setIsSearchQuery(true)
+            setSearchScope({
+                scope: scope, id: widgetId
+            })
         }
     };
 

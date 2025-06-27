@@ -40,10 +40,11 @@ const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData,setPrevKpiTa
 
     useEffect(() => {
         if (rootTabs.length > 0) {
+
             setActiveTab(rootTabs[0]);
             setOpenSubMenu(rootTabs[0].id);
         }
-    }, []);
+    }, [data]);
 
     const toggleSidebar = () => setCollapsed(prev => !prev);
 

@@ -6,7 +6,7 @@ import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../utils/CommonFunction';
 
 const FacilityTypeMappingMaster = () => {
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, getFacilityTypeDrpData, facilityTypeDrpDt } = useContext(LoginContext);
+    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, getFacilityTypeDrpData, facilityTypeDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
 
     const [facilityTypeId, setFacilityTypeId] = useState("");
     const [stateId, setStateId] = useState("");
@@ -14,6 +14,11 @@ const FacilityTypeMappingMaster = () => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [selectedAvailable, setSelectedAvailable] = useState([]);
     const [selectedSelected, setSelectedSelected] = useState([]);
+    const [initialMappedOptions, setInitialMappedOptions] = useState([]);
+
+    const [errors, setErrors] = useState({
+        "facilityTypeIdErr": "", "stateIdErr": ""
+    })
 
     useEffect(() => {
         if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
@@ -31,64 +36,123 @@ const FacilityTypeMappingMaster = () => {
     }, [stateId]);
 
     useEffect(() => {
-        if (stateId && facilityTypeId) {
+        if (facilityTypeId && stateId) {
             getMappedList();
+            getUnmappedList();
         }
     }, [stateId, facilityTypeId])
 
     const getUnmappedList = () => {
-        fetchData(`api/v1/unmappedFacilities/${stateId}`).then(data => {
+        fetchData(`http://10.226.17.20:8025/api/v1/facilityMap/unmappedFcility?facilityTypeId=${facilityTypeId}&stateId=${stateId}`).then(data => {
             if (data?.status === 1) {
-                setAvailableOptions(data?.data)
+                const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
+                    value: dt?.facilityTypeId,
+                    label: dt?.facilityTypeName
+                })
+                )
+                setAvailableOptions(drpData)
             } else {
-                // ToastAlert('Error while fetching record!', 'error')
                 setAvailableOptions([])
             }
         })
     }
 
     const getMappedList = () => {
-        fetchData(`api/v1/mapped/${facilityTypeId}/${stateId}`).then(data => {
+        fetchData(`http://10.226.17.20:8025/api/v1/facilityMap/mapped?facilityTypeId=${facilityTypeId}&stateId=${47}`).then(data => {
             if (data.status === 1) {
-                setSelectedOptions(data?.data)
+                const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
+                    value: dt?.stateFacilityTypeId,
+                    label: dt?.stateFacilityTypeName
+                })
+                )
+                setSelectedOptions(drpData)
+                setInitialMappedOptions(drpData);
             } else {
-                // ToastAlert('Error while fetching record!', 'error')
                 setSelectedOptions([])
             }
         })
     }
 
     const saveFacilityMappedData = () => {
-        const val = {
-            "stateFacilityTypeId": 0,
-            "stateId": stateId,
-            "stateFacilityTypeName": "",
-            "facilityTypeId": facilityTypeId,
+
+        const newMapped = selectedOptions.filter(
+            item => !initialMappedOptions.some(i => i.value === item.value)
+        );
+
+        const newUnMapped = initialMappedOptions.filter(
+            item => !selectedOptions.some(i => i.value === item.value)
+        );
+
+        const mappedData = newMapped?.map(dt => ({
+            "stateId": parseInt(stateId),
+            "stateFacilityTypeId": dt?.value,
+            "stateFacilityTypeName": dt?.label,
+            "facilityTypeId": parseInt(facilityTypeId),
             "seatId": getAuthUserData('userSeatId'),
-            // "facilityTypeSlno": 0,
-            // "order": 0
+            "isValid": 1,
+            "facilityTypeSlno": 0,
+            "order": 0
+        }))
+
+        const unMappedData = newUnMapped?.map(dt => ({
+            "stateId": parseInt(stateId),
+            "facilityTypeId": dt?.value,
+            "facilityTypeName": dt?.label,
+            // "combinedIdName": `${dt?.value}^1^${dt?.label}`
+        }))
+
+        const val = {
+            "mapFacilityTypeDTO": mappedData?.length > 0 ? mappedData : [],
+            "unmapFacilityTypeDTO": unMappedData?.length > 0 ? unMappedData : [],
         }
 
-        fetchPostData(`api/v1/facility-type`, val).then(data => {
+        fetchPostData(`http://10.226.17.20:8025/api/v1/facilityMap/saveFacilityMap`, val).then(data => {
             if (data?.status === 1) {
                 console.log(data?.data)
+                setConfirmSave(false)
+                reset();
             } else {
                 ToastAlert(data?.message, 'error')
+                setConfirmSave(false)
             }
         })
+
     }
+
+    const handleValidation = () => {
+        let isValid = true;
+
+        if (facilityTypeId === "") {
+            setErrors(prev => ({ ...prev, "facilityTypeIdErr": "Please select facility type" }))
+            isValid = false;
+        }
+        if (stateId === "") {
+            setErrors(prev => ({ ...prev, "stateIdErr": "Please select state" }))
+            isValid = false;
+        }
+
+        if (isValid) {
+            setShowConfirmSave(true)
+        }
+    }
+
+    useEffect(() => {
+        if (confirmSave) {
+            saveFacilityMappedData();
+        }
+    }, [confirmSave])
 
     const moveToSelected = () => {
         if (facilityTypeId) {
             const itemsToMove = availableOptions.filter(opt =>
-                selectedAvailable.includes(String(opt.facilityTypeId))
+                selectedAvailable.includes(String(opt.value))
             );
             const newSelected = itemsToMove.filter(item =>
-                !selectedOptions.some(selected => selected.facilityTypeId === item.facilityTypeId)
+                !selectedOptions.some(selected => selected.value === item.value)
             );
             setSelectedOptions(prev => [...prev, ...newSelected]);
             setAvailableOptions(prev => prev.filter(opt =>
-                !selectedAvailable.includes(String(opt.facilityTypeId))
+                !selectedAvailable.includes(String(opt.value))
             ));
             setSelectedAvailable([]);
         } else {
@@ -99,11 +163,11 @@ const FacilityTypeMappingMaster = () => {
     const moveToAvailable = () => {
         if (facilityTypeId) {
             const itemsToMove = selectedOptions.filter(opt =>
-                selectedSelected.includes(String(opt.facilityTypeId))
+                selectedSelected.includes(String(opt.value))
             );
             setAvailableOptions(prev => [...prev, ...itemsToMove]);
             setSelectedOptions(prev => prev.filter(opt =>
-                !selectedSelected.includes(String(opt.facilityTypeId))
+                !selectedSelected.includes(String(opt.value))
             ));
             setSelectedSelected([]);
         } else {
@@ -112,8 +176,13 @@ const FacilityTypeMappingMaster = () => {
     };
 
     const reset = () => {
-        setFacilityTypeId('')
-        setStateId('')
+        setFacilityTypeId('');
+        setStateId('');
+        setInitialMappedOptions();
+        setSelectedSelected();
+        setSelectedAvailable();
+        setSelectedOptions();
+        setAvailableOptions();
     }
 
 
@@ -183,8 +252,8 @@ const FacilityTypeMappingMaster = () => {
                             }}
                         >
                             {availableOptions.map(opt => (
-                                <option key={opt.facilityTypeId} value={opt.facilityTypeId}>
-                                    {opt.facilityTypeName}
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
                                 </option>
                             ))}
                         </select>
@@ -228,8 +297,8 @@ const FacilityTypeMappingMaster = () => {
                             }}
                         >
                             {selectedOptions.map(opt => (
-                                <option key={opt.facilityTypeId} value={opt.facilityTypeId}>
-                                    {opt.stateFacilityTypeName}
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
                                 </option>
                             ))}
                         </select>
@@ -242,9 +311,9 @@ const FacilityTypeMappingMaster = () => {
                 </div>
 
                 <div className='text-center'>
-                    <button className='btn btn-sm datatable-btns py-0' >
+                    <button className='btn btn-sm datatable-btns py-0' onClick={handleValidation}>
                         <i className="fa fa-save me-1 fs-13 text-success"></i>Save</button>
-                    <button className='btn btn-sm datatable-btns py-0'  >
+                    <button className='btn btn-sm datatable-btns py-0' onClick={reset}>
                         <i className="fa fa-broom me-1 fs-13 text-warning"></i>Clear</button>
                 </div>
             </div>

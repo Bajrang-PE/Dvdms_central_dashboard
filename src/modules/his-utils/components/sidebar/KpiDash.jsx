@@ -4,14 +4,13 @@ import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import React, { useContext, useEffect, useState } from 'react'
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import { HISContext } from '../../contextApi/HISContext';
-import { fetchProcedureData, fetchQueryData, formatParams, getOrderedParamValues } from '../../utils/commonFunction';
+import { fetchProcedureData, fetchQueryData, formatDateFullYear, formatParams, getOrderedParamValues } from '../../utils/commonFunction';
 
 const KpiDash = ({ widgetData, presentTabs }) => {
-    const { setActiveTab, allTabsData, setLoading, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery,prevKpiTab,setPrevKpiTab,activeTab } = useContext(HISContext);
+    const { setActiveTab, allTabsData, setLoading, paramsValues, searchScope, isSearchQuery, setIsSearchQuery, setSearchScope, setPrevKpiTab, activeTab } = useContext(HISContext);
     const [kpiData, setKpiData] = useState([]);
     const [kpiLoading, setKpiLoading] = useState(false);
 
-   
 
     const formatData = (rawData = []) => {
         return rawData.map((item) => {
@@ -42,8 +41,8 @@ const KpiDash = ({ widgetData, presentTabs }) => {
                     initialRecord?.toString(), //initial record no.===
                     finalRecord?.toString(), //final record no.===
                     "", //date options
-                    "16-Apr-2025",//from values
-                    "16-Apr-2025" // to values
+                    formatDateFullYear(new Date()),//from values
+                    formatDateFullYear(new Date()) // to values
                 ]
                 const response = await fetchProcedureData(widget?.procedureMode, params, widget?.JNDIid);
                 const formattedData = formatData(response.data || []);
@@ -51,6 +50,7 @@ const KpiDash = ({ widgetData, presentTabs }) => {
                 setKpiData(formattedData);
                 setIsSearchQuery(false)
                 setKpiLoading(false);
+                setSearchScope({ scope: "", id: "" })
             } catch (error) {
                 console.error("Error loading query data:", error);
                 setKpiData([]);
@@ -71,6 +71,7 @@ const KpiDash = ({ widgetData, presentTabs }) => {
                     setKpiData(dynamicValue);
                     setIsSearchQuery(false);
                     setKpiLoading(false);
+                    setSearchScope({ scope: "", id: "" })
                 } else {
                     setKpiData([])
                     setKpiLoading(false);
@@ -82,19 +83,22 @@ const KpiDash = ({ widgetData, presentTabs }) => {
             }
         } else if (widget?.modeOfQuery === "HTMLText") {
             setKpiData(widget?.htmlText ? widget?.htmlText : "")
-            
+
         }
     }
 
     useEffect(() => {
-        if (widgetData) {
+        if (widgetData && !isSearchQuery) {
             setKpiData([]);
             fetchData(widgetData);
         }
     }, [paramsValues, widgetData]);
 
     useEffect(() => {
-        if (isSearchQuery && widgetData && paramsValues) {
+        if (isSearchQuery && searchScope?.scope === "widgetParams" && searchScope?.id == widgetData?.rptId) {
+            setKpiData([]);
+            fetchData(widgetData);
+        } else if (isSearchQuery && searchScope?.scope !== "" && searchScope?.scope !== "widgetParams") {
             setKpiData([]);
             fetchData(widgetData);
         }
@@ -130,8 +134,8 @@ const KpiDash = ({ widgetData, presentTabs }) => {
     const widheight = presentTabs?.length > 0 && presentTabs?.filter(dt => dt?.rptId == widgetData?.rptId)[0]?.widgetHeight;
 
 
- console.log(widgetData, 'bgkpidd')
- console.log(activeTab, 'activeTab')
+    console.log(widgetData, 'bgkpidd')
+
 
 
     return (
@@ -208,7 +212,7 @@ const KpiDash = ({ widgetData, presentTabs }) => {
                             dangerouslySetInnerHTML={{ __html: kpiData || "" }}
                         />
 
-                        {(widgetData?.onClickOfKPITabId !== '0' && widgetData?.onClickOfKPITabId !== '') &&
+                        {(widgetData?.onClickOfKPITabId !== '0' && widgetData?.onClickOfKPITabId !== '' && widgetData?.onClickKPITypeOption !== '0' && widgetData?.onClickKPITypeOption) &&
                             <div className='small-box-kpi-link-dtl' style={{ color: widgetData?.kpiLinkFontColor }} onClick={() => onKpiClickDetails(widgetData?.onClickOfKPITabId)}>
                                 <span>{widgetData?.linkTab || 'Click For Details'}</span>
                                 <b><FontAwesomeIcon icon={faSearch} /></b>

@@ -18,7 +18,7 @@ const HISContextData = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [singleConfigData, setSingleConfigData] = useState();
 
-  const [prevKpiTab,setPrevKpiTab] = useState([]);
+  const [prevKpiTab, setPrevKpiTab] = useState([]);
 
   const [paramsValues, setParamsValues] = useState({
     tabParams: {},
@@ -29,6 +29,9 @@ const HISContextData = ({ children }) => {
     widgetParams: {},
   });
   const [isSearchQuery, setIsSearchQuery] = useState(false);
+  const [searchScope, setSearchScope] = useState({
+    scope: "", id: ""
+  });
 
   const [presentWidgets, setPresentWidgets] = useState([]);
 
@@ -212,11 +215,11 @@ const HISContextData = ({ children }) => {
       theme, setTheme,
       mainDashData, setMainDashData,
       singleConfigData, getDashConfigData, jndiServerDrpData,
-      clearAllCache,prevKpiTab,setPrevKpiTab,
+      clearAllCache, prevKpiTab, setPrevKpiTab,
 
       paramsValues, setParamsValues,
       paramsValuesPro, setParamsValuesPro,
-      isSearchQuery, setIsSearchQuery,
+      isSearchQuery, setIsSearchQuery,searchScope, setSearchScope,
 
       // DROP DOWNS-------------------------------
       // DASHBOARD FOR

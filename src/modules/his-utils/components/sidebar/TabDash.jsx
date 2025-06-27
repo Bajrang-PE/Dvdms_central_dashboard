@@ -9,16 +9,21 @@ const PdfDownload = lazy(() => import('../commons/PdfDownload'));
 const Parameters = lazy(() => import('./Parameters'));
 
 const TabDash = React.memo(() => {
-    const { allWidgetData, setLoading, loading, activeTab, setParamsValues, presentWidgets, setPresentWidgets, prevKpiTab, setActiveTab, setPrevKpiTab } = useContext(HISContext);
+    const { allWidgetData, setLoading, loading, activeTab, setParamsValues, presentWidgets, setPresentWidgets, prevKpiTab, setActiveTab, setPrevKpiTab, setParamsValuesPro } = useContext(HISContext);
     const [presentTabs, setPresentTabs] = useState([]);
     const [widWithoutLinked, setWidWithoutLinked] = useState([]);
 
     const footerText = activeTab?.jsonData?.footerText || "";
 
     useEffect(() => {
+
         if (activeTab?.jsonData?.lstDashboardWidgetMapping?.length > 0) {
             setLoading(true)
             setParamsValues({
+                tabParams: {},
+                widgetParams: {},
+            })
+            setParamsValuesPro({
                 tabParams: {},
                 widgetParams: {},
             })
@@ -59,13 +64,13 @@ const TabDash = React.memo(() => {
 
             uniqueWidgets?.forEach((parent) => {
                 parent.children = uniqueWidgets
-                    .filter((child) => child.parentReport === parent.rptId)
+                    .filter((child) => child.parentReport == parent.rptId)
                     .map((child) => child.rptId);
             });
 
             const childWidgetIds = new Set(
                 uniqueWidgets
-                    .filter(widget => uniqueWidgets.some(parent => widget.parentReport === parent.rptId))
+                    .filter(widget => uniqueWidgets.some(parent => widget.parentReport == parent.rptId))
                     .map(widget => widget.rptId)
             );
             const allLinkedRptIds = new Set(
@@ -81,7 +86,8 @@ const TabDash = React.memo(() => {
                     && !allLinkedRptIds.has(widget.rptId)
                     && widget.widgetType !== "singleQueryChild"
             );
-
+            console.log(standaloneAndParentsOnly, 'widWithoutLinked')
+            console.log(uniqueWidgets, 'presentWidgets')
             setWidWithoutLinked(standaloneAndParentsOnly);
             setPresentWidgets(uniqueWidgets);
             setPresentTabs(sortedWidgets);
@@ -90,6 +96,10 @@ const TabDash = React.memo(() => {
             setPresentWidgets([]);
             setWidWithoutLinked([]);
             setParamsValues({
+                tabParams: {},
+                widgetParams: {},
+            })
+            setParamsValuesPro({
                 tabParams: {},
                 widgetParams: {},
             })
@@ -102,8 +112,7 @@ const TabDash = React.memo(() => {
         setPrevKpiTab([])
     }
 
-    console.log(activeTab, 'activetab')
-    console.log(presentWidgets, 'presentWidgets')
+
 
     return (
         <>

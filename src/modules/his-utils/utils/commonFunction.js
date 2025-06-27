@@ -73,7 +73,7 @@ export const fetchQueryData = async (queryVO = [], jndiServer, params, pkColumn)
       return [];
     }
 
-    const popupIds = [...query?.matchAll(/#(PK\d+)#/g)]?.map(match => match[1]);
+    const popupIds = [...query?.matchAll(/#(PK\d+)#/gi)]?.map(match => match[1]);
     const popupIdStr = popupIds?.join(",");
 
     const requestBody = {
@@ -224,5 +224,15 @@ export const formatDate1 = (isoDate) => {
   const day = dateObject.getUTCDate().toString().padStart(2, '0');
   const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dateObject.getUTCMonth()];
   const year = dateObject.getUTCFullYear();
-  return `${day}-${month}-${year.toString().slice(-2)}`;
+  return `${day}-${month}-${year?.toString()?.slice(-2)}`;
+}
+
+export const formatDateFullYear = (isoDate) => {
+  const dateObject = new Date(isoDate);
+  // dateObject.setUTCHours(dateObject.getUTCHours() + dateObject.getTimezoneOffset() / 60);
+
+  const day = dateObject.getUTCDate().toString().padStart(2, '0');
+  const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dateObject.getUTCMonth()];
+  const year = dateObject.getUTCFullYear();
+  return `${day}-${month}-${year}`;
 }

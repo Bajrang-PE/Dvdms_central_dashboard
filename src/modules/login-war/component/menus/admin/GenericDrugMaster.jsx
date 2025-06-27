@@ -18,9 +18,12 @@ const GenericDrugMaster = () => {
     const [groupId, setGroupId] = useState('');
     const [subGroupId, setSubGroupId] = useState('');
     const [filterData, setFilterData] = useState(genericDrugListData);
+    const [errors, setErrors] = useState({
+        "groupIdErr": ""
+    })
 
     useEffect(() => {
-        getGenericDrugListData(groupId, subGroupId, recordStatus)
+        getGenericDrugListData(groupId, subGroupId, recordStatus,categoryOptions)
     }, [recordStatus, groupId, subGroupId])
 
     useEffect(() => {
@@ -37,7 +40,7 @@ const GenericDrugMaster = () => {
         } else {
             const lowercasedText = searchInput.toLowerCase();
             const newFilteredData = genericDrugListData.filter(row => {
-                
+
                 const drugName = row?.drugName?.toLowerCase() || "";
                 const drugType = row?.drugTypeName?.toString() || "";
                 const drugCat = row?.drugCatCode?.toString() || "";
@@ -50,7 +53,7 @@ const GenericDrugMaster = () => {
 
     const handleRowSelect = (row) => {
         setSelectedOption((prev) => {
-            if (prev.length > 0 && prev[0]?.centralDrugId === row?.centralDrugId) {
+            if (prev.length > 0 && prev[0]?.cwhnumCentralDrugId === row?.cwhnumCentralDrugId) {
                 return [];
             }
             return [row];
@@ -58,7 +61,7 @@ const GenericDrugMaster = () => {
     };
 
     const deleteRecord = () => {
-        fetchDeleteData(`api/v1/drugs/${selectedOption[0]?.centralDrugId}`).then(data => {
+        fetchDeleteData(`api/v1/drugs/${selectedOption[0]?.cwhnumCentralDrugId}`).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getGenericDrugListData(groupId, subGroupId, recordStatus);
@@ -93,6 +96,15 @@ const GenericDrugMaster = () => {
         setSelectedOption([]);
     }
 
+    const validate = () => {
+        let isValid = true;
+        if (!groupId) {
+            setErrors(prev => ({ ...prev, groupIdErr: "Please select group" }));
+            isValid = false
+        }
+
+        return isValid;
+    }
 
     const column = [
         {
@@ -108,7 +120,7 @@ const GenericDrugMaster = () => {
                     <span className="btn btn-sm text-white px-1 py-0 mr-1" >
                         <input
                             type="checkbox"
-                            checked={selectedOption.length > 0 && selectedOption[0]?.centralDrugId === row?.centralDrugId}
+                            checked={selectedOption.length > 0 && selectedOption[0]?.cwhnumCentralDrugId === row?.cwhnumCentralDrugId}
                             onChange={(e) => { handleRowSelect(row) }}
                         />
                     </span>
@@ -117,7 +129,7 @@ const GenericDrugMaster = () => {
         },
         {
             name: 'Drug Name',
-            selector: row => row.drugName,
+            selector: row => row.cwhstrCentraldrugName,
             sortable: true,
         },
         {
@@ -127,7 +139,8 @@ const GenericDrugMaster = () => {
         },
         {
             name: 'Category Name',
-            selector: row => categoryOptions?.filter(dt => dt?.value == row.drugCatCode)[0]?.label || "---",
+            selector: row => categoryOptions?.filter(dt => dt?.value == row.cwhstrDrugCatCode
+            )[0]?.label || "---",
             sortable: true,
         }
     ]
@@ -155,7 +168,8 @@ const GenericDrugMaster = () => {
                                         options={groupDrpData}
                                         className="aliceblue-bg border-dark-subtle"
                                         value={groupId}
-                                        onChange={(e) => { setGroupId(e.target.value) }}
+                                        onChange={(e) => { setGroupId(e.target.value); setErrors({ ...errors, groupIdErr: "" }); }}
+                                        errorMessage={errors?.groupIdErr}
                                     />
                                 </div>
                             </div>
@@ -193,10 +207,11 @@ const GenericDrugMaster = () => {
                     </div>
 
                     <hr className='my-2' />
-                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={groupId ? true : false} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} />
+                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} onValidate={validate} />
 
                     {(openPage === 'view' && !isShowReport) &&
-                        <ViewPage data={[{ value: selectedOption[0]?.drugName, label: "Drug Name" }, { value: selectedOption[0]?.drugTypeId, label: "Drug Type" }, { value: selectedOption[0]?.drugCatCode, label: "Category Name" }]} onClose={onClose} title={"Generic Drug Master"} />
+                        <ViewPage data={[{ value: selectedOption[0]?.cwhstrCentraldrugName, label: "Drug Name" }, { value: selectedOption[0]?.drugTypeName, label: "Drug Type" },
+                        { value: categoryOptions?.filter(dt => dt?.value == selectedOption[0]?.cwhstrDrugCatCode)[0]?.label, label: "Category Name" }]} onClose={onClose} title={"Generic Drug Master"} />
                     }
                 </>)}
 

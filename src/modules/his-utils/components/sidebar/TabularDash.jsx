@@ -2,7 +2,7 @@ import React, { lazy, useContext, useEffect, useState } from "react";
 import Tabular from "./Tabular";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowCircleLeft, faCog, faFileExcel, faFilePdf, faRefresh, faSortAmountDesc, faTableCells } from "@fortawesome/free-solid-svg-icons";
-import { fetchProcedureData, fetchQueryData, formatParams, getOrderedParamValues, ToastAlert } from "../../utils/commonFunction";
+import { fetchProcedureData, fetchQueryData, formatDateFullYear, formatParams, getOrderedParamValues, ToastAlert } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import InputField from "../commons/InputField";
 import { generateCSV, generatePDF } from "../commons/advancedPdf";
@@ -16,9 +16,8 @@ const TabularDash = (props) => {
 
   const { widgetData, setWidgetData, levelData, setLevelData, pkColumn, setPkColumn } = props;
 
-  const { theme, singleConfigData, paramsValues, setLoading, presentWidgets, isSearchQuery, setIsSearchQuery,prevKpiTab } = useContext(HISContext);
+  const { theme, singleConfigData, paramsValues, setLoading, presentWidgets, isSearchQuery, setIsSearchQuery, setSearchScope, searchScope } = useContext(HISContext);
 
-  console.log(widgetData,'tabledd')
 
   const [tableData, setTableData] = useState([]);
   const [currentLevel, setCurrentLevel] = useState(0);
@@ -129,6 +128,10 @@ const TabularDash = (props) => {
     setShowPopUpWidget(false);
   };
 
+  const FtpClicked = (e, atag) => {
+    console.log(atag, 'atag')
+  }
+
   const getFirstValue = (val) => {
     return typeof val === 'string' && val.includes('##') ? val.split('##')[0] : val;
   };
@@ -154,7 +157,24 @@ const TabularDash = (props) => {
       width: /^sno$/i.test(key) ? '8%' : undefined,
       cell: (row) => {
         const value = row[key];
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+          return null;
+        }
         const displayValue = getFirstValue(value);
+
+        if (key.toLowerCase() === 'ftp link' && typeof value === 'string' && value.trim().startsWith('<a')) {
+          return (
+            <span className="pointer" dangerouslySetInnerHTML={{ __html: value }} onClick={(e) => FtpClicked(e, value)} />
+          );
+        }
+
+        if (typeof value === 'string' && value.trim().startsWith('<a')) {
+          return (
+            <span
+              dangerouslySetInnerHTML={{ __html: value }}
+            />
+          );
+        }
 
         return typeof value === 'string' && value.includes("##") ? (
           <span
@@ -187,7 +207,6 @@ const TabularDash = (props) => {
     return dynamicColumns;
   };
 
-
   const fetchData = async (widget) => {
 
     if (widget?.modeOfQuery === "Procedure") {
@@ -195,7 +214,6 @@ const TabularDash = (props) => {
       try {
         setFetching(true)
         const paramVal = formatParams(paramsValues ? paramsValues : null, widgetData?.rptId || '');
-
         const params = [
           getAuthUserData('hospitalCode')?.toString(), //hospital code===
           "10001", //user id===
@@ -206,8 +224,8 @@ const TabularDash = (props) => {
           initialRecord?.toString(), //initial record no.===
           finalRecord?.toString(), //final record no.===
           "", //date options
-          "",//from values
-          "" // to values
+          formatDateFullYear(new Date()),//from values
+          formatDateFullYear(new Date()) // to values
         ]
         const response = await fetchProcedureData(widget?.procedureMode, params, widget?.JNDIid);
         const formattedData = formatData(response.data || []);
@@ -217,6 +235,7 @@ const TabularDash = (props) => {
         setLoading(false)
         setIsSearchQuery(false)
         setFetching(false)
+        setSearchScope({ scope: "", id: "" })
       } catch (error) {
         console.error("Error loading query data:", error);
         setLoading(false)
@@ -226,10 +245,9 @@ const TabularDash = (props) => {
       if (!widget?.queryVO?.length > 0) return;
 
       const params = getOrderedParamValues(widget?.queryVO[0]?.mainQuery, paramsValues, widget?.rptId);
-
       try {
         setFetching(true)
-        const data = await fetchQueryData(widget?.queryVO?.length > 0 ? widget?.queryVO : [], widget?.JNDIid, params);
+        const data = await fetchQueryData(widget?.queryVO?.length > 0 ? widget?.queryVO : [], widget?.JNDIid, params, pkColumn);
         if (data?.length > 0) {
           const formattedData = formatData(data); // if you want to keep formatting consistent
           const generatedColumns = generateColumns(formattedData, isChildPresent);
@@ -238,6 +256,7 @@ const TabularDash = (props) => {
           setLoading(false)
           setIsSearchQuery(false)
           setFetching(false)
+          setSearchScope({ scope: "", id: "" })
         } else {
           setColumns([]);
           setTableData([]);
@@ -252,13 +271,15 @@ const TabularDash = (props) => {
 
 
   useEffect(() => {
-    if (widgetData) {
+    if (widgetData && !isSearchQuery) {
       fetchData(widgetData);
     }
   }, [widgetData, paramsValues]);
 
   useEffect(() => {
-    if (isSearchQuery && widgetData && paramsValues) {
+    if (isSearchQuery && searchScope?.scope === "widgetParams" && searchScope?.id == widgetData?.rptId) {
+      fetchData(widgetData);
+    } else if (isSearchQuery && searchScope?.scope !== "" && searchScope?.scope !== "widgetParams") {
       fetchData(widgetData);
     }
   }, [isSearchQuery]);
@@ -353,10 +374,11 @@ const TabularDash = (props) => {
 
         <div className="row px-2 py-2 border-bottom" style={{ textAlign: headingAlign, color: widgetHeadingColor }} >
           {headingReq &&
-            <div className={` ${isActionButtonReq === 'Yes' ? 'col-md-7' : 'col-md-12'} fw-medium fs-6`} >{widgetData?.rptName}</div>
+            <div className={` ${isActionButtonReq === 'Yes' || currentLevel !== 0 ? 'col-md-7' : 'col-md-12'} fw-medium fs-6`} >{widgetData?.rptName}</div>
           }
-          {isActionButtonReq === 'Yes' &&
-            <div className="col-md-5">
+
+          <div className="col-md-5">
+            {isActionButtonReq === 'Yes' && (<>
               <button
                 type="button"
                 className="small-box-btn-dwn"
@@ -387,36 +409,37 @@ const TabularDash = (props) => {
               <button className="small-box-btn-dwn" onClick={() => generateCSV(widgetData, filterData, singleConfigData?.databaseConfigVO)}>
                 <FontAwesomeIcon icon={faFileExcel} />
               </button>
+            </>)}
 
-              {currentLevel !== 0 && (
-                <>
-                  <button className="small-box-btn-dwn" onClick={() => backToParentWidget()}>
-                    <FontAwesomeIcon icon={faArrowCircleLeft} />
+            {currentLevel !== 0 && (
+              <>
+                <button className="small-box-btn-dwn" onClick={() => backToParentWidget()}>
+                  <FontAwesomeIcon icon={faArrowCircleLeft} />
+                </button>
+
+                <div className="nav-item dropdown" >
+                  <button className="small-box-btn-dwn nav-link" data-bs-toggle="dropdown">
+                    <FontAwesomeIcon icon={faTableCells} />
                   </button>
 
-                  <div className="nav-item dropdown" >
-                    <button className="small-box-btn-dwn nav-link" data-bs-toggle="dropdown">
-                      <FontAwesomeIcon icon={faTableCells} />
-                    </button>
+                  <ul className="dropdown-menu dropdown-menu-start" >
+                    {levelData?.length > 0 && levelData
+                      ?.filter((level, index) => {
+                        const maxLevel = Math.max(...levelData.map(l => l.rptLevel));
+                        return level.rptLevel !== maxLevel;
+                      })
+                      ?.map((level, index) => (
+                        <li className="dropdown-item pointer text-primary p-1" style={{ whiteSpace: "normal", wordBreak: "break-word" }} key={index} onClick={() => backToParentWidget(level?.rptId)}>
+                          {level?.rptName}
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              </>
+            )}
 
-                    <ul className="dropdown-menu dropdown-menu-start" >
-                      {levelData?.length > 0 && levelData
-                        ?.filter((level, index) => {
-                          const maxLevel = Math.max(...levelData.map(l => l.rptLevel));
-                          return level.rptLevel !== maxLevel;
-                        })
-                        ?.map((level, index) => (
-                          <li className="dropdown-item pointer text-primary p-1" style={{ whiteSpace: "normal", wordBreak: "break-word" }} key={index} onClick={() => backToParentWidget(level?.rptId)}>
-                            {level?.rptName}
-                          </li>
-                        ))}
-                    </ul>
-                  </div>
-                </>
-              )}
+          </div>
 
-            </div>
-          }
 
         </div>
         {paramsData && (

@@ -43,7 +43,7 @@ const FacilityTypeMaster = () => {
 
 
     const deleteRecord = () => {
-        fetchDeleteData(`api/v1/Facility/${selectedOption[0]?.facilityTypeId}`).then(data => {
+        fetchDeleteData(`api/v1/Facility/${selectedOption[0]?.cwhnumFacilityTypeId}`).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getFacilityTypeListData();
@@ -86,7 +86,7 @@ const FacilityTypeMaster = () => {
                     <span className="btn btn-sm text-white px-1 py-0 mr-1" >
                         <input
                             type="checkbox"
-                            checked={selectedOption.length > 0 && selectedOption[0]?.facilityTypeId === row?.facilityTypeId}
+                            checked={selectedOption.length > 0 && selectedOption[0]?.cwhnumFacilityTypeId === row?.cwhnumFacilityTypeId}
                             onChange={(e) => { handleRowSelect(row) }}
                         />
                     </span>
@@ -95,12 +95,12 @@ const FacilityTypeMaster = () => {
         },
         {
             name: 'Facility Name',
-            selector: row => row.facilityTypeName,
+            selector: row => row.cwhstrFacilityTypeName,
             sortable: true,
         },
         {
             name: 'Short Name',
-            selector: row => row.facilityTypeShortName || "---",
+            selector: row => row.cwhstrFacilityTypeShortName || "---",
             sortable: true,
         },
     ]
@@ -142,7 +142,7 @@ const FacilityTypeMaster = () => {
                     <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput}/>
 
                     {openPage === 'view' &&
-                        <ViewPage data={[{ value: selectedOption[0]?.facilityTypeName, label: "Facility Type Name" }]} onClose={onClose} title={"Facility Type Master"} />
+                        <ViewPage data={[{ value: selectedOption[0]?.cwhstrFacilityTypeName, label: "Facility Type Name" }]} onClose={onClose} title={"Facility Type Master"} />
                     }
                 </>)}
 

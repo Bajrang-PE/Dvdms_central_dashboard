@@ -45,8 +45,7 @@ const QueryDetails = (props) => {
         setRows(updatedRows);
         setValues({ ...values, ['query']: updatedRows })
     };
-console.log(singleData,'singledaat')
-console.log(rows,'rows')
+
     const handleInputWebChange = (index, field, value) => {
         const updatedRows = [...procedureRows];
         updatedRows[index][field] = value;

@@ -3,7 +3,7 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog, faFileCsv, faFilePdf, faRefresh } from "@fortawesome/free-solid-svg-icons";
-import { fetchProcedureData, fetchQueryData, formatParams, getOrderedParamValues } from "../../utils/commonFunction";
+import { fetchProcedureData, fetchQueryData, formatDateFullYear, formatParams, getOrderedParamValues } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import { highchartGraphOptions } from "../../localData/DropDownData";
 import { getAuthUserData } from "../../../../utils/CommonFunction";
@@ -13,7 +13,7 @@ import { useSearchParams } from "react-router-dom";
 const Parameters = lazy(() => import('./Parameters'));
 
 const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
-  const { theme, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery } = useContext(HISContext);
+  const { theme, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery, setSearchScope, searchScope } = useContext(HISContext);
   const [widParamsValues, setWidParamsValues] = useState();
   const [filteredGraphOptions, setFilteredGraphOptions] = useState([]);
   const [chartType, setChartType] = useState('BAR_GRAPH');
@@ -175,6 +175,7 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
 
       setGraphData({ categories, seriesData });
       setIsSearchQuery(false)
+      setSearchScope({ scope: "", id: "" })
 
     } catch (error) {
       console.error("Error loading query data:", error);
@@ -254,8 +255,8 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
           initialRecord?.toString(), //initial record no.===
           finalRecord?.toString(), //final record no.===
           "", //date options
-          "16-Apr-2025",//from values
-          "16-Apr-2025" // to values
+          formatDateFullYear(new Date()),//from values
+          formatDateFullYear(new Date()) // to values
         ]
         const data = await fetchProcedureData(widget?.procedureMode, params, widgetData?.JNDIid);
         const limit = widgetLimit
@@ -268,6 +269,7 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
         const formattedData = formatProcedureDataForGraph(limitedData);
         setGraphData(formattedData);
         setIsSearchQuery(false)
+        setSearchScope({ scope: "", id: "" })
       } catch (error) {
         console.error("Error loading query data:", error);
       }
@@ -275,15 +277,21 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
   }
 
   useEffect(() => {
-    if (widgetData && widgetData?.modeOfQuery === "Procedure") {
+    if (widgetData && widgetData?.modeOfQuery === "Procedure" && !isSearchQuery) {
       fetchProcedure(widgetData)
-    } else {
+    } else if (widgetData && !isSearchQuery) {
       fetchDataQry(widgetData);
     }
   }, [paramsValues, widgetData]);
 
   useEffect(() => {
-    if (isSearchQuery && widgetData && paramsValues) {
+    if (isSearchQuery && searchScope?.scope === "widgetParams" && searchScope?.id == widgetData?.rptId) {
+      if (widgetData?.modeOfQuery === "Procedure") {
+        fetchProcedure(widgetData);
+      } else {
+        fetchDataQry(widgetData);
+      }
+    } else if (isSearchQuery && searchScope?.scope !== "widgetParams" && searchScope?.scope !== "") {
       if (widgetData?.modeOfQuery === "Procedure") {
         fetchProcedure(widgetData);
       } else {
@@ -292,7 +300,7 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
     }
   }, [isSearchQuery]);
 
-
+  console.log(searchScope, 'searchScope')
   const exportingOptions = {
     enabled: isActionButtonReq !== "No" && isActionButtonReq !== "None",
     allowHTML: true,

@@ -80,12 +80,15 @@ const WidgetMaster = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
 
   const [newRow, setNewRow] = useState({ modeForSQCHILDColumnNo: "", SQCHILDWidgetId: "", drillSQCHILDWidgetName: "" });
+
   const [otherLinkData, setOtherLinkData] = useState([{ otherLinkName: "", otherLinkURL: "" }]);
+
   const [rows, setRows] = useState([{ queryLabel: "", mainQuery: "", isMultiRowDataTable: "", tableDataDisplay: "horizontal", totalRecordCountQuery: "" }]);
+
   const [procedureRows, setProcedureRows] = useState([{ queryLabel: "", serviceReferenceNumber: "", webserviceName: "", isMultiRowDataTable: "", tableDataDisplay: "horizontal" }]);
 
   const [errors, setErrors] = useState({
-    widgetForErr: "", widgetNameDisplayErr: "", widgetNameInternalErr: "", defaultGraphTypeErr: "",  clmNameForLineGraphErr: "", defaultPluginNameErr: "", noOfNewsVisibleErr: "",
+    widgetForErr: "", widgetNameDisplayErr: "", widgetNameInternalErr: "", defaultGraphTypeErr: "", clmNameForLineGraphErr: "", defaultPluginNameErr: "", noOfNewsVisibleErr: "",
     alphaGraph3DErr: "", betaGraph3DErr: "", xAxisLabelErr: "", yAxisLabelErr: "", kpiTypeErr: "", kpiIconTypeErr: "", kpiDefaultBgColorErr: "", noOfNewsVisibleErr: "", mapNameErr: "",
 
     modeForSQCHILDColumnNoErr: "", SQCHILDWidgetIdErr: "", otherLinkNameErr: "", otherLinkURLErr: "", mainQueryErr: "", serviceReferenceNumberErr: "", webserviceNameErr: "", procedureNameErr: "",
@@ -284,7 +287,7 @@ const WidgetMaster = () => {
     // const isReset = window.confirm('Do you want to reset whole form!');
     // if (isReset) {
     setValues({
-      "id": "", "widgetFor": "", "widgetType": "columnBased", "widgetNameDisplay": "", "widgetNameInternal": "", "widgetRefreshTime": "", "widgetRefreshDelayTime": "", "cachingStatus": "", "limit": "", "widgetHadingClr": "", "widgetTopMargin": "", "headingBgColor": "", "headingFontColor": "", "headingDisplayStyle": "", "recordsPerPage": "", "pagePerBlock": "", "DataScrollHeight": "", "parentWidget": "", "columnNoToDisplay": "", "leftClmNoToFixed": "", "rightClmNoToFixed": "", "linkedWidget": [], "actionBtnReq": "", "pdfTableFontSize": "", "pdfTableHeadBarClr": "", "pdfTableHeadTxtFontClr": "", "groupClmNoComma": "", "query": "", "procedureName": "", "recordsPerPageTreeCh": "", "parameterOption": "", "loadOption": "ONWINDOWLOAD", "paraComboBgColor": "", "paraComboFontColor": "", "paraLabelFontColor": "", "jndiSavingData": "", "stmtTimeOut": "", "lastUpdatedQuery": "", "FooterText": "", "customMsgForNoData": "", "treeChildQuery": "", "treeChildProcedure": "", "popUpDetails": [], "webQuery": "", "queryLabel": '', "htmlText": '', 'iconName': "",
+      "id": "", "widgetFor": dashFor || "", "widgetType": "columnBased", "widgetNameDisplay": "", "widgetNameInternal": "", "widgetRefreshTime": "", "widgetRefreshDelayTime": "", "cachingStatus": "", "limit": "", "widgetHadingClr": "", "widgetTopMargin": "", "headingBgColor": "", "headingFontColor": "", "headingDisplayStyle": "", "recordsPerPage": "", "pagePerBlock": "", "DataScrollHeight": "", "parentWidget": "", "columnNoToDisplay": "", "leftClmNoToFixed": "", "rightClmNoToFixed": "", "linkedWidget": [], "actionBtnReq": "", "pdfTableFontSize": "", "pdfTableHeadBarClr": "", "pdfTableHeadTxtFontClr": "", "groupClmNoComma": "", "query": "", "procedureName": "", "recordsPerPageTreeCh": "", "parameterOption": "", "loadOption": "ONWINDOWLOAD", "paraComboBgColor": "", "paraComboFontColor": "", "paraLabelFontColor": "", "jndiSavingData": "", "stmtTimeOut": "", "lastUpdatedQuery": "", "FooterText": "", "customMsgForNoData": "", "treeChildQuery": "", "treeChildProcedure": "", "popUpDetails": [], "webQuery": "", "queryLabel": '', "htmlText": '', 'iconName': "",
       //graphs fields
       "defaultPluginName": "highchart", "defaultGraphType": "BAR_GRAPH", "graphTypes": [], "clmNameForLineGraph": "", "colorsForBars": "", "graphHeight": "", "graphBottomMargin": "", "graphBgStartColor": "", "graphBgEndColor": "", "graphFontColor": "", "graphTypeBgColor": "", "graphTypeFontColor": "", "labelRotation": "", "alphaGraph3D": "", "betaGraph3D": "", "xAxisLabel": "", "yAxisLabel": "", "xAxisFontSize": "", "yAxisFontSize": "", "annotationFontSize": "", "maxValueOfAxis": "", "parentWidgetGraph": "", "isActionBtnReqGraph": "Yes", "minValueOfAxis": "",
       //kpi details
@@ -328,6 +331,14 @@ const WidgetMaster = () => {
     localStorage.removeItem('radio');
     setLoading(false)
     onTableClose()
+
+    setNewRow({ modeForSQCHILDColumnNo: "", SQCHILDWidgetId: "", drillSQCHILDWidgetName: "" });
+
+    setOtherLinkData([{ otherLinkName: "", otherLinkURL: "" }]);
+
+    setRows([{ queryLabel: "", mainQuery: "", isMultiRowDataTable: "", tableDataDisplay: "horizontal", totalRecordCountQuery: "" }]);
+
+    setProcedureRows([{ queryLabel: "", serviceReferenceNumber: "", webserviceName: "", isMultiRowDataTable: "", tableDataDisplay: "horizontal" }]);
     // setIsInputChanged(false)
   }
 
@@ -456,7 +467,7 @@ const WidgetMaster = () => {
         kpiDefaultFontColor: singleData[0]?.widgetFontColour,//
         kpiDefaultHoverBg: singleData[0]?.widgetHoverBackground,//
         kpiIconColor: singleData[0]?.widgetIconColour,//
-        kpiBoxClickOptions: singleData[0]?.onClickKPITypeOption,//======
+        kpiBoxClickOptions: singleData[0]?.onClickKPITypeOption | 0,//======
         kpiTabOpenOnClick: singleData[0]?.onClickOfKPITabId,//
         kpiWidgetOpenOnClick: singleData[0]?.onClickOfKPIWidgetId,//
         kpiDashboardOpenOnClick: singleData[0]?.onClickOfKPIDashboardId,//
@@ -1235,7 +1246,7 @@ const WidgetMaster = () => {
       } else if (newErrors.mainQueryErr || newErrors.serviceReferenceNumberErr || newErrors.webserviceNameErr || newErrors.procedureNameErr) {
         setTabIndex(2);
         setTabName({ value: 2, label: "Query Details" });
-      } else if (newErrors.kpiTypeErr || newErrors.kpiIconTypeErr || newErrors.kpiDefaultBgColorErr || newErrors.noOfNewsVisibleErr || newErrors.mapNameErr || newErrors.defaultGraphTypeErr  || newErrors.clmNameForLineGraphErr || newErrors.defaultPluginNameErr || newErrors.defaultPluginNameErr || newErrors.alphaGraph3DErr || newErrors.betaGraph3DErr || newErrors.xAxisLabelErr || newErrors.yAxisLabelErr || newErrors.isThree3DErr || newErrors.isDataLabelsErr || newErrors.isShowLegendErr || newErrors.isDisplayGraphPluginErr || newErrors.isGraphScrollBarReqErr || newErrors.isFullLabelReqErr) {
+      } else if (newErrors.kpiTypeErr || newErrors.kpiIconTypeErr || newErrors.kpiDefaultBgColorErr || newErrors.noOfNewsVisibleErr || newErrors.mapNameErr || newErrors.defaultGraphTypeErr || newErrors.clmNameForLineGraphErr || newErrors.defaultPluginNameErr || newErrors.defaultPluginNameErr || newErrors.alphaGraph3DErr || newErrors.betaGraph3DErr || newErrors.xAxisLabelErr || newErrors.yAxisLabelErr || newErrors.isThree3DErr || newErrors.isDataLabelsErr || newErrors.isShowLegendErr || newErrors.isDisplayGraphPluginErr || newErrors.isGraphScrollBarReqErr || newErrors.isFullLabelReqErr) {
         setTabIndex(3);
         setTabName({ value: 3, label: "" });
       }
@@ -1342,8 +1353,6 @@ const WidgetMaster = () => {
     },
   ]
 
-  console.log(singleData,'singlawid')
-  console.log(values?.sqChildJsonString,'singlawidb')
 
   return (
     <>

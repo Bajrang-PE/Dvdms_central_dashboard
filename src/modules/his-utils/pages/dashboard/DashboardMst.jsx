@@ -50,10 +50,9 @@ const DashboardMst = () => {
 
     useEffect(() => {
         if (dashboardFor && groupId) {
-            // getAllTabsData(dashboardFor);
             setLoading(true);
             getDashboardData(groupId, dashboardFor);
-             getAllWidgetData(dashboardFor);
+            getAllWidgetData(dashboardFor);
         }
     }, [searchParams]);
 
@@ -64,18 +63,14 @@ const DashboardMst = () => {
             const themes = mainDashData?.jsonData?.dashboardTheme || 'Default'
             setTheme(themes);
             getAllAvailableTabs(ids, dashboardFor).finally(() => setLoading(false));
+        } else {
+            setLoading(false)
         }
     }, [mainDashData]);
 
     const isTopBarLayout = mainDashData?.jsonData?.tabDisplayStyle === 'TOP';
     const parameters = mainDashData?.jsonData?.allSelectedParaList || '';
 
-    // useEffect(() => {
-    //     setLoading(true);
-    //     setTimeout(() => {
-    //         setLoading(false);
-    //     }, 1000);
-    // }, [])
 
     const handleSetParamsValues = useCallback((values) => {
         setParamsValues(values);
@@ -141,6 +136,9 @@ const DashboardMst = () => {
                             >
                                 <TabDash />
                             </Suspense>
+                            // : <>
+                            //     <h2 className="text-danger">Internal Error!!!! </h2>
+                            // </>
                         }
                     </main>
                 </div>

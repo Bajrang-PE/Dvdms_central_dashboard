@@ -3,7 +3,7 @@ import { HISContext } from '../../contextApi/HISContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faFileExcel, faFilePdf, faRefresh } from '@fortawesome/free-solid-svg-icons';
 import { generateCSV, generatePDF } from '../commons/advancedPdf';
-import { fetchProcedureData, fetchQueryData } from '../../utils/commonFunction';
+import { fetchProcedureData, fetchQueryData, formatDateFullYear } from '../../utils/commonFunction';
 
 const NewsTickerDash = ({ widgetData }) => {
     const { theme, mainDashData, singleConfigData, paramsValues, setLoading } = useContext(HISContext);
@@ -81,8 +81,8 @@ const NewsTickerDash = ({ widgetData }) => {
                     initialRecord?.toString(), //initial record no.===
                     finalRecord?.toString(), //final record no.===
                     "", //date options
-                    "29-May-2025",//from values
-                    "29-May-2025" // to values
+                    formatDateFullYear(new Date()),//from values
+                    formatDateFullYear(new Date()) // to values
                 ]
                 const response = await fetchProcedureData(widget?.procedureMode, params, widget?.JNDIid);
                 const formattedData = formatData(response.data || []);
@@ -93,7 +93,7 @@ const NewsTickerDash = ({ widgetData }) => {
             }
         } else if (widget?.modeOfQuery === "Query") {
             try {
-                const data = await fetchQueryData(widget?.query, widget?.JNDIid);
+                const data = await fetchQueryData(widget?.queryVO, widget?.JNDIid);
                 console.log(data, 'bgdtdtdtddt')
                 if (data?.length > 0) {
                     const formattedData = formatData(data);
@@ -211,7 +211,7 @@ const NewsTickerDash = ({ widgetData }) => {
                     </div>
                 }
             </div>
-            
+
             <div className="px-2 py-2" style={{ marginTop: `${widgetTopMargin}px` }}>
                 <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query : {rptId}</h4>
                 {modeOfQuery === 'Query' &&
