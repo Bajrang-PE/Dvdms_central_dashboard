@@ -52,7 +52,7 @@ const DashboardMst = () => {
         if (dashboardFor && groupId) {
             setLoading(true);
             getDashboardData(groupId, dashboardFor);
-            getAllWidgetData(dashboardFor);
+             getAllWidgetData(dashboardFor);
         }
     }, [searchParams]);
 
