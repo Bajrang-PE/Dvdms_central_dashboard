@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
-import GlobalButtons from '../GlobalButtons';
 import { LoginContext } from '../../../context/LoginContext';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
 import { fetchData } from '../../../../../utils/ApiHooks';
 
-const ProgrammeMappingMaster = () => {
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext);
+const TestMappingMaster = () => {
+    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt,getFacilityTypeDrpData } = useContext(LoginContext);
 
     const [programmeId, setProgrammeId] = useState("");
     const [stateId, setStateId] = useState("");
@@ -18,7 +17,7 @@ const ProgrammeMappingMaster = () => {
     useEffect(() => {
         if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
         setOpenPage("add");
-        //getFacilityTypeDrpData();
+        getFacilityTypeDrpData();
     }, []);
 
     useEffect(() => {
@@ -94,7 +93,7 @@ const ProgrammeMappingMaster = () => {
         <>
             <div className='masters mx-3 my-2'>
                 <div className='masters-header row'>
-                    <span className='col-12'><b>{`Programme Mapping Master`}</b></span>
+                    <span className='col-12'><b>{`Test Mapping Master`}</b></span>
                     {/* {openPage === "home" && <span className='col-6 text-end'>Total Records : {functionalityData?.length || 0}</span>} */}
                 </div>
 
@@ -102,16 +101,17 @@ const ProgrammeMappingMaster = () => {
                 <div className='row pt-2'>
                     <div className='col-sm-6'>
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-5 col-form-label fix-label required-label">Programme Name : </label>
+                            <label className="col-sm-5 col-form-label fix-label required-label">State : </label>
                             <div className="col-sm-7 align-content-center">
                                 <InputSelect
                                     id="hintquestion"
                                     name="hintquestion"
                                     placeholder="Select Value"
-                                    options={[{ value: '44', label: 'District Hospital' }]}
+                                    /*options={[{ value: '44', label: 'District Hospital' }]}*/
+                                    options={stateNameDrpDt}
                                     className="aliceblue-bg border-dark-subtle"
                                     value={programmeId}
-                                    onChange={(e) => setProgrammeId(e.target.value)}
+                                    onChange={(e) => setStateId(e.target.value)}
                                 />
 
                             </div>
@@ -119,7 +119,7 @@ const ProgrammeMappingMaster = () => {
                     </div>
                     <div className='col-sm-6'>
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-5 col-form-label fix-label required-label">State : </label>
+                            <label className="col-sm-5 col-form-label fix-label required-label">Facility Type : </label>
                             <div className="col-sm-7 align-content-center">
                                 <InputSelect
                                     id="hintquestion"
@@ -134,11 +134,34 @@ const ProgrammeMappingMaster = () => {
                         </div>
                     </div>
                 </div>
+                <div className='row pt-2'>
+                    <div className='col-sm-6'>
+                        <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                            <label className="col-sm-5 col-form-label fix-label required-label">Inhouse/Outsource : </label>
+                            <div className="col-sm-7 align-content-center">
+                                <InputSelect
+                                    id="hintquestion"
+                                    name="hintquestion"
+                                    placeholder="Select Value"
+                                    options={[
+                                        { value: '1', label: 'Inhouse' },
+                                        { value: '2', label: 'Outsource' }
+                                      ]}
+                                    /*options={stateNameDrpDt}*/
+                                    className="aliceblue-bg border-dark-subtle"
+                                    value={programmeId}
+                                    onChange={(e) => setStateId(e.target.value)}
+                                />
+
+                            </div>
+                        </div>
+                    </div>
+                    </div>
 
                 <div className="d-flex align-items-center my-3">
                     <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
                     <div className="px-1 text-primary fw-bold fs-13">
-                        <span className="text-danger">*</span> State Programme Name
+                        <span className="text-danger">*</span> Test Facility Type
                     </div>
                     <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
                 </div>
@@ -225,4 +248,4 @@ const ProgrammeMappingMaster = () => {
     )
 }
 
-export default ProgrammeMappingMaster
+export default TestMappingMaster

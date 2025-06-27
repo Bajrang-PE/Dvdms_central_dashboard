@@ -30,6 +30,7 @@ const LoginContextApi = ({ children }) => {
     const [groupDrpData, setGroupDrpData] = useState([]);
     const [subGroupDrpData, setSubGroupDrpData] = useState([]);
     const [facilityTypeDrpDt, setFacilityTypeDrpDt] = useState([]);
+    const [programmeNameDrpDt, setProgrammeNameDrpDt] = useState([]);
 
 
     //confirm alert
@@ -235,6 +236,23 @@ const LoginContextApi = ({ children }) => {
                 setFacilityTypeDrpDt(drpData)
             } else {
                 setFacilityTypeDrpDt([])
+            }
+        })
+    }
+
+    const getProgrammeNameDrpData = () => {
+        fetchData('/api/v1/drpDwnFcltyTypMapMst').then((data) => {
+            if (data) {
+                const drpData = data?.map((dt) => {
+                    const val = {
+                        value: dt?.id,
+                        label: dt?.name
+                    }
+                    return val;
+                })
+                setProgrammeNameDrpDt(drpData)
+            } else {
+                setProgrammeNameDrpDt([])
             }
         })
     }

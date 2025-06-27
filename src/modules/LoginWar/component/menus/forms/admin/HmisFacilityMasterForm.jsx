@@ -7,14 +7,16 @@ import { fetchData, fetchPostData, fetchUpdateData } from '../../../../../../uti
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
 const HmisFacilityMasterForm = () => {
-    const { openPage, selectedOption, setOpenPage, setSelectedOption, getProgrammeListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const { openPage, selectedOption, setOpenPage, setSelectedOption, getProgrammeListData, setShowConfirmSave, confirmSave, setConfirmSave, handleValueChange } = useContext(LoginContext);
     const [stateName, setStateName] = useState('');
     const [facilityType, setFacilityType] = useState('');
     const [recordStatus, setRecordStatus] = useState('1');
     const [singleData, setSingleData] = useState([]);
+    const[date,setDate] = useState('');
     const [errors, setErrors] = useState({
         "hmisFacilityErr": ""
     })
+    
 
     // const getSingleData = (id) => {
     //     fetchData(`api/v1/zones/${id}`).then(data => {
@@ -180,16 +182,14 @@ const HmisFacilityMasterForm = () => {
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
                         <label className="col-sm-5 col-form-label fix-label required-label">Hmis Date : </label>
                         <div className="col-sm-7 align-content-center">
-                            <InputField
-                                type={'text'}
-                                id="programmename"
-                                name="programmename"
-                                placeholder="Enter Hmis Date"
-                                className="aliceblue-bg border-dark-subtle"
-                                value={stateName}
-                                onChange={(e) => { setProgrammeName(e.target?.value); setErrors({ ...errors, "programmeNameErr": "" }) }}
-                                errorMessage={errors?.programmeNameErr}
-                            />
+                        <InputField
+                                        type="date"
+                                        id="date"
+                                        name="date"
+                                        onChange={handleValueChange}
+                                        value={date}
+                                        //value={values?.date}
+                                    />
                         </div>
                     </div>
                 </div>

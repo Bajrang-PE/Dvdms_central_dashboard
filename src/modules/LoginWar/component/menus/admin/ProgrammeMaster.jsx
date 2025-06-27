@@ -22,7 +22,7 @@ const ProgrammeMaster = () => {
 
     }, [recordStatus])
 
-    console.log(programmeListData,'programmeListData')
+   // console.log(programmeListData,'programmeListData')
 
     const handleRowSelect = (row) => {
        
@@ -117,8 +117,10 @@ const ProgrammeMaster = () => {
 
         <div className='masters mx-3 my-2'>
             <div className='masters-header row'>
-                <span className='col-6'><b>{'Programme Master >>'}</b></span>
-                <span className='col-6 text-end'>Total Records : 12</span>
+                
+                <span className='col-6'><b>{`Programme Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
+                
 
             </div>
             {(openPage === "home" || openPage === 'view' || openPage === 'delete') && (

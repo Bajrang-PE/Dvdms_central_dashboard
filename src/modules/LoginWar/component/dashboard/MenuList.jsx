@@ -46,6 +46,7 @@ const MenuList = (props) => {
                         { dataVal: 'editUser', menuName: 'State CDB Sync Master', icon: 'fa-gear' ,link: "/dvdms/menus/state-cdb-sync-master"},
                       //  { dataVal: 'editUser', menuName: 'Additional Facility Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/additional-facility-mapping-master" },
                         { dataVal: 'editUser', menuName: 'Hmis Facility Master', icon: 'fa-gear', link: "/dvdms/menus/hmis-facility-master" },
+                        { dataVal: 'editUser', menuName: 'Test Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/test-mapping-master" },
                         
 
 

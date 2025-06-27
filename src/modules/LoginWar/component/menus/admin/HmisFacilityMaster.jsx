@@ -11,7 +11,7 @@ import HmisFacilityMasterForm from '../forms/admin/HmisFacilityMasterForm';
 
 const HmisFacilityMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, getStateListData, getSteteNameDrpData, stateNameDrpDt,stateListData, setConfirmSave, confirmSave, setShowConfirmSave } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, getStateListData, getSteteNameDrpData, stateNameDrpDt,getFacilityTypeDrpData,stateListData, setConfirmSave, confirmSave, setShowConfirmSave } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [recordStatus, setRecordStatus] = useState('1');
     const [filterData, setFilterData] = useState(stateListData);
@@ -20,6 +20,12 @@ const HmisFacilityMaster = () => {
     useEffect(() => {
         getStateListData(recordStatus ? recordStatus : '1')
     }, [recordStatus])
+
+    useEffect(() => {
+        if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
+        setOpenPage("add");
+        getFacilityTypeDrpData();
+    }, []);
 
     const handleRowSelect = (row) => {
         setSelectedOption((prev) => {
@@ -137,7 +143,8 @@ const HmisFacilityMaster = () => {
                                         id="hintquestion"
                                         name="hintquestion"
                                         placeholder="Select State"
-                                        options={[{ value: 1, label: 'Assam' }]}
+                                        //options={[{ value: 1, label: 'Assam' }]}
+                                        options={stateNameDrpDt}
                                         className="aliceblue-bg border-dark-subtle"
                                         value={country}
                                         onChange={(e) => setState(e.target.value)}

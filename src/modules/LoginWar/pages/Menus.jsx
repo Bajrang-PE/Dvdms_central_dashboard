@@ -19,6 +19,7 @@ import SubGroupMaster from '../component/menus/admin/SubGroupMaster'
 import ProgrammeMappingMaster from '../component/menus/admin/ProgrammeMappingMaster'
 import ProgrammeMaster from '../component/menus/admin/ProgrammeMaster'
 import HmisFacilityMaster from '../component/menus/admin/HmisFacilityMaster'
+import TestMappingMaster from '../component/menus/admin/TestMappingMaster'
 
 const Menus = () => {
     return (
@@ -50,6 +51,7 @@ const Menus = () => {
                  <Route path="programme-mapping-master" element={<ProgrammeMappingMaster />} /> 
                  
                  <Route path="hmis-facility-master" element={<HmisFacilityMaster />} /> 
+                 <Route path="test-mapping-master" element={<TestMappingMaster />} /> 
 
             </Routes>
         </>
