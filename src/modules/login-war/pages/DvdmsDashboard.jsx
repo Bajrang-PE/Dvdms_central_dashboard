@@ -1,48 +1,72 @@
-import React, { use, useEffect, useState } from 'react'
-import SidebarComponent from '../component/dashboard/Sidebar'
-import DashHeader from '../component/dashboard/DashHeader'
+import { useReducer } from "react";
+import SidebarComponent from "../component/dashboard/Sidebar";
+import DashHeader from "../component/dashboard/DashHeader";
+import "../styles/WelcomePage.css";
+import "../styles/DashboardCreator.css";
+import "../styles/SqlBuilder.css";
+import "../styles/Charts.css";
+import "../styles/SavedData.css";
+import MainContainer from "../component/homePage/Maincontainer";
+import ConfigurationTabs from "../component/homePage/ConfigurationTabs";
+import TableMapper from "../component/homePage/TableMapper";
+import DashboardCreator from "../component/homePage/DashboardCreator";
+import LinkMapper from "../component/homePage/LinkMapper";
 
-const DvdmsDashboard = () => {
-    const targetTime = new Date();
-    targetTime.setHours(18, 10, 0, 0);
-    const [remaining, setRemaining] = useState(targetTime - Date.now());
+export default function DvdmsDashboard() {
+  const configurationTabToggles = {
+    showTableMapper: false,
+    showDashboardMapper: false,
+    showLinkMapper: false,
+  };
 
-    // useEffect(() => {
-    //     const counter = setInterval(() => {
-    //         const timeLeft = targetTime - Date.now();
-    //         setRemaining(timeLeft)
+  //Configures which part is rendered
+  //prettier-ignore
+  const [tabToggels, dispatcher] = useReducer(toggleStateReducer, configurationTabToggles);
+  const primaryWindowState =
+    !tabToggels.showDashboardMapper &&
+    !tabToggels.showTableMapper &&
+    !tabToggels.showLinkMapper;
 
-    //         if (timeLeft <= 0) {
-    //             clearInterval(counter);
-    //             // alert("Now Go...apply for leave! 🚀");
-    //         }
-
-    //     }, 1000);
-
-    //     return () => clearInterval(counter);
-
-    // }, [targetTime])
-
-    return (
-        <div>
-            <DashHeader />
-            <div style={{
-                display: 'flex',
-                backgroundColor: "#f4f4f4",
-                minHeight: "100vh"
-            }}>
-
-                <SidebarComponent />
-
-                <main style={{ padding: "10px 20px", flex: 1 }}>
-                    <h1>Welcome to DVDMS Central Dashboard</h1>
-                    {/* <h2> Remaining Time : {Math.floor(remaining / 1000)}</h2>
-                    <progress id="file" value={Math.floor(remaining / 1000)} max={28800}></progress>{((Math.floor(remaining / 1000) / 28800) * 100).toFixed(2)}% */}
-
-                </main>
-            </div>
-        </div>
-    )
+  return (
+    <>
+      <DashHeader />
+      <div className="landingpage">
+        <SidebarComponent />
+        <MainContainer>
+          {primaryWindowState && (
+            <ConfigurationTabs toggleFunction={dispatcher} />
+          )}
+          {tabToggels.showTableMapper && (
+            <TableMapper toggleFunction={dispatcher} />
+          )}
+          {tabToggels.showDashboardMapper && (
+            <DashboardCreator toggleFunction={dispatcher} />
+          )}
+          {tabToggels.showLinkMapper && (
+            <LinkMapper toggleFunction={dispatcher} />
+          )}
+        </MainContainer>
+      </div>
+    </>
+  );
 }
 
-export default DvdmsDashboard
+function toggleStateReducer(state, action) {
+  switch (action.type) {
+    case "TOGGLE/TABLEMAPPER":
+      return {
+        ...state,
+        showTableMapper: !state.showTableMapper,
+      };
+    case "TOGGLE/DASHBOARDMAPPER":
+      return {
+        ...state,
+        showDashboardMapper: !state.showDashboardMapper,
+      };
+    case "TOGGLE/LINKMAPPER":
+      return {
+        ...state,
+        showLinkMapper: !state.showLinkMapper,
+      };
+  }
+}

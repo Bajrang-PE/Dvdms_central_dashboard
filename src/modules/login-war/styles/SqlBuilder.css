@@ -1,0 +1,308 @@
+.sql__container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.sql_editor-builder,
+.sql_editor-freehand {
+  box-shadow: 0 5px 10px rgba(0, 128, 128, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 8px 15px;
+}
+
+.sql_editor-freehand {
+  height: 200px;
+}
+
+.sql_editor-builder {
+  height: 400px;
+}
+
+.sql_editor-builder {
+  border: none;
+  outline: none;
+  overflow: scroll;
+  resize: none;
+  font-family: "Fira Code", "Courier New", monospace;
+  flex: 0 1 78%;
+}
+
+.sql_editor-freehand {
+  flex: 1;
+}
+
+.sql_suggestions {
+  flex: 0 1 20%;
+  box-shadow: 0 5px 10px rgba(0, 128, 128, 0.2);
+  overflow: scroll;
+  height: 400px;
+}
+
+.sql_editor--text {
+  font-size: 20px;
+  font-weight: 400;
+  font-family: "Segoe UI", sans-serif;
+  margin-bottom: 10px;
+}
+
+.sql_suggestions--text {
+  font-weight: 500;
+  font-family: "Segoe UI", sans-serif;
+  /* padding: 5px 5px; */
+  border-bottom: 0.5px solid rgba(0, 128, 128, 0.2);
+  text-align: center;
+}
+
+.sql_suggestions--para {
+  font-weight: 400;
+  margin-top: 5px;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.sql_suggestions--list {
+  padding-left: 10px;
+  list-style-type: disc;
+}
+
+.sql_suggestions--item {
+  margin: 0.25rem 0;
+}
+
+.sql_suggestions--item {
+  font-family: "Segoe UI", sans-serif;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.sql_alias {
+  font-weight: 400;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.sql_tables-list {
+  display: block;
+  padding: 10px 12px;
+  width: 100%;
+  margin-top: 12px;
+  box-shadow: 0 5px 10px rgba(0, 128, 128, 0.2);
+  height: 100px;
+}
+
+.execute_button,
+.clear_button {
+  border: none;
+  display: block;
+  font-size: 15px;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  padding: 5px 12px;
+  margin-bottom: 30px;
+}
+
+.execute_button {
+  color: var(--main-windowcolor);
+  background-color: cadetblue;
+}
+
+.clear_button {
+  background-color: transparent;
+  border: 1px solid cadetblue;
+}
+
+.clear_button:hover {
+  background-color: cadetblue;
+  color: var(--main-windowcolor);
+}
+
+.execute_button:hover {
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.execute_button:active,
+.clear_button:active {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.control_box {
+  width: 100%;
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+.sql_builder-editor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+  overflow: scroll;
+}
+
+.sql_columnSelector,
+.sql_clauseSelector {
+  display: flex;
+  align-items: center;
+}
+
+.sql_columnSelector {
+  gap: 15px;
+  flex: 1 1 93%;
+}
+
+.sql_clauseSelector {
+  width: 83%;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.sql_clauseSelector-dropdown {
+  display: flex;
+  flex: 0 1 24%;
+  align-items: center;
+  gap: 15px;
+}
+
+.sql_inputfield {
+  border-radius: 5%;
+  border: 0.5px solid whitesmoke;
+  padding: 5px 5px;
+  background-color: white;
+  display: inline-block;
+  transition: all 0.2s ease-in;
+}
+
+.sql_inputfield:focus {
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.sql_tableSelector {
+  display: flex;
+}
+
+.sql_identifiers {
+  color: indigo;
+  font-family: "Segoe UI", sans-serif;
+  font-weight: 600;
+}
+
+.column_controls,
+.clause_control {
+  display: block;
+  border: 0.5px solid whitesmoke;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 15px;
+  transition: all 0.2s ease-in-out;
+  padding: 5px 10px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.column_controls {
+  border-radius: 50%;
+}
+
+.column_controls:hover,
+.clause_control:hover,
+.whereconditions_btn:hover {
+  background-color: whitesmoke;
+}
+
+.whereconditions_btn {
+  display: block;
+  border: 0.5px solid whitesmoke;
+  font-family: "Segoe UI", sans-serif;
+  background-color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+  transition: background-color 0.2s ease-in;
+}
+
+.condition_selector {
+  display: flex;
+  width: 80%;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/*Table Stylings*/
+.table-scroll-wrapper {
+  overflow: hidden;
+  width: 200%;
+}
+
+.custom-table-container {
+  overflow: auto;
+  height: 70vh;
+  padding: 20px;
+  margin-top: 15px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.table-title {
+  font-weight: bold;
+  margin-bottom: 15px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.success {
+  color: #006d6d;
+}
+
+.failure {
+  color: crimson;
+}
+
+.custom-table {
+  width: 100%;
+  overflow: auto;
+  table-layout: fixed;
+  word-wrap: break-word;
+  font-size: 15px;
+}
+
+.custom-table thead {
+  background-color: cadetblue;
+  color: white;
+}
+
+.custom-table tbody tr:hover {
+  background-color: #b2d8d8;
+  cursor: pointer;
+}
+
+.custom-table th,
+.custom-table td {
+  text-align: left;
+  vertical-align: middle;
+}
+
+.custom-button-cadet {
+  background-color: rgba(0, 128, 128, 0.87);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.custom-button-teal {
+  background-color: rgba(0, 128, 128, 0.87);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.custom-button-cadet:disabled,
+.custom-button-teal:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

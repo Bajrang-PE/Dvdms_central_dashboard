@@ -1,6 +1,6 @@
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { fetchPostData } from '../../../utils/ApiHooks';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { fetchPostData } from "../../../utils/ApiHooks";
 
 export const fetchQueryData = async (queryVO = [], jndiServer) => {
   if (!Array.isArray(queryVO) || queryVO.length === 0) {
@@ -16,7 +16,10 @@ export const fetchQueryData = async (queryVO = [], jndiServer) => {
     }
 
     const requestBody = { query, params: {} };
-    const response = await fetchPostData("http://10.226.25.164:8024/hisutils/GenericApiQry", requestBody);
+    const response = await fetchPostData(
+      "http://10.226.25.164:8024/hisutils/GenericApiQry",
+      requestBody
+    );
 
     return response?.data || [];
   } catch (error) {
@@ -36,22 +39,84 @@ export const ToastAlert = (message, type) => {
     draggable: true,
     progress: undefined,
     theme: "light",
-    type: type
+    type: type,
   });
-}
+};
 
 export const capitalizeFirstLetter = (str) => {
-  if (!str) return '';
+  if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+export function getClusteredTablenames(clusterTableArray) {
+  return clusterTableArray.length
+    ? clusterTableArray.map((item) => item.split(",")[0]).join(" | ")
+    : "";
+}
 
-export const formatDate1 = (isoDate) => {
-  const dateObject = new Date(isoDate);
-  // dateObject.setUTCHours(dateObject.getUTCHours() + dateObject.getTimezoneOffset() / 60);
+export async function executeSqlQuery(sqlQuery) {
+  try {
+    const response = await fetch("http://localhost:8025/api/v1/execute-query", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: sqlQuery,
+    });
 
-  const day = dateObject.getUTCDate().toString().padStart(2, '0');
-  const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dateObject.getUTCMonth()];
-  const year = dateObject.getUTCFullYear();
-  return `${day}-${month}-${year.toString().slice(-2)}`;
+    if (!response.ok) {
+      throw new Error("Failed to fetch data");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching Table Data:", error);
+  }
+}
+
+export async function fetchDrilldownData(params) {
+  try {
+    const response = await fetch(
+      "http://localhost:8025/api/v1/fetchDrilldownData",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: params,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch data");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching Table Data:", error);
+  }
+}
+
+export default async function saveDashboardData(requestData) {
+  // Make the POST request
+  try {
+    const response = await fetch(
+      "http://localhost:8025/api/v1/save-dashboard",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok " + response.statusText);
+    }
+
+    return response.json();
+  } catch (error) {
+    return error;
+  }
 }

@@ -1,27 +1,47 @@
-import React, { useContext } from 'react'
-import Modal from 'react-bootstrap/Modal';
-import { HISContext } from '../../contextApi/HISContext';
+import { useContext } from "react";
+import Modal from "react-bootstrap/Modal";
+import { HISContext } from "../../contextApi/HISContext";
 
+function ConfirmBox({ message }) {
+  const { showConfirmSave, setShowConfirmSave, setConfirmSave } =
+    useContext(HISContext);
 
-const ConfirmBox = (props) => {
-    const { message } = props
-    const { showConfirmSave, setShowConfirmSave, confirmSave, setConfirmSave, } = useContext(HISContext)
-
-    return (
-        <>
-            {showConfirmSave &&
-                <Modal show={true} className="input-box">
-                    <Modal.Body>
-                        <h6 className='text-center'>{message}</h6>
-                        <div className="box text-center">
-                            <button type="button" className="btn btn-sm btn-success text-white me-1" data-dismiss="modal" onClick={() => { setConfirmSave(true); setShowConfirmSave(false); }}>Ok</button>
-                            <button type="button" className="btn btn-sm btn-danger text-white ms-2" data-dismiss="modal" onClick={() => { setShowConfirmSave(false); setConfirmSave(false); }}> Cancel</button>
-                        </div>
-                    </Modal.Body>
-                </Modal>
-            }
-        </>
-    )
+  return (
+    <>
+      {showConfirmSave && (
+        <Modal show={true} className="input-box">
+          <Modal.Body>
+            <h6 className="text-center">{message}</h6>
+            <div className="box text-center">
+              <button
+                type="button"
+                className="btn btn-sm btn-success text-white me-1"
+                data-dismiss="modal"
+                onClick={() => {
+                  setConfirmSave(true);
+                  setShowConfirmSave(false);
+                }}
+              >
+                Ok
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm btn-danger text-white ms-2"
+                data-dismiss="modal"
+                onClick={() => {
+                  setShowConfirmSave(false);
+                  setConfirmSave(false);
+                }}
+              >
+                {" "}
+                Cancel
+              </button>
+            </div>
+          </Modal.Body>
+        </Modal>
+      )}
+    </>
+  );
 }
 
-export default ConfirmBox
+export default ConfirmBox;
