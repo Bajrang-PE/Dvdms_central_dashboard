@@ -1,4 +1,5 @@
-import { useReducer } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleTableMapper, toggleDashboardMapper, toggleLinkMapper } from "../../../store/uiSlice";
 import SidebarComponent from "../component/dashboard/Sidebar";
 import DashHeader from "../component/dashboard/DashHeader";
 import "../styles/WelcomePage.css";
@@ -13,19 +14,29 @@ import DashboardCreator from "../component/homePage/DashboardCreator";
 import LinkMapper from "../component/homePage/LinkMapper";
 
 export default function DvdmsDashboard() {
-  const configurationTabToggles = {
-    showTableMapper: false,
-    showDashboardMapper: false,
-    showLinkMapper: false,
-  };
-
-  //Configures which part is rendered
-  //prettier-ignore
-  const [tabToggels, dispatcher] = useReducer(toggleStateReducer, configurationTabToggles);
+  const dispatch = useDispatch();
+  const tabToggels = useSelector((state) => state.ui);
   const primaryWindowState =
     !tabToggels.showDashboardMapper &&
     !tabToggels.showTableMapper &&
     !tabToggels.showLinkMapper;
+
+  // Handler to pass to children
+  const toggleFunction = (action) => {
+    switch (action.type) {
+      case "TOGGLE/TABLEMAPPER":
+        dispatch(toggleTableMapper());
+        break;
+      case "TOGGLE/DASHBOARDMAPPER":
+        dispatch(toggleDashboardMapper());
+        break;
+      case "TOGGLE/LINKMAPPER":
+        dispatch(toggleLinkMapper());
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <>
@@ -34,39 +45,19 @@ export default function DvdmsDashboard() {
         <SidebarComponent />
         <MainContainer>
           {primaryWindowState && (
-            <ConfigurationTabs toggleFunction={dispatcher} />
+            <ConfigurationTabs toggleFunction={toggleFunction} />
           )}
           {tabToggels.showTableMapper && (
-            <TableMapper toggleFunction={dispatcher} />
+            <TableMapper toggleFunction={toggleFunction} />
           )}
           {tabToggels.showDashboardMapper && (
-            <DashboardCreator toggleFunction={dispatcher} />
+            <DashboardCreator toggleFunction={toggleFunction} />
           )}
           {tabToggels.showLinkMapper && (
-            <LinkMapper toggleFunction={dispatcher} />
+            <LinkMapper toggleFunction={toggleFunction} />
           )}
         </MainContainer>
       </div>
     </>
   );
-}
-
-function toggleStateReducer(state, action) {
-  switch (action.type) {
-    case "TOGGLE/TABLEMAPPER":
-      return {
-        ...state,
-        showTableMapper: !state.showTableMapper,
-      };
-    case "TOGGLE/DASHBOARDMAPPER":
-      return {
-        ...state,
-        showDashboardMapper: !state.showDashboardMapper,
-      };
-    case "TOGGLE/LINKMAPPER":
-      return {
-        ...state,
-        showLinkMapper: !state.showLinkMapper,
-      };
-  }
 }
