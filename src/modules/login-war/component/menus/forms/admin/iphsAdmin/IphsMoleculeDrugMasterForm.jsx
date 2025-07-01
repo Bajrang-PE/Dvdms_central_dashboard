@@ -6,7 +6,7 @@ import { LoginContext } from '../../../../../context/LoginContext'
 import { ToastAlert } from '../../../../../utils/CommonFunction'
 import { fetchPostData, fetchUpdateData } from '../../../../../../../utils/ApiHooks'
 
-const IphsMoleculeDrugMasterForm = ({ selectedGroupName, selectedGroupId, getListData, valuesMain, setValuesMain,setSearchInput}) => {
+const IphsMoleculeDrugMasterForm = ({ selectedGroupName, selectedGroupId, getListData, valuesMain, setValuesMain, setSearchInput }) => {
 
   const { iphsSubGroupDrpData, getIphsSubGroupDrpData, openPage, setOpenPage, setConfirmSave, confirmSave, setShowConfirmSave, selectedOption, setSelectedOption } = useContext(LoginContext);
   const [values, setValues] = useState({
@@ -101,7 +101,7 @@ const IphsMoleculeDrugMasterForm = ({ selectedGroupName, selectedGroupId, getLis
   }
 
   const refresh = () => {
-    setValuesMain(prev => ({ ...prev, "groupId": "","subGroupId": "", "record": "1" }))
+    setValuesMain(prev => ({ ...prev, "groupId": "", "subGroupId": "", "record": "1" }))
     setOpenPage("home")
     setConfirmSave(false);
     getListData();

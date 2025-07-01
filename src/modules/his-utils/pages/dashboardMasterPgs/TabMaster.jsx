@@ -20,7 +20,7 @@ import { fetchPostData } from '../../../../utils/HisApiHooks';
 
 const TabMaster = () => {
 
-  const { dashboardForDt, getDashboardForDrpData, widgetDrpData, getAllWidgetData, getAllParameterData, parameterDrpData, getAllTabsData, allTabsData, setShowDataTable, setSelectedOption, selectedOption, actionMode, setActionMode, tabDrpData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave,getDashConfigData,singleConfigData } = useContext(HISContext);
+  const { dashboardForDt, getDashboardForDrpData, widgetDrpData, getAllWidgetData, getAllParameterData, parameterDrpData, getAllTabsData, allTabsData, setShowDataTable, setSelectedOption, selectedOption, actionMode, setActionMode, tabDrpData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, getDashConfigData, singleConfigData } = useContext(HISContext);
   const [tabIndex, setTabIndex] = useState(1);
   const [tabName, setTabName] = useState({ value: 1, label: "About Tab" });
   const [showTabsTable, setShowTabsTable] = useState(false);
@@ -65,7 +65,6 @@ const TabMaster = () => {
   useEffect(() => {
     const localValues = localStorage.getItem('values');
     const localRadio = localStorage.getItem('radio');
-    // console.log(localValues, 'bgb')
     if (localValues && localValues !== '') {
       setValues(JSON.parse(localValues));
     }
@@ -75,19 +74,19 @@ const TabMaster = () => {
 
   }, []);
 
-    //to set value of dashboard for auto
-    const dashFor = localStorage.getItem('dfor');
-    useEffect(() => {
-      if (dashFor) {
-        setValues({ ...values, "tabFor": dashFor })
-      }
-    }, [dashFor])
+  //to set value of dashboard for auto
+  const dashFor = localStorage.getItem('dfor');
+  useEffect(() => {
+    if (dashFor) {
+      setValues({ ...values, "tabFor": dashFor })
+    }
+  }, [dashFor])
 
   useEffect(() => {
     if (dashboardForDt?.length === 0) { getDashboardForDrpData(); }
     if (!singleConfigData) {
       getDashConfigData()
-  }
+    }
   }, [])
 
   useEffect(() => {
@@ -137,7 +136,6 @@ const TabMaster = () => {
         return paramId?.includes(lowercasedText) || paramName.includes(lowercasedText) || paramDisplayName.includes(lowercasedText);
       });
       setFilterData(newFilteredData);
-      console.log(newFilteredData, 'newFilteredData')
     }
   }, [searchInput, allTabsData]);
 
@@ -209,6 +207,7 @@ const TabMaster = () => {
   const handleUpdateData = () => {
     if (selectedOption?.length > 0) {
       const selectedRow = allTabsData?.filter(dt => dt?.id === selectedOption[0]?.id)
+      reset()
       setSingleData(selectedRow);
       setActionMode('edit');
       setShowDataTable(false);
@@ -559,6 +558,7 @@ const TabMaster = () => {
     localStorage.removeItem('values');
     localStorage.removeItem('radio');
     setLoading(false)
+    setRows([{ rptId: "", displayOrder: "", widgetWidth: "", widgetHeight: "0", widgetColor: "", widgetDisplay: "", sectionId: "1", animation: "" }])
     // setIsInputChanged(false)
   }
 
@@ -590,12 +590,12 @@ const TabMaster = () => {
       width: "8%"
     },
     {
-      name: 'Tab Name',
+      name: 'Tab Display Name',
       selector: row => row?.jsonData?.dashboardName || "---",
       sortable: true,
     },
     {
-      name: 'Tab Display Name',
+      name: 'Tab Name',
       selector: row => row?.jsonData?.dashboardActualName || "---",
       sortable: true,
     },
@@ -607,8 +607,6 @@ const TabMaster = () => {
     },
   ]
 
-  // console.log(singleData, 'single')
-  console.log(selectedOptions, 'values')
 
   return (
     <>
@@ -655,20 +653,20 @@ const TabMaster = () => {
             {values?.tabFor &&
               <div className='text-center mt-2 pre-nxt-btn'>
                 <button className='btn btn-sm ms-1'
-                  onClick={()=>previousTab()}
+                  onClick={() => previousTab()}
                   disabled={tabIndex > 1 ? false : true}
                 >
                   <FontAwesomeIcon icon={faArrowLeft} className="dropdown-gear-icon me-2" />
                   Previous
                 </button>
                 {tabIndex === tabNavMenus?.length ? <></> :
-                <button className='btn btn-sm ms-1' onClick={()=>saveMenuTabsData()}>
-                  {`${tabIndex < tabNavMenus?.length ? 'Save & Next' : 'Save'}`}
-                  {tabIndex < tabNavMenus?.length &&
-                    <FontAwesomeIcon icon={faArrowRight} className="dropdown-gear-icon ms-2" />
-                  }
-                </button>
-}
+                  <button className='btn btn-sm ms-1' onClick={() => saveMenuTabsData()}>
+                    {`${tabIndex < tabNavMenus?.length ? 'Save & Next' : 'Save'}`}
+                    {tabIndex < tabNavMenus?.length &&
+                      <FontAwesomeIcon icon={faArrowRight} className="dropdown-gear-icon ms-2" />
+                    }
+                  </button>
+                }
               </div>
             }
           </div>

@@ -4,7 +4,7 @@ import InputField from "./InputField";
 
 const iconList = Object.keys(FaIcons);
 
-const IconPicker = ({ setTabIcon, tabIcon, setValues,values }) => {
+const IconPicker = ({ setTabIcon, tabIcon, setValues, values }) => {
     const [selectedIcon, setSelectedIcon] = useState("");
     const [showPicker, setShowPicker] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
@@ -65,7 +65,7 @@ const IconPicker = ({ setTabIcon, tabIcon, setValues,values }) => {
                     placeholder="Select an icon"
                     value={selectedIcon}
                     readOnly
-                    onClick={()=>onOpenBox()}
+                    onClick={() => onOpenBox()}
                     className='backcolorinput-icons form-select form-select-sm'
                     style={{ cursor: "pointer" }}
                 />

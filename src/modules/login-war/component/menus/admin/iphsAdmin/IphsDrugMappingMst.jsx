@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../../context/LoginContext';
 import InputSelect from '../../../InputSelect';
-import { fetchData, fetchPostData } from '../../../../../../utils/ApiHooks';
+import { fetchData, fetchPatchData, fetchPostData } from '../../../../../../utils/ApiHooks';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 
 const IphsDrugMappingMst = () => {
@@ -35,8 +35,8 @@ const IphsDrugMappingMst = () => {
     }, [drugId])
 
     const getUnmappedList = () => {
-        fetchData(`http://10.226.26.247:8025/api/v1/IphsDrugMappingMst/getUnmappedDrugs`).then(data => {
-            if (data?.status === 200) {
+        fetchData(`http://10.226.27.173:8025/api/v1/IphsDrugMappingMst/getUnmappedDrugs`).then(data => {
+            if (data.data) {
                 const drpData = Array.from(
                     new Map(
                         data.data.map(dt => [
@@ -57,9 +57,9 @@ const IphsDrugMappingMst = () => {
 
     const getMappedList = () => {
 
-        fetchData(`http://10.226.26.247:8025/api/v1/IphsDrugMappingMst/getMappedDrugs?drugID=${drugId}`)
+        fetchData(`http://10.226.27.173:8025/api/v1/IphsDrugMappingMst/getMappedDrugs?drugID=${drugId}`)
             .then((data) => {
-                if (data.status === 1) {
+                if (data.data) {
                     const drpData = Array.from(
                         new Map(
                             data.data.map(dt => [
@@ -117,65 +117,85 @@ const IphsDrugMappingMst = () => {
         setSelectedSelected([]);
     };
 
-        const handleSave = () => {
-            let isValid = true;
-            if (drugId === "") {
-                setDrugIdErr("please select drug name")
-                isValid = false;
-            }
-          
-            if (isValid) {
-    
-                const addedToRight = selectedOptions.filter(
-                    item => !initialMappedOptions.some(i => i.value === item.value)
-                );
-    
-                const removedFromRight = initialMappedOptions.filter(
-                    item => !selectedOptions.some(i => i.value === item.value)
-                );
-            
-                const mappedData = addedToRight?.map(dt => ({
-                    "drugID": Number(dt?.value),
-                    "moleculeName": dt?.label,
-                    "packID": Number(drugId)
-                }))
-    
-                const unMappedData = removedFromRight?.map(dt => ({
-                    "moleculeID": Number(dt?.value),
-                    "packID": Number(drugId)
-                }))
-    
-                const val = {
-                    "iphsMoleculeMappingMstDTO": mappedData?.length > 0 ? mappedData : [],
-                    "iphsMoleculeUmappingMstDTO": unMappedData?.length > 0 ? unMappedData : [],
-                }
-                          
-                if (mappedData.length > 0 || unMappedData.length > 0) {
-                        // fetchPostData("http://10.226.26.247:8025/api/v1/IphsMoleculeDrugMst/mapMoleculeDrug", val).then(data=>{
-                        //     if(data?.status === 1){
-                        //         ToastAlert("Data mapped successfully","success")
-                        //         reset();     
-                        //     }else{ 
-                        //         ToastAlert(data.message	,"error")
-                        //     }
-                        // })
-                }
-                else {
-                    ToastAlert("Please map at least one molecule drug name.","warning");
-                }
-            }
-        };
+    const handleSave = async () => {
+        let isValid = true;
+        if (drugId === "") {
+            setDrugIdErr("please select drug name")
+            isValid = false;
+        }
+
+        if (isValid) {
+
+            const addedToRight = selectedOptions.filter(
+                item => !initialMappedOptions.some(i => i.value === item.value)
+            );
+
+            const removedFromRight = initialMappedOptions.filter(
+                item => !selectedOptions.some(i => i.value === item.value)
+            );
+
+            const mappedData = addedToRight?.map(dt => ({
+                "drugID": Number(dt?.value),
+                "drugName": dt?.label,
+                "packId":drugId,
+            }))
+
+            const unMappedData = removedFromRight?.map(dt => ({
+                "drugID": Number(dt?.value),
+                "drugName": dt?.label,
+                "packId":drugId,
+            }))
 
 
-        const reset = () => {
-            setDrugId("");
-            setAvailableOptions([]);
-            setSelectedOptions([]);
-            setSelectedAvailable([]);
-            setSelectedSelected([]);
-            setAddedToRight([]);
-            setRemovedFromRight([]);
-        };
+            let isMapped = false;
+
+            if (mappedData.length > 0 || unMappedData.length > 0) {
+
+                if (mappedData.length > 0) {
+                    await fetchPatchData("http://10.226.27.173:8025/api/v1/IphsDrugMappingMst/mapDrugs", mappedData).then(data => {
+                        if (data?.status == 1) {
+                            isMapped = true;
+                        } else {
+                            isMapped = false;
+                        }
+                    })
+                }
+                if (unMappedData.length > 0) {
+                    await fetchPatchData("http://10.226.27.173:8025/api/v1/IphsDrugMappingMst/unmapDrugs", unMappedData).then(data => {
+                        if (data?.status == 1) {
+                            isMapped = true;
+
+                        } else {
+                            isMapped = false;
+
+                        }
+                    })
+                }
+
+                if (isMapped) {
+                    ToastAlert("Data mapped successfully", "success")
+                    reset();
+                } else {
+                    ToastAlert("Error", "error")
+                }
+            }
+            else {
+                ToastAlert("Please map at least one molecule drug name.", "warning");
+            }
+
+        }
+    };
+
+
+    const reset = () => {
+        setDrugId("");
+        setAvailableOptions([]);
+        setSelectedOptions([]);
+        setSelectedAvailable([]);
+        setSelectedSelected([]);
+        setAddedToRight([]);
+        setRemovedFromRight([]);
+    };
 
 
     return (

@@ -19,6 +19,24 @@ const KpiWidget = (props) => {
         }
     }, [values?.iconName])
 
+    const classType = {
+        "rectangle": "kpi-preview-full-icon",
+        "rightedge": "kpi-preview-right-icon",
+        "leftedge": "kpi-preview-left-icon",
+        "circle": "kpi-preview-circle"
+    }[values?.kpiType];
+
+    const boxStyle = {
+        backgroundColor: values?.kpiDefaultBgColor,
+        borderTop: `${values?.kpiBorderWidth}px solid ${values?.kpiBorderColor}`,
+        borderBottom: `${values?.kpiBorderWidth}px solid ${values?.kpiBorderColor}`,
+        borderLeft: values?.kpiType === "leftedge" ? `20px solid ${values?.kpiBorderColor}` : `${values?.kpiBorderWidth}px solid ${values?.kpiBorderColor}`,
+        borderRight: values?.kpiType === "rightedge" ? `20px solid ${values?.kpiBorderColor}` : `${values?.kpiBorderWidth}px solid ${values?.kpiBorderColor}`,
+        borderRadius: "8px",
+        color: values?.kpiDefaultFontColor,
+        boxShadow: radioValues?.isWidgetShadowReq === 'Yes' ? "0 4px 8px rgba(0,0,0,0.3)" : "none",
+    };
+
 
     return (
         <div>
@@ -380,10 +398,31 @@ const KpiWidget = (props) => {
                     </div>
                 </div>
             }
-            <div>
-                {(tabIcon && SelectedIconComponent) && (
-                    <SelectedIconComponent />
-                )}
+
+            {/* <KpiPreview values={values} /> */}
+            <div className='row role-theme user-form'>
+                <div className='col-sm-6'>
+                    <div className="form-group row">
+                        <label className="col-sm-5 col-form-label pe-0">Kpi Preview : </label>
+                        <div className="col-sm-7 ps-0 align-content-center">
+                            <div
+                                className={`kpi-preview-kpi-box ${classType}`}
+                                style={boxStyle}
+                                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = values?.kpiDefaultHoverBg)}
+                                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = values?.kpiDefaultBgColor)}
+                            >
+                                <span className="kpi-preview-kpi-text">{'KPI TEXT'}</span>
+                                {(tabIcon && SelectedIconComponent) && (
+                                    <span className="kpi-preview-kpi-icon" style={{ color: values?.kpiIconColor }}>
+                                        <SelectedIconComponent />
+                                    </span>
+
+                                )}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     )

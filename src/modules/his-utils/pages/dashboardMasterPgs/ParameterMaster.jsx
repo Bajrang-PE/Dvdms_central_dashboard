@@ -3,10 +3,10 @@ import NavbarHeader from '../../components/headers/NavbarHeader'
 import InputSelect from '../../components/commons/InputSelect'
 import InputField from '../../components/commons/InputField'
 import Select from 'react-select'
-import { faAdd, faDatabase, faFile, faMinus, faRefresh } from '@fortawesome/free-solid-svg-icons'
+import { faAdd, faMinus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import GlobalButtonGroup from '../../components/commons/GlobalButtonGroup'
-import { datePickFields, itemForDashboard, parameterAlignment, parameterType, parameterWidth, timeOutOptions, validationType } from '../../localData/DropDownData'
+import { datePickFields, parameterAlignment, parameterType, parameterWidth, timeOutOptions, validationType } from '../../localData/DropDownData'
 import { HISContext } from '../../contextApi/HISContext'
 import GlobalDataTable from '../../components/commons/GlobalDataTable'
 import { ToastAlert } from '../../utils/commonFunction'
@@ -367,7 +367,6 @@ const ParameterMaster = () => {
         parameterQueryForDate: jsonData?.parameterQueryForDate || "",
       });
       setRows(jsonData?.lstOption?.length > 0 ? jsonData?.lstOption : [])
-      ToastAlert("Data Fetched", "success");
     }
   }, [singleData]);
 

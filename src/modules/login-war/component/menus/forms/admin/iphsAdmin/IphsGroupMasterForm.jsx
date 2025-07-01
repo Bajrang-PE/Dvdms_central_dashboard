@@ -37,7 +37,7 @@ const IphsGroupMasterForm = ({ setRecord, record, getListData, setSearchInput })
     if(openPage === "add"){
         const val ={
             "groupName":groupName,
-            "gnumSeatid": getAuthUserData('userSeatId') || 11111
+            "gnumSeatid": getAuthUserData('userSeatId')
         }
         fetchPostData('http://10.226.26.247:8025/api/v1/IphsGroupMaster/addNewGroup',val).then(data=>{
             if(data.status == 1){
@@ -53,7 +53,7 @@ const IphsGroupMasterForm = ({ setRecord, record, getListData, setSearchInput })
         const val ={
             "groupName":groupName,
             "isValid":recordStatus,
-            "gnumSeatid": getAuthUserData('userSeatId') || 11111
+            "gnumSeatid": getAuthUserData('userSeatId') 
         }
         fetchPatchData(`http://10.226.26.247:8025/api/v1/IphsGroupMaster/modifyGroupStatus?groupID=${selectedOption[0].cwhnumIphsGroupID}`,val).then(data=>{
             if(data.status == 1){

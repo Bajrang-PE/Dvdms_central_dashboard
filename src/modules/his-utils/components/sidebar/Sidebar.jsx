@@ -5,7 +5,7 @@ import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
-const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData }) => {
+const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData,setPrevKpiTab }) => {
 
     const [collapsed, setCollapsed] = useState(false);
     const [openSubMenu, setOpenSubMenu] = useState(null);
@@ -77,11 +77,11 @@ const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData }) => {
                         return (
                             <SubMenu
                                 key={tab.id}
-                                label={!collapsed && tab?.jsonData?.dashboardName}
+                                label={!collapsed && tab?.jsonData?.dashboardActualName}
                                 icon={<FontAwesomeIcon icon={getDynamicIcon(tab?.jsonData?.iconName)} />}
                                 className={`submenu-tab-side ${isActive ? 'activeSideTab' : ''}`}
                                 open={activeTab?.jsonData?.parentTabId == tab.id || openSubMenu == tab.id}
-                                onClick={() => { handleSubMenuClick(tab.id); setActiveTab(tab); }}
+                                onClick={() => { handleSubMenuClick(tab.id); setActiveTab(tab); setPrevKpiTab([]); }}
                                 id={`menu-tab-item${tab.id}`}
                                 onMouseOver={() => handleHover(`menu-tab-item${tab.id}`, true)}
                                 onMouseOut={() => handleHover(`menu-tab-item${tab.id}`, false)}
@@ -90,7 +90,7 @@ const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData }) => {
                                 {childTabs.map(child => (
                                     <MenuItem
                                         key={child.id}
-                                        onClick={() => setActiveTab(child)}
+                                        onClick={() => { setActiveTab(child); setPrevKpiTab([]) }}
                                         className={`menu-tab-item ${activeTab?.jsonData?.dashboardId === child?.jsonData?.dashboardId ? 'activeSideTab' : ''}`}
                                         icon={<FontAwesomeIcon icon={getDynamicIcon(child?.jsonData?.iconName)} />}
                                         id={`menu-tab-item${child.id}`}
@@ -98,7 +98,7 @@ const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData }) => {
                                         onMouseOut={() => handleHover(`menu-tab-item${child.id}`, false)}
                                         style={{ color: tabFont }}
                                     >
-                                        {child?.jsonData?.dashboardName}
+                                        {child?.jsonData?.dashboardActualName}
                                     </MenuItem>
                                 ))}
                             </SubMenu>
@@ -109,14 +109,14 @@ const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData }) => {
                         <MenuItem
                             key={tab.id}
                             icon={<FontAwesomeIcon icon={getDynamicIcon(tab?.jsonData?.iconName)} />}
-                            onClick={() => { setActiveTab(tab); handleSubMenuClick(''); }}
+                            onClick={() => { setActiveTab(tab); handleSubMenuClick(''); setPrevKpiTab([]) }}
                             className={`menu-tab-item ${isActive ? 'activeSideTab' : ''}`}
                             id={`menu-tab-item${tab.id}`}
                             onMouseOver={() => handleHover(`menu-tab-item${tab.id}`, true)}
                             onMouseOut={() => handleHover(`menu-tab-item${tab.id}`, false)}
                             style={{ color: tabFont }}
                         >
-                            {!collapsed && tab?.jsonData?.dashboardName}
+                            {!collapsed && tab?.jsonData?.dashboardActualName}
                         </MenuItem>
                     );
                 })}

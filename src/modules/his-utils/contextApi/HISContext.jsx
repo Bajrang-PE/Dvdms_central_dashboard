@@ -18,7 +18,20 @@ const HISContextData = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [singleConfigData, setSingleConfigData] = useState();
 
-  const [paramsValues, setParamsValues] = useState();
+  const [prevKpiTab,setPrevKpiTab] = useState([]);
+
+  const [paramsValues, setParamsValues] = useState({
+    tabParams: {},
+    widgetParams: {},
+  });
+  const [paramsValuesPro, setParamsValuesPro] = useState({
+    tabParams: {},
+    widgetParams: {},
+  });
+  const [isSearchQuery, setIsSearchQuery] = useState(false);
+
+  const [presentWidgets, setPresentWidgets] = useState([]);
+
 
   // ALL DATA
   const [parameterData, setParameterData] = useState([]);

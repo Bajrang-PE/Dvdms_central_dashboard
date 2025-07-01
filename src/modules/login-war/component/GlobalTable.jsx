@@ -18,7 +18,6 @@ const GlobalTable = (props) => {
             },
         },
     }
-    console.log(onValidate,"bgbg")
 
     return (
 
