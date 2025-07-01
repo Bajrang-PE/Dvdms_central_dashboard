@@ -84,7 +84,6 @@ const DbConfigMaster = () => {
     serviceName: "",
     userName: "",
     password: "",
-    schema: "",
     currentDB: "",
   };
 
@@ -144,12 +143,6 @@ const DbConfigMaster = () => {
         return {
           ...state,
           password: action.payload,
-        };
-
-      case "updateSchema":
-        return {
-          ...state,
-          schema: action.payload,
         };
 
       case "reset":
@@ -353,36 +346,35 @@ const DbConfigMaster = () => {
     } = values;
 
     const val = {
-      databaseConfigVO: {
-        hostname: dbFormState.hostname,
-        port: dbFormState.port,
-        serviceName: dbFormState.serviceName,
-        userName: dbFormState.userName,
-        password: dbFormState.password,
-        schema: dbFormState.schema,
-        isDbConnectionReq: isDbConnReq,
-        reportHeader1: staticReportHead1,
-        reportHeader2: staticReportHead2,
-        reportHeader3: staticReportHead3,
-        reportHeaderByQuery: reportHeaderByQuery,
-        logos: [
-          { image: logoImageUrl1, position: logoPosition?.logo1Position },
-          { image: logoImageUrl2, position: logoPosition?.logo2Position },
-          { image: logoImageUrl3, position: logoPosition?.logo3Position },
-        ].slice(0, parseInt(logoCounts)),
-        isDashboardConfigurationCached: isDashboardCached,
-        maxServiceReferenceNo: 2,
-        lstWebServiceClientConfigVO: rows?.length > 0 ? rows : [],
-        isLogoRequired: isLogoReq,
-        headingAlignment: headingAlignment,
-        isLogAllAccess: isAccessReq,
-        isLogAllError: isErrorReq,
-        isLogAllMsgs: isConsoleReq,
-        isLimitRequired: isLimitRecReq,
-        setDefaultLimit: staticDefaultLimit,
-        logoCounts: logoCounts,
-        isHeadByQueryReq: isHeadByQueryReq,
-      },
+      hostname: dbFormState.hostname,
+      port: dbFormState.port,
+      serviceName: dbFormState.serviceName,
+      userName: dbFormState.userName,
+      password: dbFormState.password,
+      schema: dbFormState.schema,
+      dbType: dbFormState.currentDB,
+      isDbConnectionReq: isDbConnReq,
+      reportHeader1: staticReportHead1,
+      reportHeader2: staticReportHead2,
+      reportHeader3: staticReportHead3,
+      reportHeaderByQuery: reportHeaderByQuery,
+      logos: [
+        { image: logoImageUrl1, position: logoPosition?.logo1Position },
+        { image: logoImageUrl2, position: logoPosition?.logo2Position },
+        { image: logoImageUrl3, position: logoPosition?.logo3Position },
+      ].slice(0, parseInt(logoCounts)),
+      isDashboardConfigurationCached: isDashboardCached,
+      maxServiceReferenceNo: 2,
+      lstWebServiceClientConfigVO: rows?.length > 0 ? rows : [],
+      isLogoRequired: isLogoReq,
+      headingAlignment: headingAlignment,
+      isLogAllAccess: isAccessReq,
+      isLogAllError: isErrorReq,
+      isLogAllMsgs: isConsoleReq,
+      isLimitRequired: isLimitRecReq,
+      setDefaultLimit: staticDefaultLimit,
+      logoCounts: logoCounts,
+      isHeadByQueryReq: isHeadByQueryReq,
     };
 
     fetchUpdateData("/hisutils/dashboard-config-save", val).then((data) => {

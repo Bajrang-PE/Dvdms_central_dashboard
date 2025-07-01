@@ -1,0 +1,111 @@
+.ChartMaker__container {
+  width: 100%;
+  margin-top: 30px;
+}
+
+.ChartMaker__container-title {
+  font-family: "Segoe UI", sans-serif;
+  font-size: 23px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: teal;
+}
+
+.ChartMaker__container-grid {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 5px 10px;
+  align-items: center;
+}
+
+.ChartMaker__container-grid-item {
+  box-shadow: 0 5px 10px rgba(0, 128, 128, 0.2);
+  border-radius: 8px;
+
+  padding: 10px 12px;
+}
+
+.central {
+  grid-area: span 2;
+  height: 330px;
+  overflow: scroll;
+}
+
+.zone-title {
+  margin-bottom: 10px;
+}
+.zone-divider-line {
+  height: 1px;
+  opacity: 0.4;
+  width: 100%;
+  background-color: cadetblue;
+  margin-bottom: 10px;
+}
+
+.charts__container {
+  border: 1px solid whitesmoke;
+  overflow: scroll;
+  box-shadow: 0 5px 10px rgba(0, 128, 128, 0.2);
+  border-radius: 8px;
+  width: 100%;
+  padding: 13px 15px;
+  height: 90vh;
+}
+
+.charts__container--selector {
+  margin-bottom: 20px;
+}
+
+.charts__container--selector-label {
+  font-family: "Segoe UI", sans-serif;
+  font-size: 17px !important;
+  margin-right: 12px;
+  font-weight: 600;
+}
+
+.charts__container--selector-picker {
+  font-family: "Segoe UI", sans-serif;
+  padding: 5px 10px;
+  background-color: transparent;
+  border: 0.5px solid whitesmoke;
+  font-size: 17px !important;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.donut__chart--radius-controls {
+  padding: 5px 10px;
+}
+
+.donut__chart--radius-controls-heading {
+  margin-top: 20px;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 17px !important;
+}
+
+.widget__detail-container {
+  padding: 10px 15px;
+  margin-top: 14px;
+}
+
+.widget_details-label {
+  font-family: "Segoe UI", sans-serif;
+  font-size: 14px !important;
+  margin-right: 10px;
+}
+
+.widget_details-field {
+  font-family: "Segoe UI", sans-serif;
+  font-size: 14px !important;
+  font-weight: 600;
+  border: 1px solid whitesmoke;
+  border-radius: 8px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+  padding: 10px 12px;
+}
+
+.chart__container {
+  margin-top: 30px;
+}

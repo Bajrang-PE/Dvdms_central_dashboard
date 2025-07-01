@@ -1,6 +1,5 @@
 function DatabaseSelector({ dispatcher }) {
   function handleDBForm(dbType) {
-    console.log("working..." + dbType);
     dispatcher({ type: dbType });
   }
 
@@ -48,14 +47,6 @@ function DBConfigForm({ dbType, dispatcher, formState }) {
     });
   }
 
-  function handleHostnameChange(e) {
-    e.preventDefault();
-    dispatcher({
-      type: "updateHostname",
-      payload: e.target.value,
-    });
-  }
-
   function handleSIDChange(e) {
     e.preventDefault();
     dispatcher({
@@ -68,14 +59,6 @@ function DBConfigForm({ dbType, dispatcher, formState }) {
     e.preventDefault();
     dispatcher({
       type: "updateUsername",
-      payload: e.target.value,
-    });
-  }
-
-  function handleSchemaChange(e) {
-    e.preventDefault();
-    dispatcher({
-      type: "updateSchema",
       payload: e.target.value,
     });
   }
@@ -161,20 +144,6 @@ function DBConfigForm({ dbType, dispatcher, formState }) {
           className="form_field"
           value={formState.password}
           onChange={handlePasswordChange}
-          required="true"
-        />
-      </div>
-      <div className="form_element_wrapper">
-        <label className="form_label" for="schemaField">
-          Schema
-        </label>
-        <input
-          type="text"
-          placeholder="Enter Schema Name"
-          id="schemaField"
-          className="form_field"
-          value={formState.schema}
-          onChange={handleSchemaChange}
           required="true"
         />
       </div>
