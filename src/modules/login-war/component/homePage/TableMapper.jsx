@@ -18,7 +18,7 @@ function TableMapper({ toggleFunction }) {
       try {
         setLoading(true);
         const response = await fetch(
-          "http://localhost:8025/api/v1/getAllTableNames"
+          "http://10.226.26.247:8025/api/v1/getAllTableNames"
         );
         const apiData = await response.json();
         const mappedOptions = apiData.data.map((table) => ({
@@ -150,7 +150,7 @@ function TableMapper({ toggleFunction }) {
 async function getColumnDetails(tablesArray) {
   try {
     const response = await fetch(
-      `http://localhost:8025/api/v1/getTableDetails?tables=${tablesArray}`
+      `http://10.226.26.247:8025/api/v1/getTableDetails?tables=${tablesArray}`
     );
 
     if (!response.ok) {
