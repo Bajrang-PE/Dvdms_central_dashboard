@@ -11,13 +11,19 @@ const uiSlice = createSlice({
   initialState,
   reducers: {
     toggleTableMapper(state) {
-      state.showTableMapper = !state.showTableMapper;
+      state.showTableMapper = true;
+      state.showDashboardMapper = false;
+      state.showLinkMapper = false;
     },
     toggleDashboardMapper(state) {
-      state.showDashboardMapper = !state.showDashboardMapper;
+      state.showTableMapper = false;
+      state.showDashboardMapper = true;
+      state.showLinkMapper = false;
     },
     toggleLinkMapper(state) {
-      state.showLinkMapper = !state.showLinkMapper;
+      state.showTableMapper = false;
+      state.showDashboardMapper = false;
+      state.showLinkMapper = true;
     },
   },
 });

@@ -1,5 +1,9 @@
 import { useSelector, useDispatch } from "react-redux";
-import { toggleTableMapper, toggleDashboardMapper, toggleLinkMapper } from "../../../store/uiSlice";
+import {
+  toggleTableMapper,
+  toggleDashboardMapper,
+  toggleLinkMapper,
+} from "../../../store/uiSlice";
 import SidebarComponent from "../component/dashboard/Sidebar";
 import DashHeader from "../component/dashboard/DashHeader";
 import "../styles/WelcomePage.css";
@@ -42,7 +46,7 @@ export default function DvdmsDashboard() {
     <>
       <DashHeader />
       <div className="landingpage">
-        <SidebarComponent />
+        <SidebarComponent toggleFunction={toggleFunction} />
         <MainContainer>
           {primaryWindowState && (
             <ConfigurationTabs toggleFunction={toggleFunction} />
