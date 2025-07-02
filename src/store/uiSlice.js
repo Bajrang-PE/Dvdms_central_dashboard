@@ -10,23 +10,23 @@ const uiSlice = createSlice({
   name: 'ui',
   initialState,
   reducers: {
-    toggleTableMapper(state) {
-      state.showTableMapper = true;
-      state.showDashboardMapper = false;
-      state.showLinkMapper = false;
-    },
-    toggleDashboardMapper(state) {
-      state.showTableMapper = false;
-      state.showDashboardMapper = true;
-      state.showLinkMapper = false;
-    },
-    toggleLinkMapper(state) {
+    openMapper(state, action) {
+      
       state.showTableMapper = false;
       state.showDashboardMapper = false;
-      state.showLinkMapper = true;
+      state.showLinkMapper = false;
+      
+      if (action.payload === "table") state.showTableMapper = true;
+      if (action.payload === "dashboard") state.showDashboardMapper = true;
+      if (action.payload === "link") state.showLinkMapper = true;
     },
+    closeAllMappers(state) {
+      state.showTableMapper = false;
+      state.showDashboardMapper = false;
+      state.showLinkMapper = false;
+    }
   },
 });
 
-export const { toggleTableMapper, toggleDashboardMapper, toggleLinkMapper } = uiSlice.actions;
+export const { openMapper,closeAllMappers } = uiSlice.actions;
 export default uiSlice.reducer;

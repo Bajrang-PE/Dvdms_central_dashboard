@@ -1,9 +1,4 @@
 import { useSelector, useDispatch } from "react-redux";
-import {
-  toggleTableMapper,
-  toggleDashboardMapper,
-  toggleLinkMapper,
-} from "../../../store/uiSlice";
 import SidebarComponent from "../component/dashboard/Sidebar";
 import DashHeader from "../component/dashboard/DashHeader";
 import "../styles/WelcomePage.css";
@@ -16,6 +11,8 @@ import ConfigurationTabs from "../component/homePage/ConfigurationTabs";
 import TableMapper from "../component/homePage/TableMapper";
 import DashboardCreator from "../component/homePage/DashboardCreator";
 import LinkMapper from "../component/homePage/LinkMapper";
+import { closeAllMappers, openMapper } from "../../../store/uiSlice";
+import DashboardHome from "../component/homePage/DashboardHome";
 
 export default function DvdmsDashboard() {
   const dispatch = useDispatch();
@@ -28,14 +25,17 @@ export default function DvdmsDashboard() {
   // Handler to pass to children
   const toggleFunction = (action) => {
     switch (action.type) {
-      case "TOGGLE/TABLEMAPPER":
-        dispatch(toggleTableMapper());
+      case "OPEN/TABLEMAPPER":
+        dispatch(openMapper("table"));
         break;
-      case "TOGGLE/DASHBOARDMAPPER":
-        dispatch(toggleDashboardMapper());
+      case "OPEN/DASHBOARDMAPPER":
+        dispatch(openMapper("dashboard"));
         break;
-      case "TOGGLE/LINKMAPPER":
-        dispatch(toggleLinkMapper());
+      case "OPEN/LINKMAPPER":
+        dispatch(openMapper("link"));
+        break;
+      case "CLOSE/ALLMAPPERS":
+        dispatch(closeAllMappers());
         break;
       default:
         break;
@@ -49,7 +49,8 @@ export default function DvdmsDashboard() {
         <SidebarComponent toggleFunction={toggleFunction} />
         <MainContainer>
           {primaryWindowState && (
-            <ConfigurationTabs toggleFunction={toggleFunction} />
+            // <ConfigurationTabs toggleFunction={toggleFunction} />
+            <DashboardHome />
           )}
           {tabToggels.showTableMapper && (
             <TableMapper toggleFunction={toggleFunction} />

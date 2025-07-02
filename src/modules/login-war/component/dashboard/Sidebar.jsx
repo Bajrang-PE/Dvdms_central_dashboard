@@ -22,16 +22,10 @@ const SidebarComponent = ({ toggleFunction }) => {
       element.style.backgroundColor = isHover ? "#1f4068" : "transparent";
     }
   };
-  const handleConfigureTables = () => {
-    toggleFunction({ type: "TOGGLE/TABLEMAPPER" });
+  const handleClick = (type) => {
+    toggleFunction({ type: type });
   };
-  function handleDashboardToggle() {
-    toggleFunction({ type: "TOGGLE/DASHBOARDMAPPER" });
-  }
 
-  function handleLinkToggle() {
-    toggleFunction({ type: "TOGGLE/LINKMAPPER" });
-  }
   return (
     <Sidebar
       width="270px"
@@ -101,7 +95,7 @@ const SidebarComponent = ({ toggleFunction }) => {
             onMouseOver={() => handleHover(`menu-tab-item-settings-1`, true)}
             onMouseOut={() => handleHover(`menu-tab-item-settings-1`, false)}
             style={{ color: tabFont }}
-            onClick={handleConfigureTables}
+            onClick={() => handleClick("OPEN/TABLEMAPPER")}
           >
             Configure Tables
           </MenuItem>
@@ -112,7 +106,9 @@ const SidebarComponent = ({ toggleFunction }) => {
             onMouseOver={() => handleHover(`menu-tab-item-settings-2`, true)}
             onMouseOut={() => handleHover(`menu-tab-item-settings-2`, false)}
             style={{ color: tabFont }}
-            onClick={handleDashboardToggle}
+            onClick={() => {
+              handleClick("OPEN/DASHBOARDMAPPER");
+            }}
           >
             Manage Dashboards
           </MenuItem>
@@ -123,7 +119,7 @@ const SidebarComponent = ({ toggleFunction }) => {
             onMouseOver={() => handleHover(`menu-tab-item-settings-3`, true)}
             onMouseOut={() => handleHover(`menu-tab-item-settings-3`, false)}
             style={{ color: tabFont }}
-            onClick={handleLinkToggle}
+            onClick={() => handleClick("OPEN/LINKMAPPER")}
           >
             Create Links / Drilldown
           </MenuItem>

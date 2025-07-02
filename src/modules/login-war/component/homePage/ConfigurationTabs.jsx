@@ -1,14 +1,14 @@
 export default function ConfigurationTabs({ toggleFunction }) {
   function handleTableToggle() {
-    toggleFunction({ type: "TOGGLE/TABLEMAPPER" });
+    toggleFunction({ type: "OPEN/TABLEMAPPER" });
   }
 
   function handleDashboardToggle() {
-    toggleFunction({ type: "TOGGLE/DASHBOARDMAPPER" });
+    toggleFunction({ type: "OPEN/DASHBOARDMAPPER" });
   }
 
   function handleLinkToggle() {
-    toggleFunction({ type: "TOGGLE/LINKMAPPER" });
+    toggleFunction({ type: "OPEN/LINKMAPPER" });
   }
 
   return (
