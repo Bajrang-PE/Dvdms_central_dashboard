@@ -61,7 +61,7 @@ function TableMapper({ toggleFunction }) {
   );
 
   function goBack() {
-    toggleFunction({ type: "TOGGLE/TABLEMAPPER" });
+    toggleFunction({ type: "CLOSE/ALLMAPPERS" });
   }
 
   function handleChange(selected) {

@@ -4,7 +4,7 @@ import CreateLinks from "../dashboard creator options/Createlinks";
 
 export default function LinkMapper({ toggleFunction }) {
   function goBack() {
-    toggleFunction({ type: "TOGGLE/LINKMAPPER" });
+    toggleFunction({ type: "CLOSE/ALLMAPPERS" });
   }
 
   return (

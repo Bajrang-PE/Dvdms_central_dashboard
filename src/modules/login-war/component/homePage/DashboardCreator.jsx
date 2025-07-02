@@ -5,7 +5,7 @@ import SavedData from "../dashboard creator options/SavedData";
 
 export default function DashboardCreator({ toggleFunction }) {
   function goBack() {
-    toggleFunction({ type: "TOGGLE/DASHBOARDMAPPER" });
+    toggleFunction({ type: "CLOSE/ALLMAPPERS" });
   }
 
   return (
