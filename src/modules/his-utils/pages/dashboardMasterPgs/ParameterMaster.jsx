@@ -15,7 +15,7 @@ import { fetchPostData } from '../../../../utils/HisApiHooks'
 
 const ParameterMaster = () => {
 
-  const { parameterData, getAllParameterData, selectedOption, setSelectedOption, setShowDataTable, dashboardForDt, getDashboardForDrpData, actionMode, setActionMode, parameterDrpData, getAllServiceData, dataServiceData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave,jndiServerDrpData,getDashConfigData,singleConfigData } = useContext(HISContext);
+  const { parameterData, getAllParameterData, selectedOption, setSelectedOption, setShowDataTable, dashboardForDt, getDashboardForDrpData, actionMode, setActionMode, parameterDrpData, getAllServiceData, dataServiceData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, jndiServerDrpData, getDashConfigData, singleConfigData, dt } = useContext(HISContext);
 
   const [rows, setRows] = useState([{ optionValue: "", optionText: "" }]);
   const [showAsLabel, setShowAsLabel] = useState(false);
@@ -49,12 +49,12 @@ const ParameterMaster = () => {
   }, [searchInput, parameterData]);
 
   //to set value of dashboard for auto
-    const dashFor = localStorage.getItem('dfor');
-    useEffect(() => {
-      if (dashFor) {
-        setValues({ ...values, "parameterFor": dashFor })
-      }
-    }, [dashFor])
+  const dashFor = localStorage.getItem('dfor');
+  useEffect(() => {
+    if (dashFor) {
+      setValues({ ...values, "parameterFor": dashFor })
+    }
+  }, [dashFor])
 
   useEffect(() => {
     if (values?.parameterFor) { getAllParameterData(values?.parameterFor); }
@@ -62,9 +62,9 @@ const ParameterMaster = () => {
 
   useEffect(() => {
     if (!singleConfigData) {
-        getDashConfigData()
+      getDashConfigData()
     }
-}, [])
+  }, [])
 
   useEffect(() => {
     if (dashboardForDt?.length === 0) { getDashboardForDrpData(); }
@@ -421,23 +421,23 @@ const ParameterMaster = () => {
       width: "8%"
     },
     {
-      name: 'ID',
+      name: dt('ID'),
       selector: row => row.id,
       sortable: true,
       width: "8%"
     },
     {
-      name: 'Parameter Name',
+      name: dt('Parameter Name'),
       selector: row => row?.jsonData?.parameterName || "---",
       sortable: true,
     },
     {
-      name: 'Display Name',
+      name: dt('Display Name'),
       selector: row => row?.jsonData?.parameterDisplayName || "---",
       sortable: true,
     },
     {
-      name: 'Type',
+      name: dt('Type'),
       selector: row => parameterType?.filter(dt => dt?.value === row?.jsonData?.parameterType)[0]?.label || "---",
       sortable: true,
     },
@@ -452,19 +452,19 @@ const ParameterMaster = () => {
         }
         <div className='form-card m-auto p-2'>
           <div className='p-1'>
-            <b><h6 className='header-devider m-0'> Parameter Master</h6></b>
+            <b><h6 className='header-devider m-0'>{dt("Parameter Master")}</h6></b>
             {/* <div > */}
             {/* SECTION DEVIDER para type and for*/}
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
               {/* //left columns */}
               <div className='col-sm-6'>
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0 required-label">Parameter For : </label>
+                  <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Parameter For")} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputSelect
                       id="parameterFor"
                       name="parameterFor"
-                      placeholder="Select value..."
+                      placeholder={dt("Select value...")}
                       options={dashboardForDt}
                       className="backcolorinput"
                       value={values?.parameterFor}
@@ -482,13 +482,13 @@ const ParameterMaster = () => {
               {/* right columns */}
               <div className='col-sm-6'>
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0 required-label">Parameter Type : </label>
+                  <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Parameter Type")} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputSelect
                       className="backcolorinput"
                       id="parameterType"
                       name="parameterType"
-                      // placeholder="Select value..."
+                      // placeholder={dt("Select value...")}
                       options={parameterType}
                       value={values?.parameterType}
                       onChange={(e) => { handleValueChange(e); }}
@@ -508,200 +508,200 @@ const ParameterMaster = () => {
             <div iv className='role-theme user-form db-connection-grid' style={{ paddingBottom: "1px" }}>
               {/* //left columns */}
               {/* <div className='col-sm-6'> */}
-                <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                  <label className="col-sm-5 col-form-label pe-0 required-label">Parameter (For Internal Use) : </label>
-                  <div className="col-sm-7 ps-0 align-content-center">
-                    <InputField
-                      type="text"
-                      className="backcolorinput"
-                      placeholder="Enter value..."
-                      name='parameterInternal'
-                      id="parameterInternal"
-                      onChange={handleValueChange}
-                      value={values?.parameterInternal}
-                      onBlur={() => { setValues({ ...values, 'parameterDisplay': values?.parameterInternal }) }}
-                    />
-                    {errors?.parameterInternalErr &&
-                      <div className="required-input">
-                        {errors?.parameterInternalErr}
-                      </div>
-                    }
-                  </div>
+              <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Parameter (For Internal Use)")} : </label>
+                <div className="col-sm-7 ps-0 align-content-center">
+                  <InputField
+                    type="text"
+                    className="backcolorinput"
+                    placeholder={dt("Enter value...")}
+                    name='parameterInternal'
+                    id="parameterInternal"
+                    onChange={handleValueChange}
+                    value={values?.parameterInternal}
+                    onBlur={() => { setValues({ ...values, 'parameterDisplay': values?.parameterInternal }) }}
+                  />
+                  {errors?.parameterInternalErr &&
+                    <div className="required-input">
+                      {errors?.parameterInternalErr}
+                    </div>
+                  }
                 </div>
-                <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                  <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Parameter Name (For Display) : </label>
-                  <div className="col-sm-7 ps-0 align-content-center">
-                    <InputField
-                      type="text"
-                      className="backcolorinput"
-                      placeholder="Enter value..."
-                      name='parameterDisplay'
-                      id="parameterDisplay"
-                      onChange={handleValueChange}
-                      value={values?.parameterDisplay}
-                    />
-                    {errors?.parameterDisplayErr &&
-                      <div className="required-input">
-                        {errors?.parameterDisplayErr}
-                      </div>
-                    }
-                  </div>
+              </div>
+              <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                <label className="col-sm-5 col-form-label fix-label pe-0 required-label">{dt("Parameter Name (For Display)")} : </label>
+                <div className="col-sm-7 ps-0 align-content-center">
+                  <InputField
+                    type="text"
+                    className="backcolorinput"
+                    placeholder={dt("Enter value...")}
+                    name='parameterDisplay'
+                    id="parameterDisplay"
+                    onChange={handleValueChange}
+                    value={values?.parameterDisplay}
+                  />
+                  {errors?.parameterDisplayErr &&
+                    <div className="required-input">
+                      {errors?.parameterDisplayErr}
+                    </div>
+                  }
                 </div>
+              </div>
               {/* </div> */}
               {/* right columns */}
               {/* <div className='col-sm-6'> */}
-               
-                <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0">Place Holder  : </label>
-                  <div className="col-sm-7 ps-0 align-content-center">
-                    <InputField
-                      type="text"
-                      className="backcolorinput"
-                      placeholder="Enter value..."
-                      name='placeHolder'
-                      id="placeHolder"
-                      onChange={handleValueChange}
-                      value={values?.placeHolder}
-                    />
-                  </div>
+
+              <div className="form-group row">
+                <label className="col-sm-5 col-form-label pe-0">{dt("Place Holder")}  : </label>
+                <div className="col-sm-7 ps-0 align-content-center">
+                  <InputField
+                    type="text"
+                    className="backcolorinput"
+                    placeholder={dt("Enter value...")}
+                    name='placeHolder'
+                    id="placeHolder"
+                    onChange={handleValueChange}
+                    value={values?.placeHolder}
+                  />
                 </div>
-                {values?.parameterType === '1' &&
-                  <div className="form-group row">
-                    <label className="col-sm-5 col-form-label pe-0">
-                      Show As Label If One Data Available :
-                    </label>
-                    <div className="col-sm-7 ps-0 align-content-center">
-                      <div className="form-check form-check-inline">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="showAsLabel"
-                          id="showAsLabelYes"
-                          value={showAsLabel}
-                          onChange={(e) => setShowAsLabel(true)}
-                          checked={showAsLabel}
-                        />
-                        <label className="form-check-label" htmlFor="dbYes">
-                          Yes
-                        </label>
-                      </div>
-                      <div className="form-check form-check-inline">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="showAsLabel"
-                          id="showAsLabelNo"
-                          value={showAsLabel}
-                          onChange={(e) => setShowAsLabel(false)}
-                          checked={!showAsLabel}
-                        />
-                        <label className="form-check-label" htmlFor="dbNo">
-                          No
-                        </label>
-                      </div>
+              </div>
+              {values?.parameterType === '1' &&
+                <div className="form-group row">
+                  <label className="col-sm-5 col-form-label pe-0">
+                    {dt("Show As Label If One Data Available")} :
+                  </label>
+                  <div className="col-sm-7 ps-0 align-content-center">
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="showAsLabel"
+                        id="showAsLabelYes"
+                        value={showAsLabel}
+                        onChange={(e) => setShowAsLabel(true)}
+                        checked={showAsLabel}
+                      />
+                      <label className="form-check-label" htmlFor="dbYes">
+                        {dt("Yes")}
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="showAsLabel"
+                        id="showAsLabelNo"
+                        value={showAsLabel}
+                        onChange={(e) => setShowAsLabel(false)}
+                        checked={!showAsLabel}
+                      />
+                      <label className="form-check-label" htmlFor="dbNo">
+                        {dt("No")}
+                      </label>
                     </div>
                   </div>
-                }
-              </div>
+                </div>
+              }
+            </div>
             {/* </div> */}
 
-            <b><h6 className='header-devider my-1'>Parameter Layout</h6></b>
+            <b><h6 className='header-devider my-1'>{dt("Parameter Layout")}</h6></b>
             {/* SECTION DEVIDER para width to control alignment*/}
             <div iv className='role-theme user-form db-connection-grid' style={{ paddingBottom: "1px" }}>
               {/* //left columns */}
               {/* <div className='col-sm-6'> */}
-                <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0">Parameter Width : </label>
-                  <div className="col-sm-7 ps-0 align-content-center">
-                    <InputSelect
-                      id="parameterWidth"
-                      name="parameterWidth"
-                      options={parameterWidth}
-                      placeholder="Select value..."
-                      className="backcolorinput"
-                      onChange={handleValueChange}
-                      value={values?.parameterWidth}
-                    />
-                  </div>
+              <div className="form-group row">
+                <label className="col-sm-5 col-form-label pe-0">{dt("Parameter Width")} : </label>
+                <div className="col-sm-7 ps-0 align-content-center">
+                  <InputSelect
+                    id="parameterWidth"
+                    name="parameterWidth"
+                    options={parameterWidth}
+                    placeholder={dt("Select value...")}
+                    className="backcolorinput"
+                    onChange={handleValueChange}
+                    value={values?.parameterWidth}
+                  />
                 </div>
-                <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0">Parameter Alignment : </label>
-                  <div className="col-sm-7 ps-0 align-content-center">
-                    <InputSelect
-                      id="parameterAlignment"
-                      name="parameterAlignment"
-                      placeholder="Select value..."
-                      options={parameterAlignment}
-                      className="backcolorinput"
-                      onChange={handleValueChange}
-                      value={values?.parameterAlignment}
-                    />
-                  </div>
+              </div>
+              <div className="form-group row">
+                <label className="col-sm-5 col-form-label pe-0">{dt("Parameter Alignment")} : </label>
+                <div className="col-sm-7 ps-0 align-content-center">
+                  <InputSelect
+                    id="parameterAlignment"
+                    name="parameterAlignment"
+                    placeholder={dt("Select value...")}
+                    options={parameterAlignment}
+                    className="backcolorinput"
+                    onChange={handleValueChange}
+                    value={values?.parameterAlignment}
+                  />
                 </div>
+              </div>
 
-                <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0">Parameter Label Width : </label>
-                  <div className="col-sm-7 ps-0 align-content-center">
-                    <InputSelect
-                      id="paraLabelWidth"
-                      name="paraLabelWidth"
-                      placeholder="Select value..."
-                      options={parameterWidth}
-                      className="backcolorinput"
-                      onChange={handleValueChange}
-                      value={values?.paraLabelWidth}
-                    />
-                  </div>
+              <div className="form-group row">
+                <label className="col-sm-5 col-form-label pe-0">{dt("Parameter Label Width")} : </label>
+                <div className="col-sm-7 ps-0 align-content-center">
+                  <InputSelect
+                    id="paraLabelWidth"
+                    name="paraLabelWidth"
+                    placeholder={dt("Select value...")}
+                    options={parameterWidth}
+                    className="backcolorinput"
+                    onChange={handleValueChange}
+                    value={values?.paraLabelWidth}
+                  />
                 </div>
-                <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0">Parameter Label Alignment : </label>
-                  <div className="col-sm-7 ps-0 align-content-center">
-                    <InputSelect
-                      id="paraLabelAlignment"
-                      name="paraLabelAlignment"
-                      placeholder="Select value..."
-                      options={parameterAlignment}
-                      className="backcolorinput"
-                      onChange={handleValueChange}
-                      value={values?.paraLabelAlignment}
-                    />
-                  </div>
+              </div>
+              <div className="form-group row">
+                <label className="col-sm-5 col-form-label pe-0">{dt("Parameter Label Alignment")} : </label>
+                <div className="col-sm-7 ps-0 align-content-center">
+                  <InputSelect
+                    id="paraLabelAlignment"
+                    name="paraLabelAlignment"
+                    placeholder={dt("Select value...")}
+                    options={parameterAlignment}
+                    className="backcolorinput"
+                    onChange={handleValueChange}
+                    value={values?.paraLabelAlignment}
+                  />
                 </div>
-                
-                <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0">Parameter Control Width : </label>
-                  <div className="col-sm-7 ps-0 align-content-center">
-                    <InputSelect
-                      id="paraControlWidth"
-                      name="paraControlWidth"
-                      placeholder="Select value..."
-                      options={parameterWidth}
-                      className="backcolorinput"
-                      onChange={handleValueChange}
-                      value={values?.paraControlWidth}
-                    />
-                  </div>
+              </div>
+
+              <div className="form-group row">
+                <label className="col-sm-5 col-form-label pe-0">{dt("Parameter Control Width")} : </label>
+                <div className="col-sm-7 ps-0 align-content-center">
+                  <InputSelect
+                    id="paraControlWidth"
+                    name="paraControlWidth"
+                    placeholder={dt("Select value...")}
+                    options={parameterWidth}
+                    className="backcolorinput"
+                    onChange={handleValueChange}
+                    value={values?.paraControlWidth}
+                  />
                 </div>
+              </div>
               {/* </div> */}
               {/* right columns */}
               {/* <div className='col-sm-6'> */}
-               
-                
-                <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0">Parameter Control Alignment : </label>
-                  <div className="col-sm-7 ps-0 align-content-center">
-                    <InputSelect
-                      id="paraControlAlignment"
-                      name="paraControlAlignment"
-                      placeholder="Select value..."
-                      options={parameterAlignment}
-                      className="backcolorinput"
-                      onChange={handleValueChange}
-                      value={values?.paraControlAlignment}
-                    />
-                  </div>
+
+
+              <div className="form-group row">
+                <label className="col-sm-5 col-form-label pe-0">{dt("Parameter Control Alignment")} : </label>
+                <div className="col-sm-7 ps-0 align-content-center">
+                  <InputSelect
+                    id="paraControlAlignment"
+                    name="paraControlAlignment"
+                    placeholder={dt("Select value...")}
+                    options={parameterAlignment}
+                    className="backcolorinput"
+                    onChange={handleValueChange}
+                    value={values?.paraControlAlignment}
+                  />
                 </div>
               </div>
+            </div>
             {/* </div> */}
 
             {/* SECTION DEVIDER mandatory and default*/}
@@ -709,13 +709,13 @@ const ParameterMaster = () => {
               {/* //left columns */}
               <div className='col-sm-6'>
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0 required-label">Mandatory : </label>
+                  <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Mandatory")} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputSelect
                       id="mandatory"
                       name="mandatory"
-                      placeholder="Select "
-                      options={[{ value: "Yes", label: "Yes" }, { value: "No", label: "No" }]}
+                      placeholder={dt("Select")}
+                      options={[{ value: "Yes", label: dt("Yes") }, { value: "No", label: dt("No") }]}
                       className="backcolorinput"
                       onChange={handleValueChange}
                       value={values?.mandatory}
@@ -732,12 +732,12 @@ const ParameterMaster = () => {
               {(values?.parameterType === '2' || values?.parameterType === '4') &&
                 <div className='col-sm-6'>
                   <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label fix-label pe-0">Default Value (If Left Empty) : </label>
+                    <label className="col-sm-5 col-form-label fix-label pe-0">{dt("Default Value (If Left Empty)")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputField
                         type="text"
                         className="backcolorinput"
-                        placeholder="Enter..."
+                        placeholder={dt("Enter...")}
                         name='defaultValueIfLeft'
                         id='defaultValueIfLeft'
                         onChange={handleValueChange}
@@ -755,12 +755,12 @@ const ParameterMaster = () => {
                 {/* //left columns */}
                 <div className='col-sm-6'>
                   <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label pe-0">Default Value : </label>
+                    <label className="col-sm-5 col-form-label pe-0">{dt("Default Value")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputField
                         type="text"
                         className="backcolorinput"
-                        placeholder="Enter value..."
+                        placeholder={dt("Enter value...")}
                         name='defaultValue'
                         id='defaultValue'
                         onChange={handleValueChange}
@@ -769,12 +769,12 @@ const ParameterMaster = () => {
                     </div>
                   </div>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label pe-0">Max Length  : </label>
+                    <label className="col-sm-5 col-form-label pe-0">{dt("Max Length")}  : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputField
                         type="text"
                         className="backcolorinput"
-                        placeholder="Enter value..."
+                        placeholder={dt("Enter value...")}
                         name='maxLength'
                         id='maxLength'
                         onChange={handleValueChange}
@@ -786,12 +786,12 @@ const ParameterMaster = () => {
                 {/* right columns */}
                 <div className='col-sm-6'>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label pe-0">Validation : </label>
+                    <label className="col-sm-5 col-form-label pe-0">{dt("Validation")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputSelect
                         id="validation"
                         name="validation"
-                        // placeholder="Select value..."
+                        // placeholder={dt("Select value...")}
                         options={validationType}
                         className="backcolorinput"
                         onChange={handleValueChange}
@@ -800,12 +800,12 @@ const ParameterMaster = () => {
                     </div>
                   </div>
                   <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label fix-label pe-0">Min Length : </label>
+                    <label className="col-sm-5 col-form-label fix-label pe-0">{dt("Min Length")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputField
                         type="text"
                         className="backcolorinput"
-                        placeholder="Enter value..."
+                        placeholder={dt("Enter value...")}
                         name='minLength'
                         id='minLength'
                         onChange={handleValueChange}
@@ -824,14 +824,14 @@ const ParameterMaster = () => {
                 {/* //left columns */}
                 <div className='col-sm-6'>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label pe-0">Parent ID : </label>
+                    <label className="col-sm-5 col-form-label pe-0">{dt("Parent ID")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <Select
                         id='parentID'
                         name='parentID'
                         options={parameterDrpData}
                         isMulti
-                        placeholder="Select value..."
+                        placeholder={dt("Select value...")}
                         className="backcolorinput react-select-multi"
                         value={values?.parentID}
                         onChange={(e) => setValues({ ...values, ['parentID']: e })}
@@ -843,13 +843,13 @@ const ParameterMaster = () => {
                 {/* right columns */}
                 <div className='col-sm-6'>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label pe-0">Mode For Query : </label>
+                    <label className="col-sm-5 col-form-label pe-0">{dt("Mode For Query")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputSelect
                         id="modeForQuery"
                         name="modeForQuery"
-                        // placeholder="Select "
-                        options={[{ value: 'query', label: "By Query" }, { value: 'multiRowOption', label: "By Multi Row Option" }]}
+                        // placeholder={dt("Select")}
+                        options={[{ value: 'query', label: dt("By Query") }, { value: 'multiRowOption', label: dt("By Multi Row Option") }]}
                         required
                         className="backcolorinput"
                         value={values?.modeForQuery}
@@ -868,11 +868,11 @@ const ParameterMaster = () => {
                 <div className='col-sm-6'>
                   {values?.parameterType === "4" &&
                     <div className="form-group row">
-                      <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Query For Default Date : </label>
+                      <label className="col-sm-5 col-form-label fix-label pe-0 required-label">{dt("Query For Default Date")} : </label>
                       <div className="col-sm-7 ps-0 align-content-center">
                         <textarea
                           className="form-control backcolorinput"
-                          placeholder="Enter value..."
+                          placeholder={dt("Enter value...")}
                           name="parameterQueryForDate"
                           id="parameterQueryForDate"
                           rows="1"
@@ -889,11 +889,11 @@ const ParameterMaster = () => {
                   }
                   {(values?.modeForQuery === "query" && values?.parameterType !== "4") &&
                     <div className="form-group row">
-                      <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Query : </label>
+                      <label className="col-sm-5 col-form-label fix-label pe-0 required-label">{dt("Query")} : </label>
                       <div className="col-sm-7 ps-0 align-content-center">
                         <textarea
                           className="form-control backcolorinput"
-                          placeholder="Enter value..."
+                          placeholder={dt("Enter value...")}
                           name="query"
                           id="query"
                           rows="1"
@@ -921,12 +921,12 @@ const ParameterMaster = () => {
                 {/* //left columns */}
                 <div className='col-sm-6'>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label pe-0">Should Be Less Than Field : </label>
+                    <label className="col-sm-5 col-form-label pe-0">{dt("Should Be Less Than Field")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputSelect
                         id="shouldBeLess"
                         name="shouldBeLess"
-                        placeholder="Not Required"
+                        placeholder={dt("Not Required")}
                         options={datePickFields}
                         className="backcolorinput"
                         onChange={handleValueChange}
@@ -935,12 +935,12 @@ const ParameterMaster = () => {
                     </div>
                   </div>
                   <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label fix-label pe-0">Min Days Selection Before Current Date : </label>
+                    <label className="col-sm-5 col-form-label fix-label pe-0">{dt("Min Days Selection Before Current Date")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputField
                         type="text"
                         className="backcolorinput"
-                        placeholder="Enter..."
+                        placeholder={dt("Enter...")}
                         name='minDaysBefore'
                         id='minDaysBefore'
                         onChange={handleValueChange}
@@ -952,12 +952,12 @@ const ParameterMaster = () => {
                 {/* right columns */}
                 <div className='col-sm-6'>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label pe-0">Should Be Greater Than Field : </label>
+                    <label className="col-sm-5 col-form-label pe-0">{dt("Should Be Greater Than Field")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputSelect
                         id="shouldBeGreater"
                         name="shouldBeGreater"
-                        placeholder="Not Required"
+                        placeholder={dt("Not Required")}
                         options={datePickFields}
                         className="backcolorinput"
                         onChange={handleValueChange}
@@ -966,12 +966,12 @@ const ParameterMaster = () => {
                     </div>
                   </div>
                   <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label fix-label pe-0">Max Days Selection After Current Date : </label>
+                    <label className="col-sm-5 col-form-label fix-label pe-0">{dt("Max Days Selection After Current Date")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputField
                         type="text"
                         className="backcolorinput"
-                        placeholder="Enter..."
+                        placeholder={dt("Enter...")}
                         name='maxDaysAfter'
                         id='maxDaysAfter'
                         onChange={handleValueChange}
@@ -987,14 +987,14 @@ const ParameterMaster = () => {
             {/* MAIN DEVIDER for list options */}
             {(values?.modeForQuery === "multiRowOption" && values?.parameterType !== '4' && values?.parameterType !== '2') &&
               <>
-                <b><h6 className='header-devider mt-2'> List Options</h6></b>
+                <b><h6 className='header-devider mt-2'>{dt("List Options")}</h6></b>
                 <div className="mx-4">
                   <div className="row mb-1">
                     <div className="col-4 text-center">
-                      <label className="form-label req">Option Value</label>
+                      <label className="form-label req">{dt("Option Value")}</label>
                     </div>
                     <div className="col-4 text-center">
-                      <label className="form-label">Option Text</label>
+                      <label className="form-label">{dt("Option Text")}</label>
                     </div>
                     <div className='col-2'>
                       <button
@@ -1011,7 +1011,7 @@ const ParameterMaster = () => {
                         <InputField
                           type="text"
                           className="backcolorinput"
-                          placeholder="Option Value"
+                          placeholder={dt("Option Value")}
                           value={row.optionValue}
                           onChange={(e) => handleInputChange(index, "optionValue", e.target.value)}
                         />
@@ -1025,7 +1025,7 @@ const ParameterMaster = () => {
                         <InputField
                           type="text"
                           className="backcolorinput"
-                          placeholder="Option Text"
+                          placeholder={dt("Option Text")}
                           value={row.optionText}
                           onChange={(e) => handleInputChange(index, "optionText", e.target.value)}
                         />
@@ -1060,22 +1060,22 @@ const ParameterMaster = () => {
                   <div className='' style={{ width: "20%" }}>
                   </div>
                   <div className="col-4">
-                    <label className="form-label">Option Value</label>
+                    <label className="form-label">{dt("Option Value")}</label>
                   </div>
                   <div className="col-4">
-                    <label className="form-label">Option Text</label>
+                    <label className="form-label">{dt("Option Text")}</label>
                   </div>
                 </div>
                 {/* DEFAULT OPTION 1 */}
                 <div className="row mb-1">
-                  <label className="col-form-label fix-label pe-0 required-label" style={{ width: "20%" }}>Default Option : </label>
+                  <label className="col-form-label fix-label pe-0 required-label" style={{ width: "20%" }}>{dt("Default Option")} : </label>
                   <div className="col-4">
                     <InputField
                       type="text"
                       name='defaultOptValue'
                       id='defaultOptValue'
                       className="backcolorinput"
-                      placeholder="Enter value..."
+                      placeholder={dt("Enter value...")}
                       value={values?.defaultOptValue}
                       onChange={handleValueChange}
                     />
@@ -1091,7 +1091,7 @@ const ParameterMaster = () => {
                       name="defaultOptText"
                       id='defaultOptText'
                       className="backcolorinput"
-                      placeholder="Enter text..."
+                      placeholder={dt("Enter text...")}
                       value={values?.defaultOptText}
                       onChange={handleValueChange}
                     />
@@ -1104,14 +1104,14 @@ const ParameterMaster = () => {
                 </div>
                 {/* DEFAULT OPTION FOR FILTER */}
                 <div className="row mb-1" >
-                  <label className="col-form-label fix-label pe-0 required-label" style={{ width: "20%" }}>Default Option For Filter : </label>
+                  <label className="col-form-label fix-label pe-0 required-label" style={{ width: "20%" }}>{dt("Default Option For Filter")} : </label>
                   <div className="col-4">
                     <InputField
                       type="text"
                       name='defOptFilterVal'
                       id='defOptFilterVal'
                       className="backcolorinput"
-                      placeholder="Enter value..."
+                      placeholder={dt("Enter value...")}
                       value={values?.defOptFilterVal}
                       onChange={handleValueChange}
                     />
@@ -1127,7 +1127,7 @@ const ParameterMaster = () => {
                       name='defOptFilterTxt'
                       id='defOptFilterTxt'
                       className="backcolorinput"
-                      placeholder="Option Text"
+                      placeholder={dt("Option Text")}
                       value={values?.defOptFilterTxt}
                       onChange={handleValueChange}
                     />
@@ -1148,7 +1148,7 @@ const ParameterMaster = () => {
                 <div className='col-sm-6'>
                   <div className="form-group row">
                     <label className="col-sm-5 col-form-label pe-0">
-                      Is Multiple Selection Required :
+                      {dt("Is Multiple Selection Required")} :
                     </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <div className="form-check form-check-inline">
@@ -1162,7 +1162,7 @@ const ParameterMaster = () => {
                           checked={isMultiSelectReq === 'Yes'}
                         />
                         <label className="form-check-label" htmlFor="dbYes">
-                          Yes
+                          {dt("Yes")}
                         </label>
                       </div>
                       <div className="form-check form-check-inline">
@@ -1176,7 +1176,7 @@ const ParameterMaster = () => {
                           checked={isMultiSelectReq === 'No'}
                         />
                         <label className="form-check-label" htmlFor="dbNo">
-                          No
+                          {dt("No")}
                         </label>
                       </div>
                     </div>
@@ -1187,19 +1187,19 @@ const ParameterMaster = () => {
             }
 
             {/* MAIN DEVIDER FOR JNDI */}
-            <b><h6 className='header-devider m-0'>JNDI Details</h6></b>
+            <b><h6 className='header-devider m-0'>{dt("JNDI Details")}</h6></b>
 
             {/* SECTION DEVIDER jndi and time*/}
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
               {/* //left columns */}
               <div className='col-sm-6'>
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0">JNDI For Saving Data : </label>
+                  <label className="col-sm-5 col-form-label pe-0">{dt("JNDI For Saving Data")} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputSelect
                       id="jndiSavingData"
                       name="jndiSavingData"
-                      // placeholder="Select"
+                      // placeholder={dt("Select")}
                       options={jndiServerDrpData}
                       className="backcolorinput"
                       onChange={handleValueChange}
@@ -1211,12 +1211,12 @@ const ParameterMaster = () => {
               {/* right columns */}
               <div className='col-sm-6'>
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0">Statement Time Out : </label>
+                  <label className="col-sm-5 col-form-label pe-0">{dt("Statement Time Out")} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputSelect
                       id="stmtTimeOut"
                       name="stmtTimeOut"
-                      // placeholder="Select "
+                      // placeholder={dt("Select")}
                       options={timeOutOptions}
                       className="backcolorinput"
                       onChange={handleValueChange}
@@ -1232,7 +1232,7 @@ const ParameterMaster = () => {
         </div>
 
         {showParamsTable &&
-          <GlobalDataTable title={"Parameter List"} column={column} data={filterData} onModify={handleUpdateData} onDelete={handleDeleteParams} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={true} />
+          <GlobalDataTable title={dt("Parameter List")} column={column} data={filterData} onModify={handleUpdateData} onDelete={handleDeleteParams} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={true} />
         }
         {showWebServiceTable &&
           <DataServiceTable data={dataServiceData} onModify={null} onDelete={null} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={false} />

@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons'
 
 const TabDetails = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values, availableOptions, setAvailableOptions, selectedOptions, setSelectedOptions, } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, availableOptions, setAvailableOptions, selectedOptions, setSelectedOptions, dt } = props;
 
     const [leftSelectedValues, setLeftSelectedValues] = useState([]);
     const [rightSelectedValues, setRightSelectedValues] = useState([]);
@@ -112,71 +112,63 @@ const TabDetails = (props) => {
 
     return (
         <div>
-            <b><h6 className='header-devider m-0'> Dashboard Master - Tab Details</h6></b>
+            <b><h6 className='header-devider m-0'>{dt("Dashboard Master - Tab Details")}</h6></b>
 
             {/* SECTION DEVIDER*/}
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 ">Tab Display Style : </label>
+                        <label className="col-sm-5 col-form-label pe-0 ">{dt("Tab Display Style")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 id="tabDisplayStyle"
                                 name="tabDisplayStyle"
-                                // placeholder="Select value..."
                                 options={tabDisplayOptions}
                                 className="backcolorinput"
                                 value={values?.tabDisplayStyle}
                                 onChange={handleValueChange}
-                            // disabled={actionMode === 'edit' ? true : false}
                             />
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 ">Time Interval : </label>
+                        <label className="col-sm-5 col-form-label pe-0 ">{dt("Time Interval")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 id="timeInterval"
                                 name="timeInterval"
-                                // placeholder="Not Required"
                                 options={widgetRefreshTimeOptions}
                                 className="backcolorinput"
                                 value={values?.timeInterval}
                                 onChange={handleValueChange}
-                            // disabled={actionMode === 'edit' ? true : false}
                             />
                         </div>
                     </div>
                 </div>
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 ">Tab Icon Type : </label>
+                        <label className="col-sm-5 col-form-label pe-0 ">{dt("Tab Icon Type")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 id="tabIconType"
                                 name="tabIconType"
-                                // placeholder="Select value..."
                                 options={iconType}
                                 className="backcolorinput"
                                 value={values?.tabIconType}
                                 onChange={handleValueChange}
-                            // disabled={actionMode === 'edit' ? true : false}
                             />
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 ">Change Interval Time : </label>
+                        <label className="col-sm-5 col-form-label pe-0 ">{dt("Change Interval Time")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 id="changeIntervalTime"
                                 name="changeIntervalTime"
-                                // placeholder="Not Required"
                                 options={widgetRefreshTimeOptions}
                                 className="backcolorinput"
                                 value={values?.changeIntervalTime}
                                 onChange={handleValueChange}
-                            // disabled={actionMode === 'edit' ? true : false}
                             />
                         </div>
                     </div>
@@ -190,7 +182,7 @@ const TabDetails = (props) => {
                     <div className='col-sm-6'>
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Is Top Tab Bar Visible :
+                                {dt("Is Top Tab Bar Visible")} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -204,7 +196,7 @@ const TabDetails = (props) => {
                                         checked={radioValues?.isTopBarVisible === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt("Yes")}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -218,7 +210,7 @@ const TabDetails = (props) => {
                                         checked={radioValues?.isTopBarVisible === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt("No")}
                                     </label>
                                 </div>
                             </div>
@@ -234,7 +226,7 @@ const TabDetails = (props) => {
                     <div className='col-sm-6'>
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                is Fixed Layout :
+                                {dt("is Fixed Layout")} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -248,7 +240,7 @@ const TabDetails = (props) => {
                                         checked={radioValues?.isFixedLayout === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt("Yes")}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -262,18 +254,18 @@ const TabDetails = (props) => {
                                         checked={radioValues?.isFixedLayout === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt("No")}
                                     </label>
                                 </div>
                             </div>
                         </div>
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-5 col-form-label pe-0">Text Shadow Color : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt("Text Shadow Color")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type="color"
                                     className="backcolorinput"
-                                    placeholder="Enter value..."
+                                    placeholder={dt("Enter value...")}
                                     name='textshadowColor'
                                     id="textshadowColor"
                                     onChange={handleValueChange}
@@ -282,12 +274,12 @@ const TabDetails = (props) => {
                             </div>
                         </div>
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-5 col-form-label pe-0 ">Tab Background Color On hover: </label>
+                            <label className="col-sm-5 col-form-label pe-0 ">{dt("Tab Background Color On hover")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type="color"
                                     className="backcolorinput"
-                                    placeholder="Enter value..."
+                                    placeholder={dt("Enter value...")}
                                     name='tabBgColorOnHover'
                                     id="tabBgColorOnHover"
                                     onChange={handleValueChange}
@@ -299,7 +291,7 @@ const TabDetails = (props) => {
                     <div className='col-sm-6'>
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Is Sidebar Collapse :
+                                {dt("Is Sidebar Collapse")} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -313,7 +305,7 @@ const TabDetails = (props) => {
                                         checked={radioValues?.isSidebarCollapse === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt("Yes")}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -327,18 +319,18 @@ const TabDetails = (props) => {
                                         checked={radioValues?.isSidebarCollapse === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt("No")}
                                     </label>
                                 </div>
                             </div>
                         </div>
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-5 col-form-label pe-0">Tab Font Color : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt("Tab Font Color")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type="color"
                                     className="backcolorinput"
-                                    placeholder="Enter value..."
+                                    placeholder={dt("Enter value...")}
                                     name='tabFontColor'
                                     id="tabFontColor"
                                     onChange={handleValueChange}
@@ -347,12 +339,12 @@ const TabDetails = (props) => {
                             </div>
                         </div>
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-5 col-form-label pe-0 ">Tab Font Color On hover: </label>
+                            <label className="col-sm-5 col-form-label pe-0 ">{dt("Tab Font Color On hover")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type="color"
                                     className="backcolorinput"
-                                    placeholder="Enter value..."
+                                    placeholder={dt("Enter value...")}
                                     name='tabFontColorOnHover'
                                     id="tabFontColorOnHover"
                                     onChange={handleValueChange}
@@ -370,44 +362,41 @@ const TabDetails = (props) => {
                     {/* //left columns */}
                     <div className='col-sm-6'>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0 ">Tab Menu Width (For Big Icon) : </label>
+                            <label className="col-sm-5 col-form-label pe-0 ">{dt("Tab Menu Width (For Big Icon)")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputSelect
                                     id="tabMenuWidthBigIcon"
                                     name="tabMenuWidthBigIcon"
-                                    // placeholder="Select value..."
                                     options={[{ value: '2', label: "2" }, { value: '3', label: "3" }, { value: '4', label: "4" }, { value: '5', label: "5" }, { value: '6', label: "6" }]}
                                     className="backcolorinput"
                                     value={values?.tabMenuWidthBigIcon}
                                     onChange={handleValueChange}
-                                // disabled={actionMode === 'edit' ? true : false}
                                 />
                             </div>
                         </div>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0 ">Tab shapes (For Big Icon) : </label>
+                            <label className="col-sm-5 col-form-label pe-0 ">{dt("Tab shapes (For Big Icon)")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputSelect
                                     id="tabShapesBigIcon"
                                     name="tabShapesBigIcon"
-                                    placeholder="Select value..."
+                                    placeholder={dt("Select value...")}
                                     options={tabShapeOptions}
                                     className="backcolorinput"
                                     value={values?.tabShapesBigIcon}
                                     onChange={handleValueChange}
-                                // disabled={actionMode === 'edit' ? true : false}
                                 />
                             </div>
                         </div>
                     </div>
                     <div className='col-sm-6'>
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-5 col-form-label pe-0 ">Tab Menu Height (For Big Icon) : </label>
+                            <label className="col-sm-5 col-form-label pe-0 ">{dt("Tab Menu Height (For Big Icon)")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type="text"
                                     className="backcolorinput"
-                                    placeholder="Enter value..."
+                                    placeholder={dt("Enter value...")}
                                     name='tabMenuHeightBigIcon'
                                     id="tabMenuHeightBigIcon"
                                     onChange={handleValueChange}
@@ -419,10 +408,12 @@ const TabDetails = (props) => {
                 </div>
             }
 
-            <b><h6 className='header-devider  my-1'>Tab Mapping Details</h6></b>
+            <b><h6 className='header-devider  my-1'>{dt("Tab Mapping Details")}</h6></b>
+
+
             <div className='d-flex justify-content-center mt-1 mb-2 role-theme'>
                 <div className='' style={{ width: "30%" }}>
-                    <b><h6 className='mb-2 text-center'>All Tabs</h6></b>
+                    <b><h6 className='mb-2 text-center'>{dt('All Tabs')}</h6></b>
                     <select className="form-select form-select-sm backcolorinput" id='leftRightSelect' size="6" aria-label="size 4 select example" onChange={handleLeftSelect}>
                         {availableOptions?.map((opt, index) => (
                             <option value={opt.value} key={index}>{opt.label}</option>
@@ -433,21 +424,21 @@ const TabDetails = (props) => {
                 <div className='align-self-center' style={{ marginLeft: "2%", marginRight: "2%" }}>
 
                     <div className='d-flex justify-content-center'>
-                        <button type='button' className='btn btn-outline-secondary btn-sm m-1' disabled={availableOptions?.length > 0 ? false : true} onClick={()=>moveRight()}>
+                        <button type='button' className='btn btn-outline-secondary btn-sm m-1' disabled={availableOptions?.length > 0 ? false : true} onClick={() => moveRight()}>
                             <svg dangerouslySetInnerHTML={{ __html: rightCaret }} height={16} width={16} />
                         </button>
 
                     </div>
 
                     <div className='d-flex justify-content-center'>
-                        <button type='button' className='btn btn-outline-secondary btn-sm m-1' disabled={selectedOptions?.length > 0 ? false : true} onClick={()=>moveLeft()}>
+                        <button type='button' className='btn btn-outline-secondary btn-sm m-1' disabled={selectedOptions?.length > 0 ? false : true} onClick={() => moveLeft()}>
                             <svg dangerouslySetInnerHTML={{ __html: leftCaret }} height={16} width={16} />
                         </button>
                     </div>
                 </div>
 
                 <div className='' style={{ width: "30%" }}>
-                    <b><h6 className='mb-2 text-center'>Selected Dashboard Tabs</h6></b>
+                    <b><h6 className='mb-2 text-center'>{dt('Selected Dashboard Tabs')}</h6></b>
                     <select className="form-select form-select-sm backcolorinput" id='leftRightSelect1' size="6" aria-label="size 4 select example" onChange={handleRightSelect} sele>
                         {selectedOptions?.map((opt, index) => (
                             <option value={opt.value} key={index} selected={selectedIndex === index}>{opt.label}</option>
@@ -455,24 +446,24 @@ const TabDetails = (props) => {
                     </select>
                 </div>
 
-                <div className='align-self-center' style={{ marginLeft: "2%", marginRight: "2%",marginTop:"auto" }}>
+                <div className='align-self-center' style={{ marginLeft: "2%", marginRight: "2%", marginTop: "auto" }}>
                     <div className='d-flex justify-content-center'>
-                        <button type='button' className='btn btn-outline-secondary btn-sm mb-1' onClick={()=>moveTop()} disabled={selectedIndex === 0 || selectedIndex === null} style={{ padding: "2px 8px" }}>
+                        <button type='button' className='btn btn-outline-secondary btn-sm mb-1' onClick={() => moveTop()} disabled={selectedIndex === 0 || selectedIndex === null} style={{ padding: "2px 8px" }}>
                             <FontAwesomeIcon icon={faAngleDoubleUp} className="dropdown-gear-icon" />
                         </button>
                     </div>
                     <div className='d-flex justify-content-center'>
-                        <button type='button' className='btn btn-outline-secondary btn-sm mb-1' onClick={()=>moveSingleUp()} disabled={selectedIndex === 0 || selectedIndex === null} style={{ padding: "2px 8px" }}>
+                        <button type='button' className='btn btn-outline-secondary btn-sm mb-1' onClick={() => moveSingleUp()} disabled={selectedIndex === 0 || selectedIndex === null} style={{ padding: "2px 8px" }}>
                             <FontAwesomeIcon icon={faAngleUp} className="dropdown-gear-icon" />
                         </button>
                     </div>
                     <div className='d-flex justify-content-center'>
-                        <button type='button' className='btn btn-outline-secondary btn-sm mb-1' onClick={()=>moveSingleDown()} disabled={selectedIndex === null || selectedIndex === selectedOptions.length - 1} style={{ padding: "2px 8px" }}>
+                        <button type='button' className='btn btn-outline-secondary btn-sm mb-1' onClick={() => moveSingleDown()} disabled={selectedIndex === null || selectedIndex === selectedOptions.length - 1} style={{ padding: "2px 8px" }}>
                             <FontAwesomeIcon icon={faAngleDown} className="dropdown-gear-icon" />
                         </button>
                     </div>
                     <div className='d-flex justify-content-center'>
-                        <button type='button' className='btn btn-outline-secondary btn-sm mb-1' onClick={()=>moveBottom()} disabled={selectedIndex === null || selectedIndex === selectedOptions.length - 1} style={{ padding: "2px 8px" }}>
+                        <button type='button' className='btn btn-outline-secondary btn-sm mb-1' onClick={() => moveBottom()} disabled={selectedIndex === null || selectedIndex === selectedOptions.length - 1} style={{ padding: "2px 8px" }}>
                             <FontAwesomeIcon icon={faAngleDoubleDown} className="dropdown-gear-icon" />
                         </button>
                     </div>

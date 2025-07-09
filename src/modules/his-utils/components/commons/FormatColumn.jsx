@@ -8,7 +8,7 @@ import { Modal } from 'react-bootstrap';
 import { ToastAlert } from '../../utils/commonFunction';
 
 const FormatColumn = (props) => {
-    const { showDataTable, setShowDataTable } = useContext(HISContext);
+    const { showDataTable, setShowDataTable,dt } = useContext(HISContext);
     const { title, onClose } = props;
 
     const [rows, setRows] = useState([{ displayedClmNo: "", clmViewedIn: "", alignment: "", clmWidth: "" }]);
@@ -66,7 +66,7 @@ const FormatColumn = (props) => {
         <div>
             <Modal show={showDataTable} onHide={handleClose} size='xl'>
                 <Modal.Header closeButton className='p-2'></Modal.Header>
-                <b><h6 className='datatable-header mx-3 py-1 mt-1 px-1'>{title}</h6></b>
+                <b><h6 className='datatable-header mx-3 py-1 mt-1 px-1'>{dt(title)}</h6></b>
                 <Modal.Body className='px-3 pb-3 pt-0'>
                     <div className="table-responsive" style={{ maxHeight: "65vh" }}>
                         <table className="table text-center mb-0 table-bordered">
@@ -74,22 +74,22 @@ const FormatColumn = (props) => {
                                 <tr className='m-0' style={{ fontSize: "smaller" }}>
                                     <th style={{ width: "15%" }}>
                                         <span className='required-label'>
-                                            Displayed Column No.
+                                            {dt('Displayed Column No.')}
                                         </span>
                                     </th>
                                     <th style={{ width: "20%" }}>
                                         <span className='required-label'>
-                                            Column Viewed In
+                                            {dt('Column Viewed In')}
                                         </span>
                                     </th>
                                     <th style={{ width: "20%" }}>
                                         <span className='required-label'>
-                                            Alignment
+                                            {dt('Alignment')}
                                         </span>
                                     </th>
                                     <th style={{ width: "20%" }}>
                                         <span className='required-label'>
-                                            Column Width(in Percentage)
+                                            {dt('Column Width(in Percentage)')}
                                         </span>
                                     </th>
                                     <th style={{ width: "10%" }}>
@@ -167,7 +167,7 @@ const FormatColumn = (props) => {
 
                         <b><h6 className='header-devider mt-2'></h6></b>
                         <div className="d-flex justify-content-center align-items-center mb-1">
-                            <label className="col-form-label me-2 ">Total Of Width :</label>
+                            <label className="col-form-label me-2 ">{dt('Total Of Width')} :</label>
                             <div className=''>
                                 <InputField
                                     type="text"
@@ -184,7 +184,7 @@ const FormatColumn = (props) => {
                                 <button className='btn btn-sm ms-2 mt-sm-0'
                                     onClick={()=>onSaveSession()}
                                 >
-                                    OK
+                                    {dt('OK')}
                                 </button>
                             </div>
                         </div>

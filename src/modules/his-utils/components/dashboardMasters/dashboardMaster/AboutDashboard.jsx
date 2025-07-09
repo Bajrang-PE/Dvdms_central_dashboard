@@ -4,28 +4,26 @@ import InputField from '../../commons/InputField'
 import { cachingStatusForWidgetOptions, dataLoadOptions } from '../../../localData/DropDownData'
 
 const AboutDashboard = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values, setValues, dashboardForDt, errors } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, setValues, dashboardForDt, errors, dt } = props;
 
     return (
         <div>
-            <b><h6 className='header-devider m-0'> Dashboard Master</h6></b>
+            <b><h6 className='header-devider m-0'>{dt("Dashboard Master")}</h6></b>
 
-            {/* SECTION DEVIDER Dashboard for*/}
+            {/* SECTION DEVIDER Dashboard for */}
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
-                {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Dashboard For : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Dashboard For")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 id="dashboardFor"
                                 name="dashboardFor"
-                                placeholder="Select value..."
+                                placeholder={dt("Select value...")}
                                 options={dashboardForDt}
                                 className="backcolorinput"
                                 value={values?.dashboardFor}
                                 onChange={(e) => { handleValueChange(e); localStorage?.setItem("dfor", e.target.value) }}
-                            // disabled={actionMode === 'edit' ? true : false}
                             />
                             {errors?.dashboardForErr &&
                                 <div className="required-input">
@@ -39,15 +37,13 @@ const AboutDashboard = (props) => {
 
             {/* SECTION DEVIDER tab name,parent,ellipse,css,icon */}
             <div iv className='role-theme user-form db-connection-grid' style={{ paddingBottom: "1px" }}>
-                {/* //left columns */}
-                {/* <div className='col-sm-6'> */}
                 <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label pe-0 required-label">Dashboard Name (For Display) : </label>
+                    <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Dashboard Name (For Display)")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                         <InputField
                             type="text"
                             className="backcolorinput"
-                            placeholder="Enter value..."
+                            placeholder={dt("Enter value...")}
                             name='dashNameDisplay'
                             id="dashNameDisplay"
                             onChange={handleValueChange}
@@ -62,12 +58,12 @@ const AboutDashboard = (props) => {
                     </div>
                 </div>
                 <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Dashboard Name (For Internal) : </label>
+                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">{dt("Dashboard Name (For Internal)")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                         <InputField
                             type="text"
                             className="backcolorinput"
-                            placeholder="Enter value..."
+                            placeholder={dt("Enter value...")}
                             name='dashNameInternal'
                             id="dashNameInternal"
                             onChange={handleValueChange}
@@ -81,12 +77,12 @@ const AboutDashboard = (props) => {
                     </div>
                 </div>
                 <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label pe-0">Menu Container Background Color : </label>
+                    <label className="col-sm-5 col-form-label pe-0">{dt("Menu Container Background Color")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                         <InputField
                             type="color"
                             className="backcolorinput"
-                            placeholder="Enter value..."
+                            placeholder={dt("Enter value...")}
                             name='menuContainerBgColor'
                             id="menuContainerBgColor"
                             onChange={handleValueChange}
@@ -95,12 +91,12 @@ const AboutDashboard = (props) => {
                     </div>
                 </div>
                 <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label fix-label pe-0">Dashboard Title Font Color : </label>
+                    <label className="col-sm-5 col-form-label fix-label pe-0">{dt("Dashboard Title Font Color")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                         <InputField
                             type="color"
                             className="backcolorinput"
-                            placeholder="Enter value..."
+                            placeholder={dt("Enter value...")}
                             name='dashTitlefontColor'
                             id="dashTitlefontColor"
                             onChange={handleValueChange}
@@ -109,12 +105,12 @@ const AboutDashboard = (props) => {
                     </div>
                 </div>
                 <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label pe-0 ">Icon Color: </label>
+                    <label className="col-sm-5 col-form-label pe-0 ">{dt("Icon Color")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                         <InputField
                             type="color"
                             className="backcolorinput"
-                            placeholder="Enter value..."
+                            placeholder={dt("Enter value...")}
                             name='iconColor'
                             id="iconColor"
                             onChange={handleValueChange}
@@ -123,28 +119,27 @@ const AboutDashboard = (props) => {
                     </div>
                 </div>
                 <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label pe-0">Menu Container Background Image : </label>
+                    <label className="col-sm-5 col-form-label pe-0">{dt("Menu Container Background Image")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                         <InputSelect
                             id="menuContainerBgImage"
                             name="menuContainerBgImage"
-                            placeholder="No Image"
+                            placeholder={dt("No Image")}
                             options={[{ value: 'background11.png', label: "background11.png" }]}
                             className="backcolorinput"
                             value={values?.menuContainerBgImage}
                             onChange={handleValueChange}
-                        // disabled={actionMode === 'edit' ? true : false}
                         />
                     </div>
                 </div>
                 <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label pe-0">Caching Status : </label>
+                    <label className="col-sm-5 col-form-label pe-0">{dt("Caching Status")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                         <InputSelect
                             id="cachingStatus"
                             name="cachingStatus"
                             options={cachingStatusForWidgetOptions}
-                            placeholder="Select value..."
+                            placeholder={dt("Select value...")}
                             className="backcolorinput"
                             onChange={handleValueChange}
                             value={values?.cachingStatus}
@@ -153,7 +148,7 @@ const AboutDashboard = (props) => {
                 </div>
                 <div className="form-group row">
                     <label className="col-sm-5 col-form-label pe-0">
-                        Is Print Button Required :
+                        {dt("Is Print Button Required")} :
                     </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                         <div className="form-check form-check-inline">
@@ -167,7 +162,7 @@ const AboutDashboard = (props) => {
                                 checked={radioValues?.isPrintBtnReq === 'Yes'}
                             />
                             <label className="form-check-label" htmlFor="dbYes">
-                                Yes
+                                {dt("Yes")}
                             </label>
                         </div>
                         <div className="form-check form-check-inline">
@@ -181,14 +176,14 @@ const AboutDashboard = (props) => {
                                 checked={radioValues?.isPrintBtnReq === 'No'}
                             />
                             <label className="form-check-label" htmlFor="dbNo">
-                                No
+                                {dt("No")}
                             </label>
                         </div>
                     </div>
                 </div>
                 <div className="form-group row">
                     <label className="col-sm-5 col-form-label pe-0">
-                        Dashboard Theme :
+                        {dt("Dashboard Theme")} :
                     </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                         <div className="form-check form-check-inline">
@@ -202,7 +197,7 @@ const AboutDashboard = (props) => {
                                 checked={radioValues?.dashboardTheme === 'Default'}
                             />
                             <label className="form-check-label" htmlFor="dbDefault">
-                                Default
+                                {dt("Default")}
                             </label>
                         </div>
                         <div className="form-check form-check-inline">
@@ -216,31 +211,27 @@ const AboutDashboard = (props) => {
                                 checked={radioValues?.dashboardTheme === 'Dark'}
                             />
                             <label className="form-check-label" htmlFor="dbDark">
-                                Dark
+                                {dt("Dark")}
                             </label>
                         </div>
                     </div>
                 </div>
-                {/* </div> */}
-                {/* //right column */}
-                {/* <div className='col-sm-6'> */}
                 <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-5 col-form-label pe-0">Data Load : </label>
+                    <label className="col-sm-5 col-form-label pe-0">{dt("Data Load")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                         <InputSelect
                             id="dataLoad"
                             name="dataLoad"
                             options={dataLoadOptions}
-                            // placeholder="Select value..."
                             className="backcolorinput"
                             onChange={handleValueChange}
                             value={values?.dataLoad}
                         />
                     </div>
                 </div>
-                {/* </div> */}
             </div>
         </div>
+
     )
 }
 

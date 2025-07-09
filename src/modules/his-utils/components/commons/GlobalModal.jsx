@@ -1,11 +1,13 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, useContext } from 'react'
 import { Modal } from 'react-bootstrap'
+import { HISContext } from '../../contextApi/HISContext';
 
 const IframeComponent = React.lazy(() => import('./IframeComponent'));
 
 const GlobalModal = (props) => {
 
     const { linkData, onClose } = props;
+     const { dt } = useContext(HISContext);
 
     return (
         <Modal show={true} onHide={onClose} size={'xl'} dialogClassName="dialog-big">
@@ -19,7 +21,7 @@ const GlobalModal = (props) => {
                 <Suspense
                     fallback={
                         <div className="pt-3 text-center">
-                            Loading...
+                            {dt('Loading')}...
                         </div>
                     }
                 >
@@ -28,7 +30,7 @@ const GlobalModal = (props) => {
                 <hr className='my-2' />
                 <div className='text-center'>
                     <button className='btn cms-login-btn m-1 btn-sm' onClick={onClose}>
-                        <i className="fa fa-broom me-1"></i> Close
+                        <i className="fa fa-broom me-1"></i> {dt('Close')}
                     </button>
                 </div>
             </Modal.Body>

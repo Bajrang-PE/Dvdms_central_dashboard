@@ -9,7 +9,7 @@ const TopBar = lazy(() => import("../../components/sidebar/TopBar"));
 const TabDash = lazy(() => import("../../components/sidebar/TabDash"));
 
 const DashboardMst = () => {
-    const { getAllWidgetData, activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData, setParamsValues, setPrevKpiTab } = useContext(HISContext);
+    const { getAllWidgetData, activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData, setParamsValues, setPrevKpiTab, dt } = useContext(HISContext);
 
     const [searchParams] = useSearchParams();
     const groupId = searchParams.get("groupId");
@@ -52,7 +52,7 @@ const DashboardMst = () => {
         if (dashboardFor && groupId) {
             setLoading(true);
             getDashboardData(groupId, dashboardFor);
-             getAllWidgetData(dashboardFor);
+            getAllWidgetData(dashboardFor);
         }
     }, [searchParams]);
 
@@ -88,7 +88,7 @@ const DashboardMst = () => {
                     <Suspense
                         fallback={
                             <div className="pt-3 text-center">
-                                Loading...
+                                {dt('Loading')}...
                             </div>
                         }
                     >
@@ -117,7 +117,7 @@ const DashboardMst = () => {
                                 <Suspense
                                     fallback={
                                         <div className="pt-3 text-center">
-                                            Loading...
+                                            {dt('Loading')}...
                                         </div>
                                     }
                                 >
@@ -130,7 +130,7 @@ const DashboardMst = () => {
                             <Suspense
                                 fallback={
                                     <div className="pt-3 text-center">
-                                        Loading...
+                                        {dt('Loading')}...
                                     </div>
                                 }
                             >

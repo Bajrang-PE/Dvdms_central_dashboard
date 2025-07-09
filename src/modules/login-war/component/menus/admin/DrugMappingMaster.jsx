@@ -169,8 +169,6 @@ const DrugMappingMaster = () => {
         { value: "3", label: "All" }
     ];
 
-    console.log(drugItemObject, 'drugItemObject')
-    console.log(itemNameList, 'itemNameList')
 
     return (
         <>
@@ -178,7 +176,6 @@ const DrugMappingMaster = () => {
                 <div className='masters-header row'>
                     <span className='col-12'><b>{`Drug Mapping Master`}</b></span>
                 </div>
-
 
                 <div className='row pt-2'>
                     <div className='col-sm-6'>
@@ -192,7 +189,7 @@ const DrugMappingMaster = () => {
                                     options={mapCategoryOptions}
                                     className="aliceblue-bg border-dark-subtle"
                                     value={itemCategory}
-                                    onChange={(e) => { setItemCategory(e.target.value); getItemNameList(e.target.value) }}
+                                    onChange={(e) => { setItemCategory(e.target.value); getItemNameList(e.target.value); setItemName(''); setDrugItemObject(null)}}
 
                                 />
                             </div>
@@ -212,7 +209,8 @@ const DrugMappingMaster = () => {
                                     value={itemName}
                                     onChange={(e) => {
                                         setItemName(e);
-                                        const itemObj = itemNameList?.find(dt => dt?.cwhnumDrugId === e?.value)
+                                        const itemObj = itemNameList?.find(dt => dt?.cwhnumDrugId == e?.value);
+                                        console.log(itemObj)
                                         setDrugItemObject(itemObj)
                                     }}
                                     isSearchable={true}
@@ -221,12 +219,52 @@ const DrugMappingMaster = () => {
                                 />
                             </div>
                         </div>
-                        <div className="form-group" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-5 col-form-label fix-label required-label">Generic Drug Name : </label>
-                            <div className="col-sm-7 align-content-center">
-                                {drugItemObject}
-                            </div>
-                        </div>
+                        {(itemCategory != "2" && itemName && drugItemObject) &&
+                            <>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Generic Drug Name : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.centraldrugName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Group : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.groupName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Subgroup : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.subGroupName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Drug Type : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.drugtypeName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Category : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.drugCatName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">VED : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.vedName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Strength : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.cwhstrStrengthName || "---"}
+                                    </div>
+                                </div>
+                            </>
+                        }
                     </div>
                     <div className='col-sm-6'>
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>

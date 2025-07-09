@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext';
-import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
+import { ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
 import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../utils/CommonFunction';
 
 const FacilityTypeMappingMaster = () => {
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, getFacilityTypeDrpData, facilityTypeDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const { setOpenPage, getSteteNameDrpData, stateNameDrpDt, getFacilityTypeDrpData, facilityTypeDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
 
     const [facilityTypeId, setFacilityTypeId] = useState("");
     const [stateId, setStateId] = useState("");
@@ -29,7 +29,6 @@ const FacilityTypeMappingMaster = () => {
     useEffect(() => {
         if (stateId) {
             setSelectedOptions([]);
-            getUnmappedList();
         }
         setSelectedAvailable([]);
         setSelectedSelected([]);
@@ -50,9 +49,9 @@ const FacilityTypeMappingMaster = () => {
                     label: dt?.facilityTypeName
                 })
                 )
-                setAvailableOptions(drpData)
+                setAvailableOptions(drpData);
             } else {
-                setAvailableOptions([])
+                setAvailableOptions([]);
             }
         })
     }
@@ -69,6 +68,7 @@ const FacilityTypeMappingMaster = () => {
                 setInitialMappedOptions(drpData);
             } else {
                 setSelectedOptions([])
+                setInitialMappedOptions([])
             }
         })
     }
@@ -83,19 +83,20 @@ const FacilityTypeMappingMaster = () => {
             item => !selectedOptions.some(i => i.value === item.value)
         );
 
-        const mappedData = newMapped?.map(dt => ({
-            "stateId": parseInt(stateId),
+
+        const mappedData = newMapped?.length > 0 && newMapped?.map(dt => ({
+            // "stateId": parseInt(stateId),
             "stateFacilityTypeId": dt?.value,
             "stateFacilityTypeName": dt?.label,
-            "facilityTypeId": parseInt(facilityTypeId),
-            "seatId": getAuthUserData('userSeatId'),
-            "isValid": 1,
-            "facilityTypeSlno": 0,
-            "order": 0
+            // "facilityTypeId": parseInt(facilityTypeId),
+            // "seatId": getAuthUserData('userSeatId'),
+            // "isValid": 1,
+            // "facilityTypeSlno": 0,
+            // "order": 0
         }))
 
-        const unMappedData = newUnMapped?.map(dt => ({
-            "stateId": parseInt(stateId),
+        const unMappedData = newUnMapped?.length > 0 && newUnMapped?.map(dt => ({
+            // "stateId": parseInt(stateId),
             "facilityTypeId": dt?.value,
             "facilityTypeName": dt?.label,
             // "combinedIdName": `${dt?.value}^1^${dt?.label}`
@@ -104,11 +105,14 @@ const FacilityTypeMappingMaster = () => {
         const val = {
             "mapFacilityTypeDTO": mappedData?.length > 0 ? mappedData : [],
             "unmapFacilityTypeDTO": unMappedData?.length > 0 ? unMappedData : [],
+            "stateId": parseInt(stateId),
+            "seatId": getAuthUserData('userSeatId'),
+            "stateFacilityTypeId": parseInt(facilityTypeId)
         }
 
         fetchPostData(`http://10.226.17.20:8025/api/v1/facilityMap/saveFacilityMap`, val).then(data => {
             if (data?.status === 1) {
-                console.log(data?.data)
+                ToastAlert("Facility type mapped successfully", 'success')
                 setConfirmSave(false)
                 reset();
             } else {
@@ -185,6 +189,14 @@ const FacilityTypeMappingMaster = () => {
         setAvailableOptions();
     }
 
+    const refresh = () => {
+        setInitialMappedOptions();
+        setSelectedSelected();
+        setSelectedAvailable();
+        setSelectedOptions();
+        setAvailableOptions();
+    }
+
 
     return (
         <>
@@ -207,7 +219,7 @@ const FacilityTypeMappingMaster = () => {
                                     options={facilityTypeDrpDt}
                                     className="aliceblue-bg border-dark-subtle"
                                     value={facilityTypeId}
-                                    onChange={(e) => setFacilityTypeId(e.target.value)}
+                                    onChange={(e) => { setFacilityTypeId(e.target.value); refresh() }}
                                 />
 
                             </div>
@@ -224,7 +236,7 @@ const FacilityTypeMappingMaster = () => {
                                     options={stateNameDrpDt}
                                     className="aliceblue-bg border-dark-subtle"
                                     value={stateId}
-                                    onChange={(e) => setStateId(e.target.value)}
+                                    onChange={(e) => { setStateId(e.target.value); refresh(); }}
                                 />
                             </div>
                         </div>
@@ -251,7 +263,7 @@ const FacilityTypeMappingMaster = () => {
                                 setSelectedAvailable(selected);
                             }}
                         >
-                            {availableOptions.map(opt => (
+                            {availableOptions?.length > 0 && availableOptions.map(opt => (
                                 <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                 </option>
@@ -266,7 +278,7 @@ const FacilityTypeMappingMaster = () => {
                                 type='button'
                                 className='btn btn-outline-secondary btn-sm m-1'
                                 onClick={moveToSelected}
-                                disabled={selectedAvailable.length === 0}
+                                disabled={selectedAvailable?.length === 0}
                             >
                                 <i className="fa fa-caret-right"></i>
                             </button>
@@ -278,7 +290,7 @@ const FacilityTypeMappingMaster = () => {
                                 type='button'
                                 className='btn btn-outline-secondary btn-sm m-1'
                                 onClick={moveToAvailable}
-                                disabled={selectedSelected.length === 0}
+                                disabled={selectedSelected?.length === 0}
                             >
                                 <i className="fa fa-caret-left"></i>
                             </button>
@@ -296,7 +308,7 @@ const FacilityTypeMappingMaster = () => {
                                 setSelectedSelected(selected);
                             }}
                         >
-                            {selectedOptions.map(opt => (
+                            {selectedOptions?.length > 0 && selectedOptions.map(opt => (
                                 <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                 </option>

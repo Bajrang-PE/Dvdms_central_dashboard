@@ -9,7 +9,7 @@ import { HISContext } from '../../../contextApi/HISContext'
 const QueryDetails = (props) => {
 
     const { showDataTable, setShowDataTable } = useContext(HISContext);
-    const { handleValueChange, handleRadioChange, radioValues, values, setValues, singleData, rows, setRows, procedureRows, setProcedureRows, errors, setErrors } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, setValues, singleData, rows, setRows, procedureRows, setProcedureRows, errors, setErrors,dt } = props;
 
     const [showFormatModal, setShowFormatModal] = useState(false);
     const [isRightTab, setIsRightTab] = useState(true);
@@ -92,7 +92,7 @@ const QueryDetails = (props) => {
 
     return (
         <>
-            <b><h6 className='header-devider m-0'>Query or Procedure or Webservice Details</h6></b>
+            <b><h6 className='header-devider m-0'>{dt('Query or Procedure or Webservice Details')}</h6></b>
 
             {/* SECTION DEVIDER widget mode of query */}
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
@@ -100,7 +100,7 @@ const QueryDetails = (props) => {
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Select Mode for Query :
+                            {dt('Select Mode for Query')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -114,7 +114,7 @@ const QueryDetails = (props) => {
                                     checked={radioValues?.selectedModeQuery === "Query"}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    By Query
+                                   {dt('By Query')} 
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -128,7 +128,7 @@ const QueryDetails = (props) => {
                                     checked={radioValues?.selectedModeQuery === "Procedure"}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    By Procedure
+                                    {dt('By Procedure')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -142,7 +142,7 @@ const QueryDetails = (props) => {
                                     checked={radioValues?.selectedModeQuery === "WebSevice"}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    By Webservice
+                                   {dt('By Webservice')} 
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -156,7 +156,7 @@ const QueryDetails = (props) => {
                                     checked={radioValues?.selectedModeQuery === "Parent"}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    By Parent
+                                    {dt('By Parent')}
                                 </label>
                             </div>
                             {radioValues?.widgetViewed === 'KPI' &&
@@ -171,7 +171,7 @@ const QueryDetails = (props) => {
                                         checked={radioValues?.selectedModeQuery === "HTMLText"}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        By HTML Text
+                                        {dt('By HTML Text')}
                                     </label>
                                 </div>
                             }
@@ -182,7 +182,7 @@ const QueryDetails = (props) => {
                     <div className='col-sm-6'>
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Is Data Table Required :
+                               {dt('Is Data Table Required')}  :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -196,7 +196,7 @@ const QueryDetails = (props) => {
                                         checked={radioValues?.isDataTblReq === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                       {dt('Yes')} 
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -210,7 +210,7 @@ const QueryDetails = (props) => {
                                         checked={radioValues?.isDataTblReq === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                       {dt('No')} 
                                     </label>
                                 </div>
                             </div>
@@ -224,16 +224,16 @@ const QueryDetails = (props) => {
                     <table className="table table-borderless text-center mb-0">
                         <thead className="text-white">
                             <tr className='header-devider m-0'>
-                                <th style={{ width: "15%" }}>Query Label</th>
-                                <th style={{ width: "20%" }}>Main Query</th>
+                                <th style={{ width: "15%" }}>{dt('Query Label')}</th>
+                                <th style={{ width: "20%" }}>{dt('Main Query')}</th>
                                 {radioValues?.isDataTblReq === 'Yes' &&
-                                    <th style={{ width: "20%" }}>Data Table Required</th>
+                                    <th style={{ width: "20%" }}>{dt('Data Table Required')}</th>
                                 }
                                 {radioValues?.isDataTblReq === 'No' &&
-                                    <th style={{ width: "20%" }}>Total Record Count Query</th>
+                                    <th style={{ width: "20%" }}>{dt('Total Record Count Query')}</th>
                                 }
 
-                                <th style={{ width: "15%" }}>Data Table Display</th>
+                                <th style={{ width: "15%" }}>{dt('Data Table Display')}</th>
                                 <th style={{ width: "15%" }}>
                                     <button
                                         className="btn btn-secondary btn-sm"
@@ -317,7 +317,7 @@ const QueryDetails = (props) => {
                                                         onClick={() => { setShowDataTable(true); setShowFormatModal(true) }}
                                                         style={{ padding: "0 4px" }}
                                                     >
-                                                        Format
+                                                        {dt('Format')}
                                                     </button>
                                                 }
                                                 <button
@@ -343,7 +343,7 @@ const QueryDetails = (props) => {
                     {/* //left columns */}
                     <div className='col-sm-6'>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Procedure Name : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Procedure Name')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type='text'
@@ -366,7 +366,7 @@ const QueryDetails = (props) => {
                                 onClick={() => { setShowDataTable(true); setShowFormatModal(true) }}
                                 style={{ padding: "0 4px" }}
                             >
-                                Format Column
+                                {dt('Format Column')}
                             </button>
                         </div>
                     }
@@ -379,20 +379,20 @@ const QueryDetails = (props) => {
                     <table className="table table-borderless text-center mb-0">
                         <thead className="text-white">
                             <tr className='header-devider m-0'>
-                                <th style={{ width: "15%" }}>Query Label</th>
-                                <th style={{ width: "20%" }}>Webservice Reference Name</th>
-                                <th style={{ width: "15%" }}>Webservice Id</th>
+                                <th style={{ width: "15%" }}>{dt('Query Label')}</th>
+                                <th style={{ width: "20%" }}>{dt('Webservice Reference Name')}</th>
+                                <th style={{ width: "15%" }}>{dt('Webservice Id')}</th>
                                 {radioValues?.isDataTblReq === 'Yes' &&
-                                    <th style={{ width: "15%" }}>Data Table Required</th>
+                                    <th style={{ width: "15%" }}>{dt('Data Table Required')}</th>
                                 }
-                                <th style={{ width: "15%" }}>Table Data Display</th>
+                                <th style={{ width: "15%" }}>{dt('Table Data Display')}</th>
                                 <th style={{ width: "10%" }}>
                                     <button
                                         className="btn btn-secondary btn-sm"
                                         onClick={() => { setShowDataTable(true); setShowFormatModal(true) }}
                                         style={{ padding: "0 4px" }}
                                     >
-                                        Format Column
+                                        {dt('Format Column')}
                                     </button>
                                 </th>
                                 <th >
@@ -495,8 +495,8 @@ const QueryDetails = (props) => {
                     <table className="table table-borderless text-center mb-0">
                         <thead className="text-white">
                             <tr className='header-devider m-0'>
-                                <th style={{ width: "40%" }}>Query Label</th>
-                                <th style={{ width: "50%" }}>Main Query</th>
+                                <th style={{ width: "40%" }}>{dt('Query Label')}</th>
+                                <th style={{ width: "50%" }}>{dt('Main Query')}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -541,7 +541,7 @@ const QueryDetails = (props) => {
                     {/* //left columns */}
                     <div className='col-sm-6'>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Webservice Reference Name : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Webservice Reference Name')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputSelect
                                     placeholder="Select value..."
@@ -558,7 +558,7 @@ const QueryDetails = (props) => {
                     {/* right columns */}
                     <div className='col-sm-6'>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Webservice ID : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Webservice ID')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type='text'
@@ -585,7 +585,7 @@ const QueryDetails = (props) => {
                     <div className='col-sm-6'>
                         {radioValues?.selectedModeQuery === "Query" &&
                             <div className="form-group row">
-                                <label className="col-sm-5 col-form-label pe-0">Main Query : </label>
+                                <label className="col-sm-5 col-form-label pe-0">{dt('Main Query')} : </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <textarea
                                         className="form-control backcolorinput"
@@ -606,7 +606,7 @@ const QueryDetails = (props) => {
                         }
                         {radioValues?.selectedModeQuery === "HTMLText" &&
                             <div className="form-group row">
-                                <label className="col-sm-5 col-form-label pe-0">HTML : </label>
+                                <label className="col-sm-5 col-form-label pe-0">{dt('HTML')} : </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <textarea
                                         className="form-control backcolorinput"

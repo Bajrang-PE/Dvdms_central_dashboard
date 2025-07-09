@@ -1,17 +1,17 @@
 import React from 'react'
 
 const HeaderDetails = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values, setValues, errors } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, setValues, errors, dt } = props;
     return (
         <div>
-            <b><h6 className='header-devider m-0'> Dashboard Master - Header Details</h6></b>
+            <b><h6 className='header-devider m-0'>{dt("Dashboard Master - Header Details")}</h6></b>
             {/* SECTION DEVIDER*/}
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Header required :
+                            {dt("Is Header required")} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -25,7 +25,7 @@ const HeaderDetails = (props) => {
                                     checked={radioValues?.isHeaderReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -39,7 +39,7 @@ const HeaderDetails = (props) => {
                                     checked={radioValues?.isHeaderReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
@@ -53,11 +53,11 @@ const HeaderDetails = (props) => {
                     {/* //left columns */}
                     <div className='col-sm-6'>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Header HTML : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt("Header HTML")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <textarea
                                     className="form-control backcolorinput"
-                                    placeholder="Enter value..."
+                                    placeholder={dt("Enter value...")}
                                     name="headerHtml"
                                     id='headerHtml'
                                     rows="2"
@@ -68,7 +68,7 @@ const HeaderDetails = (props) => {
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Show Header :
+                                {dt("Show Header")} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -82,7 +82,7 @@ const HeaderDetails = (props) => {
                                         checked={radioValues?.showHeader === 'Only in Big Icon Menu'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Only in Big Icon Menu
+                                        {dt("Only in Big Icon Menu")}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -96,7 +96,7 @@ const HeaderDetails = (props) => {
                                         checked={radioValues?.showHeader === 'All Tabs'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        All Tabs
+                                        {dt("All Tabs")}
                                     </label>
                                 </div>
                             </div>
@@ -104,11 +104,11 @@ const HeaderDetails = (props) => {
                     </div>
                     <div className='col-sm-6'>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Header CSS : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt("Header CSS")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <textarea
                                     className="form-control backcolorinput"
-                                    placeholder="Enter value..."
+                                    placeholder={dt("Enter value...")}
                                     name="headerCss"
                                     id='headerCss'
                                     rows="2"
@@ -119,7 +119,7 @@ const HeaderDetails = (props) => {
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Show Header in Global Dashboard Only :
+                                {dt("Show Header in Global Dashboard Only")} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -133,7 +133,7 @@ const HeaderDetails = (props) => {
                                         checked={radioValues?.showHeaderInGlobalDash === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt("Yes")}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -147,7 +147,7 @@ const HeaderDetails = (props) => {
                                         checked={radioValues?.showHeaderInGlobalDash === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt("No")}
                                     </label>
                                 </div>
                             </div>
@@ -162,7 +162,7 @@ const HeaderDetails = (props) => {
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Report Header Type (For PDF AND EXL) :
+                            {dt("Report Header Type (For PDF AND EXL)")} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -176,7 +176,7 @@ const HeaderDetails = (props) => {
                                     checked={radioValues?.rptHeaderTypePdfExl === '1'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Static
+                                    {dt("Static")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -190,7 +190,7 @@ const HeaderDetails = (props) => {
                                     checked={radioValues?.rptHeaderTypePdfExl === '2'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    By Query
+                                    {dt("By Query")}
                                 </label>
                             </div>
                         </div>
@@ -199,7 +199,7 @@ const HeaderDetails = (props) => {
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Active :
+                            {dt("Is Active")} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -213,7 +213,7 @@ const HeaderDetails = (props) => {
                                     checked={radioValues?.isActive === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -227,7 +227,7 @@ const HeaderDetails = (props) => {
                                     checked={radioValues?.isActive === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
@@ -241,11 +241,11 @@ const HeaderDetails = (props) => {
                     {/* //left columns */}
                     <div className='col-sm-6'>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0 required-label">Report Header By Query : </label>
+                            <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Report Header By Query")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <textarea
                                     className="form-control backcolorinput"
-                                    placeholder="Enter value..."
+                                    placeholder={dt("Enter value...")}
                                     name="rptHeaderbyQuery"
                                     id='rptHeaderbyQuery'
                                     rows="2"
@@ -262,14 +262,15 @@ const HeaderDetails = (props) => {
                     </div>
                     <div className='col-sm-6'>
                         <div className="ps-0 align-content-start">
-                            <b>queryFormat :-</b><br />
-                            <i> <span> select col1 as "ReportHeader1",col2 as "ReportHeader2", col3 as "ReportHeader3" , col4 as "LogoImageURL", col5 as "LogoPosition", col6 as "logoAlignment",col8 as "logoCoordinates", col7 as "IsLogoRequired" from table where condition</span></i>
+                            <b>{dt("queryFormat")} :-</b><br />
+                            <i> <span>{dt(`select col1 as "ReportHeader1",col2 as "ReportHeader2", col3 as "ReportHeader3" , col4 as "LogoImageURL", col5 as "LogoPosition", col6 as "logoAlignment",col8 as "logoCoordinates", col7 as "IsLogoRequired" from table where condition`)}</span></i>
                         </div>
                     </div>
                 </div>
             }
 
         </div>
+
     )
 }
 

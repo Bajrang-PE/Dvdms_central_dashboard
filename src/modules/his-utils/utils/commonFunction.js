@@ -236,3 +236,75 @@ export const formatDateFullYear = (isoDate) => {
   const year = dateObject.getUTCFullYear();
   return `${day}-${month}-${year}`;
 }
+
+export const extractAllPageText = (config = {}) => {
+  const {
+    includeTags: userIncludeTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'label', 'span', 'button', 'a', 'li', 'th'],
+    excludeTags: userExcludeTags = [],
+    excludeClasses: userExcludeClasses = [],
+    includeClasses: userIncludeClasses = ['card-header-count','apexcharts-title-text','apexcharts-text','rdt_TableCol']
+  } = config;
+
+  const texts = new Set();
+
+  const strictExcludeTags = new Set([
+    'script', 'style', 'noscript', 'input', 'textarea', 'select', 'option', 'td',
+    'canvas', 'svg',
+  ]);
+  userExcludeTags.forEach(tag => strictExcludeTags.add(tag.toLowerCase()));
+
+
+  const includeTagsSet = new Set(userIncludeTags.map(tag => tag.toLowerCase()));
+  const excludeClassesSet = new Set(userExcludeClasses);
+  const includeClassesSet = new Set(userIncludeClasses);
+
+  const walker = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_TEXT,
+    null,
+    false
+  );
+
+  let node;
+  while ((node = walker.nextNode())) {
+    // Ensure the text node has a parent element
+    const parentElement = node.parentElement;
+    if (!parentElement) {
+      continue;
+    }
+
+    const tagName = parentElement.tagName.toLowerCase();
+    const parentClassList = Array.from(parentElement.classList);
+
+    if (strictExcludeTags.has(tagName)) {
+      continue;
+    }
+
+    let isExcludedByClass = false;
+    let currentAncestor = parentElement;
+    while (currentAncestor && currentAncestor !== document.body) {
+      if (excludeClassesSet.size > 0 && Array.from(currentAncestor.classList).some(cls => excludeClassesSet.has(cls))) {
+        isExcludedByClass = true;
+        break;
+      }
+      currentAncestor = currentAncestor.parentElement;
+    }
+    if (isExcludedByClass) {
+      continue;
+    }
+
+    let shouldInclude = false;
+    if (includeTagsSet.has(tagName) || includeClassesSet.size > 0 && parentClassList.some(cls => includeClassesSet.has(cls))) {
+      shouldInclude = true;
+    }
+
+    if (shouldInclude) {
+      const text = node.textContent.trim();
+      if (text && text.length > 1) {
+        texts.add(text);
+      }
+    }
+  }
+
+  return Array.from(texts);
+};

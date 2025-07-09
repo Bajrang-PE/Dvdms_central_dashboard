@@ -11,7 +11,7 @@ import GlobalDataTable from '../../components/commons/GlobalDataTable'
 import { fetchPostData } from '../../../../utils/HisApiHooks'
 
 const DataServiceMaster = () => {
-  const { setShowDataTable, getAllServiceData, dataServiceData, selectedOption, setSelectedOption, setActionMode, actionMode, parameterData, getAllParameterData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, jndiServerDrpData, getDashConfigData, singleConfigData } = useContext(HISContext);
+  const { setShowDataTable, getAllServiceData, dataServiceData, selectedOption, setSelectedOption, setActionMode, actionMode, parameterData, getAllParameterData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, jndiServerDrpData, getDashConfigData, singleConfigData, dt } = useContext(HISContext);
 
   const [isCacheData, setIsCacheData] = useState(false);
   const [selectedMode, setSelectedMode] = useState("query");
@@ -297,23 +297,23 @@ const DataServiceMaster = () => {
       width: "8%"
     },
     {
-      name: 'ID',
+      name: dt('ID'),
       selector: row => row.id,
       sortable: true,
       width: "8%"
     },
     {
-      name: 'Parameter Name',
+      name: dt('Parameter Name'),
       selector: row => row?.jsonData?.parameterName || "---",
       sortable: true,
     },
     {
-      name: 'Display Name',
+      name: dt('Display Name'),
       selector: row => row?.jsonData?.parameterDisplayName || "---",
       sortable: true,
     },
     {
-      name: 'Type',
+      name: dt('Type'),
       selector: row => parameterType?.filter(dt => dt?.value === row?.jsonData?.parameterType)[0]?.label || "---",
       sortable: true,
     },
@@ -326,14 +326,14 @@ const DataServiceMaster = () => {
       <div className='main-master-page'>
         <GlobalButtonGroup isSave={true} isOpen={true} isReset={true} isParams={true} isWeb={false} onSave={handleSaveUpdate} onOpen={onOpenWebService} onReset={reset} onParams={onOpenDataParams} onWeb={null} />
         <div className='form-card m-auto p-3'>
-          <b><h6 className='header-devider mt-0 mb-1'>Data Service Master</h6></b>
+          <b><h6 className='header-devider mt-0 mb-1'>{dt('Data Service Master')}</h6></b>
 
           {/* SECTION DEVIDER service category*/}
           <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
             {/* //left columns */}
             <div className='col-sm-6'>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0 required-label">Service Category : </label>
+                <label className="col-sm-5 col-form-label pe-0 required-label">{dt('Service Category')} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputSelect
                     id="serviceCategory"
@@ -359,7 +359,7 @@ const DataServiceMaster = () => {
             {/* //left columns */}
             <div className='col-sm-6'>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0 required-label">Service Display Name : </label>
+                <label className="col-sm-5 col-form-label pe-0 required-label">{dt('Service Display Name')} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="text"
@@ -382,7 +382,7 @@ const DataServiceMaster = () => {
             {/* right columns */}
             <div className='col-sm-6'>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0 required-label">Service Name(For Calling Service) : </label>
+                <label className="col-sm-5 col-form-label pe-0 required-label">{dt('Service Name(For Calling Service)')} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="text"
@@ -409,7 +409,7 @@ const DataServiceMaster = () => {
             <div className='col-sm-6'>
               <div className="form-group row">
                 <label className="col-sm-5 col-form-label pe-0 required-label">
-                  Select Mode For Data :
+                  {dt('Select Mode For Data')} :
                 </label>
                 {errors?.selectedModeErr &&
                   <div className="required-input">
@@ -428,7 +428,7 @@ const DataServiceMaster = () => {
                       checked={selectedMode === "query"}
                     />
                     <label className="form-check-label" htmlFor="dbYes">
-                      By Query
+                      {dt('By Query')}
                     </label>
                   </div>
                   <div className="form-check form-check-inline">
@@ -442,7 +442,7 @@ const DataServiceMaster = () => {
                       checked={selectedMode === "procedure"}
                     />
                     <label className="form-check-label" htmlFor="dbNo">
-                      By Procedure For Query
+                      {dt('By Procedure For Query')}
                     </label>
                   </div>
                   <div className="form-check form-check-inline">
@@ -456,7 +456,7 @@ const DataServiceMaster = () => {
                       checked={selectedMode === "function"}
                     />
                     <label className="form-check-label" htmlFor="dbNo">
-                      By Function For Query
+                      {dt('By Function For Query')}
                     </label>
                   </div>
                   <div className="form-check form-check-inline">
@@ -470,7 +470,7 @@ const DataServiceMaster = () => {
                       checked={selectedMode === "html"}
                     />
                     <label className="form-check-label" htmlFor="dbNo">
-                      By HTML/Content Text
+                      {dt('By HTML/Content Text')}
                     </label>
                   </div>
                   <div className="form-check form-check-inline">
@@ -484,7 +484,7 @@ const DataServiceMaster = () => {
                       checked={selectedMode === "procedureDml"}
                     />
                     <label className="form-check-label" htmlFor="dbNo">
-                      By Procedure For DML
+                      {dt('By Procedure For DML')}
                     </label>
                   </div>
                   <div className="form-check form-check-inline">
@@ -498,7 +498,7 @@ const DataServiceMaster = () => {
                       checked={selectedMode === "functionDML"}
                     />
                     <label className="form-check-label" htmlFor="dbNo">
-                      By Function For DML
+                      {dt('By Function For DML')}
                     </label>
                   </div>
                 </div>
@@ -509,7 +509,7 @@ const DataServiceMaster = () => {
               {(selectedMode !== "procedureDml" && selectedMode !== "functionDml") &&
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">
-                    Is Cache Data :
+                    {dt('Is Cache Data')} :
                   </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <div className="form-check form-check-inline">
@@ -523,7 +523,7 @@ const DataServiceMaster = () => {
                         checked={isCacheData}
                       />
                       <label className="form-check-label" htmlFor="dbYes">
-                        Yes
+                        {dt('Yes')}
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
@@ -537,7 +537,7 @@ const DataServiceMaster = () => {
                         checked={!isCacheData}
                       />
                       <label className="form-check-label" htmlFor="dbNo">
-                        No
+                        {dt('No')}
                       </label>
                     </div>
                   </div>
@@ -552,7 +552,7 @@ const DataServiceMaster = () => {
             <div className='col-sm-6'>
               {(selectedMode !== "query" && selectedMode !== "html") &&
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0 required-label">Procedure/Function Name : </label>
+                  <label className="col-sm-5 col-form-label pe-0 required-label">{dt('Procedure/Function Name')} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputField
                       type="text"
@@ -573,7 +573,7 @@ const DataServiceMaster = () => {
               }
               {(selectedMode === "query" || selectedMode === "html") &&
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Fetch Query : </label>
+                  <label className="col-sm-5 col-form-label fix-label pe-0 required-label">{dt('Fetch Query')} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <textarea
                       className="form-control backcolorinput"
@@ -596,7 +596,7 @@ const DataServiceMaster = () => {
             {/* right columns */}
             <div className='col-sm-6'>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0">Webservice Json Type : </label>
+                <label className="col-sm-5 col-form-label pe-0">{dt('Webservice Json Type')} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputSelect
                     id="webJsonType"
@@ -617,10 +617,10 @@ const DataServiceMaster = () => {
             {/* //left columns */}
             <div className='col-sm-6'>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0">Webservice Json Preview : </label>
+                <label className="col-sm-5 col-form-label pe-0">{dt('Webservice Json Preview')} : </label>
                 {values?.webJsonType === "dataHeadingColumnType" &&
                   <div className="col-sm-7 ps-0 align-content-center">
-                    <b><u>DATAHEADING-DATAVALUE FORMAT:-</u></b><br />
+                    <b><u>{dt('DATAHEADING-DATAVALUE FORMAT')}:-</u></b><br />
                     <br />
                     {"{"}
                     <br />
@@ -638,7 +638,7 @@ const DataServiceMaster = () => {
                 }
                 {values?.webJsonType === "keyValueType" &&
                   <div className="col-sm-7 ps-0 align-content-center">
-                    <b><u>KEY-VALUE FORMAT:-</u></b><br />
+                    <b><u>{dt('KEY-VALUE FORMAT')}:-</u></b><br />
                     <br />
                     [
                     <br />
@@ -667,14 +667,14 @@ const DataServiceMaster = () => {
           </div>
 
           {/* MAIN DEVIDER FOR JNDI */}
-          <b><h6 className='header-devider m-0'>JNDI Details</h6></b>
+          <b><h6 className='header-devider m-0'>{dt('JNDI Details')}</h6></b>
 
           {/* SECTION DEVIDER jndi and time*/}
           <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
             {/* //left columns */}
             <div className='col-sm-6'>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0">JNDI For Saving Data : </label>
+                <label className="col-sm-5 col-form-label pe-0">{dt('JNDI For Saving Data')} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputSelect
                     id="jndiSavingData"
@@ -691,7 +691,7 @@ const DataServiceMaster = () => {
             {/* right columns */}
             <div className='col-sm-6'>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0">Statement Time Out : </label>
+                <label className="col-sm-5 col-form-label pe-0">{dt('Statement Time Out')} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputSelect
                     id="stmtTimeOut"
@@ -712,7 +712,7 @@ const DataServiceMaster = () => {
         <DataServiceTable data={dataServiceData} onModify={handleUpdateData} onDelete={handleDeleteDataService} onClose={onTableClose} isShowBtn={true} />
       }
       {showParamsTable &&
-        <GlobalDataTable title={"Parameter List"} column={column} data={filterData} onModify={null} onDelete={null} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={false} />
+        <GlobalDataTable title={dt("Parameter List")} column={column} data={filterData} onModify={null} onDelete={null} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={false} />
       }
     </div>
   )

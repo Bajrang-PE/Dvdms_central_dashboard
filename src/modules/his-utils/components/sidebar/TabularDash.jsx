@@ -9,6 +9,7 @@ import { generateCSV, generatePDF } from "../commons/advancedPdf";
 import { getAuthUserData } from "../../../../utils/CommonFunction";
 import { useSearchParams } from "react-router-dom";
 import PopUpWidget from "./PopUpWidget";
+import { fetchPostData } from "../../../../utils/HisApiHooks";
 
 const Parameters = lazy(() => import('./Parameters'));
 
@@ -128,8 +129,35 @@ const TabularDash = (props) => {
     setShowPopUpWidget(false);
   };
 
-  const FtpClicked = (e, atag) => {
-    console.log(atag, 'atag')
+  const FtpClicked = (e) => {
+
+    e.preventDefault();
+    // setLoading(true);
+    const tag = e.target;
+
+    // Safety check: Make sure we clicked on an <a> tag
+    if (tag.tagName !== 'A') {
+      ToastAlert("Invalid FTP link.", 'error');
+      // setLoading(false);
+      return;
+    }
+
+    const remoteUrl = tag.getAttribute('data-url');
+    const fileName = tag.getAttribute('data-filename');
+
+    const val = {
+      "remoteUrl": remoteUrl,
+      "fileName": fileName
+    }
+    fetchPostData("/hisutils/ftp/view", val).then((data) => {
+      if (data?.status === 1) {
+        console.log(data, 'File fetched successfully');
+        // setLoading(false);
+      } else {
+        ToastAlert(data?.message, 'error')
+        // setLoading(false);
+      }
+    })
   }
 
   const getFirstValue = (val) => {

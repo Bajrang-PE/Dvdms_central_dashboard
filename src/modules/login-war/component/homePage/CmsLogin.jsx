@@ -110,12 +110,38 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
     }, [])
 
 
+    const [capsLockOn, setCapsLockOn] = useState(false);
+
+    const checkCapsLock = (event) => {
+        if (event && event.getModifierState) {
+            setCapsLockOn(event.getModifierState('CapsLock'));
+        }
+    };
+
+    useEffect(() => {
+        // Global Caps Lock key detection
+        const handleKeyEvent = (e) => {
+            if (e.key === 'CapsLock') {
+                setCapsLockOn(e.getModifierState('CapsLock'));
+            }
+        };
+
+        window.addEventListener('keyup', handleKeyEvent);
+        return () => window.removeEventListener('keyup', handleKeyEvent);
+    }, []);
+
+
     return (
         <>
             <Modal show={isShow} onHide={onClose} size='sm'>
                 <Modal.Header closeButton className='p-2 datatable-header cms-login'>
                     <b><h5 className='mx-2 mt-1 px-1'>DVDMS Dashboard Login</h5></b>
                 </Modal.Header>
+                {capsLockOn && (
+                    <div className="caps-lock-warning" style={{ color: "red", fontSize: "12px", marginTop: "5px", textAlign: "center" }}>
+                        ⚠️ Caps Lock is On
+                    </div>
+                )}
                 <Modal.Body className='px-2 py-0'>
                     <div className="ps-0 align-content-center m-3">
                         <select className="form-control aliceblue-bg" id="DashboardFor" name='DashboardFor' placeholder="Select Program" defaultValue={'1'}>
@@ -131,6 +157,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                             id='username'
                             value={username}
                             onChange={handleChange}
+                            onKeyDown={checkCapsLock}
                         />
                         {errors?.usernameErr &&
                             <div className="required-input">
@@ -147,6 +174,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                             id='password'
                             value={password}
                             onChange={handleChange}
+                            onKeyDown={checkCapsLock}
                         />
                         <span className="input-group-text aliceblue-bg pointer" id="basic-addon1" onClick={() => setIsShowPassword(!isShowPassword)}>
                             <FontAwesomeIcon icon={isShowPassword ? faEye : faEyeSlash} className="dropdown-gear-icon me-1" />
@@ -171,6 +199,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                             id='captchaInput'
                             value={captchaInput}
                             onChange={handleChange}
+                            onKeyDown={checkCapsLock}
                         />
                         {errors?.captchaInputErr &&
                             <div className="required-input">

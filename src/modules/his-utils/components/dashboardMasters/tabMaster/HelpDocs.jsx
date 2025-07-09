@@ -6,7 +6,7 @@ import { faAdd } from "@fortawesome/free-solid-svg-icons";
 
 const HelpDocs = (props) => {
 
-  const { values, setValues, errors, setErrors } = props;
+  const { values, setValues, errors, setErrors, dt } = props;
 
   const [rows, setRows] = useState([]);
   const [newRow, setNewRow] = useState({ fileNameForManualDocument: "", displayNameForManualDocument: "", downloadFileNameForManualDocument: "" });
@@ -64,7 +64,7 @@ const HelpDocs = (props) => {
   return (
     <div>
       <b>
-        <h6 className="header-devider my-1">Attach Help Docs</h6>
+        <h6 className="header-devider my-1">{dt("Attach Help Docs")}</h6>
       </b>
 
       {/* SECTION DIVIDER */}
@@ -73,13 +73,13 @@ const HelpDocs = (props) => {
           <thead className="text-white">
             <tr className="table-row-form">
               <th className="p-0" style={{ width: "25%", fontSize: "smaller" }}>
-                Help Doc. File Name
+                {dt("Help Doc. File Name")}
               </th>
               <th className="p-0" style={{ width: "25%", fontSize: "smaller" }}>
-                Display Name For Manual Document
+                {dt("Display Name For Manual Document")}
               </th>
               <th className="p-0" style={{ width: "25%", fontSize: "smaller" }}>
-                Download File Name
+                {dt("Download File Name")}
               </th>
               <th className="p-0"></th>
             </tr>
@@ -91,7 +91,7 @@ const HelpDocs = (props) => {
                   className="backcolorinput"
                   name="fileNameForManualDocument"
                   id="fileNameForManualDocument"
-                  placeholder={"Select File"}
+                  placeholder={dt("Select File")}
                   options={[{ value: 1, label: "pdf file" }]}
                   onChange={(e) => handleInputChange("fileNameForManualDocument", e.target.value)}
                   value={newRow.fileNameForManualDocument}
@@ -123,10 +123,10 @@ const HelpDocs = (props) => {
                 <button
                   className="btn btn-sm me-1 py-0 px-0"
                   style={{ background: "#34495e", color: "white" }}
-                  onClick={()=>handleAddRow()}
+                  onClick={() => handleAddRow()}
                 >
                   <FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size="sm" />{" "}
-                  {isEditing !== null ? "Save" : "Add"}
+                  {isEditing !== null ? dt("Save") : dt("Add")}
                 </button>
               </td>
             </tr>
@@ -141,13 +141,13 @@ const HelpDocs = (props) => {
                       className="btn btn-outline-secondary btn-sm me-1 py-0 px-1"
                       onClick={() => handleEditRow(index)}
                     >
-                      Edit
+                      {dt("Edit")}
                     </button>
                     <button
                       className="btn btn-outline-secondary btn-sm ms-1 py-0 px-1"
                       onClick={() => handleRemoveRow(index)}
                     >
-                      Delete
+                      {dt("Delete")}
                     </button>
                   </div>
                 </td>
@@ -157,6 +157,7 @@ const HelpDocs = (props) => {
         </table>
       </div>
     </div>
+
   );
 };
 

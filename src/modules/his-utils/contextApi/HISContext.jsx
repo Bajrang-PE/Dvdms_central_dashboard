@@ -1,6 +1,7 @@
 import React, { createContext, useState } from 'react'
 import { DrpDataValLab, ToastAlert } from '../utils/commonFunction';
 import { fetchData, fetchDeleteData } from '../../../utils/HisApiHooks';
+import axios from 'axios';
 
 export const HISContext = createContext();
 
@@ -53,6 +54,36 @@ const HISContextData = ({ children }) => {
   const [dataServiceDrpData, setDataServiceDrpData] = useState([]);
   const [serviceCategoryDrpData, setServiceCategoryDrpData] = useState([]);
   const [jndiServerDrpData, setJndiServerDrpData] = useState([]);
+
+
+  //language provider
+
+  const [extractedTexts, setExtractedTexts] = useState([]);
+  const [showTranslateModal, setShowTranslateModal] = useState(false);
+  const [language, setLanguage] = useState('english');
+  const [translations, setTranslations] = useState([]);
+
+
+  const fetchTranslations = async (lang) => {
+    try {
+      const response = await axios.get(`/usm/translations/getAllTranslatedData`);
+      const data = await response?.data?.data;
+      // setTranslations(prev => ({ ...prev, [lang]: data }));
+      setTranslations(data);
+    } catch (error) {
+      console.error('Error fetching translations:', error);
+    }
+  };
+
+  const changeLanguage = async (lang) => {
+    setLanguage(lang);
+    localStorage.setItem('language', lang)
+  };
+
+  const dt = (key) => {
+    const translation = translations?.length > 0 && translations?.find(item => item.keyName === key);
+    return translation?.[language] || key;
+  };
 
   // dropdowns api call
   const getDashboardForDrpData = () => {
@@ -219,7 +250,7 @@ const HISContextData = ({ children }) => {
 
       paramsValues, setParamsValues,
       paramsValuesPro, setParamsValuesPro,
-      isSearchQuery, setIsSearchQuery,searchScope, setSearchScope,
+      isSearchQuery, setIsSearchQuery, searchScope, setSearchScope,
 
       // DROP DOWNS-------------------------------
       // DASHBOARD FOR
@@ -246,7 +277,16 @@ const HISContextData = ({ children }) => {
       //dashboard submenu
       dashboardSubmenuData, getDashboardSubmenuData,
 
-      presentWidgets, setPresentWidgets
+      presentWidgets, setPresentWidgets,
+
+      //language provider
+      language,
+      dt,
+      changeLanguage,
+      fetchTranslations,
+      setLanguage,
+      showTranslateModal, setShowTranslateModal,
+      extractedTexts, setExtractedTexts
     }}>
       {children}
     </HISContext.Provider>

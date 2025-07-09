@@ -632,3 +632,13 @@ label {
   /* max-height: 2rem; */
   min-height: 2rem;
 }
+
+.caps-lock-warning {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}

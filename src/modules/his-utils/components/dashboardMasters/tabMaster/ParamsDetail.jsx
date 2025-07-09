@@ -8,7 +8,7 @@ const InputSelect = lazy(() => import('../../commons/InputSelect'));
 const InputField = lazy(() => import('../../commons/InputField'));
 
 const ParamsDetail = (props) => {
-    const { availableOptions, setAvailableOptions, selectedOptions, setSelectedOptions, handleValueChange, values, pageName } = props;
+    const { availableOptions, setAvailableOptions, selectedOptions, setSelectedOptions, handleValueChange, values, pageName, dt } = props;
 
     const [leftSelectedValues, setLeftSelectedValues] = useState([]);
     const [rightSelectedValues, setRightSelectedValues] = useState([]);
@@ -65,10 +65,10 @@ const ParamsDetail = (props) => {
 
     return (
         <>
-            <b><h6 className='header-devider m-0'>Parameter Details</h6></b>
+            <b><h6 className='header-devider m-0'>{dt('Parameter Details')}</h6></b>
             <div className='d-flex justify-content-center mt-1 mb-2 role-theme'>
                 <div className='' style={{ width: "30%" }}>
-                    <b><h6 className='mb-2 text-center'>Parameter Name</h6></b>
+                    <b><h6 className='mb-2 text-center'>{dt('Parameter Name')}</h6></b>
                     <select className="form-select form-select-sm backcolorinput" id='leftRightSelect' size="6" aria-label="size 4 select example" onChange={handleLeftSelect}>
                         {availableOptions?.map((opt, index) => (
                             <option value={opt.value} key={index}>{opt.label}</option>
@@ -79,21 +79,21 @@ const ParamsDetail = (props) => {
                 <div className='align-self-center' style={{ marginLeft: "2%", marginRight: "2%" }}>
 
                     <div className='d-flex justify-content-center'>
-                        <button type='button' className='btn btn-outline-secondary btn-sm m-1' disabled={availableOptions?.length > 0 ? false : true} onClick={()=>moveRight()}>
+                        <button type='button' className='btn btn-outline-secondary btn-sm m-1' disabled={availableOptions?.length > 0 ? false : true} onClick={() => moveRight()}>
                             <svg dangerouslySetInnerHTML={{ __html: rightCaret }} height={16} width={16} />
                         </button>
 
                     </div>
 
                     <div className='d-flex justify-content-center'>
-                        <button type='button' className='btn btn-outline-secondary btn-sm m-1' disabled={selectedOptions?.length > 0 ? false : true} onClick={()=>moveLeft()}>
+                        <button type='button' className='btn btn-outline-secondary btn-sm m-1' disabled={selectedOptions?.length > 0 ? false : true} onClick={() => moveLeft()}>
                             <svg dangerouslySetInnerHTML={{ __html: leftCaret }} height={16} width={16} />
                         </button>
                     </div>
                 </div>
 
                 <div className='' style={{ width: "30%" }}>
-                    <b><h6 className='mb-2 text-center'>Selected Parameter Name</h6></b>
+                    <b><h6 className='mb-2 text-center'>{dt('Selected Parameter Name')}</h6></b>
                     <select className="form-select form-select-sm backcolorinput" id='leftRightSelect1' size="6" aria-label="size 4 select example" onChange={handleRightSelect}>
                         {selectedOptions?.map((opt, index) => (
                             <option value={opt.value} key={index}>{opt.label}</option>
@@ -108,7 +108,7 @@ const ParamsDetail = (props) => {
                 <div className='col-sm-6'>
                     {selectedOptions?.length > 0 &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Parameter Options : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Parameter Options')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputSelect
                                     className="backcolorinput "
@@ -123,7 +123,7 @@ const ParamsDetail = (props) => {
                         </div>
                     }
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Parameter Combo Background Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Parameter Combo Background Color')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='color'
@@ -137,7 +137,7 @@ const ParamsDetail = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Parameter Label Font Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Parameter Label Font Color')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='color'
@@ -155,7 +155,7 @@ const ParamsDetail = (props) => {
                 <div className='col-sm-6'>
                     {selectedOptions?.length > 0 &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">{pageName === "tab" ? 'Tab Load Options' : 'Widget Load Options'} : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{pageName === "tab" ? dt('Tab Load Options') : dt('Widget Load Options')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputSelect
                                     className="backcolorinput "
@@ -170,7 +170,7 @@ const ParamsDetail = (props) => {
                         </div>
                     }
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Parameter Combo Font Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Parameter Combo Font Color')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='color'
@@ -185,7 +185,7 @@ const ParamsDetail = (props) => {
                     </div>
                     {pageName === 'tab' &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Parameter Remarks : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Parameter Remarks')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <textarea
                                     className="form-control backcolorinput"

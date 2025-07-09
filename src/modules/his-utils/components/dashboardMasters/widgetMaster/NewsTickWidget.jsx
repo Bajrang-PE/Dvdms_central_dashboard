@@ -4,17 +4,17 @@ import InputSelect from '../../commons/InputSelect'
 import { newsTimeIntervals } from '../../../localData/DropDownData';
 
 const NewsTickWidget = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values, setValues,errors } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, setValues,errors,dt } = props;
 
     return (
         <div>
-            <b><h6 className='header-devider mb-1'>News Ticker Details</h6></b>
+            <b><h6 className='header-devider mb-1'>{dt('News Ticker Details')}</h6></b>
             {/* SECTION DEVIDER */}
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">No. of News visible at a time : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt('No. of News visible at a time')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type={'text'}
@@ -29,7 +29,7 @@ const NewsTickWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">News Speed : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('News Speed')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 className="backcolorinput "
@@ -47,7 +47,7 @@ const NewsTickWidget = (props) => {
                 {/* right columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">News Interval : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('News Interval')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 className="backcolorinput "

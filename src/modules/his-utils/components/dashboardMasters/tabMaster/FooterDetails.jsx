@@ -4,34 +4,33 @@ import InputSelect from '../../commons/InputSelect'
 import { parameterAlignment } from '../../../localData/DropDownData';
 
 const FooterDetails = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values,dt } = props;
     return (
         <>
 
-            <b><h6 className='header-devider'>Footer Details</h6></b>
+            <b><h6 className='header-devider'>{dt("Footer Details")}</h6></b>
 
             {/* SECTION DEVIDER */}
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Footer Alignment : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Footer Alignment : ")}</label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 id="footerAlignment"
                                 name="footerAlignment"
-                                placeholder="Select value..."
+                                placeholder={dt("Select value...")}
                                 options={parameterAlignment}
                                 className="backcolorinput"
                                 value={values?.footerAlignment}
                                 onChange={handleValueChange}
-                            // disabled={actionMode === 'edit' ? true : false}
                             />
                         </div>
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Legend Collapes :
+                            {dt("Is Legend Collapes :")}
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -45,7 +44,7 @@ const FooterDetails = (props) => {
                                     checked={radioValues?.isLegendCollapes === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -59,17 +58,17 @@ const FooterDetails = (props) => {
                                     checked={radioValues?.isLegendCollapes === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Footer Query : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Footer Query : ")}</label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <textarea
                                 className="form-control backcolorinput"
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name="footerQuery"
                                 id='footerQuery'
                                 rows="2"
@@ -83,7 +82,7 @@ const FooterDetails = (props) => {
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Marquee Required :
+                            {dt("Is Marquee Required :")}
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -97,7 +96,7 @@ const FooterDetails = (props) => {
                                     checked={radioValues?.isMarqueeReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -111,14 +110,14 @@ const FooterDetails = (props) => {
                                     checked={radioValues?.isMarqueeReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Legend Border Required :
+                            {dt("Is Legend Border Required :")}
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -132,7 +131,7 @@ const FooterDetails = (props) => {
                                     checked={radioValues?.isLegendBorderReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -146,17 +145,17 @@ const FooterDetails = (props) => {
                                     checked={radioValues?.isLegendBorderReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Footer Text : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Footer Text : ")}</label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <textarea
                                 className="form-control backcolorinput"
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name="footerText"
                                 id='footerText'
                                 rows="2"
@@ -168,37 +167,35 @@ const FooterDetails = (props) => {
                 </div>
             </div>
 
-            <b>Footer by WebService Details:</b>
+            <b>{dt("Footer by WebService Details:")}</b>
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Webservice Reference Name : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Webservice Reference Name : ")}</label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 id="webRefName"
                                 name="webRefName"
-                                placeholder="Select value..."
-                                options={[{value:'1',label:'Localhost'}]}
+                                placeholder={dt("Select value...")}
+                                options={[{ value: '1', label: dt("Localhost") }]}
                                 className="backcolorinput"
                                 value={values?.webRefName}
                                 onChange={handleValueChange}
-                            // disabled={actionMode === 'edit' ? true : false}
                             />
                         </div>
                     </div>
                 </div>
                 {/* right columns */}
                 <div className='col-sm-6'>
-
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Webservice Name : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Webservice Name : ")}</label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
                                 id="webServiceName"
                                 name="webServiceName"
-                                placeholder="Enter "
+                                placeholder={dt("Enter ")}
                                 className="backcolorinput"
                                 onChange={handleValueChange}
                                 value={values?.webServiceName}
@@ -207,6 +204,7 @@ const FooterDetails = (props) => {
                     </div>
                 </div>
             </div>
+
 
         </>
     )

@@ -7,7 +7,7 @@ import IconPicker from '../../commons/IconPicker';
 
 
 const KpiWidget = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values, setValues, errors, tabDrpData, widgetDrpData } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, setValues, errors, tabDrpData, widgetDrpData, dt } = props;
     const [tabIcon, setTabIcon] = useState('');
     const SelectedIconComponent = tabIcon ? FaIcons[tabIcon] : '';
 
@@ -40,14 +40,14 @@ const KpiWidget = (props) => {
 
     return (
         <div>
-            <b><h6 className='header-devider m-0'>KPI Details</h6></b>
+            <b><h6 className='header-devider m-0'>{dt('KPI Details')}</h6></b>
             {/* SECTION DEVIDER graph plugin and color*/}
 
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">KPI TYPE : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt('KPI TYPE')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 className="backcolorinput "
@@ -63,7 +63,7 @@ const KpiWidget = (props) => {
                     </div>
                     {values?.kpiType !== 'circle' &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">KPI Icon Type : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('KPI Icon Type')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputSelect
                                     className="backcolorinput "
@@ -82,7 +82,7 @@ const KpiWidget = (props) => {
                 </div>
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">KPI Border Width (In Pixels) and Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('KPI Border Width (In Pixels) and Color')} : </label>
                         <div className="col-sm-3 ps-0 align-content-center">
                             <InputField
                                 type={'text'}
@@ -108,7 +108,7 @@ const KpiWidget = (props) => {
                     </div>
                     {(values?.kpiIconType !== 'NOICON' && values?.kpiType !== 'circle') &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Tab Icon Image : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Tab Icon Image')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 {values?.kpiIconType === 'IMAGE' &&
                                     <InputSelect
@@ -136,7 +136,7 @@ const KpiWidget = (props) => {
                 <div className='col-sm-6'>
 
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Default Background Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt('Default Background Color')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type={'color'}
@@ -152,7 +152,7 @@ const KpiWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Default hover Background : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Default hover Background')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type={'color'}
@@ -167,7 +167,7 @@ const KpiWidget = (props) => {
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Widget Shadow Required :
+                            {dt('Is Widget Shadow Required')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -181,7 +181,7 @@ const KpiWidget = (props) => {
                                     checked={radioValues?.isWidgetShadowReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -195,7 +195,7 @@ const KpiWidget = (props) => {
                                     checked={radioValues?.isWidgetShadowReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt('No')}
                                 </label>
                             </div>
                         </div>
@@ -205,7 +205,7 @@ const KpiWidget = (props) => {
                 <div className='col-sm-6'>
 
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Default Font Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Default Font Color')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type={'color'}
@@ -220,7 +220,7 @@ const KpiWidget = (props) => {
                     </div>
                     {values?.kpiType !== 'circle' &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Icon Color : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Icon Color')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type={'color'}
@@ -236,7 +236,7 @@ const KpiWidget = (props) => {
                     }
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Download data from KPI :
+                            {dt('Download data from KPI')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -250,7 +250,7 @@ const KpiWidget = (props) => {
                                     checked={radioValues?.isDownloadDataFromKpi === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -264,7 +264,7 @@ const KpiWidget = (props) => {
                                     checked={radioValues?.isDownloadDataFromKpi === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt('No')}
                                 </label>
                             </div>
                         </div>
@@ -277,7 +277,7 @@ const KpiWidget = (props) => {
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">KPI Box click Options : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('KPI Box click Options')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 className="backcolorinput "
@@ -294,7 +294,7 @@ const KpiWidget = (props) => {
                 <div className='col-sm-6'>
                     {values?.kpiBoxClickOptions !== '0' &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">{values?.kpiBoxClickOptions === '1' ? "Tab" : values?.kpiBoxClickOptions === '2' ? 'Widget' : 'Dashboard'} open on click : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{values?.kpiBoxClickOptions === '1' ? dt("Tab open on click") : values?.kpiBoxClickOptions === '2' ? dt('Widget open on click') : dt('Dashboard open on click')}  : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 {values?.kpiBoxClickOptions === '1' &&
                                     <InputSelect
@@ -338,7 +338,7 @@ const KpiWidget = (props) => {
                     {/* //left columns */}
                     <div className='col-sm-6'>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Tab link name : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Tab link name')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type={'text'}
@@ -352,7 +352,7 @@ const KpiWidget = (props) => {
                             </div>
                         </div>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">KPI link color : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('KPI link color')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type={'color'}
@@ -368,7 +368,7 @@ const KpiWidget = (props) => {
                     </div>
                     <div className='col-sm-6'>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Widget link name : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Widget link name')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type={'text'}
@@ -382,7 +382,7 @@ const KpiWidget = (props) => {
                             </div>
                         </div>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">KPI link Font color : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('KPI link Font color')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type={'color'}
@@ -403,7 +403,7 @@ const KpiWidget = (props) => {
             <div className='row role-theme user-form'>
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Kpi Preview : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Kpi Preview')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div
                                 className={`kpi-preview-kpi-box ${classType}`}

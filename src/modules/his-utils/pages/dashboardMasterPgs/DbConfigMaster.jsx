@@ -11,7 +11,7 @@ import { fetchData, fetchUpdateData } from '../../../../utils/HisApiHooks'
 import LogoUploader from '../../components/commons/LogoUploader'
 
 const DbConfigMaster = () => {
-  const { dashboardForDt, getDashboardForDrpData, setSelectedOption, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, singleConfigData, getDashConfigData, clearAllCache } = useContext(HISContext);
+  const { dashboardForDt, getDashboardForDrpData, setSelectedOption, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, singleConfigData, getDashConfigData, clearAllCache, dt } = useContext(HISContext);
 
   const [values, setValues] = useState({
     "configurationFor": '', "serverName": "WEBSPHERE", "jndiServer": '', "jndiServer1": '', "jndiServer2": '', "jndiServer3": '', "driverClass": "", "userName": "", "connectionURL": "", "password": "", "staticReportHead1": "", "staticReportHead2": "", "staticReportHead3": "", "reportHeaderByQuery": "", "logoImageUrl": "", "staticDefaultLimit": "", "logoImageUrl1": "", "logoImageUrl2": "", "logoImageUrl3": ""
@@ -306,7 +306,7 @@ const DbConfigMaster = () => {
       <NavbarHeader />
       <div className='main-master-page'>
         <div className='form-card m-auto p-2'>
-          <b><h6 className='header-devider m-0 ps-1'> Configuration Master</h6></b>
+          <b><h6 className='header-devider m-0 ps-1'>{dt("Configuration Master")}</h6></b>
           {/* <form action=""> */}
           <div className='py-2 px-2'>
 
@@ -315,12 +315,12 @@ const DbConfigMaster = () => {
               {/* //left columns */}
               <div className='col-sm-6'>
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0 required-label">Configuration For : </label>
+                  <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Configuration For")} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputSelect
                       id="configurationFor"
                       name="configurationFor"
-                      placeholder="Select value..."
+                      placeholder={dt("Select value...")}
                       options={dashboardForDt}
                       className="backcolorinput"
                       value={values?.configurationFor}
@@ -333,11 +333,11 @@ const DbConfigMaster = () => {
               {/* right columns */}
               <div className='col-sm-6'>
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0 required-label">Server Name : </label>
+                  <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Server Name")} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputSelect
                       className="backcolorinput"
-                      // placeholder="Select value..."
+                      // placeholder={dt("Select value...")}
                       id="serverName"
                       name="serverName"
                       options={serverName}
@@ -356,7 +356,7 @@ const DbConfigMaster = () => {
               <div className='col-sm-6'>
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">
-                    Is DB Connection String Required:
+                    {dt("Is DB Connection String Required")}:
                   </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <div className="form-check form-check-inline">
@@ -370,7 +370,7 @@ const DbConfigMaster = () => {
                         checked={isDbConnReq === "1"}
                       />
                       <label className="form-check-label" htmlFor="dbYes">
-                        Yes
+                        {dt("Yes")}
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
@@ -384,7 +384,7 @@ const DbConfigMaster = () => {
                         checked={isDbConnReq === '0'}
                       />
                       <label className="form-check-label" htmlFor="dbNo">
-                        No
+                        {dt("No")}
                       </label>
                     </div>
                   </div>
@@ -402,12 +402,12 @@ const DbConfigMaster = () => {
                 {/* //left columns */}
                 {/* <div className='col-sm-6'> */}
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0 required-label align-content-center">JNDI for Primary Server : </label>
+                  <label className="col-sm-5 col-form-label pe-0 required-label align-content-center">{dt("JNDI for Primary Server")} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputField
                       type="text"
                       className="backcolorinput"
-                      placeholder="For Saving Dashboard Master,Running Data service"
+                      placeholder={dt("For Saving Dashboard Master,Running Data service")}
                       name='jndiServer'
                       id='jndiServer'
                       value={values?.jndiServer}
@@ -418,12 +418,12 @@ const DbConfigMaster = () => {
                   </div>
                 </div>
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label pe-0 required-label align-content-center">JNDI for Secondary Server 1(Reporting Server) : </label>
+                  <label className="col-sm-5 col-form-label pe-0 required-label align-content-center">{dt("JNDI for Secondary Server 1(Reporting Server)")} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputField
                       type="text"
                       className="backcolorinput"
-                      placeholder="For Running Dashboard"
+                      placeholder={dt("For Running Dashboard")}
                       name='jndiServer1'
                       id='jndiServer1'
                       value={values?.jndiServer1}
@@ -437,12 +437,12 @@ const DbConfigMaster = () => {
                 {/* right columns */}
                 {/* <div className='col-sm-6'> */}
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label fix-label pe-0 align-content-center">JNDI for Secondary Server 2(Reporting Server) : </label>
+                  <label className="col-sm-5 col-form-label fix-label pe-0 align-content-center">{dt("JNDI for Secondary Server 2(Reporting Server)")} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputField
                       type="text"
                       className="backcolorinput"
-                      placeholder="For Running Dashboard"
+                      placeholder={dt("For Running Dashboard")}
                       name='jndiServer2'
                       id='jndiServer2'
                       value={values?.jndiServer2}
@@ -451,12 +451,12 @@ const DbConfigMaster = () => {
                   </div>
                 </div>
                 <div className="form-group row">
-                  <label className="col-sm-5 col-form-label fix-label pe-0 align-content-center">JNDI for Secondary Server 3(Reporting Server) : </label>
+                  <label className="col-sm-5 col-form-label fix-label pe-0 align-content-center">{dt("JNDI for Secondary Server 3(Reporting Server)")} : </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <InputField
                       type="text"
                       className="backcolorinput"
-                      placeholder="For Running Dashboard"
+                      placeholder={dt("For Running Dashboard")}
                       name='jndiServer3'
                       id='jndiServer3'
                       value={values?.jndiServer3}
@@ -474,12 +474,12 @@ const DbConfigMaster = () => {
                 {/* //left columns */}
                 <div className='col-sm-6'>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label pe-0 required-label">Driver Class Name : </label>
+                    <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Driver Class Name")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputField
                         type="text"
                         className="backcolorinput"
-                        placeholder="Enter value..."
+                        placeholder={dt("Enter value...")}
                         name='driverClass'
                         id='driverClass'
                         value={values?.driverClass}
@@ -489,12 +489,12 @@ const DbConfigMaster = () => {
                     </div>
                   </div>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label pe-0 required-label">UserName  : </label>
+                    <label className="col-sm-5 col-form-label pe-0 required-label">{dt("UserName")}  : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputField
                         type="text"
                         className="backcolorinput"
-                        placeholder="Enter value..."
+                        placeholder={dt("Enter value...")}
                         name='userName'
                         id='userName'
                         value={values?.userName}
@@ -507,12 +507,12 @@ const DbConfigMaster = () => {
                 {/* right columns */}
                 <div className='col-sm-6'>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Connection URL : </label>
+                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">{dt("Connection URL")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputField
                         type="text"
                         className="backcolorinput"
-                        placeholder="Enter value..."
+                        placeholder={dt("Enter value...")}
                         name='connectionURL'
                         id='connectionURL'
                         value={values?.connectionURL}
@@ -522,12 +522,12 @@ const DbConfigMaster = () => {
                     </div>
                   </div>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Password : </label>
+                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">{dt("Password")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputField
                         type="password"
                         className="backcolorinput"
-                        placeholder="Enter value..."
+                        placeholder={dt("Enter value...")}
                         name='password'
                         id='password'
                         value={values?.password}
@@ -546,7 +546,7 @@ const DbConfigMaster = () => {
               <div className='col-sm-6'>
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0 required-label">
-                    Is Dashboard Configuration Cached :
+                    {dt("Is Dashboard Configuration Cached")} :
                   </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <div className="form-check form-check-inline">
@@ -560,7 +560,7 @@ const DbConfigMaster = () => {
                         checked={isDashboardCached === 'Yes'}
                       />
                       <label className="form-check-label" htmlFor="dbYes">
-                        Yes
+                        {dt("Yes")}
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
@@ -574,7 +574,7 @@ const DbConfigMaster = () => {
                         checked={isDashboardCached === 'No'}
                       />
                       <label className="form-check-label" htmlFor="dbNo">
-                        No
+                        {dt("No")}
                       </label>
                     </div>
                     {errors?.isDashboardCachedErr &&
@@ -587,7 +587,7 @@ const DbConfigMaster = () => {
 
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">
-                    Is Access Log Required :
+                    {dt("Is Access Log Required")} :
                   </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <div className="form-check form-check-inline">
@@ -601,7 +601,7 @@ const DbConfigMaster = () => {
                         checked={isAccessReq === 'Yes'}
                       />
                       <label className="form-check-label" htmlFor="dbYes">
-                        Yes
+                        {dt("Yes")}
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
@@ -615,7 +615,7 @@ const DbConfigMaster = () => {
                         checked={isAccessReq === 'No'}
                       />
                       <label className="form-check-label" htmlFor="dbNo">
-                        No
+                        {dt("No")}
                       </label>
                     </div>
                   </div>
@@ -625,7 +625,7 @@ const DbConfigMaster = () => {
               <div className='col-sm-6'>
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">
-                    Is Console Log Required :
+                    {dt("Is Console Log Required")} :
                   </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <div className="form-check form-check-inline">
@@ -639,7 +639,7 @@ const DbConfigMaster = () => {
                         checked={isConsoleReq === 'Yes'}
                       />
                       <label className="form-check-label" htmlFor="dbYes">
-                        Yes
+                        {dt("Yes")}
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
@@ -653,7 +653,7 @@ const DbConfigMaster = () => {
                         checked={isConsoleReq === 'No'}
                       />
                       <label className="form-check-label" htmlFor="dbNo">
-                        No
+                        {dt("No")}
                       </label>
                     </div>
                   </div>
@@ -661,7 +661,7 @@ const DbConfigMaster = () => {
 
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">
-                    Is Error Log Required :
+                    {dt("Is Error Log Required")} :
                   </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <div className="form-check form-check-inline">
@@ -675,7 +675,7 @@ const DbConfigMaster = () => {
                         checked={isErrorReq === 'Yes'}
                       />
                       <label className="form-check-label" htmlFor="dbYes">
-                        Yes
+                        {dt("Yes")}
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
@@ -689,7 +689,7 @@ const DbConfigMaster = () => {
                         checked={isErrorReq === 'No'}
                       />
                       <label className="form-check-label" htmlFor="dbNo">
-                        No
+                        {dt("No")}
                       </label>
                     </div>
                   </div>
@@ -697,19 +697,19 @@ const DbConfigMaster = () => {
               </div>
             </div>
 
-            <b><h6 className='header-devider my-1 ps-1'>Header Details</h6></b>
+            <b><h6 className='header-devider my-1 ps-1'>{dt("Header Details")}</h6></b>
 
             {/* SECTION DEVIDER static header and report header*/}
             <div iv className='role-theme user-form db-connection-grid' style={{ paddingBottom: "1px" }}>
               {/* //left columns */}
               {/* <div className='col-sm-6'> */}
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0 required-label">Static Report Header1 : </label>
+                <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Static Report Header1")} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="text"
                     className="backcolorinput"
-                    placeholder="Enter value..."
+                    placeholder={dt("Enter value...")}
                     name='staticReportHead1'
                     id='staticReportHead1'
                     value={values?.staticReportHead1}
@@ -719,12 +719,12 @@ const DbConfigMaster = () => {
                 </div>
               </div>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0">Static Report Header2  : </label>
+                <label className="col-sm-5 col-form-label pe-0">{dt("Static Report Header2")}  : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="text"
                     className="backcolorinput"
-                    placeholder="Enter value..."
+                    placeholder={dt("Enter value...")}
                     name='staticReportHead2'
                     id='staticReportHead2'
                     value={values?.staticReportHead2}
@@ -734,12 +734,12 @@ const DbConfigMaster = () => {
               </div>
 
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label fix-label pe-0">Static Report Header3 : </label>
+                <label className="col-sm-5 col-form-label fix-label pe-0">{dt("Static Report Header3")} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="text"
                     className="backcolorinput"
-                    placeholder="Enter value..."
+                    placeholder={dt("Enter value...")}
                     name='staticReportHead3'
                     id='staticReportHead3'
                     value={values?.staticReportHead3}
@@ -749,7 +749,7 @@ const DbConfigMaster = () => {
               </div>
               <div className="form-group row">
                 <label className="col-sm-5 col-form-label pe-0">
-                  Heading Alignment:
+                  {dt("Heading Alignment")}:
                 </label>
                 <div className="col-sm-7 ps-0 align-content-center">
 
@@ -764,7 +764,7 @@ const DbConfigMaster = () => {
                       checked={headingAlignment === "Left"}
                     />
                     <label className="form-check-label" htmlFor="dbNo">
-                      Left
+                      {dt("Left")}
                     </label>
                   </div>
                   <div className="form-check form-check-inline">
@@ -778,7 +778,7 @@ const DbConfigMaster = () => {
                       checked={headingAlignment === "right"}
                     />
                     <label className="form-check-label" htmlFor="dbNo">
-                      Right
+                      {dt("Right")}
                     </label>
                   </div>
                   <div className="form-check form-check-inline">
@@ -792,7 +792,7 @@ const DbConfigMaster = () => {
                       checked={headingAlignment === "Center"}
                     />
                     <label className="form-check-label" htmlFor="dbYes">
-                      Center
+                      {dt("Center")}
                     </label>
                   </div>
                 </div>
@@ -805,7 +805,7 @@ const DbConfigMaster = () => {
               <div className='col-sm-6'>
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">
-                    Is Header By Query Required:
+                    {dt("Is Header By Query Required")}:
                   </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <div className="form-check form-check-inline">
@@ -819,7 +819,7 @@ const DbConfigMaster = () => {
                         checked={isHeadByQueryReq === 'Yes'}
                       />
                       <label className="form-check-label" htmlFor="dbYes">
-                        Yes
+                        {dt("Yes")}
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
@@ -833,7 +833,7 @@ const DbConfigMaster = () => {
                         checked={isHeadByQueryReq === 'No'}
                       />
                       <label className="form-check-label" htmlFor="dbNo">
-                        No
+                        {dt("No")}
                       </label>
                     </div>
                   </div>
@@ -843,11 +843,11 @@ const DbConfigMaster = () => {
               <div className='col-sm-6'>
                 {isHeadByQueryReq === "Yes" &&
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Report Header By Query : </label>
+                    <label className="col-sm-5 col-form-label fix-label pe-0 required-label">{dt("Report Header By Query")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <textarea
                         className="form-control backcolorinput"
-                        placeholder="Enter value..."
+                        placeholder={dt("Enter value...")}
                         rows="1"
                         name='reportHeaderByQuery'
                         id='reportHeaderByQuery'
@@ -865,14 +865,14 @@ const DbConfigMaster = () => {
               </div>
             </div>
 
-            <b><h6 className='header-devider my-1 ps-1'>Logo Details -  <span className='required-label'><i>click on icon to uplaod logos</i></span></h6></b>
+            <b><h6 className='header-devider my-1 ps-1'>{dt("Logo Details")} -  <i><span className='required-label'>{dt("click on icon to uplaod logos")}</span></i></h6></b>
             {/* SECTION DEVIDER logo details*/}
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
               {/* //left columns */}
               <div className='col-sm-6'>
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">
-                    Is Logo Required:
+                    {dt("Is Logo Required")}:
                   </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <div className="form-check form-check-inline">
@@ -886,7 +886,7 @@ const DbConfigMaster = () => {
                         checked={isLogoReq === 'Yes'}
                       />
                       <label className="form-check-label" htmlFor="dbYes">
-                        Yes
+                        {dt("Yes")}
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
@@ -900,7 +900,7 @@ const DbConfigMaster = () => {
                         checked={isLogoReq === 'No'}
                       />
                       <label className="form-check-label" htmlFor="dbNo">
-                        No
+                        {dt("No")}
                       </label>
                     </div>
                   </div>
@@ -911,7 +911,7 @@ const DbConfigMaster = () => {
                 <div className='col-sm-6'>
                   <div className="form-group row">
                     <label className="col-sm-5 col-form-label pe-0">
-                      Logo Counts:
+                      {dt("Logo Counts")}:
                     </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <div className="form-check form-check-inline">
@@ -968,7 +968,7 @@ const DbConfigMaster = () => {
                 <div className='col-sm-6'>
                   {(logoCounts === "1" || logoCounts === "2" || logoCounts === "3") &&
                     <div className="form-group row">
-                      <label className="col-sm-5 col-form-label pe-0">Logo 1 File : </label>
+                      <label className="col-sm-5 col-form-label pe-0">{dt("Logo 1 File")} : </label>
                       <div className="col-sm-7 ps-0 align-content-center">
                         <LogoUploader
                           name="logoImageUrl1"
@@ -980,7 +980,7 @@ const DbConfigMaster = () => {
                   }
                   {(logoCounts === "2" || logoCounts === "3") &&
                     <div className="form-group row">
-                      <label className="col-sm-5 col-form-label pe-0">Logo 2 File : </label>
+                      <label className="col-sm-5 col-form-label pe-0">{dt("Logo 2 File")} : </label>
                       <div className="col-sm-7 ps-0 align-content-center">
                         <LogoUploader
                           name="logoImageUrl2"
@@ -992,7 +992,7 @@ const DbConfigMaster = () => {
                   }
                   {logoCounts === "3" &&
                     <div className="form-group row">
-                      <label className="col-sm-5 col-form-label pe-0">Logo 3 File : </label>
+                      <label className="col-sm-5 col-form-label pe-0">{dt("Logo 3 File")} : </label>
                       <div className="col-sm-7 ps-0 align-content-center">
                         <LogoUploader
                           name='logoImageUrl3'
@@ -1009,7 +1009,7 @@ const DbConfigMaster = () => {
                   {(logoCounts === "1" || logoCounts === "2" || logoCounts === "3") &&
                     <div className="form-group row">
                       <label className="col-sm-5 col-form-label pe-0">
-                        Logo 1 Position:
+                        {dt("Logo 1 Position")}:
                       </label>
                       <div className="col-sm-7 ps-0 align-content-center">
                         <div className="form-check form-check-inline">
@@ -1023,7 +1023,7 @@ const DbConfigMaster = () => {
                             checked={logoPosition?.logo1Position === "left"}
                           />
                           <label className="form-check-label" htmlFor="dbNo">
-                            Left
+                            {dt("Left")}
                           </label>
                         </div>
 
@@ -1038,7 +1038,7 @@ const DbConfigMaster = () => {
                             checked={logoPosition?.logo1Position === "top"}
                           />
                           <label className="form-check-label" htmlFor="dbYes">
-                            Center
+                            {dt("Center")}
                           </label>
                         </div>
 
@@ -1053,7 +1053,7 @@ const DbConfigMaster = () => {
                             checked={logoPosition?.logo1Position === "right"}
                           />
                           <label className="form-check-label" htmlFor="dbNo">
-                            Right
+                            {dt("Right")}
                           </label>
                         </div>
                       </div>
@@ -1062,7 +1062,7 @@ const DbConfigMaster = () => {
                   {(logoCounts === "2" || logoCounts === "3") &&
                     <div className="form-group row">
                       <label className="col-sm-5 col-form-label pe-0">
-                        Logo 2 Position:
+                        {dt("Logo 2 Position")}:
                       </label>
                       <div className="col-sm-7 ps-0 align-content-center">
                         <div className="form-check form-check-inline">
@@ -1076,7 +1076,7 @@ const DbConfigMaster = () => {
                             checked={logoPosition?.logo2Position === "left"}
                           />
                           <label className="form-check-label" htmlFor="dbNo">
-                            Left
+                            {dt("Left")}
                           </label>
                         </div>
                         <div className="form-check form-check-inline">
@@ -1090,7 +1090,7 @@ const DbConfigMaster = () => {
                             checked={logoPosition?.logo2Position === "top"}
                           />
                           <label className="form-check-label" htmlFor="dbYes">
-                            Center
+                            {dt("Center")}
                           </label>
                         </div>
 
@@ -1105,7 +1105,7 @@ const DbConfigMaster = () => {
                             checked={logoPosition?.logo2Position === "right"}
                           />
                           <label className="form-check-label" htmlFor="dbNo">
-                            Right
+                            {dt("Right")}
                           </label>
                         </div>
                       </div>
@@ -1114,7 +1114,7 @@ const DbConfigMaster = () => {
                   {logoCounts === "3" &&
                     <div className="form-group row">
                       <label className="col-sm-5 col-form-label pe-0">
-                        Logo 3 Position:
+                        {dt("Logo 3 Position")}:
                       </label>
                       <div className="col-sm-7 ps-0 align-content-center">
 
@@ -1129,7 +1129,7 @@ const DbConfigMaster = () => {
                             checked={logoPosition?.logo3Position === "left"}
                           />
                           <label className="form-check-label" htmlFor="dbNo">
-                            Left
+                            {dt("Left")}
                           </label>
                         </div>
 
@@ -1144,7 +1144,7 @@ const DbConfigMaster = () => {
                             checked={logoPosition?.logo3Position === "top"}
                           />
                           <label className="form-check-label" htmlFor="dbYes">
-                            Center
+                            {dt("Center")}
                           </label>
                         </div>
 
@@ -1159,7 +1159,7 @@ const DbConfigMaster = () => {
                             checked={logoPosition?.logo3Position === "right"}
                           />
                           <label className="form-check-label" htmlFor="dbNo">
-                            Right
+                            {dt("Right")}
                           </label>
                         </div>
                       </div>
@@ -1175,7 +1175,7 @@ const DbConfigMaster = () => {
               <div className='col-sm-6'>
                 <div className="form-group row">
                   <label className="col-sm-5 col-form-label pe-0">
-                    "Limit Records" Feature Required:
+                    {dt("\"Limit Records\" Feature Required")}:
                   </label>
                   <div className="col-sm-7 ps-0 align-content-center">
                     <div className="form-check form-check-inline">
@@ -1189,7 +1189,7 @@ const DbConfigMaster = () => {
                         checked={isLimitRecReq === 'Yes'}
                       />
                       <label className="form-check-label" htmlFor="dbYes">
-                        Yes
+                        {dt("Yes")}
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
@@ -1203,7 +1203,7 @@ const DbConfigMaster = () => {
                         checked={isLimitRecReq === 'No'}
                       />
                       <label className="form-check-label" htmlFor="dbNo">
-                        No
+                        {dt("No")}
                       </label>
                     </div>
                   </div>
@@ -1213,12 +1213,12 @@ const DbConfigMaster = () => {
               {isLimitRecReq === 'Yes' &&
                 <div className='col-sm-6'>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label pe-0">Static Set Default Limit : </label>
+                    <label className="col-sm-5 col-form-label pe-0">{dt("Static Set Default Limit")} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputField
                         type="text"
                         className="backcolorinput"
-                        placeholder="Enter value..."
+                        placeholder={dt("Enter value...")}
                         name='staticDefaultLimit'
                         id='staticDefaultLimit'
                         value={values?.staticDefaultLimit}
@@ -1234,12 +1234,12 @@ const DbConfigMaster = () => {
               <table className="table table-borderless text-center mb-0">
                 <thead className="text-white">
                   <tr className='header-devider m-0'>
-                    <th style={{ width: "15%" }}>Service Reference Name</th>
-                    <th style={{ width: "25%" }}>Server URL</th>
-                    <th style={{ width: "15%" }}>Default Method</th>
-                    <th style={{ width: "15%" }}>Service User Name</th>
-                    <th style={{ width: "15%" }}>Service Password</th>
-                    <th style={{ width: "15%" }}>Actions</th>
+                    <th style={{ width: "15%" }}>{dt("Service Reference Name")}</th>
+                    <th style={{ width: "25%" }}>{dt("Server URL")}</th>
+                    <th style={{ width: "15%" }}>{dt("Default Method")}</th>
+                    <th style={{ width: "15%" }}>{dt("Service User Name")}</th>
+                    <th style={{ width: "15%" }}>{dt("Service Password")}</th>
+                    <th style={{ width: "15%" }}>{dt("Actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1298,9 +1298,9 @@ const DbConfigMaster = () => {
                       />
                     </td>
                     <td className='px-0 action-buttons'>
-                      <button className='btn btn-sm me-1 py-0 px-0' style={{ background: "#34495e", color: "white" }} onClick={() => handleAddRow()}><FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size='sm' />{isEditing !== null ? "Modify" : "Add"}</button>
+                      <button className='btn btn-sm me-1 py-0 px-0' style={{ background: "#34495e", color: "white" }} onClick={() => handleAddRow()}><FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size='sm' />{isEditing !== null ? dt("Modify") : dt("Add")}</button>
 
-                      <button className='btn btn-sm ms-1 py-0 px-0' style={{ background: "#34495e", color: "white" }} onClick={() => clearRow()}><FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon" size='sm' />Clear</button>
+                      <button className='btn btn-sm ms-1 py-0 px-0' style={{ background: "#34495e", color: "white" }} onClick={() => clearRow()}><FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon" size='sm' />{dt("Clear")}</button>
                     </td>
                   </tr>
                   {rows?.map((row, index) => (
@@ -1334,13 +1334,13 @@ const DbConfigMaster = () => {
           </div>
           {/* </form> */}
           <div className='text-center py-1 rounded-2 configuration-buttons'>
-            <button className='btn btn-sm me-1' onClick={() => handleSaveConfig()}><FontAwesomeIcon icon={faFile} className="dropdown-gear-icon me-1" />Save</button>
-            <button className='btn btn-sm ms-1 me-1' onClick={() => checkDatabaseConnection()}><FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />Test DB Connection</button>
-            <button className='btn btn-sm ms-1 me-1' onClick={reset}><FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-1" />Reset</button>
-            <button className='btn btn-sm ms-1 me-1' onClick={getDashConfigData}><FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />Refresh Data</button>
+            <button className='btn btn-sm me-1' onClick={() => handleSaveConfig()}><FontAwesomeIcon icon={faFile} className="dropdown-gear-icon me-1" />{dt("Save")}</button>
+            <button className='btn btn-sm ms-1 me-1' onClick={() => checkDatabaseConnection()}><FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />{dt("Test DB Connection")}</button>
+            <button className='btn btn-sm ms-1 me-1' onClick={reset}><FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-1" />{dt("Reset")}</button>
+            <button className='btn btn-sm ms-1 me-1' onClick={getDashConfigData}><FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />{dt("Refresh Data")}</button>
             <button className='btn btn-sm ms-1' onClick={clearAllCache}>
               <FontAwesomeIcon icon={faDatabase} className="dropdown-gear-icon me-1" />
-              Clear All Cached Data
+              {dt("Clear All Cached Data")}
             </button>
           </div>
         </div>

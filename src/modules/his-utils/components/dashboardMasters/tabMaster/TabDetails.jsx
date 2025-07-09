@@ -3,18 +3,19 @@ import InputField from '../../commons/InputField'
 
 const TabDetails = (props) => {
 
-    const { handleValueChange, handleRadioChange, radioValues, values, errors } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, errors, dt } = props;
 
     return (
         <>
-            <b><h6 className='header-devider my-1'>Tab Details Configuration</h6></b>
+            <b><h6 className='header-devider my-1'>{dt("Tab Details Configuration")}</h6></b>
+
             {/* SECTION DEVIDER tab name,parent,ellipse,css,icon */}
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0 required-label">
-                            Show Tab Name In Detail Title :
+                            {dt("Show Tab Name In Detail Title")} :
                         </label>
                         <di v className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -28,7 +29,7 @@ const TabDetails = (props) => {
                                     checked={radioValues?.showTabNameInDetail === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -42,23 +43,24 @@ const TabDetails = (props) => {
                                     checked={radioValues?.showTabNameInDetail === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                             {errors?.showTabNameInDetailErr &&
                                 <div className="required-input">
-                                    {errors?.showTabNameInDetailErr}
+                                    {dt(errors?.showTabNameInDetailErr)}
                                 </div>
                             }
                         </di>
                     </div>
+
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Tab Name Font Weight : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Tab Name Font Weight")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type="text"
                                 className="backcolorinput"
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='tabNameFontWeight'
                                 id="tabNameFontWeight"
                                 onChange={handleValueChange}
@@ -66,18 +68,19 @@ const TabDetails = (props) => {
                             />
                             {errors?.tabNameFontWeightErr &&
                                 <div className="required-input">
-                                    {errors?.tabNameFontWeightErr}
+                                    {dt(errors?.tabNameFontWeightErr)}
                                 </div>
                             }
                         </div>
                     </div>
+
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label pe-0">Tab Detail Background color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Tab Detail Background color")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type="color"
                                 className="backcolorinput"
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='tabDetailBgColor'
                                 id="tabDetailBgColor"
                                 onChange={handleValueChange}
@@ -85,13 +88,14 @@ const TabDetails = (props) => {
                             />
                         </div>
                     </div>
+
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label pe-0">Tab Top Padding (in pixel) : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Tab Top Padding (in pixel)")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type="text"
                                 className="backcolorinput"
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='tabTopPadding'
                                 id="tabTopPadding"
                                 onChange={handleValueChange}
@@ -99,13 +103,14 @@ const TabDetails = (props) => {
                             />
                         </div>
                     </div>
+
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label pe-0">Bottom Margin (For Tab Heading) : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Bottom Margin (For Tab Heading)")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type="text"
                                 className="backcolorinput"
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='buttonMarginHeading'
                                 id="buttonMarginHeading"
                                 onChange={handleValueChange}
@@ -114,15 +119,16 @@ const TabDetails = (props) => {
                         </div>
                     </div>
                 </div>
+
                 {/* right columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Tab Name Font Size (in percentage) : </label>
+                        <label className="col-sm-5 col-form-label fix-label pe-0 required-label">{dt("Tab Name Font Size (in percentage)")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type="text"
                                 className="backcolorinput"
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='tabNameFontSize'
                                 id="tabNameFontSize"
                                 onChange={handleValueChange}
@@ -130,19 +136,19 @@ const TabDetails = (props) => {
                             />
                             {errors?.tabNameFontSizeErr &&
                                 <div className="required-input">
-                                    {errors?.tabNameFontSizeErr}
+                                    {dt(errors?.tabNameFontSizeErr)}
                                 </div>
                             }
                         </div>
                     </div>
 
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Tab Name Text Decoration : </label>
+                        <label className="col-sm-5 col-form-label fix-label pe-0 required-label">{dt("Tab Name Text Decoration")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type="text"
                                 className="backcolorinput"
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='tabNameTxtDecorat'
                                 id="tabNameTxtDecorat"
                                 onChange={handleValueChange}
@@ -150,18 +156,19 @@ const TabDetails = (props) => {
                             />
                             {errors?.tabNameTxtDecoratErr &&
                                 <div className="required-input">
-                                    {errors?.tabNameTxtDecoratErr}
+                                    {dt(errors?.tabNameTxtDecoratErr)}
                                 </div>
                             }
                         </div>
                     </div>
+
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Tab Detail Title Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Tab Detail Title Color")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type="color"
                                 className="backcolorinput"
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='tabDetailTitleColor'
                                 id="tabDetailTitleColor"
                                 onChange={handleValueChange}
@@ -172,7 +179,7 @@ const TabDetails = (props) => {
 
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Widget Maximize/Minimize :
+                            {dt("Widget Maximize/Minimize")} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -186,7 +193,7 @@ const TabDetails = (props) => {
                                     checked={radioValues?.widgetMaxMin === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -200,14 +207,14 @@ const TabDetails = (props) => {
                                     checked={radioValues?.widgetMaxMin === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
+
         </>
     )
 }
