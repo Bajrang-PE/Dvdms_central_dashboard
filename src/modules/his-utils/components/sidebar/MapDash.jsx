@@ -14,7 +14,7 @@ import Parameters from "./Parameters";
 
 
 const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, setLevelData }) => {
-    const { theme, setSearchScope, singleConfigData, paramsValues, setLoading, isSearchQuery, setIsSearchQuery, presentWidgets, searchScope } = useContext(HISContext);
+    const { theme, setSearchScope, singleConfigData, paramsValues, setLoading, isSearchQuery, setIsSearchQuery, presentWidgets, searchScope,dt } = useContext(HISContext);
     const [mapData, setMapData] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false)
     const [stateName, setStateName] = useState([]);
@@ -22,10 +22,8 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
     const [tableData, setTableData] = useState([]);
     const [currentLevel, setCurrentLevel] = useState(0);
 
-
     const [queryParams] = useSearchParams();
     const isPrev = queryParams.get('isPreview');
-
 
     const isChildPresent = widgetData?.children && widgetData?.children?.length > 0;
     const childId = widgetData?.children?.length > 0 ? widgetData?.children[0] : '';
@@ -280,7 +278,7 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
 
 
     if (!isLoaded) {
-        return <div>Loading Chart...</div>
+        return <div>{dt('Loading Chart')}...</div>
     }
 
 
@@ -333,30 +331,6 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
         }
     };
 
-
-    const stateMapData = {
-        "in-rj": {
-            name: "Rajasthan",
-            mapData: transformMapData(RajasthanMap),
-            data: [
-                ["churu", 80],
-                ["jhunjhunu", 60],
-                ["jaipur", 90],
-                ["udaipur", 50],
-                ["jhalawar", 70],
-            ],
-        },
-        "in-up": {
-            name: "Uttar Pradesh",
-            mapData: transformMapData(UpMap),
-            data: [
-                ["prayagraj", 80],
-                ["varanasi", 70],
-                ["gautam-buddha-nagar", 40],
-                ["gorakhpur", 50],
-            ]
-        }
-    };
 
     const onDrillDown = (pkCol, name) => {
         if (isChildPresent && childId) {
@@ -412,7 +386,7 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
 
                             }, 1000);
                         } else {
-                            ToastAlert('Child Not Found!')
+                            ToastAlert(dt('Child Not Found!'))
                         }
                     }
                 },
@@ -565,7 +539,7 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
         <div className={`tabular-box ${theme === 'Dark' ? 'dark-theme' : ''} tabular-box-border ${borderReq === 'No' ? '' : 'tabular-box-border'}`} style={{ border: `1px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
             <div className="row px-2 py-2 border-bottom" style={{ textAlign: headingAlign, color: widgetHeadingColor }} >
                 {isWidgetNameVisible === "Yes" &&
-                    <div className={` ${isDirectDownloadRequired === 'Yes' ? 'col-md-7' : 'col-md-12'} fw-medium fs-6`} >{rptDisplayName}</div>
+                    <div className={` ${isDirectDownloadRequired === 'Yes' ? 'col-md-7' : 'col-md-12'} fw-medium fs-6`} >{dt(rptDisplayName)}</div>
                 }
                 <div className="col-md-5">
                     {currentLevel !== 0 && (
@@ -606,7 +580,7 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
             )}
 
             <div className="px-2 py-2" style={{ marginTop: `${widgetTopMargin}px` }}>
-                <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query : {rptId}</h4>
+                <h4 style={{ fontWeight: "500", fontSize: "20px" }}>{dt('Query')} : {rptId}</h4>
                 {(modeOfQuery === 'Query' && isPrev == 1) &&
                     <span>{mainQuery}</span>
                 }
@@ -639,7 +613,7 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
                         recordsPerPageOptions={[10, 20, 50]}
                         // isTableHeadingRequired={!headingReq}
                         theme={theme}
-                        noDataComponent={<div className="text-danger fw-bold fs-13">{"There are no records to display"}</div>}
+                        noDataComponent={<div className="text-danger fw-bold fs-13">{dt("There are no records to display")}</div>}
                     />
                 </div>
 

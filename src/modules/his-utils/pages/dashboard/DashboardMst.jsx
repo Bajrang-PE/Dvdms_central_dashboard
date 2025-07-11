@@ -76,6 +76,13 @@ const DashboardMst = () => {
         setParamsValues(values);
     }, []);
 
+      useEffect(() => {
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+        }, 1000);
+    }, [])
+
 
     return (
         <>
@@ -99,6 +106,7 @@ const DashboardMst = () => {
                                 activeTab={activeTab}
                                 dashboardData={mainDashData}
                                 setPrevKpiTab={setPrevKpiTab}
+                                dt={dt}
                             />
                         ) : (
                             <DashSidebar
@@ -107,6 +115,7 @@ const DashboardMst = () => {
                                 activeTab={activeTab}
                                 dashboardData={mainDashData}
                                 setPrevKpiTab={setPrevKpiTab}
+                                dt={dt}
                             />
                         )}
                     </Suspense>

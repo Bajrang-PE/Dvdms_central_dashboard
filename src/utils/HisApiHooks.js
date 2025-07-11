@@ -13,7 +13,7 @@ const BaseUrl = 'http://10.226.17.6:8024';  //BG
 // const BaseUrl = 'https://10.226.28.17:8024/';  //se
 
 const apiHis = axios.create({
-  baseURL: BaseUrl
+    baseURL: BaseUrl
 });
 
 //axios.defaults.baseURL = BaseUrl;

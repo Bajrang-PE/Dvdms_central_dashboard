@@ -9,7 +9,7 @@ import { useSearchParams } from "react-router-dom";
 import { fetchPostData } from "../../../../utils/HisApiHooks";
 
 const Parameters = ({ params, scope, widgetId = null }) => {
-    const { parameterData, getAllParameterData, theme, setParamsValues, paramsValuesPro, setParamsValuesPro, setIsSearchQuery, activeTab, isSearchQuery, searchScope, setSearchScope } = useContext(HISContext);
+    const { parameterData, getAllParameterData, theme, setParamsValues, paramsValuesPro, setParamsValuesPro, setIsSearchQuery, activeTab, isSearchQuery, searchScope, setSearchScope,dt } = useContext(HISContext);
     const [presentParams, setPresentParams] = useState([]);
     const [selectedValues, setSelectedValues] = useState({});
     const [dropdownData, setDropdownData] = useState({});
@@ -369,7 +369,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                 <label
                     className={`col-${parameterLabelWidth || 6} col-form-label text-${labelAlignment?.toLowerCase() || 'left'} ${isMandatory === "Yes" ? 'required-label' : ''}`}
                 >
-                    {parameterDisplayName} :
+                    {dt(parameterDisplayName)} :
                 </label>
 
                 <div className={`col-${parameterControlWidth || 6} text-${controlAlignment?.toLowerCase() || 'left'}`}>

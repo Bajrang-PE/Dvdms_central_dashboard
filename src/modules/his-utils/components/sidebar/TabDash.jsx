@@ -9,7 +9,7 @@ const PdfDownload = lazy(() => import('../commons/PdfDownload'));
 const Parameters = lazy(() => import('./Parameters'));
 
 const TabDash = React.memo(() => {
-    const { allWidgetData, setLoading, loading, activeTab, setParamsValues, presentWidgets, setPresentWidgets, prevKpiTab, setActiveTab, setPrevKpiTab, setParamsValuesPro } = useContext(HISContext);
+    const { allWidgetData, setLoading, loading, activeTab, setParamsValues, presentWidgets, setPresentWidgets, prevKpiTab, setActiveTab, setPrevKpiTab, setParamsValuesPro, dt } = useContext(HISContext);
     const [presentTabs, setPresentTabs] = useState([]);
     const [widWithoutLinked, setWidWithoutLinked] = useState([]);
 
@@ -122,7 +122,7 @@ const TabDash = React.memo(() => {
                         <div className=''>
                             <button className='btn btn-sm me-1 back-button-kpi' onClick={onPrevClick}>
                                 <FontAwesomeIcon icon={faArrowLeft}
-                                    className="me-1" />Back</button>
+                                    className="me-1" />{dt('Back')}</button>
                         </div>
                     }
                     {(activeTab?.jsonData?.docJsonString && JSON.parse(activeTab?.jsonData?.docJsonString)?.length > 0) && (
@@ -132,7 +132,7 @@ const TabDash = React.memo(() => {
                                 <Suspense
                                     fallback={
                                         <div className="pt-3 text-center">
-                                            Loading...
+                                            {dt('Loading')}...
                                         </div>
                                     }
                                 >
@@ -142,14 +142,14 @@ const TabDash = React.memo(() => {
                         </>
                     )}
 
-                    <h4 className='text-center'>{activeTab?.jsonData?.dashboardName}</h4>
+                    <h4 className='text-center'>{dt(activeTab?.jsonData?.dashboardName)}</h4>
 
                     {activeTab?.jsonData?.allParameters && (
                         <div className='parameter-box'>
                             <Suspense
                                 fallback={
                                     <div className="pt-3 text-center">
-                                        Loading...
+                                       {dt('Loading')}...
                                     </div>
                                 }
                             >
@@ -166,7 +166,7 @@ const TabDash = React.memo(() => {
                                         <Suspense
                                             fallback={
                                                 <div className="pt-3 text-center">
-                                                    Loading...
+                                                     {dt('Loading')}...
                                                 </div>
                                             }
                                         >

@@ -5,7 +5,7 @@ import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
-const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData,setPrevKpiTab }) => {
+const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData,setPrevKpiTab,dt }) => {
 
     const [collapsed, setCollapsed] = useState(false);
     const [openSubMenu, setOpenSubMenu] = useState(null);
@@ -62,7 +62,7 @@ const DashSidebar = ({ data, setActiveTab, activeTab, dashboardData,setPrevKpiTa
         <Sidebar width="270px" style={{ minHeight: "100vh", color: "#ECF0F1" }} collapsed={collapsed} toggled backgroundColor="#071b2f">
             <Menu iconShape="square">
                 <MenuItem className="menu-item-container">
-                    {!collapsed && <span><b>{dashboardData?.jsonData?.groupName || "Dashboard"}</b></span>}
+                    {!collapsed && <span><b>{dt(dashboardData?.jsonData?.groupName || "Dashboard")}</b></span>}
                     {isSidebarCollapse !== 'No' && (
                         <FaBars onClick={() => toggleSidebar()} className="menu-icon-right" />
                     )}

@@ -17,7 +17,7 @@ const TabularDash = (props) => {
 
   const { widgetData, setWidgetData, levelData, setLevelData, pkColumn, setPkColumn } = props;
 
-  const { theme, singleConfigData, paramsValues, setLoading, presentWidgets, isSearchQuery, setIsSearchQuery, setSearchScope, searchScope } = useContext(HISContext);
+  const { theme, singleConfigData, paramsValues, setLoading, presentWidgets, isSearchQuery, setIsSearchQuery, setSearchScope, searchScope,dt } = useContext(HISContext);
 
 
   const [tableData, setTableData] = useState([]);
@@ -402,7 +402,7 @@ const TabularDash = (props) => {
 
         <div className="row px-2 py-2 border-bottom" style={{ textAlign: headingAlign, color: widgetHeadingColor }} >
           {headingReq &&
-            <div className={` ${isActionButtonReq === 'Yes' || currentLevel !== 0 ? 'col-md-7' : 'col-md-12'} fw-medium fs-6`} >{widgetData?.rptName}</div>
+            <div className={` ${isActionButtonReq === 'Yes' || currentLevel !== 0 ? 'col-md-7' : 'col-md-12'} fw-medium fs-6`} >{dt(widgetData?.rptName)}</div>
           }
 
           <div className="col-md-5">
@@ -417,13 +417,13 @@ const TabularDash = (props) => {
               </button>
               <ul className="dropdown-menu p-2">
                 <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => fetchData(widgetData)}>
-                  <FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-2" />Refresh Data
+                  <FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-2" />{dt('Refresh Data')}
                 </li>
                 <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generatePDF(widgetData, widgetLimit ? filterData.slice(0, parseInt(widgetLimit)) : safeLimit ? filterData.slice(0, safeLimit) : filterData, singleConfigData?.databaseConfigVO)} title="pdf">
-                  <FontAwesomeIcon icon={faFilePdf} className="dropdown-gear-icon me-2" />Download PDF
+                  <FontAwesomeIcon icon={faFilePdf} className="dropdown-gear-icon me-2" />{dt('Download PDF')}
                 </li>
                 <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generateCSV(widgetData, widgetLimit ? filterData.slice(0, parseInt(widgetLimit)) : safeLimit ? filterData.slice(0, safeLimit) : filterData, singleConfigData?.databaseConfigVO)}>
-                  <FontAwesomeIcon icon={faFileExcel} className="dropdown-gear-icon me-2" />Download CSV
+                  <FontAwesomeIcon icon={faFileExcel} className="dropdown-gear-icon me-2" />{dt('Download CSV')}
                 </li>
                 {/* <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }}>
                 <FontAwesomeIcon icon={faBarChart} className="dropdown-gear-icon me-2" />Outliers
@@ -476,7 +476,7 @@ const TabularDash = (props) => {
           </div>
         )}
         <div className="px-2 py-2" style={{ marginTop: `${widgetTopMargin}px` }}>
-          <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query : {widgetData?.rptId}</h4>
+          <h4 style={{ fontWeight: "500", fontSize: "20px" }}>{dt('Query')} : {widgetData?.rptId}</h4>
           {(widgetData?.modeOfQuery === 'Query' && isPrev == 1) &&
             <span>{mainQuery}</span>
           }
@@ -485,7 +485,7 @@ const TabularDash = (props) => {
           }
           {isDataSearchReq &&
             <div className="d-flex align-items-center">
-              <label className="col-form-label me-2">Search :</label>
+              <label className="col-form-label me-2">{dt('Search')} :</label>
               <div className=''>
                 <InputField
                   type="search"
@@ -504,7 +504,7 @@ const TabularDash = (props) => {
 
           ?
           <>
-            <h6 className="text-center">Data Fetching...</h6>
+            <h6 className="text-center">{dt('Data Fetching')}...</h6>
           </>
 
           :
@@ -521,7 +521,7 @@ const TabularDash = (props) => {
             recordsPerPageOptions={[recordPerPage, 10, 20, 50]}
             isTableHeadingRequired={!headingReq}
             theme={theme}
-            noDataComponent={<div className="text-danger fw-bold fs-13">{customMessage || "There are no records to display"}</div>}
+            noDataComponent={<div className="text-danger fw-bold fs-13">{dt(customMessage || "There are no records to display")}</div>}
           />
 
         }

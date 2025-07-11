@@ -6,7 +6,7 @@ import { generateCSV, generatePDF } from '../commons/advancedPdf';
 import { fetchProcedureData, fetchQueryData, formatDateFullYear } from '../../utils/commonFunction';
 
 const NewsTickerDash = ({ widgetData }) => {
-    const { theme, mainDashData, singleConfigData, paramsValues, setLoading } = useContext(HISContext);
+    const { theme, mainDashData, singleConfigData, paramsValues, setLoading, dt } = useContext(HISContext);
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isTransitionActive, setIsTransitionActive] = useState(true);
@@ -179,7 +179,7 @@ const NewsTickerDash = ({ widgetData }) => {
         <div className={`tabular-box ${theme === 'Dark' ? 'dark-theme' : ''} tabular-box-border ${borderReq === 'No' ? '' : 'tabular-box-border'}`} style={{ border: `1px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
             <div className="row px-2 py-2 border-bottom" style={{ textAlign: headingAlign, color: widgetHeadingColor }} >
                 {isWidgetNameVisible === "Yes" &&
-                    <div className={` ${isDirectDownloadRequired === 'Yes' ? 'col-md-7' : 'col-md-12'} fw-medium fs-6`} >{rptDisplayName}</div>
+                    <div className={` ${isDirectDownloadRequired === 'Yes' ? 'col-md-7' : 'col-md-12'} fw-medium fs-6`} >{dt(rptDisplayName)}</div>
                 }
                 {isDirectDownloadRequired === 'Yes' &&
                     <div className="col-md-5 text-end">
@@ -193,13 +193,13 @@ const NewsTickerDash = ({ widgetData }) => {
                         </button>
                         <ul className="dropdown-menu p-2">
                             <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => fetchData(widgetData)}>
-                                <FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-2" />Refresh Data
+                                <FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-2" />{dt('Refresh Data')}
                             </li>
                             <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generatePDF(widgetData, widgetLimit ? newsData.slice(0, parseInt(widgetLimit)) : safeLimit ? newsData.slice(0, safeLimit) : newsData, singleConfigData?.databaseConfigVO)} title="pdf">
-                                <FontAwesomeIcon icon={faFilePdf} className="dropdown-gear-icon me-2" />Download PDF
+                                <FontAwesomeIcon icon={faFilePdf} className="dropdown-gear-icon me-2" />{dt('Download PDF')}
                             </li>
                             <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }} onClick={() => generateCSV(widgetData, widgetLimit ? newsData.slice(0, parseInt(widgetLimit)) : safeLimit ? newsData.slice(0, safeLimit) : newsData, singleConfigData?.databaseConfigVO)}>
-                                <FontAwesomeIcon icon={faFileExcel} className="dropdown-gear-icon me-2" />Download CSV
+                                <FontAwesomeIcon icon={faFileExcel} className="dropdown-gear-icon me-2" />{dt('Download CSV')}
                             </li>
                         </ul>
                         <button className="small-box-btn-dwn ms-1" onClick={() => generatePDF(widgetData, newsList, singleConfigData?.databaseConfigVO)} title="PDF">
@@ -213,7 +213,7 @@ const NewsTickerDash = ({ widgetData }) => {
             </div>
 
             <div className="px-2 py-2" style={{ marginTop: `${widgetTopMargin}px` }}>
-                <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query : {rptId}</h4>
+                <h4 style={{ fontWeight: "500", fontSize: "20px" }}>{dt('Query')} : {rptId}</h4>
                 {modeOfQuery === 'Query' &&
                     <span>{mainQuery}</span>
                 }
@@ -251,7 +251,7 @@ const NewsTickerDash = ({ widgetData }) => {
                             }}
                             title={news}
                         >
-                            {news}
+                            {dt(news)}
                         </div>
                     ))}
                 </div>

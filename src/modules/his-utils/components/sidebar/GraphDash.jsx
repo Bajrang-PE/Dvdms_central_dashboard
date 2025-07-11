@@ -13,7 +13,7 @@ import { useSearchParams } from "react-router-dom";
 const Parameters = lazy(() => import('./Parameters'));
 
 const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
-  const { theme, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery, setSearchScope, searchScope } = useContext(HISContext);
+  const { theme, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery, setSearchScope, searchScope,dt } = useContext(HISContext);
   const [widParamsValues, setWidParamsValues] = useState();
   const [filteredGraphOptions, setFilteredGraphOptions] = useState([]);
   const [chartType, setChartType] = useState('BAR_GRAPH');
@@ -300,7 +300,6 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
     }
   }, [isSearchQuery]);
 
-  console.log(searchScope, 'searchScope')
   const exportingOptions = {
     enabled: isActionButtonReq !== "No" && isActionButtonReq !== "None",
     allowHTML: true,
@@ -513,7 +512,7 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
 
       <div className="row px-2 py-2 border-bottom">
         <div className="col-md-8 col-xs-7 fw-medium fs-6 pe-0">
-          {widgetData?.rptDisplayName}
+          {dt(widgetData?.rptDisplayName)}
         </div>
         {isDirectDownloadRequired === 'Yes' &&
           <div className="col-md-4">
@@ -527,7 +526,7 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
             </button>
             <ul className="dropdown-menu p-2">
               <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }}>
-                <FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-2" />Refresh Data
+                <FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-2" />{dt('Refresh Data')}
               </li>
             </ul>
             <button type="button" className="small-box-btn-dwn"
@@ -547,7 +546,7 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
       </div>
 
       <div className="px-2 py-2" style={{ marginTop: `${widgetTopMargin}px` }}>
-        <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query :{widgetData?.rptId}</h4>
+        <h4 style={{ fontWeight: "500", fontSize: "20px" }}>{dt('Query')} :{widgetData?.rptId}</h4>
         {(widgetData?.modeOfQuery === 'Query' && isPrev == 1) &&
           <span>{mainQuery}</span>
         }

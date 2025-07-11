@@ -16,7 +16,7 @@ import NewsTickWidget from '../../components/dashboardMasters/widgetMaster/NewsT
 import GlobalDataTable from '../../components/commons/GlobalDataTable'
 import { HISContext } from '../../contextApi/HISContext'
 import DataServiceTable from '../../components/webServiceMasters/dataService/DataServiceTable'
-import { graphOptions, highchartGraphOptions, parameterType } from '../../localData/DropDownData'
+import { highchartGraphOptions, parameterType } from '../../localData/DropDownData'
 import ParamsDetail from '../../components/dashboardMasters/tabMaster/ParamsDetail'
 import InputSelect from '../../components/commons/InputSelect'
 import { ToastAlert } from '../../utils/commonFunction'
@@ -43,8 +43,8 @@ const WidgetMaster = () => {
     "lstOtherLink": [],
     "sqChildJsonString": [],
     "selFilterIds": ""
-
   })
+
   const [radioValues, setRadioValues] = useState({
     widgetViewed: 'Tabular', isWidgetNameVisible: 'Yes', selectedModeQuery: 'Query', widgetPurpose: 'HTML',
     widgetHeadingAlign: 'left', isRecordLimitReq: 'Yes', isWidgetBorderReq: 'Yes',
@@ -60,7 +60,6 @@ const WidgetMaster = () => {
     isChildBasedPrimaryKey: "Yes", isHideParentMap: "Yes",
     //iframe
     isSsoUrl: "Yes"
-
   })
 
   const [tabIndex, setTabIndex] = useState(1);
@@ -1287,23 +1286,23 @@ const WidgetMaster = () => {
       width: "8%"
     },
     {
-      name: 'Widget ID',
+      name: dt('Widget ID'),
       selector: row => parseInt(row?.rptId),
       sortable: true,
       width: "10%"
     },
     {
-      name: 'Widget Name',
+      name: dt('Widget Name'),
       selector: row => row?.rptName,
       sortable: true,
     },
     {
-      name: 'Display Name',
+      name: dt('Display Name'),
       selector: row => row?.rptDisplayName,
       sortable: true,
     },
     {
-      name: 'Type',
+      name: dt('Type'),
       selector: row => row?.reportViewed,
       sortable: true,
     }
@@ -1331,23 +1330,23 @@ const WidgetMaster = () => {
       width: "8%"
     },
     {
-      name: 'ID',
+      name: dt('ID'),
       selector: row => row.id,
       sortable: true,
       width: "8%"
     },
     {
-      name: 'Parameter Name',
+      name: dt('Parameter Name'),
       selector: row => row?.jsonData?.parameterName,
       sortable: true,
     },
     {
-      name: 'Display Name',
+      name: dt('Display Name'),
       selector: row => row?.jsonData?.parameterDisplayName,
       sortable: true,
     },
     {
-      name: 'Type',
+      name: dt('Type'),
       selector: row => parameterType?.filter(dt => dt?.value === row?.jsonData?.parameterType)[0]?.label || "---",
       sortable: true,
     },
@@ -1415,10 +1414,10 @@ const WidgetMaster = () => {
                 <FooterDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} errors={errors} dt={dt}/>}
 
               {showWidgetTable &&
-                <GlobalDataTable title={"Widget List"} column={widgetColumn} data={widgetFilterData} onModify={handleUpdateData} onDelete={handleDeleteParams} onClose={onTableClose} setSearchInput={setWidgetSearchInput} isShowBtn={true} />
+                <GlobalDataTable title={dt("Widget List")} column={widgetColumn} data={widgetFilterData} onModify={handleUpdateData} onDelete={handleDeleteParams} onClose={onTableClose} setSearchInput={setWidgetSearchInput} isShowBtn={true} />
               }
               {showParamsTable &&
-                <GlobalDataTable title={"Parameter List"} column={paramsColumn} data={filterData} onModify={null} onDelete={null} onClose={onTableClose} setSearchInput={setSearchInput} isShowBtn={false} />
+                <GlobalDataTable title={dt("Parameter List")} column={paramsColumn} data={filterData} onModify={null} onDelete={null} onClose={onTableClose} setSearchInput={setSearchInput} isShowBtn={false} />
               }
               {showWebServiceTable &&
                 <DataServiceTable data={dataServiceData} onModify={null} onDelete={null} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={false} />

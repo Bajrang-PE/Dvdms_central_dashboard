@@ -7,7 +7,7 @@ import { HISContext } from '../../contextApi/HISContext';
 import { fetchProcedureData, fetchQueryData, formatDateFullYear, formatParams, getOrderedParamValues } from '../../utils/commonFunction';
 
 const KpiDash = ({ widgetData, presentTabs }) => {
-    const { setActiveTab, allTabsData, setLoading, paramsValues, searchScope, isSearchQuery, setIsSearchQuery, setSearchScope, setPrevKpiTab, activeTab } = useContext(HISContext);
+    const { setActiveTab, allTabsData, setLoading, paramsValues, searchScope, isSearchQuery, setIsSearchQuery, setSearchScope, setPrevKpiTab, activeTab,dt } = useContext(HISContext);
     const [kpiData, setKpiData] = useState([]);
     const [kpiLoading, setKpiLoading] = useState(false);
 
@@ -134,9 +134,6 @@ const KpiDash = ({ widgetData, presentTabs }) => {
     const widheight = presentTabs?.length > 0 && presentTabs?.filter(dt => dt?.rptId == widgetData?.rptId)[0]?.widgetHeight;
 
 
-    console.log(widgetData, 'bgkpidd')
-
-
 
     return (
         <div className={`${widgetData?.kpiType === "circle" ? 'small-box-kpi-circle' : 'small-box-kpi'}`} style={{
@@ -174,7 +171,7 @@ const KpiDash = ({ widgetData, presentTabs }) => {
                             // id={`KPI_PDF_${widgetData.rptId}`} 
                             // onClick={() => downloadWidgetDataWithoutHTML(widgetData.rptId, 'PDF')}
                             >
-                                <i className="fa fa-file-pdf"></i> &nbsp; Download PDF
+                                <i className="fa fa-file-pdf"></i> &nbsp; {dt('Download PDF')}
                             </a>
                         </li>
                         <li>
@@ -184,7 +181,7 @@ const KpiDash = ({ widgetData, presentTabs }) => {
                             // id={`KPI_Excel_${widgetData.rptId}`} 
                             // onClick={() => downloadWidgetDataWithoutHTML(widgetData.rptId, 'EXCEL')}
                             >
-                                <i className="fa fa-file-excel"></i> &nbsp; Download Excel
+                                <i className="fa fa-file-excel"></i> &nbsp; {dt('Download Excel')} 
                             </a>
                         </li>
                     </ul>
@@ -204,7 +201,7 @@ const KpiDash = ({ widgetData, presentTabs }) => {
                 <span className="sweet"><b>Value : 4 Lakh</b></span> */}
                 {kpiLoading ?
                     <>
-                        <span style={{ textAlign: "center", color: "white" }}>Loading...</span> </>
+                        <span style={{ textAlign: "center", color: "white" }}>{dt('Loading')}...</span> </>
                     :
                     <>
                         <div
@@ -214,7 +211,7 @@ const KpiDash = ({ widgetData, presentTabs }) => {
 
                         {(widgetData?.onClickOfKPITabId !== '0' && widgetData?.onClickOfKPITabId !== '' && widgetData?.onClickKPITypeOption !== '0' && widgetData?.onClickKPITypeOption) &&
                             <div className='small-box-kpi-link-dtl' style={{ color: widgetData?.kpiLinkFontColor }} onClick={() => onKpiClickDetails(widgetData?.onClickOfKPITabId)}>
-                                <span>{widgetData?.linkTab || 'Click For Details'}</span>
+                                <span>{dt(widgetData?.linkTab || 'Click For Details')}</span>
                                 <b><FontAwesomeIcon icon={faSearch} /></b>
                             </div>
                         }
@@ -233,7 +230,7 @@ const KpiDash = ({ widgetData, presentTabs }) => {
                 </div>
             }
             <a href="#" className="small-box-footer" style={{ display: 'none' }}>
-                More info <i className="fa fa-search"></i>
+                {dt('More info')} <i className="fa fa-search"></i>
             </a>
         </div>
     )
