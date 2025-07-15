@@ -12,10 +12,6 @@ const NewsTickerDash = ({ widgetData }) => {
     const [isTransitionActive, setIsTransitionActive] = useState(true);
     const [newsData, setNewsData] = useState([]);
 
-    useEffect(() => {
-        console.log(widgetData, 'bgnews')
-    }, [])
-
     const borderReq = useMemo(() => widgetData?.isWidgetBorderRequired || '', [widgetData?.isWidgetBorderRequired]);
     const headingAlign = useMemo(() => widgetData?.widgetHeadingAlignment || '', [widgetData?.widgetHeadingAlignment]);
     const widgetHeadingColor = useMemo(() => widgetData?.widgetHeadingColor || '', [widgetData?.widgetHeadingColor]);
@@ -94,7 +90,6 @@ const NewsTickerDash = ({ widgetData }) => {
         } else if (widget?.modeOfQuery === "Query") {
             try {
                 const data = await fetchQueryData(widget?.queryVO, widget?.JNDIid);
-                console.log(data, 'bgdtdtdtddt')
                 if (data?.length > 0) {
                     const formattedData = formatData(data);
                     setNewsData(formattedData);

@@ -24,7 +24,7 @@ import { fetchPostData, fetchUpdateData } from '../../../../utils/HisApiHooks'
 
 const WidgetMaster = () => {
 
-  const { setShowDataTable, allWidgetData, getAllWidgetData, dashboardForDt, getDashboardForDrpData, parameterData, getAllParameterData, widgetDrpData, getAllServiceData, dataServiceData, selectedOption, setSelectedOption, actionMode, setActionMode, parameterDrpData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, getAllTabsData, tabDrpData, getDashConfigData, singleConfigData,dt } = useContext(HISContext);
+  const { setShowDataTable, allWidgetData, getAllWidgetData, dashboardForDt, getDashboardForDrpData, parameterData, getAllParameterData, widgetDrpData, getAllServiceData, dataServiceData, selectedOption, setSelectedOption, actionMode, setActionMode, parameterDrpData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, getAllTabsData, tabDrpData, getDashConfigData, singleConfigData, dt } = useContext(HISContext);
 
   const [values, setValues] = useState({
     "id": "", "widgetFor": "", "widgetType": "columnBased", "widgetNameDisplay": "", "widgetNameInternal": "", "widgetRefreshTime": "", "widgetRefreshDelayTime": "", "cachingStatus": "", "limit": "", "widgetHadingClr": "", "widgetTopMargin": "", "headingBgColor": "", "headingFontColor": "", "headingDisplayStyle": "", "recordsPerPage": "", "pagePerBlock": "", "DataScrollHeight": "", "parentWidget": "", "columnNoToDisplay": "", "leftClmNoToFixed": "", "rightClmNoToFixed": "", "linkedWidget": [], "actionBtnReq": "", "pdfTableFontSize": "", "pdfTableHeadBarClr": "", "pdfTableHeadTxtFontClr": "", "groupClmNoComma": "", "query": "", "webQuery": "", "procedureName": "", "recordsPerPageTreeCh": "", "parameterOption": "", "loadOption": "ONWINDOWLOAD", "paraComboBgColor": "", "paraComboFontColor": "", "paraLabelFontColor": "", "jndiSavingData": "", "stmtTimeOut": "", "lastUpdatedQuery": "", "FooterText": "", "customMsgForNoData": "", "treeChildQuery": "", "treeChildProcedure": "", "popUpDetails": [], "queryLabel": '', "htmlText": '', 'iconName': "",
@@ -87,7 +87,7 @@ const WidgetMaster = () => {
   const [procedureRows, setProcedureRows] = useState([{ queryLabel: "", serviceReferenceNumber: "", webserviceName: "", isMultiRowDataTable: "", tableDataDisplay: "horizontal" }]);
 
   const [errors, setErrors] = useState({
-    widgetForErr: "", widgetNameDisplayErr: "", widgetNameInternalErr: "", defaultGraphTypeErr: "", clmNameForLineGraphErr: "", defaultPluginNameErr: "", noOfNewsVisibleErr: "",
+    widgetForErr: "", widgetNameDisplayErr: "", widgetNameInternalErr: "", defaultGraphTypeErr: "", clmNameForLineGraphErr: "", defaultPluginNameErr: "",
     alphaGraph3DErr: "", betaGraph3DErr: "", xAxisLabelErr: "", yAxisLabelErr: "", kpiTypeErr: "", kpiIconTypeErr: "", kpiDefaultBgColorErr: "", noOfNewsVisibleErr: "", mapNameErr: "",
 
     modeForSQCHILDColumnNoErr: "", SQCHILDWidgetIdErr: "", otherLinkNameErr: "", otherLinkURLErr: "", mainQueryErr: "", serviceReferenceNumberErr: "", webserviceNameErr: "", procedureNameErr: "",
@@ -317,7 +317,7 @@ const WidgetMaster = () => {
       isSsoUrl: "Yes"
     });
     setErrors({
-      widgetForErr: "", widgetNameDisplayErr: "", widgetNameInternalErr: "", defaultGraphTypeErr: "", graphTypesErr: "", clmNameForLineGraphErr: "", defaultPluginNameErr: "", noOfNewsVisibleErr: "",
+      widgetForErr: "", widgetNameDisplayErr: "", widgetNameInternalErr: "", defaultGraphTypeErr: "", graphTypesErr: "", clmNameForLineGraphErr: "", defaultPluginNameErr: "",
       alphaGraph3DErr: "", betaGraph3DErr: "", xAxisLabelErr: "", yAxisLabelErr: "", kpiTypeErr: "", kpiIconTypeErr: "", kpiDefaultBgColorErr: "", noOfNewsVisibleErr: "", mapNameErr: "",
 
       modeForSQCHILDColumnNoErr: "", SQCHILDWidgetIdErr: "", otherLinkNameErr: "", otherLinkURLErr: "", mainQueryErr: "", serviceReferenceNumberErr: "", webserviceNameErr: "", procedureNameErr: "",
@@ -371,11 +371,10 @@ const WidgetMaster = () => {
   const returnLinkedData = (linkedWidgetRptId) => {
     if (!linkedWidgetRptId || !widgetDrpData) return [];
 
-    const ids = linkedWidgetRptId.split(",").map(id => id.trim());
+    const ids = linkedWidgetRptId?.split(",").map(id => id.trim());
 
-    return widgetDrpData.filter(item => ids.includes(item.value));
+    return widgetDrpData.filter(item => ids.includes(String(item.value)));
   }
-
   useEffect(() => {
     if (singleData?.length > 0) {
       setLoading(true)
@@ -466,7 +465,7 @@ const WidgetMaster = () => {
         kpiDefaultFontColor: singleData[0]?.widgetFontColour,//
         kpiDefaultHoverBg: singleData[0]?.widgetHoverBackground,//
         kpiIconColor: singleData[0]?.widgetIconColour,//
-        kpiBoxClickOptions: singleData[0]?.onClickKPITypeOption | 0,//======
+        kpiBoxClickOptions: singleData[0]?.onClickKPITypeOption || '0',//======
         kpiTabOpenOnClick: singleData[0]?.onClickOfKPITabId,//
         kpiWidgetOpenOnClick: singleData[0]?.onClickOfKPIWidgetId,//
         kpiDashboardOpenOnClick: singleData[0]?.onClickOfKPIDashboardId,//
@@ -538,9 +537,9 @@ const WidgetMaster = () => {
         isShowLegendOnExport: singleData[0]?.showLegendOnExport,//
         isFullLabelReq: singleData[0]?.isFullLabelRequired,//
         isGraphScrollBarReq: singleData[0]?.isScrollbarRequired,//
-        isShowLegend: singleData[0]?.showInLegend === 'true' ? 'Yes' : 'No',//
-        isDataLabels: singleData[0]?.dataLabels === 'true' ? "Yes" : 'No',//
-        isThree3D: singleData[0]?.is3d === 'true' ? 'Yes' : 'No',//
+        isShowLegend: singleData[0]?.showInLegend === 'true' || singleData[0]?.showInLegend === 'Yes' ? 'Yes' : 'No',//
+        isDataLabels: singleData[0]?.dataLabels === 'true' || singleData[0]?.dataLabels === 'Yes' ? "Yes" : 'No',//
+        isThree3D: singleData[0]?.is3d === 'true' || singleData[0]?.is3d === 'Yes' ? 'Yes' : 'No',//
         isDirectDownloadBtnGraph: singleData[0]?.isDirectDownloadRequired,//
         isFirstClmGraphHeading: singleData[0]?.isFirstClmGraphHeading,//========
         isShowPrntHeadChildGraph: singleData[0]?.showParentDetailsinChild,//
@@ -665,7 +664,8 @@ const WidgetMaster = () => {
         parentDisplaycolumnno: columnNoToDisplay,
         leftColumnsToBeFixed: leftClmNoToFixed,
         rightColumnsToBeFixed: rightClmNoToFixed,
-        linkWidget: linkedWidget?.length > 0 ? linkedWidget : kpiWidgetLinkName?.length > 0 ? kpiWidgetLinkName : [],
+        linkWidget: kpiWidgetLinkName,
+        linkedWidgetRptId: linkedWidget?.length > 0 ?  linkedWidget.map(item => item.value).join(',') : '',
         isActionButtonReq: actionBtnReq,
         pdfTableFontSize: pdfTableFontSize,
         pdfTableheaderBarColor: pdfTableHeadBarClr,
@@ -729,7 +729,8 @@ const WidgetMaster = () => {
         onClickOfKPIWidgetId: kpiWidgetOpenOnClick,
         onClickOfKPIDashboardId: kpiDashboardOpenOnClick,
         linkTab: kpiTabLinkName,
-        // linkWidget: kpiWidgetLinkName,
+        linkWidget: kpiWidgetLinkName,
+        linkedWidgetRptId: linkedWidget?.length > 0 ? linkedWidget.map(item => item.value).join(',') : '',
         kpiLinkColor: kpiLinkColor,
         kpiLinkFontColor: kpiLinkFontColor,
         iconName: iconName,//
@@ -894,7 +895,8 @@ const WidgetMaster = () => {
         parentDisplaycolumnno: columnNoToDisplay,
         leftColumnsToBeFixed: leftClmNoToFixed,
         rightColumnsToBeFixed: rightClmNoToFixed,
-        linkWidget: linkedWidget?.length > 0 ? linkedWidget : kpiWidgetLinkName?.length > 0 ? kpiWidgetLinkName : [],
+        linkWidget: kpiWidgetLinkName,
+        linkedWidgetRptId: linkedWidget?.length > 0 ? linkedWidget.map(item => item.value).join(',') : '',
         isActionButtonReq: actionBtnReq,
         pdfTableFontSize: pdfTableFontSize,
         pdfTableheaderBarColor: pdfTableHeadBarClr,
@@ -959,7 +961,7 @@ const WidgetMaster = () => {
         onClickOfKPIWidgetId: kpiWidgetOpenOnClick,
         onClickOfKPIDashboardId: kpiDashboardOpenOnClick,
         linkTab: kpiTabLinkName,
-        // linkWidget: kpiWidgetLinkName,
+        linkWidget: kpiWidgetLinkName,
         kpiLinkColor: kpiLinkColor,
         kpiLinkFontColor: kpiLinkFontColor,
         iconName: iconName,//
@@ -1113,10 +1115,10 @@ const WidgetMaster = () => {
       //   newErrors.graphTypesErr = "Graph type selection is required";
       //   isValid = false;
       // }
-      if (!values?.clmNameForLineGraph?.trim()) {
-        newErrors.clmNameForLineGraphErr = "Column name for Line Graph is required";
-        isValid = false;
-      }
+      // if (!values?.clmNameForLineGraph?.trim()) {
+      //   newErrors.clmNameForLineGraphErr = "Column name for Line Graph is required";
+      //   isValid = false;
+      // }
       if (!values?.defaultPluginName?.trim()) {
         newErrors.defaultPluginNameErr = "Default plugin name is required";
         isValid = false;
@@ -1157,10 +1159,10 @@ const WidgetMaster = () => {
         newErrors.isGraphScrollBarReqErr = "Graph scrollbar requirement is needed";
         isValid = false;
       }
-      if (!radioValues?.isFullLabelReq?.trim()) {
-        newErrors.isFullLabelReqErr = "Full label requirement is needed";
-        isValid = false;
-      }
+      // if (!radioValues?.isFullLabelReq?.trim()) {
+      //   newErrors.isFullLabelReqErr = "Full label requirement is needed";
+      //   isValid = false;
+      // }
     }
 
     //  KPI-Specific Validations
@@ -1245,7 +1247,7 @@ const WidgetMaster = () => {
       } else if (newErrors.mainQueryErr || newErrors.serviceReferenceNumberErr || newErrors.webserviceNameErr || newErrors.procedureNameErr) {
         setTabIndex(2);
         setTabName({ value: 2, label: "Query Details" });
-      } else if (newErrors.kpiTypeErr || newErrors.kpiIconTypeErr || newErrors.kpiDefaultBgColorErr || newErrors.noOfNewsVisibleErr || newErrors.mapNameErr || newErrors.defaultGraphTypeErr || newErrors.clmNameForLineGraphErr || newErrors.defaultPluginNameErr || newErrors.defaultPluginNameErr || newErrors.alphaGraph3DErr || newErrors.betaGraph3DErr || newErrors.xAxisLabelErr || newErrors.yAxisLabelErr || newErrors.isThree3DErr || newErrors.isDataLabelsErr || newErrors.isShowLegendErr || newErrors.isDisplayGraphPluginErr || newErrors.isGraphScrollBarReqErr || newErrors.isFullLabelReqErr) {
+      } else if (newErrors.kpiTypeErr || newErrors.kpiIconTypeErr || newErrors.kpiDefaultBgColorErr || newErrors.noOfNewsVisibleErr || newErrors.mapNameErr || newErrors.defaultGraphTypeErr  || newErrors.defaultPluginNameErr || newErrors.defaultPluginNameErr || newErrors.alphaGraph3DErr || newErrors.betaGraph3DErr || newErrors.xAxisLabelErr || newErrors.yAxisLabelErr || newErrors.isThree3DErr || newErrors.isDataLabelsErr || newErrors.isShowLegendErr || newErrors.isDisplayGraphPluginErr || newErrors.isGraphScrollBarReqErr ) {
         setTabIndex(3);
         setTabName({ value: 3, label: "" });
       }
@@ -1372,46 +1374,46 @@ const WidgetMaster = () => {
             <div className='p-1'>
 
               {tabName?.value === 1 &&
-                <AboutWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} dashboardForDt={dashboardForDt} setValues={setValues} widgetDrpData={widgetDrpData} errors={errors} setErrors={setErrors} {...{ otherLinkData, setOtherLinkData, newRow, setNewRow }} dt={dt}/>
+                <AboutWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} dashboardForDt={dashboardForDt} setValues={setValues} widgetDrpData={widgetDrpData} errors={errors} setErrors={setErrors} {...{ otherLinkData, setOtherLinkData, newRow, setNewRow }} dt={dt} />
               }
 
               {tabName?.value === 2 &&
-                <QueryDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} singleData={singleData} errors={errors} setErrors={setErrors} {...{ rows, setRows, procedureRows, setProcedureRows }} dt={dt}/>
+                <QueryDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} singleData={singleData} errors={errors} setErrors={setErrors} {...{ rows, setRows, procedureRows, setProcedureRows }} dt={dt} />
               }
 
               {tabName?.value === 3 &&
                 <>
                   {radioValues?.widgetViewed === "Tabular" &&
-                    <TableDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} parentWidget={widgetDrpData} setValues={setValues} errors={errors} dt={dt}/>
+                    <TableDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} parentWidget={widgetDrpData} setValues={setValues} errors={errors} dt={dt} />
                   }
 
                   {radioValues?.widgetViewed === "Graph" &&
-                    <GraphWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} parentWidget={widgetDrpData} errors={errors} setErrors={setErrors} dt={dt}/>
+                    <GraphWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} parentWidget={widgetDrpData} errors={errors} setErrors={setErrors} dt={dt} />
                   }
 
                   {radioValues?.widgetViewed === "KPI" &&
-                    <KpiWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} errors={errors} widgetDrpData={widgetDrpData} tabDrpData={tabDrpData} dt={dt}/>
+                    <KpiWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} errors={errors} widgetDrpData={widgetDrpData} tabDrpData={tabDrpData} dt={dt} />
                   }
 
                   {radioValues?.widgetViewed === "Criteria_Map" &&
-                    <MapWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} parentWidget={widgetDrpData} errors={errors} dt={dt}/>
+                    <MapWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} parentWidget={widgetDrpData} errors={errors} dt={dt} />
                   }
 
                   {radioValues?.widgetViewed === "News_Ticker" &&
-                    <NewsTickWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} errors={errors} dt={dt}/>
+                    <NewsTickWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} errors={errors} dt={dt} />
                   }
                 </>
 
               }
 
               {(tabName?.value === 4 && (radioValues?.widgetViewed === "Criteria_Map" || radioValues?.widgetViewed === "Graph" || radioValues?.widgetViewed === "Tabular")) &&
-                <ParamsDetail handleValueChange={handleValueChange} values={values} pageName={'widget'} parameterDrpData={parameterDrpData} availableOptions={availableOptions} setAvailableOptions={setAvailableOptions} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} errors={errors} dt={dt}/>}
+                <ParamsDetail handleValueChange={handleValueChange} values={values} pageName={'widget'} parameterDrpData={parameterDrpData} availableOptions={availableOptions} setAvailableOptions={setAvailableOptions} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} errors={errors} dt={dt} />}
 
               {tabName?.value === 5 &&
-                <JndiDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} errors={errors} dt={dt}/>}
+                <JndiDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} errors={errors} dt={dt} />}
 
               {tabName?.value === 6 &&
-                <FooterDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} errors={errors} dt={dt}/>}
+                <FooterDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} errors={errors} dt={dt} />}
 
               {showWidgetTable &&
                 <GlobalDataTable title={dt("Widget List")} column={widgetColumn} data={widgetFilterData} onModify={handleUpdateData} onDelete={handleDeleteParams} onClose={onTableClose} setSearchInput={setWidgetSearchInput} isShowBtn={true} />

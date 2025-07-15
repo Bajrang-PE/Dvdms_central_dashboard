@@ -136,9 +136,10 @@ export const generatePDF = async (widgetData, tableData, config, filters = []) =
     isDirectDownloadRequired,
     rptDisplayName,
     isPdfHeaderReqInAllPages
-  } = widgetData;
+  } = widgetData || {};
 
-  const { reportHeader1, reportHeader2, reportHeader3, isLogoRequired, headingAlignment, logos } = config;
+
+  const { reportHeader1, reportHeader2, reportHeader3, isLogoRequired, headingAlignment, logos } = config || {};
 
   const orientation = printPDFIn === 'Landscape' ? 'l' : 'p';
   const pdf = new jsPDF(orientation, 'mm', 'a4');
@@ -150,7 +151,7 @@ export const generatePDF = async (widgetData, tableData, config, filters = []) =
     const logoHeight = 18;
     const margin = 10;
     const textMargin = 10;
-    const alignment = headingAlignment.toLowerCase();
+    const alignment = headingAlignment?.toLowerCase();
 
     // Filter valid logos
     const validLogos = isLogoRequired === 'Yes' && Array.isArray(logos)
@@ -251,12 +252,19 @@ export const generatePDF = async (widgetData, tableData, config, filters = []) =
     });
     yPosition += 5;
   }
-
+  const unwantedKeys = ['pkcolumn'];
   // Prepare headers for autoTable
-  const headers = Object.keys(tableData[0] || {}).map(key => ({
-    header: key.toString().toUpperCase(),
-    dataKey: key
-  }));
+  // const headers = Object.keys(tableData[0] || {}).map(key => ({
+  //   header: key.toString().toUpperCase(),
+  //   dataKey: key
+  // }));
+
+  const headers = Object.keys(tableData[0] || {})
+    .filter(key => !unwantedKeys.includes(key))
+    .map(key => ({
+      header: key.toString().toUpperCase(),
+      dataKey: key
+    }));
 
   const columnCount = headers.length;
   // Calculate total width needed
@@ -280,6 +288,10 @@ export const generatePDF = async (widgetData, tableData, config, filters = []) =
         const content = row[header.dataKey];
         if (content === null || content === undefined) return '';
         if (typeof content === 'object') return JSON.stringify(content);
+        if (typeof content === 'string' && content.includes('##')) {
+          const parts = content.split('##');
+          return parts[0];
+        }
         return content.toString();
       })
     ),
@@ -544,91 +556,15 @@ export const generateGraphPDF = async (widgetData, tableData, config, filters = 
     isPdfHeaderReqInAllPages,
     xAxisLabel,
     yAxisLabel
-  } = widgetData;
+  } = widgetData || {};
 
-  const { reportHeader1, reportHeader2, reportHeader3, isLogoRequired, logoImage, headingAlignment, logos, logoCounts } = config;
+  const { reportHeader1, reportHeader2, reportHeader3, isLogoRequired, logoImage, headingAlignment, logos, logoCounts } = config || {};
 
   const orientation = printPDFIn === 'Landscape' ? 'l' : 'p';
   const pdf = new jsPDF(orientation, 'mm', 'a4');
   const margin = 10;////////
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-
-  // const drawHeader = (doc) => {
-  //   const logoWidth = 15;
-  //   const logoHeight = 18;
-  //   const margin = 10;
-  //   const textMargin = 10;
-
-  //   // Handle logos
-  //   if (isLogoRequired === 'Yes' && logos?.length) {
-  //     logos.forEach(logo => {
-  //       if (!logo.image) return;
-
-  //       let logoX, logoY;
-
-  //       switch (logo.position.toLowerCase()) {
-  //         case 'top':
-  //           logoX = pageWidth / 2 - logoWidth / 2;
-  //           logoY = 5;
-  //           break;
-  //         case 'left':
-  //           logoX = margin;
-  //           logoY = 5;
-  //           break;
-  //         case 'right':
-  //           logoX = pageWidth - logoWidth - margin;
-  //           logoY = 5;
-  //           break;
-  //         default:
-  //           logoX = pageWidth / 2 - logoWidth / 2;
-  //           logoY = margin;
-  //       }
-
-  //       try {
-  //         doc.addImage(logo.image, 'JPEG', logoX, logoY, logoWidth, logoHeight);
-  //       } catch (error) {
-  //         console.error('Error adding logo:', error);
-  //       }
-  //     });
-  //   }
-
-  //   // Calculate starting Y position
-  //   const hasTopLogo = isLogoRequired === 'Yes' && logos?.some(logo =>
-  //     logo.position.toLowerCase() === 'top' && logo.image
-  //   );
-  //   const headerYStart = hasTopLogo ? logoHeight + 10 : 15;
-  //   const alignment = headingAlignment.toLowerCase();
-
-  //   // Determine x-position based on alignment
-  //   let headerX;
-  //   switch (alignment) {
-  //     case 'left':
-  //       headerX = textMargin;
-  //       break;
-  //     case 'right':
-  //       headerX = pageWidth - textMargin;
-  //       break;
-  //     case 'center':
-  //     default:
-  //       headerX = pageWidth / 2;
-  //   }
-
-  //   doc.setFontSize(12);
-  //   doc.setFont('helvetica', 'bold');
-
-  //   doc.text(reportHeader1, headerX, headerYStart, { align: alignment });
-  //   doc.text(reportHeader2, headerX, headerYStart + 5, { align: alignment });
-  //   doc.text(reportHeader3, headerX, headerYStart + 10, { align: alignment });
-
-  //   doc.setFontSize(11);
-  //   doc.text(rptDisplayName || 'Report', headerX, headerYStart + 17, { align: alignment });
-
-
-  //   return headerYStart + 20;
-  // };
-
-  // drawHeader(pdf);
 
   const drawHeader = (doc) => {
     const logoWidth = 15;
@@ -737,34 +673,28 @@ export const generateGraphPDF = async (widgetData, tableData, config, filters = 
     yPosition += 5;
   }
 
-  // Prepare headers for autoTable
-  // const headers = Object.keys(tableData[0] || {}).map((key) => ({
-  //   header: key.toUpperCase(),
-  //   dataKey: key
-  // }));
-
-
   const tabData = [];
 
-  // const headers = ['Category'].concat(tableData.categories.map(series => series.name));
-  const body = tableData.seriesData.map((category, index) => {
-    const row = [category];
-    tableData.seriesData.forEach(series => {
-      row.push(series.data[index] || '');
-    });
-    return row;
-  });
-
-  const headers = [xAxisLabel, yAxisLabel];
+  // const headers = [xAxisLabel, yAxisLabel];
+  const headers = [xAxisLabel, ...tableData.seriesData.map(s => s.name)];
 
   // Assuming first series contains the counts
   const counts = tableData.seriesData[0]?.data || [];
 
+  // tableData.categories.forEach((state, index) => {
+  //   tabData.push([state, counts[index] || 0]);
+  // });
+
   tableData.categories.forEach((state, index) => {
-    tabData.push([state, counts[index] || 0]);
+    const row = [state];
+    tableData.seriesData.forEach(series => {
+      row.push(series.data[index] || 0);
+    });
+
+    tabData.push(row);
   });
 
-
+  console.log(tableData, 'tableData')
   pdf.autoTable({
     startY: yPosition,
     head: [headers],
@@ -818,7 +748,7 @@ export const generateCSV = (widgetData, tableData, config) => {
   if (!widgetData) return;
 
   const { rptDisplayName } = widgetData;
-  const { reportHeader1, reportHeader2, reportHeader3, isLogoRequired, logoImage, headingAlignment } = config;
+  const { reportHeader1, reportHeader2, reportHeader3, isLogoRequired, logoImage, headingAlignment } = config || {};
   const currentDate = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB');
 
   const heading = [
@@ -832,8 +762,23 @@ export const generateCSV = (widgetData, tableData, config) => {
     []
   ];
 
-  const tableHeaders = Object.keys(tableData[0]);
-  const tableRows = tableData.map(row => tableHeaders.map(header => row[header]));
+  const unwantedKeys = ['pkcolumn'];
+
+  const tableHeaders = Object.keys(tableData[0] || {}).filter(key => !unwantedKeys.includes(key));
+  // const tableHeaders = Object.keys(tableData[0]);
+  // const tableRows = tableData.map(row => tableHeaders.map(header => row[header]));
+
+  const tableRows = tableData.map(row =>
+    tableHeaders.map(header => {
+      const content = row[header];
+      if (content === null || content === undefined) return '';
+      if (typeof content === 'object') return JSON.stringify(content);
+      if (typeof content === 'string' && content.includes('##')) {
+        return content.split('##')[0];
+      }
+      return content.toString();
+    })
+  );
 
   const finalData = [
     ...heading,
@@ -884,16 +829,24 @@ export const generateGraphCSV = (widgetData, data, config) => {
   }
 
   // Simplified headers for state-wise data
-  const headers = [xAxisLabel, yAxisLabel];
+  const headers = [xAxisLabel, ...data.seriesData.map(s => s.name)];
 
   // Get counts from first series
   const counts = data.seriesData[0].data;
 
   // Prepare rows
-  const rows = data.categories.map((state, index) => [
-    state,
-    counts[index] || 0
-  ]);
+  // const rows = data.categories.map((state, index) => [
+  //   state,
+  //   counts[index] || 0
+  // ]);
+
+  const rows = data.categories.map((state, index) => {
+  const row = [state];
+  data.seriesData.forEach(series => {
+    row.push(series.data[index] || 0);
+  });
+  return row;
+});
 
   // Combine all data
   const finalData = [

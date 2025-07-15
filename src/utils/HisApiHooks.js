@@ -3,8 +3,8 @@ import axios from 'axios';
 
 // const BaseUrl = import.meta.env.VITE_HIS_API_BASE_URL
 // 
-// const BaseUrl = 'https://10.226.25.164:8023'; //prSitee//
-const BaseUrl = 'http://10.226.17.6:8024';  //BG     
+const BaseUrl = 'http://10.226.25.164:8024'; //prSitee//
+// const BaseUrl = 'http://10.226.17.6:8024';  //BG     
 // const BaseUrl = 'http://10.226.29.211:8025/';  //Disha
 //  const BaseUrl = 'http://10.226.29.102:8025/';  //shubham
 // const BaseUrl = 'http://10.226.30.45:8025/';  //pradeep
@@ -79,10 +79,16 @@ export const fetchData = async (url, params) => {
     }
 };
 
-export const fetchPostData = async (url, data) => {
+export const fetchPostData = async (url, data, rt) => {
     try {
-        const response = await apiHis.post(url, data);
-        return response.data;
+        if (rt) {
+            const response = await apiHis.post(url, data, rt);
+            return response;
+        } else {
+            const response = await apiHis.post(url, data);
+            return response.data;
+        }
+
     } catch (error) {
         console.log('API Error:', error);
         // return error?.response?.data;

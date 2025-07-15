@@ -4,115 +4,146 @@ import { HISContext } from '../../contextApi/HISContext';
 import FooterText from '../commons/FooterText';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faBackward } from '@fortawesome/free-solid-svg-icons';
+import { useSearchParams } from 'react-router-dom';
+import { fetchPostData } from '../../../../utils/HisApiHooks';
 
 const PdfDownload = lazy(() => import('../commons/PdfDownload'));
 const Parameters = lazy(() => import('./Parameters'));
 
 const TabDash = React.memo(() => {
-    const { allWidgetData, setLoading, loading, activeTab, setParamsValues, presentWidgets, setPresentWidgets, prevKpiTab, setActiveTab, setPrevKpiTab, setParamsValuesPro, dt } = useContext(HISContext);
+    const { setLoading, loading, activeTab, setParamsValues, presentWidgets, setPresentWidgets, prevKpiTab, setActiveTab, setPrevKpiTab, setParamsValuesPro, dt } = useContext(HISContext);
     const [presentTabs, setPresentTabs] = useState([]);
     const [widWithoutLinked, setWidWithoutLinked] = useState([]);
+    const [allWidgetData, setAllWidgetData] = useState([]);
+
+    const [searchParams] = useSearchParams();
+    const groupId = searchParams.get("groupId");
+    const dashboardFor = searchParams.get("dashboardFor");
 
     const footerText = activeTab?.jsonData?.footerText || "";
 
-    useEffect(() => {
-
-        if (activeTab?.jsonData?.lstDashboardWidgetMapping?.length > 0) {
-            setLoading(true)
-            setParamsValues({
-                tabParams: {},
-                widgetParams: {},
-            })
-            setParamsValuesPro({
-                tabParams: {},
-                widgetParams: {},
-            })
-            const widgetIds = activeTab?.jsonData?.lstDashboardWidgetMapping;
-
-            const sortedWidgets = [...widgetIds].sort((a, b) => parseInt(a.displayOrder) - parseInt(b.displayOrder));
-            const availableWidgets = sortedWidgets
-                ?.map(wid => allWidgetData?.find(widget => widget?.rptId == wid?.rptId))
-                ?.filter(widget => widget);
-
-            let finalWidgets = [];
-
-            sortedWidgets?.forEach(wid => {
-                const parentWidget = availableWidgets?.find(widget => widget?.rptId == wid?.rptId);
-                if (parentWidget) {
-                    finalWidgets?.push(parentWidget);
-                    if (parentWidget?.linkedWidgetRptId) {
-                        const linkedWidgetIds = parentWidget.linkedWidgetRptId?.split(',');
-                        linkedWidgetIds?.forEach(linkedId => {
-                            const linkedWidget = availableWidgets?.find(widget => widget?.rptId == linkedId);
-                            if (linkedWidget) {
-                                finalWidgets?.push(linkedWidget);
-                            }
-                        });
-                    }
-                }
-            });
-
-            let seen = new Set();
-            let uniqueWidgets = finalWidgets?.filter(widget => {
-                if (!seen.has(widget.rptId)) {
-                    seen.add(widget.rptId);
-                    return true;
-                }
-                return false;
-            });
-
-
-            uniqueWidgets?.forEach((parent) => {
-                parent.children = uniqueWidgets
-                    .filter((child) => child.parentReport == parent.rptId)
-                    .map((child) => child.rptId);
-            });
-
-            const childWidgetIds = new Set(
-                uniqueWidgets
-                    .filter(widget => uniqueWidgets.some(parent => widget.parentReport == parent.rptId))
-                    .map(widget => widget.rptId)
-            );
-            const allLinkedRptIds = new Set(
-                uniqueWidgets
-                    .flatMap(widget => widget?.linkedWidgetRptId?.split(',') || [])
-                    ?.map(id => id?.trim())
-                    ?.filter(Boolean)
-            );
-
-
-            const standaloneAndParentsOnly = uniqueWidgets?.filter(
-                widget => !childWidgetIds.has(widget.rptId)
-                    && !allLinkedRptIds.has(widget.rptId)
-                    && widget.widgetType !== "singleQueryChild"
-            );
-            console.log(standaloneAndParentsOnly, 'widWithoutLinked')
-            console.log(uniqueWidgets, 'presentWidgets')
-            setWidWithoutLinked(standaloneAndParentsOnly);
-            setPresentWidgets(uniqueWidgets);
-            setPresentTabs(sortedWidgets);
-            setLoading(false)
-        } else {
-            setPresentWidgets([]);
-            setWidWithoutLinked([]);
-            setParamsValues({
-                tabParams: {},
-                widgetParams: {},
-            })
-            setParamsValuesPro({
-                tabParams: {},
-                widgetParams: {},
-            })
-            setLoading(false)
+    const getAllAvailableWidgets = useCallback(async (idArr, dashFor) => {
+        try {
+            const val = {
+                ids: idArr || [],
+                dashboardFor: dashFor || 'CENTRAL DASHBOARD',
+                masterName: "DashboardWidgetMst"
+            };
+            const data = await fetchPostData("/hisutils/getWdgtMultipleData", val);
+            if (data?.status === 1) {
+                setAllWidgetData(data?.data);
+                return data?.data;
+            } else {
+                setAllWidgetData([]);
+                return [];
+            }
+        } catch (error) {
+            console.error("Error fetching tabs data", error);
+             return [];
         }
-    }, [activeTab, allWidgetData]);
+    }, []);
+
+
+    useEffect(() => {
+        const loadWidgets = async () => {
+            if (activeTab?.jsonData?.lstDashboardWidgetMapping?.length > 0) {
+                setParamsValues({
+                    tabParams: {},
+                    widgetParams: {},
+                })
+                setParamsValuesPro({
+                    tabParams: {},
+                    widgetParams: {},
+                })
+                const widgetIds = activeTab?.jsonData?.lstDashboardWidgetMapping;
+
+                const sortedWidgets = [...widgetIds].sort((a, b) => parseInt(a.displayOrder) - parseInt(b.displayOrder));
+                // const availableWidgets = sortedWidgets
+                //     ?.map(wid => allWidgetData?.find(widget => widget?.rptId == wid?.rptId))
+                //     ?.filter(widget => widget);
+
+                const availableWidgets = await getAllAvailableWidgets(sortedWidgets?.map(dt=>dt?.rptId), dashboardFor);
+                console.log(availableWidgets, 'avail')
+
+                let finalWidgets = [];
+
+                sortedWidgets?.forEach(wid => {
+                    const parentWidget = availableWidgets?.find(widget => widget?.jsonData?.rptId == wid?.rptId)?.jsonData;
+                    if (parentWidget) {
+                        finalWidgets?.push(parentWidget);
+                        if (parentWidget?.linkedWidgetRptId) {
+                            const linkedWidgetIds = parentWidget.linkedWidgetRptId?.split(',');
+                            linkedWidgetIds?.forEach(linkedId => {
+                                const linkedWidget = availableWidgets?.find(widget => widget?.jsonData?.rptId == linkedId);
+                                if (linkedWidget) {
+                                    finalWidgets?.push(linkedWidget?.jsonData);
+                                }
+                            });
+                        }
+                    }
+                });
+
+                let seen = new Set();
+                let uniqueWidgets = finalWidgets?.filter(widget => {
+                    if (!seen.has(widget.rptId)) {
+                        seen.add(widget.rptId);
+                        return true;
+                    }
+                    return false;
+                });
+
+
+                uniqueWidgets?.forEach((parent) => {
+                    parent.children = uniqueWidgets
+                        .filter((child) => child.parentReport == parent.rptId)
+                        .map((child) => child.rptId);
+                });
+
+                const childWidgetIds = new Set(
+                    uniqueWidgets
+                        .filter(widget => uniqueWidgets.some(parent => widget.parentReport == parent.rptId))
+                        .map(widget => widget.rptId)
+                );
+                const allLinkedRptIds = new Set(
+                    uniqueWidgets
+                        .flatMap(widget => widget?.linkedWidgetRptId?.split(',') || [])
+                        ?.map(id => id?.trim())
+                        ?.filter(Boolean)
+                );
+
+
+                const standaloneAndParentsOnly = uniqueWidgets?.filter(
+                    widget => !childWidgetIds.has(widget.rptId)
+                        && !allLinkedRptIds.has(widget.rptId)
+                        && widget.widgetType !== "singleQueryChild"
+                );
+
+                setWidWithoutLinked(standaloneAndParentsOnly);
+                setPresentWidgets(uniqueWidgets);
+                setPresentTabs(sortedWidgets);
+            } else {
+                setPresentWidgets([]);
+                setWidWithoutLinked([]);
+                setParamsValues({
+                    tabParams: {},
+                    widgetParams: {},
+                })
+                setParamsValuesPro({
+                    tabParams: {},
+                    widgetParams: {},
+                })
+            }
+        };
+
+        loadWidgets();
+    }, [activeTab]);
 
     const onPrevClick = () => {
         setActiveTab(prevKpiTab[0])
         setPrevKpiTab([])
     }
 
-
+// console.log(activeTab,'activeTab')
 
     return (
         <>
@@ -149,7 +180,7 @@ const TabDash = React.memo(() => {
                             <Suspense
                                 fallback={
                                     <div className="pt-3 text-center">
-                                       {dt('Loading')}...
+                                        {dt('Loading')}...
                                     </div>
                                 }
                             >
@@ -166,7 +197,7 @@ const TabDash = React.memo(() => {
                                         <Suspense
                                             fallback={
                                                 <div className="pt-3 text-center">
-                                                     {dt('Loading')}...
+                                                    {dt('Loading')}...
                                                 </div>
                                             }
                                         >

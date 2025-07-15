@@ -45,7 +45,6 @@ const WidgetDash = React.memo(({ widgetDetail, presentWidgets, presentTabs, pk }
 
     }, [widgetData])
 
-
     const renderWidget = (data) => {
         switch (data?.reportViewed) {
             case 'KPI': return <KpiDash widgetData={data} presentTabs={presentTabs} />;
@@ -56,32 +55,77 @@ const WidgetDash = React.memo(({ widgetDetail, presentWidgets, presentTabs, pk }
             case 'News_Ticker': return <NewsTickerDash widgetData={data} />;
             case 'Criteria_Map': return (
                 <div style={{ position: 'relative', zIndex: 1 }}>
-                    <MapDash widgetData={data} setWidgetData={setWidgetData} pkColumn={pkColumn} setPkColumn={handleSetPkColumn} levelData={levelData} setLevelData={setLevelData}/>
+                    <MapDash widgetData={data} setWidgetData={setWidgetData} pkColumn={pkColumn} setPkColumn={handleSetPkColumn} levelData={levelData} setLevelData={setLevelData} />
                 </div>
             );
             default: return null;
         }
     };
 
+
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <>
-                {widgetData &&
-                    <div className={`col-sm-${presentTabs?.filter(dt => dt?.rptId == widgetData?.rptId)[0]?.widgetWidth}`}
-                        style={{
-                            padding: "5px 3px"
-                        }}>
-                        {/* {widgetData?.widgetType === "singleQueryParent" ?
+                {widgetData && (
+                    <>
+                        {widgetData?.widgetType === "singleQueryParent" ? (
+                            <>
+                                {(() => {
+                                    try {
+                                        const parsedChildren = JSON.parse(widgetData?.sqChildJsonString || '[]');
+                                        const mainQuery = widgetData?.queryVO?.[0]?.mainQuery || '';
+                                        const orderedChildren = presentWidgets
+                                            .filter(widget => parsedChildren.some(child => child.SQCHILDWidgetId === widget.rptId))
+                                            .map(widget => {
+                                                const childWidgetId = widget.rptId;
+                                                const widgetWidth = presentTabs?.find(tab => tab?.rptId === childWidgetId)?.widgetWidth || 12;
 
-                        <h1>Hi BG</h1>
-                        :
-                        <> */}
-                        {renderWidget(widgetData)}
-                        {/* </>
-                    } */}
+                                                const childMeta = parsedChildren.find(child => child.SQCHILDWidgetId === childWidgetId);
+                                                const columnIndexesParent = childMeta?.modeForSQCHILDColumnNo
+                                                    ?.split(',')
+                                                    ?.map(idx => parseInt(idx.trim()) - 1)
+                                                    ?.filter(idx => !isNaN(idx));
+                                                const modifiedWidget = {
+                                                    ...widget,
+                                                    queryVO: [
+                                                        {
+                                                            mainQuery
+                                                        }
+                                                    ],
+                                                    columnIndexesParent,
+                                                    isQuerychild: "1"
+                                                };
 
-                    </div>
-                }
+                                                return (
+                                                    <div
+                                                        key={childWidgetId}
+                                                        className={`col-sm-${widgetWidth}`}
+                                                        style={{ padding: "5px 3px" }}
+                                                    >
+                                                        {renderWidget(modifiedWidget)}
+                                                    </div>
+                                                );
+                                            });
+
+                                        return <>{orderedChildren}</>;
+                                    } catch (error) {
+                                        console.error("Invalid sqChildJsonString", error);
+                                        return null;
+                                    }
+                                })()}
+                            </>
+                        ) : (
+                            // Normal widget rendering with col class
+                            <div
+                                className={`col-sm-${presentTabs?.find(dt => dt?.rptId == widgetData?.rptId)?.widgetWidth || 12}`}
+                                style={{ padding: "5px 3px" }}
+                            >
+                                {renderWidget(widgetData)}
+                            </div>
+                        )}
+                    </>
+                )}
+
                 {/* Render linked widgets if available */}
                 {linkedWidget && linkedWidget.map((id) => {
 

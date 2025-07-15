@@ -10,6 +10,7 @@ import { getAuthUserData } from "../../../../utils/CommonFunction";
 import { useSearchParams } from "react-router-dom";
 import PopUpWidget from "./PopUpWidget";
 import { fetchPostData } from "../../../../utils/HisApiHooks";
+import { jsPDF } from 'jspdf';
 
 const Parameters = lazy(() => import('./Parameters'));
 
@@ -17,7 +18,7 @@ const TabularDash = (props) => {
 
   const { widgetData, setWidgetData, levelData, setLevelData, pkColumn, setPkColumn } = props;
 
-  const { theme, singleConfigData, paramsValues, setLoading, presentWidgets, isSearchQuery, setIsSearchQuery, setSearchScope, searchScope,dt } = useContext(HISContext);
+  const { theme, singleConfigData, paramsValues, setLoading, presentWidgets, isSearchQuery, setIsSearchQuery, setSearchScope, searchScope, dt } = useContext(HISContext);
 
 
   const [tableData, setTableData] = useState([]);
@@ -55,6 +56,7 @@ const TabularDash = (props) => {
       setFilterData(newFilteredData);
     }
   }, [searchInput, tableData]);
+
 
   const formatData = (rawData = []) => {
     return rawData.map((item) => {
@@ -129,16 +131,12 @@ const TabularDash = (props) => {
     setShowPopUpWidget(false);
   };
 
-  const FtpClicked = (e) => {
-
+  const FtpClicked = async (e) => {
     e.preventDefault();
-    // setLoading(true);
     const tag = e.target;
 
-    // Safety check: Make sure we clicked on an <a> tag
     if (tag.tagName !== 'A') {
       ToastAlert("Invalid FTP link.", 'error');
-      // setLoading(false);
       return;
     }
 
@@ -149,13 +147,38 @@ const TabularDash = (props) => {
       "remoteUrl": remoteUrl,
       "fileName": fileName
     }
-    fetchPostData("/hisutils/ftp/view", val).then((data) => {
-      if (data?.status === 1) {
-        console.log(data, 'File fetched successfully');
-        // setLoading(false);
+
+    fetchPostData("http://10.226.25.164:8024/hisutils/ftp/view", val, { responseType: 'blob' }).then(async (data) => {
+      if (data) {
+        const contentType = data.headers['content-type'] || data.data.type;
+
+        if (contentType.includes('application/pdf')) {
+
+          const pdfBlob = new Blob([data.data], { type: 'application/pdf' });
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          window.open(pdfUrl, '_blank');
+
+        } else if (contentType.includes('text/plain')) {
+
+          const text = await data.data.text();
+          const doc = new jsPDF();
+          doc.text(text?.trim(), 10, 10);
+          const pdfUrl = URL.createObjectURL(doc.output('blob'));
+
+          const pdfWindow = window.open(pdfUrl);
+          if (!pdfWindow) {
+            const a = document.createElement('a');
+            a.href = pdfUrl;
+            a.download = 'converted.pdf';
+            a.click();
+          }
+          setTimeout(() => URL.revokeObjectURL(pdfUrl), 60000);
+        }
+        else {
+          ToastAlert(`Unsupported file type: ${contentType}`, 'error');
+        }
       } else {
-        ToastAlert(data?.message, 'error')
-        // setLoading(false);
+        ToastAlert("Internal Error", 'error')
       }
     })
   }
@@ -240,7 +263,7 @@ const TabularDash = (props) => {
     if (widget?.modeOfQuery === "Procedure") {
       if (!widget?.procedureMode) return;
       try {
-        setFetching(true)
+        setFetching(true);
         const paramVal = formatParams(paramsValues ? paramsValues : null, widgetData?.rptId || '');
         const params = [
           getAuthUserData('hospitalCode')?.toString(), //hospital code===
@@ -277,7 +300,21 @@ const TabularDash = (props) => {
         setFetching(true)
         const data = await fetchQueryData(widget?.queryVO?.length > 0 ? widget?.queryVO : [], widget?.JNDIid, params, pkColumn);
         if (data?.length > 0) {
-          const formattedData = formatData(data); // if you want to keep formatting consistent
+          let filteredData = data;
+
+          if (widget?.isQuerychild && widget?.isQuerychild === "1") {
+            const columnIndexes = widget?.columnIndexesParent || [];
+            const keys = Object.keys(data[0]);
+            filteredData = data.map(row => {
+              const filteredRow = {};
+              columnIndexes.forEach(idx => {
+                const key = keys[idx];
+                if (key) filteredRow[key] = row[key];
+              });
+              return filteredRow;
+            });
+          }
+          const formattedData = formatData(filteredData);
           const generatedColumns = generateColumns(formattedData, isChildPresent);
           setColumns(generatedColumns);
           setTableData(formattedData);

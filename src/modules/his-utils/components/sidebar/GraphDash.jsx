@@ -13,7 +13,7 @@ import { useSearchParams } from "react-router-dom";
 const Parameters = lazy(() => import('./Parameters'));
 
 const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
-  const { theme, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery, setSearchScope, searchScope,dt } = useContext(HISContext);
+  const { theme, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery, setSearchScope, searchScope, dt } = useContext(HISContext);
   const [widParamsValues, setWidParamsValues] = useState();
   const [filteredGraphOptions, setFilteredGraphOptions] = useState([]);
   const [chartType, setChartType] = useState('BAR_GRAPH');
@@ -21,11 +21,11 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
   const [queryParams] = useSearchParams();
   const isPrev = queryParams.get('isPreview');
 
-  const is3D = widgetData.is3d === "true";
+  const is3D = widgetData.is3d === "true" || widgetData.is3d === "Yes";
   const xAxisLabel = widgetData.xAxisLabel || "X Axis";
   const yAxisLabel = widgetData.yAxisLabel || "Y Axis";
-  const showLegend = widgetData.showInLegend === "true";
-  const dataLabelsEnabled = widgetData.dataLabels === "true";
+  const showLegend = widgetData.showInLegend === "true" || widgetData.showInLegend === "Yes";
+  const dataLabelsEnabled = widgetData.dataLabels === "true" || widgetData.dataLabels === "Yes";
   const colorList = widgetData.colorForBars ? widgetData.colorForBars.split(",") : ["red", "blue", "green"];
   const mainQuery = widgetData?.queryVO && widgetData?.queryVO?.length > 0 ? widgetData?.queryVO[0]?.mainQuery : ''
   const alpha = widgetData.alpha || 15;
@@ -138,13 +138,31 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
     const params = getOrderedParamValues(widget?.queryVO[0]?.mainQuery, paramsValues, widget?.rptId);
     try {
       const data = await fetchQueryData(query, widgetData?.JNDIid, params);
+
+      let filteredData = data;
+
+      if (widget?.isQuerychild && widget?.isQuerychild === "1") {
+        const columnIndexes = widget?.columnIndexesParent || [];
+
+        if (data.length > 0 && columnIndexes.length > 0) {
+          const keys = Object.keys(data[0]);
+          filteredData = data.map(row => {
+            const filteredRow = {};
+            columnIndexes.forEach(idx => {
+              const key = keys[idx];
+              if (key) filteredRow[key] = row[key];
+            });
+            return filteredRow;
+          });
+        }
+      }
       const limit = widgetLimit
         ? parseInt(widgetLimit)
         : safeLimit
           ? parseInt(safeLimit)
-          : data.length;
+          : filteredData.length;
 
-      const limitedData = data.slice(0, limit);
+      const limitedData = filteredData.slice(0, limit);
 
       // If no data, do nothing
       if (!limitedData.length) {

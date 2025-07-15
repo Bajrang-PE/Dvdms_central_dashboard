@@ -7,8 +7,9 @@ import { faAdd, faDatabase, faEdit, faFile, faRefresh, faTrash } from '@fortawes
 import { serverName } from '../../localData/DropDownData'
 import { ToastAlert } from '../../utils/commonFunction'
 import { HISContext } from '../../contextApi/HISContext'
-import { fetchData, fetchUpdateData } from '../../../../utils/HisApiHooks'
+import { fetchData, fetchPostData, fetchUpdateData } from '../../../../utils/HisApiHooks'
 import LogoUploader from '../../components/commons/LogoUploader'
+
 
 const DbConfigMaster = () => {
   const { dashboardForDt, getDashboardForDrpData, setSelectedOption, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, singleConfigData, getDashConfigData, clearAllCache, dt } = useContext(HISContext);
@@ -299,7 +300,6 @@ const DbConfigMaster = () => {
     setRows([])
     setLogoPosition({ "logo1Position": "left", "logo2Position": "right", "logo3Position": "top" })
   }
-
 
   return (
     <>

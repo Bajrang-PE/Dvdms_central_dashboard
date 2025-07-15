@@ -14,7 +14,7 @@ import Parameters from "./Parameters";
 
 
 const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, setLevelData }) => {
-    const { theme, setSearchScope, singleConfigData, paramsValues, setLoading, isSearchQuery, setIsSearchQuery, presentWidgets, searchScope,dt } = useContext(HISContext);
+    const { theme, setSearchScope, singleConfigData, paramsValues, setLoading, isSearchQuery, setIsSearchQuery, presentWidgets, searchScope, dt } = useContext(HISContext);
     const [mapData, setMapData] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false)
     const [stateName, setStateName] = useState([]);
@@ -232,7 +232,21 @@ const MapDash = ({ widgetData, setWidgetData, pkColumn, setPkColumn, levelData, 
             try {
                 const data = await fetchQueryData(widget?.queryVO?.length > 0 ? widget?.queryVO : [], widget?.JNDIid, params);
                 if (data?.length > 0) {
-                    const formattedData = formatData(data);
+                    let filteredData = data;
+
+                    if (widget?.isQuerychild && widget?.isQuerychild === "1") {
+                        const columnIndexes = widget?.columnIndexesParent || [];
+                        const keys = Object.keys(data[0]);
+                        filteredData = data.map(row => {
+                            const filteredRow = {};
+                            columnIndexes.forEach(idx => {
+                                const key = keys[idx];
+                                if (key) filteredRow[key] = row[key];
+                            });
+                            return filteredRow;
+                        });
+                    }
+                    const formattedData = formatData(filteredData);
                     const generatedColumns = generateColumns(formattedData, false);
                     setColumns(generatedColumns);
                     setTableData(formattedData);

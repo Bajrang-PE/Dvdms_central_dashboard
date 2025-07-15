@@ -35,6 +35,7 @@ const HISContextData = ({ children }) => {
   });
 
   const [presentWidgets, setPresentWidgets] = useState([]);
+  const [presentTabsDash, setPresentTabsDash] = useState([]);
 
 
   // ALL DATA
@@ -277,7 +278,7 @@ const HISContextData = ({ children }) => {
       //dashboard submenu
       dashboardSubmenuData, getDashboardSubmenuData,
 
-      presentWidgets, setPresentWidgets,
+      presentWidgets, setPresentWidgets,presentTabsDash, setPresentTabsDash,
 
       //language provider
       language,

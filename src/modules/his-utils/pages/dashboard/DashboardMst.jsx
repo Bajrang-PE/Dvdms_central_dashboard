@@ -9,7 +9,7 @@ const TopBar = lazy(() => import("../../components/sidebar/TopBar"));
 const TabDash = lazy(() => import("../../components/sidebar/TabDash"));
 
 const DashboardMst = () => {
-    const { getAllWidgetData, activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData, setParamsValues, setPrevKpiTab, dt } = useContext(HISContext);
+    const { activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData, setParamsValues, setPrevKpiTab, dt, setPresentTabsDash } = useContext(HISContext);
 
     const [searchParams] = useSearchParams();
     const groupId = searchParams.get("groupId");
@@ -23,7 +23,7 @@ const DashboardMst = () => {
     }, [])
 
     const getDashboardData = useCallback((groupId, dashFor) => {
-        fetchData(`hisutils/singleDashboard/${groupId}/${dashFor}/DashboardGroupingMst`)
+        fetchData(`/hisutils/singleDashboard/${groupId}/${dashFor}/DashboardGroupingMst`)
             .then((data) => {
                 if (data?.status === 1) setMainDashData(data?.data);
             });
@@ -36,11 +36,13 @@ const DashboardMst = () => {
                 dashboardFor: dashFor || 'CENTRAL DASHBOARD',
                 masterName: "DashboardMst"
             };
-            const data = await fetchPostData("hisutils/gettabsMultipleData", val);
+            const data = await fetchPostData("/hisutils/gettabsMultipleData", val);
             if (data?.status === 1) {
                 setPresentTabs(data.data);
+                setPresentTabsDash(data.data);
             } else {
                 setPresentTabs([]);
+                setPresentTabsDash([]);
             }
         } catch (error) {
             console.error("Error fetching tabs data", error);
@@ -52,7 +54,7 @@ const DashboardMst = () => {
         if (dashboardFor && groupId) {
             setLoading(true);
             getDashboardData(groupId, dashboardFor);
-            getAllWidgetData(dashboardFor);
+            // getAllWidgetData(dashboardFor);
         }
     }, [searchParams]);
 
@@ -76,7 +78,7 @@ const DashboardMst = () => {
         setParamsValues(values);
     }, []);
 
-      useEffect(() => {
+    useEffect(() => {
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
