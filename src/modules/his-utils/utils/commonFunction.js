@@ -105,7 +105,7 @@ export const fetchProcedureData = async (procedure, params, jndiServer) => {
       "parameters": params,
       "jndi": jndiServer
     };
-    const response = await fetchPostData(`api/procedures/execute`, requestBody);
+    const response = await fetchPostData(`/hisutils/procedures/execute`, requestBody);
 
     return response?.data || [];
   } catch (error) {

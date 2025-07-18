@@ -1,8 +1,6 @@
 import React, { lazy, useContext, useEffect, useMemo, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import RajasthanMap from '../../localData/mapJson/rajasthan.json';
-import UpMap from '../../localData/mapJson/uttarpradesh.json';
 import { fetchProcedureData, fetchQueryData, formatDateFullYear, formatParams, getOrderedParamValues, ToastAlert } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import { useSearchParams } from "react-router-dom";

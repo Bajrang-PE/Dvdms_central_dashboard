@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react'
 import { DrpDataValLab, ToastAlert } from '../utils/commonFunction';
-import { fetchData, fetchDeleteData } from '../../../utils/HisApiHooks';
+import { fetchData, fetchDeleteData, fetchPostData } from '../../../utils/HisApiHooks';
 import axios from 'axios';
 
 export const HISContext = createContext();
@@ -88,7 +88,7 @@ const HISContextData = ({ children }) => {
 
   // dropdowns api call
   const getDashboardForDrpData = () => {
-    fetchData("hisutils/dashboardfor").then((data) => {
+    fetchData("/hisutils/dashboardfor").then((data) => {
       if (data?.status === 1) {
         setDashboardForDt(data?.data);
       } else {
@@ -98,7 +98,7 @@ const HISContextData = ({ children }) => {
   }
 
   const getServiceCategoryDrpData = () => {
-    fetchData("hisutils/serviceCategory").then((data) => {
+    fetchData("/hisutils/serviceCategory").then((data) => {
       if (data?.status === 1) {
         setServiceCategoryDrpData(data?.data);
       } else {
@@ -225,7 +225,7 @@ const HISContextData = ({ children }) => {
   }
 
   const clearAllCache = () => {
-    fetchDeleteData('hisutils/clearCache').then((data) => {
+    fetchPostData('/hisutils/clearCache').then((data) => {
       if (data?.status === 1) {
         ToastAlert(data?.message)
       } else {

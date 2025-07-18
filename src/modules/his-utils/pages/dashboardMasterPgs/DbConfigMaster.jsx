@@ -10,7 +10,6 @@ import { HISContext } from '../../contextApi/HISContext'
 import { fetchData, fetchPostData, fetchUpdateData } from '../../../../utils/HisApiHooks'
 import LogoUploader from '../../components/commons/LogoUploader'
 
-
 const DbConfigMaster = () => {
   const { dashboardForDt, getDashboardForDrpData, setSelectedOption, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, singleConfigData, getDashConfigData, clearAllCache, dt } = useContext(HISContext);
 
@@ -216,7 +215,7 @@ const DbConfigMaster = () => {
       }
     }
 
-    fetchUpdateData("/hisutils/dashboard-config-save", val).then((data) => {
+    fetchPostData("/hisutils/dashboard-config-save", val).then((data) => {
       if (data?.status === 1) {
         ToastAlert(data?.message, "success");
         reset();
@@ -300,6 +299,8 @@ const DbConfigMaster = () => {
     setRows([])
     setLogoPosition({ "logo1Position": "left", "logo2Position": "right", "logo3Position": "top" })
   }
+
+
 
   return (
     <>

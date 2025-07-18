@@ -122,6 +122,7 @@ const ParameterMaster = () => {
       setShowDataTable(false);
       setShowWebServiceTable(false);
       setSelectedOption([]);
+      onTableClose()
     } else {
       ToastAlert('Please select a record', 'warning');
     }

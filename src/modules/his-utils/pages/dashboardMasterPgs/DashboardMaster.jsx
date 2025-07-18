@@ -521,6 +521,7 @@ const DashboardMaster = () => {
       setShowDataTable(false);
       setShowDashboardTable(false);
       setSelectedOption([]);
+      setSearchInput('');
       // setIsInputChanged(true)
 
     } else {
@@ -591,7 +592,7 @@ const DashboardMaster = () => {
       name: dt('Group Name'),
       selector: row => row?.jsonData?.groupName || "---",
       cell: row => <a
-        href={`/dvdms/HIS_dashboard/dashboard?groupId=${row.id}&dashboardFor=${row?.dashboardFor}&data=${""}&isPreview=1`}
+        href={`/dvdms/HIS_dashboard/dashboard?groupId=${row.id}&dashboardFor=${row?.dashboardFor}&isPreview=1`}
         target="_blank"
         rel="noopener noreferrer"
         className='text-decoration-none'
@@ -602,8 +603,9 @@ const DashboardMaster = () => {
     },
     {
       name: dt('URL'),
-      selector: row => `/dashboard?groupId=${row.id}&dashboardFor=${row?.dashboardFor}` || "---",
+      selector: row => `/dvdms/HIS_dashboard/dashboard?groupId=${row.id}&dashboardFor=${row?.dashboardFor}` || "---",
       sortable: true,
+      wrap:true
     }
   ]
 

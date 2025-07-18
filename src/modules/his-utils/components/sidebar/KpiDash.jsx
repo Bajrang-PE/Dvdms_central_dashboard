@@ -14,7 +14,6 @@ const KpiDash = ({ widgetData, presentTabs }) => {
     const [popupConfig, setPopupConfig] = useState(null);
     const [showPopUpWidget, setShowPopUpWidget] = useState(false);
 
-
     const formatData = (rawData = []) => {
         return rawData.map((item) => {
             const formattedItem = {};
@@ -232,13 +231,13 @@ const KpiDash = ({ widgetData, presentTabs }) => {
                             />
                             {/* widgetData?.onClickOfKPITabId !== '0' && widgetData?.onClickOfKPITabId !== '' && */}
 
-                            {(widgetData?.onClickKPITypeOption !== '0' && widgetData?.onClickKPITypeOption === "1") &&
+                            {(widgetData?.onClickOfKPITabId && widgetData?.onClickOfKPITabId !== '0') &&
                                 <div className='small-box-kpi-link-dtl' style={{ color: widgetData?.kpiLinkFontColor }} onClick={() => onKpiClickDetails(widgetData?.onClickOfKPITabId)}>
                                     <span>{dt(widgetData?.linkTab || 'Click For Details')}</span>
                                     <b><FontAwesomeIcon icon={faSearch} /></b>
                                 </div>
                             }
-                            {(widgetData?.onClickKPITypeOption !== '0' && widgetData?.onClickKPITypeOption === "2") &&
+                            {(widgetData?.onClickOfKPIWidgetId && widgetData?.onClickOfKPIWidgetId !== '0') &&
                                 <div className='small-box-kpi-link-dtl' style={{ color: widgetData?.kpiLinkFontColor }} onClick={() => onWidgetClickDetails(widgetData?.onClickOfKPIWidgetId)}>
                                     <span>{dt(widgetData?.linkWidget || 'Click For Details')}</span>
                                     <b><FontAwesomeIcon icon={faSearch} /></b>

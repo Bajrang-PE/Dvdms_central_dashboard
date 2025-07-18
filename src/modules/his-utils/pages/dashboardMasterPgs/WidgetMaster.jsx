@@ -381,7 +381,7 @@ const WidgetMaster = () => {
       setValues({
         ...values,
         id: singleData[0]?.rptId,
-        widgetFor: singleData[0]?.dashboardFor || 'CENTRAL DASHBOARD',//
+        widgetFor: singleData[0]?.dashboardFor || '',//
         widgetType: singleData[0]?.widgetType,//
         widgetNameDisplay: singleData[0]?.rptDisplayName,//
         widgetNameInternal: singleData[0]?.rptName,//
@@ -664,8 +664,7 @@ const WidgetMaster = () => {
         parentDisplaycolumnno: columnNoToDisplay,
         leftColumnsToBeFixed: leftClmNoToFixed,
         rightColumnsToBeFixed: rightClmNoToFixed,
-        linkWidget: kpiWidgetLinkName,
-        linkedWidgetRptId: linkedWidget?.length > 0 ?  linkedWidget.map(item => item.value).join(',') : '',
+        linkedWidgetRptId: linkedWidget?.length > 0 ? linkedWidget.map(item => item.value).join(',') : '',
         isActionButtonReq: actionBtnReq,
         pdfTableFontSize: pdfTableFontSize,
         pdfTableheaderBarColor: pdfTableHeadBarClr,
@@ -725,12 +724,11 @@ const WidgetMaster = () => {
         widgetHoverBackground: kpiDefaultHoverBg,
         widgetIconColour: kpiIconColor,
         onClickKPITypeOption: kpiBoxClickOptions,
-        onClickOfKPITabId: kpiTabOpenOnClick,
-        onClickOfKPIWidgetId: kpiWidgetOpenOnClick,
-        onClickOfKPIDashboardId: kpiDashboardOpenOnClick,
+        onClickOfKPITabId: kpiBoxClickOptions === "showTab" ? kpiTabOpenOnClick : "",
+        onClickOfKPIWidgetId: kpiBoxClickOptions === "showWidget" ? kpiWidgetOpenOnClick : "",
+        onClickOfKPIDashboardId: kpiBoxClickOptions === "showDashboard" ? kpiDashboardOpenOnClick : "",
         linkTab: kpiTabLinkName,
         linkWidget: kpiWidgetLinkName,
-        linkedWidgetRptId: linkedWidget?.length > 0 ? linkedWidget.map(item => item.value).join(',') : '',
         kpiLinkColor: kpiLinkColor,
         kpiLinkFontColor: kpiLinkFontColor,
         iconName: iconName,//
@@ -895,7 +893,6 @@ const WidgetMaster = () => {
         parentDisplaycolumnno: columnNoToDisplay,
         leftColumnsToBeFixed: leftClmNoToFixed,
         rightColumnsToBeFixed: rightClmNoToFixed,
-        linkWidget: kpiWidgetLinkName,
         linkedWidgetRptId: linkedWidget?.length > 0 ? linkedWidget.map(item => item.value).join(',') : '',
         isActionButtonReq: actionBtnReq,
         pdfTableFontSize: pdfTableFontSize,
@@ -957,9 +954,9 @@ const WidgetMaster = () => {
         widgetHoverBackground: kpiDefaultHoverBg,
         widgetIconColour: kpiIconColor,
         onClickKPITypeOption: kpiBoxClickOptions,
-        onClickOfKPITabId: kpiTabOpenOnClick,
-        onClickOfKPIWidgetId: kpiWidgetOpenOnClick,
-        onClickOfKPIDashboardId: kpiDashboardOpenOnClick,
+        onClickOfKPITabId: kpiBoxClickOptions === "showTab" ? kpiTabOpenOnClick : "",
+        onClickOfKPIWidgetId: kpiBoxClickOptions === "showWidget" ? kpiWidgetOpenOnClick : "",
+        onClickOfKPIDashboardId: kpiBoxClickOptions === "showDashboard" ? kpiDashboardOpenOnClick : "",
         linkTab: kpiTabLinkName,
         linkWidget: kpiWidgetLinkName,
         kpiLinkColor: kpiLinkColor,
@@ -1039,7 +1036,7 @@ const WidgetMaster = () => {
         isSSOUrl: isSsoUrl
       }
     }
-    fetchUpdateData("/hisutils/updateWidget", val).then((data) => {
+    fetchPostData("/hisutils/updateWidget", val).then((data) => {
       if (data?.status === 1) {
         ToastAlert("Data Updated Successfully", "success");
         getAllWidgetData(values?.widgetFor)
@@ -1247,7 +1244,7 @@ const WidgetMaster = () => {
       } else if (newErrors.mainQueryErr || newErrors.serviceReferenceNumberErr || newErrors.webserviceNameErr || newErrors.procedureNameErr) {
         setTabIndex(2);
         setTabName({ value: 2, label: "Query Details" });
-      } else if (newErrors.kpiTypeErr || newErrors.kpiIconTypeErr || newErrors.kpiDefaultBgColorErr || newErrors.noOfNewsVisibleErr || newErrors.mapNameErr || newErrors.defaultGraphTypeErr  || newErrors.defaultPluginNameErr || newErrors.defaultPluginNameErr || newErrors.alphaGraph3DErr || newErrors.betaGraph3DErr || newErrors.xAxisLabelErr || newErrors.yAxisLabelErr || newErrors.isThree3DErr || newErrors.isDataLabelsErr || newErrors.isShowLegendErr || newErrors.isDisplayGraphPluginErr || newErrors.isGraphScrollBarReqErr ) {
+      } else if (newErrors.kpiTypeErr || newErrors.kpiIconTypeErr || newErrors.kpiDefaultBgColorErr || newErrors.noOfNewsVisibleErr || newErrors.mapNameErr || newErrors.defaultGraphTypeErr || newErrors.defaultPluginNameErr || newErrors.defaultPluginNameErr || newErrors.alphaGraph3DErr || newErrors.betaGraph3DErr || newErrors.xAxisLabelErr || newErrors.yAxisLabelErr || newErrors.isThree3DErr || newErrors.isDataLabelsErr || newErrors.isShowLegendErr || newErrors.isDisplayGraphPluginErr || newErrors.isGraphScrollBarReqErr) {
         setTabIndex(3);
         setTabName({ value: 3, label: "" });
       }

@@ -193,12 +193,25 @@ const TabularDash = (props) => {
     // const keys = Object.keys(data[0]);
     const keys = Object.keys(data[0]).filter(key => key !== 'pkcolumn');
 
-    const reorderedKeys = [
-      ...keys.filter(k => /^sno$/i.test(k)),
-      ...keys.filter(k => /state/i.test(k)),
-      // ...keys.filter(k => !/state/i.test(k))
-      ...keys.filter(k => !/^sno$/i.test(k) && !/state/i.test(k))
-    ];
+    // const reorderedKeys = [
+    //   ...keys.filter(k => /^sno$/i.test(k)),
+    //   ...keys.filter(k => /state/i.test(k)),
+    //   // ...keys.filter(k => !/state/i.test(k))
+    //   ...keys.filter(k => !/^sno$/i.test(k) && !/state/i.test(k))
+    // ];
+    let reorderedKeys = [];
+
+    const snoKey = keys.find(k => /^sno$/i.test(k));
+    const stateKey = keys.find(k => /state/i.test(k));
+
+    if (snoKey) reorderedKeys.push(snoKey);
+    if (stateKey) reorderedKeys.push(stateKey);
+
+    const restKeys = keys.filter(
+      k => k !== snoKey && k !== stateKey
+    );
+
+    reorderedKeys = [...reorderedKeys, ...restKeys];
 
     const dynamicColumns = reorderedKeys.map((key) => ({
       name: key,

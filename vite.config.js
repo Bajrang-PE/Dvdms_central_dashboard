@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    // port: 5173,  
+    port: 5175,  
     proxy: {
       '/usm': {
         target: 'http://10.226.17.6:8084',

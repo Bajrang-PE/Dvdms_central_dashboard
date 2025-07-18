@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { DataSeries } from '../../localData/HomeData';
 import useScrollVisibility from '../../hooks/useScrollAnimation';
 import { LoginContext } from '../../context/LoginContext';
-import { fetchQueryData } from '../../utils/CommonFunction';
+import { fetchQueryData, ToastAlert } from '../../utils/CommonFunction';
 import GraphModal from './GraphModal';
 import Loader from '../Loader';
 
@@ -33,26 +33,33 @@ const Facilities = () => {
         setIsLoading(true);
         try {
             const data = await fetchQueryData(fc?.queryVO);
-            const rawItem = data?.[0];
+            if (data?.status === 1) {
 
-            if (!rawItem) {
-                setGraphData([]);
+                const rawItem = data?.data?.[0];
+
+                if (!rawItem) {
+                    setGraphData([]);
+                    setIsLoading(false);
+                    return;
+                }
+
+                const keys = Object.keys(rawItem);
+
+                const graphData = data?.data.map(item => ({
+                    name: item[keys[0]],
+                    y: parseFloat(item[keys[1]]) || 0
+                }));
+
+                setGraphData(graphData);
+                setSingleWidget(fc);
+                setShowGraph(true);
                 setIsLoading(false);
-                return;
+
+            } else {
+                ToastAlert(data?.message, 'error')
+                 setIsLoading(false);
             }
 
-            const keys = Object.keys(rawItem);
-
-
-            const graphData = data.map(item => ({
-                name: item[keys[0]],
-                y: parseFloat(item[keys[1]]) || 0
-            }));
-
-            setGraphData(graphData);
-            setSingleWidget(fc);
-            setShowGraph(true);
-            setIsLoading(false);
         } catch (error) {
             console.error("Error loading query data:", error);
             setIsLoading(false);
@@ -85,6 +92,7 @@ const Facilities = () => {
         const total = data?.reduce((a, b) => a + b)
         return total || ''
     }
+    console.log(graphWidgets)
 
     return (
         <div className="facility row pl-5 pr-5" style={{ padding: "10px" }} id='facilities'>

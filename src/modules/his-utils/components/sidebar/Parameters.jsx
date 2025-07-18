@@ -9,7 +9,7 @@ import { useSearchParams } from "react-router-dom";
 import { fetchPostData } from "../../../../utils/HisApiHooks";
 
 const Parameters = ({ params, scope, widgetId = null }) => {
-    const { parameterData, getAllParameterData, theme, setParamsValues, paramsValuesPro, setParamsValuesPro, setIsSearchQuery, activeTab, isSearchQuery, searchScope, setSearchScope,dt } = useContext(HISContext);
+    const { theme, setParamsValues, paramsValuesPro, setParamsValuesPro, setIsSearchQuery, activeTab, isSearchQuery, searchScope, setSearchScope, dt } = useContext(HISContext);
     const [presentParams, setPresentParams] = useState([]);
     const [selectedValues, setSelectedValues] = useState({});
     const [dropdownData, setDropdownData] = useState({});
@@ -67,12 +67,32 @@ const Parameters = ({ params, scope, widgetId = null }) => {
         }
     }, []);
 
+    const getAllAvailableParams = useCallback(async (idArr, dashFor) => {
+        try {
+            const val = {
+                ids: idArr || [],
+                dashboardFor: dashFor || 'CENTRAL DASHBOARD',
+                masterName: "ParameterMst"
+            };
+            const data = await fetchPostData("/hisutils/getparametertMultipleData", val);
+            if (data?.status === 1) {
+                setPresentParams(data?.data);
+            } else {
+                setPresentParams([]);
+            }
+        } catch (error) {
+            console.error("Error fetching tabs data", error);
+        }
+    }, []);
+
 
     useEffect(() => {
-        if (dashFor && parameterData?.length === 0) {
-            getAllParameterData(dashFor);
+        if (params) {
+            const ids = params?.split(',')?.map(Number) || [];
+            getAllAvailableParams(ids, dashFor);
         }
-    }, [dashFor]);
+    }, [params]);
+
 
     const handleMultiSelectChange = (parameterName, selectedOptions, id) => {
         setSelectedValues((prev) => ({
@@ -115,18 +135,6 @@ const Parameters = ({ params, scope, widgetId = null }) => {
         setErrors(prev => ({ ...prev, [id]: "" }))
     };
 
-    useEffect(() => {
-        if (parameterData?.length > 0 && params) {
-            // setParamsValuesPro({
-            //     tabParams: {},
-            //     widgetParams: {},
-            // })
-            const dashboardIdsArray = params.split(",")?.map(Number);
-            const matchedParams = dashboardIdsArray?.map((id) => parameterData?.find((p) => p.id === id)).filter(Boolean);
-            setPresentParams(matchedParams);
-        }
-    }, [parameterData, activeTab]);
-
     const getDateConstraint = (fieldId) => {
         if (!fieldId) return "";
         const field = document.getElementById(fieldId);
@@ -154,13 +162,6 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                 };
             });
 
-            // if (isDate) {
-            //     setSelectedValues((prev) => ({
-            //         ...prev,
-            //         [parameterName]: isDate ? formattedData[0]?.optionValue : '',
-            //     }));
-
-            // }
 
             setDropdownData(prev => ({
                 ...prev,
@@ -297,59 +298,6 @@ const Parameters = ({ params, scope, widgetId = null }) => {
 
         initializeParams();
     }, [presentParams, widgetId]);
-
-
-    // useEffect(() => {
-    //     if (presentParams.length > 0) {
-    //         const initialSelectedValues = {};
-    //         const defOpt = {};
-    //         presentParams.forEach((param) => {
-    //             const { parameterName, defaultValueIfEmpty, defaultOption, isMultipleSelectionRequired, parameterType, parameterQueryForDate } = param?.jsonData || {};
-    //             const defaultValStr = defaultOption?.optionValue || "";
-    //             const defaultTextStr = defaultOption?.optionText || "";
-    //             setDefaultValueIfEmpty(defaultValueIfEmpty)
-
-    //             const isMulti = isMultipleSelectionRequired === "Yes";
-    //             const values = defaultValStr?.includes("##") ? defaultValStr?.split("##") : [defaultValStr];
-    //             const texts = defaultTextStr?.includes("##") ? defaultTextStr?.split("##") : [defaultTextStr];
-
-    //             if (parameterType == '4' && parameterQueryForDate) {
-    //                 const val = { query, params: {}, jndi: jndiS };
-    //                 const response = await fetchPostData('/hisutils/GenericApiQry', val);
-    //                 const rawData = response?.data || [];
-
-    //                 const formattedData = rawData.map(item => {
-    //                     const keys = Object.keys(item);
-    //                     const valueKey = keys[0];
-    //                     const labelKey = keys[1] || keys[0];
-    //                     return {
-    //                         optionValue: convertToISODate(item[valueKey]),
-    //                         optionText: convertToISODate(item[labelKey]),
-    //                     };
-    //                 });
-
-    //                 initialSelectedValues[parameterName] = formattedData[0]?.optionValue || '';
-    //                 defOpt[param?.id] = formattedData[0]?.optionValue || '';
-    //             }
-
-    //             if (isMulti) {
-    //                 const matchedOptions = values.map((val, idx) => ({
-    //                     optionValue: val,
-    //                     optionText: texts[idx] || val,
-    //                 }));
-    //                 initialSelectedValues[parameterName] = matchedOptions;
-    //                 defOpt[param?.id] = values.join("~");
-    //             } else {
-    //                 initialSelectedValues[parameterName] = values[0] || '';
-    //                 defOpt[param?.id] = values[0] || defaultValueIfEmpty;
-    //             }
-
-    //         });
-    //         handleSetProParamsValues(defOpt, scope, widgetId);
-    //         handleSetParamsValues(defOpt, scope, widgetId);
-    //         setSelectedValues(initialSelectedValues);
-    //     }
-    // }, [presentParams]);
 
 
     const renderInputField = (param) => {

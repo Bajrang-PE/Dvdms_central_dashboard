@@ -3,7 +3,7 @@ import WidgetDash from './WidgetDash';
 import { HISContext } from '../../contextApi/HISContext';
 import FooterText from '../commons/FooterText';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faBackward } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { useSearchParams } from 'react-router-dom';
 import { fetchPostData } from '../../../../utils/HisApiHooks';
 
@@ -15,6 +15,7 @@ const TabDash = React.memo(() => {
     const [presentTabs, setPresentTabs] = useState([]);
     const [widWithoutLinked, setWidWithoutLinked] = useState([]);
     const [allWidgetData, setAllWidgetData] = useState([]);
+    const [tabLoading, setTabloading] = useState(false);
 
     const [searchParams] = useSearchParams();
     const groupId = searchParams.get("groupId");
@@ -39,13 +40,15 @@ const TabDash = React.memo(() => {
             }
         } catch (error) {
             console.error("Error fetching tabs data", error);
-             return [];
+            return [];
         }
     }, []);
 
 
     useEffect(() => {
         const loadWidgets = async () => {
+            console.log('a')
+            setTabloading(true)
             if (activeTab?.jsonData?.lstDashboardWidgetMapping?.length > 0) {
                 setParamsValues({
                     tabParams: {},
@@ -62,8 +65,7 @@ const TabDash = React.memo(() => {
                 //     ?.map(wid => allWidgetData?.find(widget => widget?.rptId == wid?.rptId))
                 //     ?.filter(widget => widget);
 
-                const availableWidgets = await getAllAvailableWidgets(sortedWidgets?.map(dt=>dt?.rptId), dashboardFor);
-                console.log(availableWidgets, 'avail')
+                const availableWidgets = await getAllAvailableWidgets(sortedWidgets?.map(dt => dt?.rptId), dashboardFor);
 
                 let finalWidgets = [];
 
@@ -121,6 +123,8 @@ const TabDash = React.memo(() => {
                 setWidWithoutLinked(standaloneAndParentsOnly);
                 setPresentWidgets(uniqueWidgets);
                 setPresentTabs(sortedWidgets);
+                setTabloading(false);
+                console.log('b')
             } else {
                 setPresentWidgets([]);
                 setWidWithoutLinked([]);
@@ -132,6 +136,8 @@ const TabDash = React.memo(() => {
                     tabParams: {},
                     widgetParams: {},
                 })
+                setTabloading(false);
+                console.log('c')
             }
         };
 
@@ -143,11 +149,11 @@ const TabDash = React.memo(() => {
         setPrevKpiTab([])
     }
 
-// console.log(activeTab,'activeTab')
+    // console.log(activeTab,'activeTab')
 
     return (
         <>
-            {loading ? null : (
+            {tabLoading ? <h1>Loading...</h1> : (
                 <div>
                     {prevKpiTab?.length > 0 &&
                         <div className=''>
