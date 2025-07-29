@@ -42,13 +42,13 @@ const GlobalDataTable = (props) => {
                         }
                     </div>
                     <div className="col-6 d-flex justify-content-end align-items-center p-0">
-                        <label className="col-form-label me-2">{dt('Search')} :</label>
+                        <label className="col-form-label me-2 d-none d-lg-block">{dt('Search')} :</label>
                         <div className=''>
                             <InputField
                                 type="search"
                                 id="customMsgForNoData"
                                 name="customMsgForNoData"
-                                placeholder="Enter"
+                                placeholder="Search..."
                                 className="backcolorinput"
                                 onChange={(e) => { setSearchInput(e?.target?.value); }}
                             // value={values?.customMsgForNoData}
@@ -73,6 +73,7 @@ const GlobalDataTable = (props) => {
                         pagination
                         // pointerOnHover
                         customStyles={tableCustomStyles}
+                        
                     />
                 </Modal.Body>
             </Modal>

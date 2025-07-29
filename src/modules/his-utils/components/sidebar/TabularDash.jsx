@@ -148,7 +148,7 @@ const TabularDash = (props) => {
       "fileName": fileName
     }
 
-    fetchPostData("http://10.226.25.164:8024/hisutils/ftp/view", val, { responseType: 'blob' }).then(async (data) => {
+    fetchPostData("/hisutils/ftp/view", val, { responseType: 'blob' }).then(async (data) => {
       if (data) {
         const contentType = data.headers['content-type'] || data.data.type;
 
@@ -190,15 +190,8 @@ const TabularDash = (props) => {
   const generateColumns = (data, ifDrill = isChildPresent) => {
     if (!data || data.length === 0) return [];
 
-    // const keys = Object.keys(data[0]);
     const keys = Object.keys(data[0]).filter(key => key !== 'pkcolumn');
 
-    // const reorderedKeys = [
-    //   ...keys.filter(k => /^sno$/i.test(k)),
-    //   ...keys.filter(k => /state/i.test(k)),
-    //   // ...keys.filter(k => !/state/i.test(k))
-    //   ...keys.filter(k => !/^sno$/i.test(k) && !/state/i.test(k))
-    // ];
     let reorderedKeys = [];
 
     const snoKey = keys.find(k => /^sno$/i.test(k));
@@ -232,7 +225,7 @@ const TabularDash = (props) => {
           );
         }
 
-        if (typeof value === 'string' && value.trim().startsWith('<a')) {
+        if (typeof value === 'string' && (value.trim().startsWith('<a') || value.trim().startsWith('<div'))) {
           return (
             <span
               dangerouslySetInnerHTML={{ __html: value }}

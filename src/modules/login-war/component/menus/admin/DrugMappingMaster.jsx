@@ -4,6 +4,8 @@ import { ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
 import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
 import Select from 'react-select'
+import { CustomListWindow } from '../../../../../utils/CommonFunction';
+// import debounce from 'lodash.debounce';
 
 const DrugMappingMaster = () => {
     const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext);
@@ -169,6 +171,22 @@ const DrugMappingMaster = () => {
         { value: "3", label: "All" }
     ];
 
+    // const [inputValue, setInputValue] = useState('');
+
+    // const debouncedInputChange = debounce(value => {
+    //     setInputValue(value);
+    // }, 300);
+
+    // const filteredOptions = useMemo(() => {
+    //     return itemNameList
+    //         ?.filter(item =>
+    //             item.cwhstrDrugName.toLowerCase().includes(inputValue.toLowerCase())
+    //         )
+    //         .map(item => ({
+    //             value: item.cwhnumDrugId,
+    //             label: item.cwhstrDrugName,
+    //         }));
+    // }, [itemNameList, inputValue]);
 
     return (
         <>
@@ -189,7 +207,7 @@ const DrugMappingMaster = () => {
                                     options={mapCategoryOptions}
                                     className="aliceblue-bg border-dark-subtle"
                                     value={itemCategory}
-                                    onChange={(e) => { setItemCategory(e.target.value); getItemNameList(e.target.value); setItemName(''); setDrugItemObject(null)}}
+                                    onChange={(e) => { setItemCategory(e.target.value); getItemNameList(e.target.value); setItemName(''); setDrugItemObject(null) }}
 
                                 />
                             </div>
@@ -204,6 +222,8 @@ const DrugMappingMaster = () => {
                                         value: item.cwhnumDrugId,
                                         label: item.cwhstrDrugName,
                                     }))}
+                                    // options={filteredOptions}
+                                    // onInputChange={debouncedInputChange}
                                     isMulti={false}
                                     className="aliceblue-bg border-dark-subtle react-select-login"
                                     value={itemName}
@@ -216,6 +236,7 @@ const DrugMappingMaster = () => {
                                     isSearchable={true}
                                     isDisabled={itemNameList?.length > 0 ? false : true}
                                     placeholder="select value"
+                                    components={{ MenuList: CustomListWindow }}
                                 />
                             </div>
                         </div>

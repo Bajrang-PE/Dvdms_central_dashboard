@@ -108,7 +108,7 @@ const NavbarHeader = () => {
         setShowTranslateModal(false);
         setExtractedTexts([]);
     }
-    
+
     return (
         <>
             {/* <DashHeader/> */}
@@ -128,18 +128,6 @@ const NavbarHeader = () => {
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNavDropdown">
                         <ul className="navbar-nav ms-auto">
-                            <button
-                                className='btn btn-sm me-1 py-0 header-image-his'
-                                onClick={handleExtractClick}
-                                // disabled={language !== 'english'}
-                            // data-tooltip="Select english then translate data from here"
-                            // data-trigger="hover"
-                            >
-                                <i className="fa fa-language me-1 translate"></i> {dt("Translate")}</button>
-
-                            <li className="nav-item">
-                                <div className="vr h-100 mx-2 text-white text-opacity-100" />
-                            </li>
 
                             <li className="nav-item dropdown">
                                 <a
@@ -163,7 +151,7 @@ const NavbarHeader = () => {
                                     ))}
                                 </ul>
                             </li>
-                            <li className="nav-item">
+                            <li className="nav-item d-none d-lg-block">
                                 <div className="vr h-100 mx-2 text-white text-opacity-100" />
                             </li>
 
@@ -191,18 +179,25 @@ const NavbarHeader = () => {
                                 </ul>
                             </li>
 
+                        </ul>
+                        <div className="d-flex align-items-lg-center">
                             {/* Language Selector */}
-                            <li className="nav-item">
+                            <li className="nav-item d-none d-lg-block">
                                 <div className="vr h-100 mx-2 text-white text-opacity-100" />
                             </li>
+                            <button
+                                className='btn btn-sm me-1 py-0 header-image-his'
+                                onClick={handleExtractClick}
+                            >
+                                <i className="fa fa-language me-1 translate"></i> {dt("Translate")}</button>
+
+                            <div className="vr h-100 mx-2 text-white text-opacity-100 align-self-center" />
 
                             <select
                                 className="form-select form-select-sm py-0 "
                                 style={{ width: 'auto', cursor: 'pointer' }}
                                 value={language}
                                 onChange={(e) => changeLanguage(e.target.value)}
-                            // data-tooltip-tour={isDashboard ? "Select your preferred language" : null}
-                            // data-tooltip-step={isDashboard ? "3" : null}
                             >
                                 {languageOptions.map((lang) => (
                                     <option key={lang.code} value={lang.code}>
@@ -210,7 +205,7 @@ const NavbarHeader = () => {
                                     </option>
                                 ))}
                             </select>
-                        </ul>
+                        </div>
                     </div>
                 </div>
             </nav>

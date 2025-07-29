@@ -12,9 +12,10 @@ const DashboardMst = () => {
     const { activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData, setParamsValues, setPrevKpiTab, dt, setPresentTabsDash } = useContext(HISContext);
 
     const [searchParams] = useSearchParams();
-    const groupId = searchParams.get("groupId");
-    const dashboardFor = searchParams.get("dashboardFor");
+    const groupId = atob(searchParams.get("groupId"));
+    const dashboardFor = atob(searchParams.get("dashboardFor"));
     const [presentTabs, setPresentTabs] = useState([]);
+
 
     useEffect(() => {
         if (!singleConfigData) {
@@ -122,7 +123,7 @@ const DashboardMst = () => {
                         )}
                     </Suspense>
 
-                    <main style={{ padding: "10px 20px", flex: 1 }}>
+                    <main style={{ padding: "10px 20px", flex: 1, width: isTopBarLayout ? "" : "80%" }} >
                         {parameters &&
                             <div className='parameter-box'>
                                 <Suspense

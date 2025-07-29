@@ -571,7 +571,7 @@ const DashboardMaster = () => {
         className="form-check-input log-select"
       />,
       cell: row =>
-        <div style={{ position: 'absolute', top: 4, left: 10 }}>
+        <div style={{ position: 'absolute', top: 4, left: 10, alignSelf: "anchor-center" }}>
           <span className="btn btn-sm text-white px-1 py-0 mr-1" >
             <input
               type="checkbox"
@@ -580,19 +580,19 @@ const DashboardMaster = () => {
             />
           </span>
         </div>,
-      width: "8%"
+      width: "60px"
     },
     {
       name: dt('Group ID'),
       selector: row => row.id,
       sortable: true,
-      width: "10%"
+      width: "120px"
     },
     {
       name: dt('Group Name'),
       selector: row => row?.jsonData?.groupName || "---",
       cell: row => <a
-        href={`/dvdms/HIS_dashboard/dashboard?groupId=${row.id}&dashboardFor=${row?.dashboardFor}&isPreview=1`}
+        href={`/dvdms/HIS_dashboard/dashboard?groupId=${row?.id ? encodeURIComponent(btoa(row?.id)) : "0"}&dashboardFor=${row?.dashboardFor ? encodeURIComponent(btoa(row?.dashboardFor)) : ""}&isPreview=1`}
         target="_blank"
         rel="noopener noreferrer"
         className='text-decoration-none'
@@ -600,12 +600,13 @@ const DashboardMaster = () => {
         {row?.jsonData?.groupName}
       </a>,
       sortable: true,
+      wrap: false
     },
     {
       name: dt('URL'),
-      selector: row => `/dvdms/HIS_dashboard/dashboard?groupId=${row.id}&dashboardFor=${row?.dashboardFor}` || "---",
+      selector: row => `/dvdms/HIS_dashboard/dashboard?groupId=${row.id ? btoa(row?.id) : "0"}&dashboardFor=${row?.dashboardFor ? btoa(row?.dashboardFor) : ""}` || "---",
       sortable: true,
-      wrap:true
+      wrap: true
     }
   ]
 

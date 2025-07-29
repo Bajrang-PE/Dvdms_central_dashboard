@@ -17,7 +17,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
     const [defaultValueIfEmpty, setDefaultValueIfEmpty] = useState('');
     const [queryParams] = useSearchParams();
 
-    const dashFor = queryParams.get('dashboardFor');
+    const dashFor =  atob(queryParams.get('dashboardFor'));
     const [errors, setErrors] = useState({
     })
 

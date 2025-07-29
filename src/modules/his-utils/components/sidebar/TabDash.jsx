@@ -18,8 +18,8 @@ const TabDash = React.memo(() => {
     const [tabLoading, setTabloading] = useState(false);
 
     const [searchParams] = useSearchParams();
-    const groupId = searchParams.get("groupId");
-    const dashboardFor = searchParams.get("dashboardFor");
+    const groupId = atob(searchParams.get("groupId"));
+    const dashboardFor = atob(searchParams.get("dashboardFor"));
 
     const footerText = activeTab?.jsonData?.footerText || "";
 
@@ -47,7 +47,6 @@ const TabDash = React.memo(() => {
 
     useEffect(() => {
         const loadWidgets = async () => {
-            console.log('a')
             setTabloading(true)
             if (activeTab?.jsonData?.lstDashboardWidgetMapping?.length > 0) {
                 setParamsValues({
@@ -124,7 +123,6 @@ const TabDash = React.memo(() => {
                 setPresentWidgets(uniqueWidgets);
                 setPresentTabs(sortedWidgets);
                 setTabloading(false);
-                console.log('b')
             } else {
                 setPresentWidgets([]);
                 setWidWithoutLinked([]);
@@ -137,7 +135,6 @@ const TabDash = React.memo(() => {
                     widgetParams: {},
                 })
                 setTabloading(false);
-                console.log('c')
             }
         };
 

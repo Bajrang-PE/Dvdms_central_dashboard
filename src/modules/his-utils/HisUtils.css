@@ -111,9 +111,9 @@ select:focus {
   box-shadow: 0 0 4px rgba(49, 130, 206, 0.5) !important;
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="search"]:focus {
   border-color: #3182ce !important;
-  /* Primary blue focus */
   outline: none;
   box-shadow: 0 0 4px rgba(49, 130, 206, 0.5) !important;
 }
@@ -124,6 +124,7 @@ input[type="text"]:focus {
   /* border: 1px solid !important; */
   border-color: gray !important;
 }
+
 
 .backcolorinput-dark {
   border-radius: 10px !important;
