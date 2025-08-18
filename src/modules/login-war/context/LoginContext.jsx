@@ -1,3 +1,6 @@
+
+
+
 import { createContext, useState } from "react";
 import { fetchData } from "../../../utils/ApiHooks";
 
@@ -22,6 +25,7 @@ const LoginContextApi = ({ children }) => {
     const [stateListData, setStateListData] = useState([]);
     const [groupListData, setGroupListData] = useState([]);
     const [stateJobListData, setStateJobListData] = useState([]);
+    const [programmeListData, setProgrammeListData] = useState([]);
 
     //dropdowns
     const [hintQuestionDrpDt, setHintQuestionDrpDt] = useState([]);
@@ -136,11 +140,34 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
-    const getSteteNameDrpData = () => {
-        fetchData('http://10.226.27.173:8025/api/v1/state/getstate').then((data) => {
-            if (data?.status === 1) {
+    // const getSteteNameDrpData = () => {
+    //     fetchData('http://10.226.29.102:8025/state/getstate').then((data) => {
+    //         //http://10.226.29.102:8025/state/getstate
+    //         if (data?.status === 1) {
 
-                const drpData = data?.data?.map((dt) => {
+    //             const drpData = data?.data?.map((dt) => {
+    //                 const val = {
+    //                     value: dt?.cwhnumStateId,
+    //                     label: dt?.cwhstrStateName
+    //                 }
+
+    //                 return val;
+    //             })
+
+    //             setStateNameDrpDt(drpData)
+
+    //         } else {
+    //             setStateNameDrpDt([])
+    //         }
+    //     })
+    // }
+
+    const getSteteNameDrpData = () => {
+        fetchData('http://10.226.29.102:8025/state/getstate').then((data) => {
+            //http://10.226.29.102:8025/state/getstate
+            if (data) {
+
+                const drpData = data?.map((dt) => {
                     const val = {
                         value: dt?.cwhnumStateId,
                         label: dt?.cwhstrStateName
@@ -426,6 +453,17 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+    const getProgrammeListData = (status) => {
+        fetchData(`/api/v1/programmes/all?isActive=${status ? status : "1"}`).then((data) => {
+            if (data?.status === 1) {
+                setProgrammeListData(data?.data)
+            } else {
+                setProgrammeListData([])
+            }
+        })
+    }
+
+
 
 
 
@@ -466,7 +504,8 @@ const LoginContextApi = ({ children }) => {
             getGenericDrugListData, genericDrugListData,
             getStateListData, stateListData,
             getGroupListData, groupListData,
-            getStateJobDetailsListData, stateJobListData
+            getStateJobDetailsListData, stateJobListData,
+            getProgrammeListData,programmeListData
         }}>
             {children}
         </LoginContext.Provider>
