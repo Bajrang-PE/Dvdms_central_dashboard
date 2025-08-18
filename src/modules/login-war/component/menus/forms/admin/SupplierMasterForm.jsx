@@ -15,9 +15,9 @@ const SupplierMasterForm = (props) => {
     const [recordStatus, setRecordStatus] = useState("");
 
     const [values, setValues] = useState({
-        "suppName": "", "suppType": "10", "contactNo": "", "emailId": "admin_disha", "address": "",
+        "suppName": "", "suppType": "10", "contactNo": "", "emailId": "", "address": "",
         "pinCode": "", "countryName": "101", "stateId": "", "corporateGst": "", "lstNo": "", "cstNo": "",
-        "panNo": "D@shboard_2024", "showPan": "", "suppId": "",
+        "panNo": "", "showPan": "", "suppId": "",
     })
 
     const [errors, setErrors] = useState({
@@ -25,6 +25,12 @@ const SupplierMasterForm = (props) => {
         "pinCodeErr": "", "countryNameErr": "", "stateIdErr": "", "corporateGstErr": "", "lstNoErr": "", "cstNoErr": "",
         "panNoErr": "", "showPanErr": "", "suppIdErr": "",
     })
+
+    const supplierTypeDrp = [
+        { label: "Supplier", value: "10" },
+        { label: "Manufacturer", value: "11" },
+        { label: "Supplier/Manufacturer", value: "12" }
+    ]
 
     const handleValueChange = (e) => {
         const { name, value } = e.target;
@@ -43,32 +49,30 @@ const SupplierMasterForm = (props) => {
 
     useEffect(() => {
         if (selectedOption?.length > 0 && openPage === 'modify') {
+            const selected = selectedOption[0];
+            const suppTypeId = supplierTypeDrp?.find(dt => dt?.label === selected?.cwhnumSupplierType);
 
-            if (selectedOption[0]?.cwhnumSupplierType === 'Supplier') {
-                setValues(prevValues => ({ ...prevValues, suppType: "10" }));
-            } else if (selectedOption[0]?.cwhnumSupplierType === 'Manufacturer') {
-                setValues(prevValues => ({ ...prevValues, suppType: "11" }));
-            } else if (selectedOption[0]?.cwhnumSupplierType === 'Supplier/Manufacturer') {
-                setValues(prevValues => ({ ...prevValues, suppType: "12" }));
-            } else { setValues(prevValues => ({ ...prevValues, suppType: "10" })); }
+            setValues(prevValues => ({
+                ...prevValues,
+                suppName: selected?.cwhstrSupplierName,
+                suppType: suppTypeId?.value || "10",
+                contactNo: selected?.cwhstrContactNo,
+                emailId: selected?.cwhstrEmailId || " ",
+                address: selected?.cwhstrAddress || " ",
+                pinCode: selected?.cwhnumPincode,
+                countryName: selected?.cwhnumAddressCountryCode,
+                stateId: selected?.cwhnumAddressStateCode,
+                corporateGst: selected?.cwhstrCorporateMainGstno || " ",
+                lstNo: selected?.cwhstrLstNo || " ",
+                cstNo: selected?.cwhstrCstNo || " ",
+                panNo: selected?.cwhstrPanNo || " ",
+                suppId: selected?.cwhnumSupplierId,
+            }));
 
-            setValues(prevValues => ({ ...prevValues, suppName: selectedOption[0]?.cwhstrSupplierName }));
-            setValues(prevValues => ({ ...prevValues, contactNo: selectedOption[0]?.cwhstrContactNo }));
-            setValues(prevValues => ({ ...prevValues, emailId: selectedOption[0]?.cwhstrEmailId }));
-            setValues(prevValues => ({ ...prevValues, address: selectedOption[0]?.cwhstrAddress }));
-            setValues(prevValues => ({ ...prevValues, pinCode: selectedOption[0]?.cwhnumPincode }));
-            setValues(prevValues => ({ ...prevValues, countryName: selectedOption[0]?.cwhnumAddressCountryCode }));
-            setValues(prevValues => ({ ...prevValues, stateId: selectedOption[0]?.cwhnumAddressStateCode }));
-            setValues(prevValues => ({ ...prevValues, corporateGst: selectedOption[0]?.cwhstrCorporateMainGstno }));
-            setValues(prevValues => ({ ...prevValues, lstNo: selectedOption[0]?.cwhstrLstNo }));
-            setValues(prevValues => ({ ...prevValues, cstNo: selectedOption[0]?.cwhstrCstNo }));
-            setValues(prevValues => ({ ...prevValues, panNo: selectedOption[0]?.cwhstrPanNo }));
-            setValues(prevValues => ({ ...prevValues, suppId: selectedOption[0]?.cwhnumSupplierId }));
-            setRecordStatus(selectedOption[0]?.gnumIsvalid)
-
+            setRecordStatus(selected?.gnumIsvalid);
         }
+    }, [selectedOption, openPage]);
 
-    }, [selectedOption, openPage])
 
     const handleValidation = () => {
         let isValid = true;
@@ -202,11 +206,13 @@ const SupplierMasterForm = (props) => {
 
     const reset = () => {
         setValues({
-            "suppName": "", "suppType": "10", "contactNo": "", "emailId": "admin_disha", "address": "",
+            "suppName": "", "suppType": "10", "contactNo": "", "emailId": "", "address": "",
             "pinCode": "", "countryName": "101", "stateId": "", "corporateGst": "", "lstNo": "", "cstNo": "",
-            "panNo": "D@shboard_2024", "showPan": "", "suppId": "",
+            "panNo": "", "showPan": "", "suppId": "",
         });
     }
+
+
 
 
     return (
@@ -238,10 +244,7 @@ const SupplierMasterForm = (props) => {
                             className="aliceblue-bg form-control form-control-sm border-dark-subtle"
                             name='suppType'
                             id='suppType'
-                            options={[{ label: "Supplier", value: "10" },
-                            { label: "Manufacturer", value: "11" },
-                            { label: "Supplier/Manufacturer", value: "12" }
-                            ]}
+                            options={supplierTypeDrp}
                             onChange={handleValueChange}
                             value={values?.suppType}
                             errorMessage={errors?.suppTypeErr}
