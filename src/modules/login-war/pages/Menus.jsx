@@ -19,7 +19,6 @@ import GroupMaster from '../component/menus/admin/GroupMaster'
 import StateJobDetailsService from '../component/menus/services/StateJobDetailsService'
 import DrugMaster from '../component/menus/admin/DrugMaster'
 import OutsourceMaster from '../component/menus/admin/OutsourceMaster'
-import TestMappingMaster from '../component/menus/admin/TestMappingMaster'
 import DrugMappingMaster from '../component/menus/admin/DrugMappingMaster'
 import IphsGroupMaster from '../component/menus/admin/iphsAdmin/IphsGroupMaster'
 import IphsSubGroupMaster from '../component/menus/admin/iphsAdmin/IphsSubGroupMaster'
@@ -27,6 +26,10 @@ import IphsMedicineMaster from '../component/menus/admin/iphsAdmin/IphsMedicineM
 import IphsMoleculeDrugMaster from '../component/menus/admin/iphsAdmin/IphsMoleculeDrugMaster'
 import MedicineMoleculeMapMst from '../component/menus/admin/iphsAdmin/MedicineMoleculeMapMst'
 import IphsDrugMappingMst from '../component/menus/admin/iphsAdmin/IphsDrugMappingMst'
+import ProgrammeMappingMaster from '../component/menus/admin/ProgrammeMappingMaster'
+import ProgrammeMaster from '../component/menus/admin/ProgrammeMaster'
+import HmisFacilityMaster from '../component/menus/admin/HmisFacilityMaster'
+import TestMappingMaster from '../component/menus/admin/TestMappingMaster'
 
 const Menus = () => {
     return (
@@ -64,6 +67,14 @@ const Menus = () => {
                 <Route path="iphs-molecule-drug-master" element={<IphsMoleculeDrugMaster />}/>
                 <Route path="iphs-medicine-molecule-mapping" element={<MedicineMoleculeMapMst />} />
                 <Route path="iphs-drug-mapping-mst" element={<IphsDrugMappingMst />}/>
+
+                
+                 <Route path="programme-master" element={<ProgrammeMaster/>} /> 
+
+                 <Route path="programme-mapping-master" element={<ProgrammeMappingMaster />} /> 
+                 
+                 <Route path="hmis-facility-master" element={<HmisFacilityMaster />} /> 
+                 <Route path="test-mapping-master" element={<TestMappingMaster />} /> 
 
                 {/*---------------------------- SERVICES-------------------------------------------- */}
                 <Route path="state-job-details" element={<StateJobDetailsService />} />

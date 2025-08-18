@@ -59,7 +59,6 @@ const DistrictMasterForm = ({ setValues, values }) => {
 
             const data = {
                 "gnumSeatid": getAuthUserData('userSeatId'),
-                "cwhnumDistId": 555, // it will gen auto 
                 "cwhstrDistName": distName,
                 "cwhnumStateId": stateId,
                 "cwhstrDistShortName": distName,
@@ -74,7 +73,6 @@ const DistrictMasterForm = ({ setValues, values }) => {
             const data = {
                 "gnumIsvalid": recordStatus,
                 "gnumSeatid": getAuthUserData('userSeatId'),
-                "cwhnumDistId": 555, // it will gen auto 
                 "cwhstrDistName": distName,
                 "cwhnumStateId": stateId,
                 "cwhstrDistShortName": distName,
@@ -112,8 +110,9 @@ const DistrictMasterForm = ({ setValues, values }) => {
 
     return (
         <>
-            <div className='text-left w-100 fw-bold p-1 heading-text' >District Master &gt;&gt;Add</div>
+    
             <GlobalButtons onSave={validate} onClear={reset} />
+            <hr className='my-2' />
             <div className="row mt-2">
                 {openPage === "add" &&
                     <>

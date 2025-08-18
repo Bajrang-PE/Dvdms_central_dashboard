@@ -7,12 +7,12 @@ import { ToastAlert } from '../../../../../utils/CommonFunction'
 import { LoginContext } from '../../../../../context/LoginContext'
 import { getAuthUserData } from '../../../../../../../utils/CommonFunction'
 
-const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGroupId, setGroupId, setRecord}) => {
+const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGroupId, setGroupId, setRecord }) => {
 
     const [subGroupName, setSubGroupName] = useState("")
     const [subGroupNameErr, setSubGroupNameErr] = useState("")
     const [recordStatus, setRecordStatus] = useState("")
-    const { confirmSave, setShowConfirmSave, openPage, setOpenPage, selectedOption, setSelectedOption, setConfirmSave} = useContext(LoginContext)
+    const { confirmSave, setShowConfirmSave, openPage, setOpenPage, selectedOption, setSelectedOption, setConfirmSave } = useContext(LoginContext)
 
     const handleSave = () => {
         let isValid = true;
@@ -29,7 +29,7 @@ const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGro
 
     useEffect(() => {
         if (selectedOption?.length > 0 && openPage === "modify") {
-             setSubGroupName(selectedOption[0]?.cwhstrIphsSubgroupName)
+            setSubGroupName(selectedOption[0]?.cwhstrIphsSubgroupName)
         }
 
     }, [selectedOption, openPage])
@@ -51,7 +51,7 @@ const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGro
             }
 
             fetchPostData(`http://10.226.26.247:8025/api/v1/IphsSubGroupMaster/saveSubgroup`, val).then(data => {
-                if(data?.status === 1){
+                if (data?.status === 1) {
                     ToastAlert("Data saved successfully", "success");
                     refresh();
                 } else {
@@ -67,7 +67,7 @@ const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGro
             }
 
             fetchPatchData(`http://10.226.26.247:8025/api/v1/IphsSubGroupMaster/modifySubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}`, val).then(data => {
-                if(data?.status === 1){
+                if (data?.status === 1) {
                     ToastAlert("Data updated successfully", "success");
                     setSelectedOption([]);
                     refresh();
@@ -78,7 +78,7 @@ const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGro
         }
     }
 
-    const refresh=()=>{
+    const refresh = () => {
         setOpenPage("home");
         setGroupId("");
         setRecord("1");

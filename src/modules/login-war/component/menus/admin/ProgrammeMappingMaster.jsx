@@ -1,59 +1,74 @@
 import React, { useContext, useEffect, useState } from 'react'
+import GlobalButtons from '../GlobalButtons';
 import { LoginContext } from '../../../context/LoginContext';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
 import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../utils/CommonFunction';
 
-const TestMappingMaster = () => {
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt,getFacilityTypeDrpData,facilityTypeDrpDt,setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+const ProgrammeMappingMaster = () => {
+    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
 
-   
+    const confirmSaveLocaL = confirmSave;
+
+    console.log("save", confirmSaveLocaL);
+
+    const [programmeId, setProgrammeId] = useState("");
     const [stateId, setStateId] = useState("");
-    const [facilityId, setFacilityId] = useState("");
-    const [inOutFlag, setInoutFlag] = useState("");
     const [availableOptions, setAvailableOptions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [selectedAvailable, setSelectedAvailable] = useState([]);
     const [selectedSelected, setSelectedSelected] = useState([]);
+    const [programmeNameList, setProgrammeNameList] = useState([]);
     const [initialMappedOptions, setInitialMappedOptions] = useState([]);
+
 
     useEffect(() => {
         if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
-        
-        if (facilityTypeDrpDt?.length === 0) getFacilityTypeDrpData();
-        setOpenPage("add");
-       // getFacilityTypeDrpData();
-    }, []);
+        if (programmeNameList?.length === 0) getProgrammeNameList();
 
+        setOpenPage("add");
+        //getFacilityTypeDrpData();
+    }, []);
 
     useEffect(() => {
         if (stateId) {
             setSelectedOptions([]);
-           // getUnmappedList();
+            // getUnmappedList();
         }
         setSelectedAvailable([]);
         setSelectedSelected([]);
     }, [stateId]);
 
     useEffect(() => {
-        if (stateId && facilityId && inOutFlag) {
+        if (stateId && programmeId) {
             getMappedList();
             getUnmappedList();
         }
-    }, [stateId, facilityId, inOutFlag])
+    }, [stateId, programmeId])
 
+    const getProgrammeNameList = () => {
+        fetchData(`http://10.226.17.20:8025/api/v1/ProgrammeMap/all?isActive=1`).then(data => {
+            if (data?.status === 1) {
+                console.log(data?.data, 'listpname')
+                const drpData = data?.data?.map((dt) => ({
+                    value: dt?.cwhnumProgrammeId,
+                    label: dt?.cwhstrProgrammeName
+                }))
 
-    
+                setProgrammeNameList(drpData)
+            } else {
+                console.error(data?.message, 'error');
+            }
+        })
+    }
 
     const getUnmappedList = () => {
-    
-            fetchData(`http://10.226.17.20:8025/api/v1/TestMap/unmap?isActive=1&facilityTypeId=${facilityId}&stateId=${stateId}&inhouseOutsourceFlag=1`).then(data => {
-            //http://10.226.17.20:8025/api/v1/TestMap/map?isActive=1&facilityTypeId=46&stateId=46&inhouseOutsourceFlag=1
+        fetchData(`http://10.226.17.20:8025/api/v1/ProgrammeMap/unmap?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
-                    value: dt?.cwhnumTestId,
-                    label: dt?.cwhstrTestDesc
+                    value: dt?.cwhnumProgrammeId,
+                    label: dt?.cwhstrProgrammeName
                 })
                 )
                 setAvailableOptions(drpData)
@@ -65,11 +80,11 @@ const TestMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`http://10.226.17.20:8025/api/v1/TestMap/map?isActive=1&facilityTypeId=${facilityId}&stateId=${stateId}&inhouseOutsourceFlag=1`).then(data => {
+        fetchData(`http://10.226.17.20:8025/api/v1/ProgrammeMap/map?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
-                    value: dt?.cwhnumTestId,
-                    label: dt?.cwhstrTestDesc
+                    value: dt?.cwhnumStateProgrammeId,
+                    label: dt?.cwhstrStateProgrammeName
                 })
                 )
                 setSelectedOptions(drpData)
@@ -82,7 +97,10 @@ const TestMappingMaster = () => {
         })
     }
 
-    const saveTestMappedData = () => {
+
+    const saveProgrammeMappedData = () => {
+
+        console.log("selected value", selectedOptions);
 
         const newMapped = selectedOptions.filter(
             item => !initialMappedOptions.some(i => i.value == item.value)
@@ -96,50 +114,42 @@ const TestMappingMaster = () => {
         console.log(newUnMapped,'u')
 
         const mappedData = newMapped?.length > 0 && newMapped?.map(dt => ({
-            "cwhnumStateId": parseInt(stateId),
-         //   "cwhnumStateFacilityTypeId": 0,
-            "cwhnumCentreFacilityTypeId":  parseInt(facilityId),
-            "cwhnumTestId": dt?.value,
-            "cwhnumInhouseOutsourceFlag": parseInt(inOutFlag),
-          //  "cwhstrTestDesc": dt?.label,
-           // "gnumSeatId": getAuthUserData('userSeatId'),
-            "cwhnumIsvalid": 1,
+         //   "cwhnumStateId": parseInt(stateId),
+            "cwhnumStateProgrammeId": dt?.value,
+            "cwhstrStateProgrammeName": dt?.label,
+          //  "gnumSeatId": getAuthUserData('userSeatId') || 10008,
+          //  "gnumIsValid": 1,
            // "cwhnumProgrammeSlno": 0,
-           
-          
+           // "cwhnumProgrammeId": programmeId,
+          //  "cwhstrProgrammeName": '',
 
         }))
 
         const unMappedData = newUnMapped?.length > 0 && newUnMapped?.map(dt => ({
           //  "cwhnumStateId": parseInt(stateId),
-            "cwhnumTestId": dt?.value,
-         //   "cwhstrTestDesc": dt?.label,            
-            "cwhnumDh": 0,
-            "cwhnumSdh": 0,
-            "cwhnumChc": 0,
-            "cwhnumAamphc": 0,
-            "cwhnumAamshc": 0,
-            "cwhnumIsvalid": 0,
-         //    "cwhnumEntryUid": 0,
-          //  "cwhdtEntryDate": "2025-06-30T05:34:24.275Z",
-          //  "cwhnumModUid": 0,
-          //  "cwhdtModDate": "2025-06-30T05:34:24.275Z",
-            "cwhnumInhouseOutsourceFlag":  parseInt(inOutFlag),
-            "cwhnumStateId": parseInt(stateId),
-       //     "cwhnumStateFacilityTypeId": 0,
-            "cwhnumCentreFacilityTypeId":parseInt(facilityId)
+          //  "cwhnumProgrammeId":  programmeId,
+           // "cwhstrProgrammeName": '',
+           cwhnumProgrammeId: dt?.value,
+         //  gdtEntryDate: 
+           //gdtEntryDate: new Date().toISOString(),
+           cwhstrProgrammeName: dt?.label,
         }))
 
         const val = {
-            "arrTestMappedDtos": mappedData?.length > 0 ? mappedData : [],
-            "arrTestUnMapDtos": unMappedData?.length > 0 ? unMappedData : [],
-          //  "gnumSeatId": getAuthUserData('userSeatId'),
-        //    "cwhnumStateProgrammeId": 0,
-        //    "cwhstrStateProgrammeName": "",
-            "cwhnumStateId": parseInt(stateId)
+            arrProgrammeMappedDtos: mappedData?.length > 0 ? mappedData : [],
+            arrProgrammeUnMapDtos: unMappedData?.length > 0 ? unMappedData : [],
+         //   gnumSeatId: getAuthUserData('userSeatId') || 10008,
+
+            //change here
+            
+            gnumSeatId:  getAuthUserData('userSeatId') || 10008,
+            cwhnumStateId: parseInt(stateId),
+            cwhnumProgrammeId: programmeId,
         }
 
-        fetchPostData(`http://10.226.17.20:8025/api/v1/TestMap/create`, val).then(data => {
+
+       // fetchPostData(`http://10.226.17.20:8025/api/v1/ProgrammeMap`, JSON.stringify(val)).then(data => {
+        fetchPostData(`http://10.226.17.20:8025/api/v1/ProgrammeMap`,val).then(data => {
             if (data?.status === 1) {
                 console.log(data?.data)
                 setConfirmSave(false)
@@ -155,17 +165,12 @@ const TestMappingMaster = () => {
     const handleValidation = () => {
         let isValid = true;
 
-        if (stateId === "") {
-            setErrors(prev => ({ ...prev, "stateIdErr": "Please select state name" }))
+        if (programmeId === "") {
+            setErrors(prev => ({ ...prev, "programmeIdErr": "Please select programme name" }))
             isValid = false;
         }
-        if (facilityId === "") {
-            setErrors(prev => ({ ...prev, "facilityIdErr": "Please select facility type" }))
-            isValid = false;
-        }//    "arrTestMappedDtos": [
-   // {
-        if (inOutFlag === "") {
-            setErrors(prev => ({ ...prev, "inOutFlagErr": "Please select inhouse/outsource flag" }))
+        if (stateId === "") {
+            setErrors(prev => ({ ...prev, "stateIdErr": "Please select state" }))
             isValid = false;
         }
 
@@ -176,28 +181,13 @@ const TestMappingMaster = () => {
 
     useEffect(() => {
         if (confirmSave) {
-            saveTestMappedData();
+             saveProgrammeMappedData();
         }
     }, [confirmSave])
 
-    const reset = () => {
-        setInoutFlag('');
-        setStateId('');
-        setFacilityId('');
-     //   setInitialMappedOptions();
-     //   setSelectedSelected();
-      //  setSelectedAvailable();
-      //  setSelectedOptions();
-      //  setAvailableOptions();
-        setInitialMappedOptions([]);
-        setSelectedSelected([]);
-        setSelectedAvailable([]);
-        setSelectedOptions([]);
-        setAvailableOptions([]);
-    }
 
     const moveToSelected = () => {
-     //   if (cwhnumTestId) {
+      //  if (programmeId) {
             const itemsToMove = availableOptions.filter(opt =>
                 selectedAvailable.includes(String(opt.value))
             );
@@ -209,14 +199,13 @@ const TestMappingMaster = () => {
                 !selectedAvailable.includes(String(opt.value))
             ));
             setSelectedAvailable([]);
-      //  } else {
-          //  ToastAlert('Please select test name!', 'warning')
-      //  }
+    //    } else {
+    //        ToastAlert('Please select programme name!', 'warning')
+    //    }
     };
 
-
     const moveToAvailable = () => {
-      //  if (cwhnumTestId) {
+     //   if (programmeId) {
             const itemsToMove = selectedOptions.filter(opt =>
                 selectedSelected.includes(String(opt.value))
             );
@@ -225,17 +214,29 @@ const TestMappingMaster = () => {
                 !selectedSelected.includes(String(opt.value))
             ));
             setSelectedSelected([]);
-     //   } else {
-          //  ToastAlert('Please select test name!', 'warning')
-    //    }
+    //    } else {
+   //         ToastAlert('Please select programme name!', 'warning')
+     //   }
     };
+
+   
+    const reset = () => {
+        setProgrammeId('');
+        setStateId('');
+        setInitialMappedOptions([]);
+        setSelectedSelected([]);
+        setSelectedAvailable([]);
+        setSelectedOptions([]);
+        setAvailableOptions([]);
+    }
+    
 
 
     return (
         <>
             <div className='masters mx-3 my-2'>
                 <div className='masters-header row'>
-                    <span className='col-12'><b>{`Test Mapping Master`}</b></span>
+                    <span className='col-12'><b>{`Programme Mapping Master`}</b></span>
                     {/* {openPage === "home" && <span className='col-6 text-end'>Total Records : {functionalityData?.length || 0}</span>} */}
                 </div>
 
@@ -243,67 +244,43 @@ const TestMappingMaster = () => {
                 <div className='row pt-2'>
                     <div className='col-sm-6'>
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                            <label className="col-sm-5 col-form-label fix-label required-label">Programme Name : </label>
+                            <div className="col-sm-7 align-content-center">
+                                <InputSelect
+                                    id="hintquestion"
+                                    name="hintquestion"
+                                    placeholder="Select Value"
+                                    options={programmeNameList}
+                                    className="aliceblue-bg border-dark-subtle"
+                                    value={programmeId}
+                                    onChange={(e) => setProgrammeId(e.target.value)}
+                                />
+
+                            </div>
+                        </div>
+                    </div>
+                    <div className='col-sm-6'>
+                        <div className="form-group row" style={{ paddingBottom: "1px" }}>
                             <label className="col-sm-5 col-form-label fix-label required-label">State : </label>
                             <div className="col-sm-7 align-content-center">
                                 <InputSelect
                                     id="hintquestion"
                                     name="hintquestion"
-                                    placeholder="Select Value"
-                                    /*options={[{ value: '44', label: 'District Hospital' }]}*/
+                                    placeholder="Select value"
                                     options={stateNameDrpDt}
                                     className="aliceblue-bg border-dark-subtle"
                                     value={stateId}
                                     onChange={(e) => setStateId(e.target.value)}
                                 />
-
-                            </div>
-                        </div>
-                    </div>
-                    <div className='col-sm-6'>
-                        <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-5 col-form-label fix-label required-label">Facility Type : </label>
-                            <div className="col-sm-7 align-content-center">
-                                <InputSelect
-                                    id="hintquestion"
-                                    name="hintquestion"
-                                    placeholder="Select value"
-                                    options={facilityTypeDrpDt}
-                                    className="aliceblue-bg border-dark-subtle"
-                                    value={facilityId}
-                                    onChange={(e) => setFacilityId(e.target.value)}
-                                />
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className='row pt-2'>
-                    <div className='col-sm-6'>
-                        <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-5 col-form-label fix-label required-label">Inhouse/Outsource : </label>
-                            <div className="col-sm-7 align-content-center">
-                                <InputSelect
-                                    id="hintquestion"
-                                    name="hintquestion"
-                                    placeholder="Select Value"
-                                    options={[
-                                        { value: '1', label: 'Inhouse' },
-                                        { value: '2', label: 'Outsource' }
-                                      ]}
-                                    /*options={stateNameDrpDt}*/
-                                    className="aliceblue-bg border-dark-subtle"
-                                    value={inOutFlag}
-                                    onChange={(e) => setInoutFlag(e.target.value)}
-                                />
-
-                            </div>
-                        </div>
-                    </div>
-                    </div>
 
                 <div className="d-flex align-items-center my-3">
                     <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
                     <div className="px-1 text-primary fw-bold fs-13">
-                        <span className="text-danger">*</span> Test Facility Type
+                        <span className="text-danger">*</span> State Programme Name
                     </div>
                     <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
                 </div>
@@ -320,7 +297,7 @@ const TestMappingMaster = () => {
                                 setSelectedAvailable(selected);
                             }}
                         >
-                             {availableOptions?.length > 0 && availableOptions?.map(opt => (
+                            {availableOptions?.length > 0 && availableOptions?.map(opt => (
                                 <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                 </option>
@@ -362,6 +339,7 @@ const TestMappingMaster = () => {
                             value={selectedSelected}
                             onChange={(e) => {
                                 const selected = Array.from(e.target.selectedOptions, option => option.value);
+                    
                                 setSelectedSelected(selected);
                             }}
                         >
@@ -380,9 +358,9 @@ const TestMappingMaster = () => {
                 </div>
 
                 <div className='text-center'>
-                <button className='btn btn-sm datatable-btns py-0' onClick={handleValidation}>
+                    <button className='btn btn-sm datatable-btns py-0' onClick={handleValidation}>
                         <i className="fa fa-save me-1 fs-13 text-success"></i>Save</button>
-                        <button className='btn btn-sm datatable-btns py-0' onClick={reset} >
+                    <button className='btn btn-sm datatable-btns py-0' onClick={reset} >
                         <i className="fa fa-broom me-1 fs-13 text-warning"></i>Clear</button>
                 </div>
             </div>
@@ -390,4 +368,4 @@ const TestMappingMaster = () => {
     )
 }
 
-export default TestMappingMaster
+export default ProgrammeMappingMaster

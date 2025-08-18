@@ -11,6 +11,7 @@ const BaseUrl = 'http://10.226.25.164:8025'; //prSitee
 // const BaseUrl = 'http://10.226.30.45:8025/';  //pradeep
 // const BaseUrl = 'http://10.226.26.247:8025/';  //harsh
 // const BaseUrl = 'http://10.226.80.61:8025/';  //server
+// const BaseUrl = 'http://10.226.17.20:8025/'; //himanshi
 
 const apiLogin = axios.create({
     baseURL: BaseUrl

@@ -5,7 +5,7 @@ import axios from 'axios'
 import GlobalTable from '../../GlobalTable'
 import DistrictMasterForm from '../forms/admin/DistrictMasterForm'
 import { fetchData, fetchDeleteData, fetchUpdateData } from '../../../../../utils/ApiHooks'
-import { ToastAlert } from '../../../utils/CommonFunction'
+import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction'
 import { Modal } from 'react-bootstrap';
 
 const DistrictMaster = () => {
@@ -155,11 +155,15 @@ const DistrictMaster = () => {
     return (
         <div className="masters mx-3 my-2">
 
+            <div className='masters-header row'>
+                <span className='col-6'><b>{`District Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
+            </div>
+
             {(openPage === "home" || openPage === "view" || openPage === 'delete') &&
                 <>
-                    <div className='text-left w-100 fw-bold p-1 heading-text' >District Master</div>
 
-                    <div className="row">
+                    <div className="row pt-2">
                         <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
                             <label className="col-sm-4 col-form-label fix-label required-label"> Country </label>
                             <div className="col-sm-8 align-content-center">
@@ -194,7 +198,7 @@ const DistrictMaster = () => {
 
                     </div>
 
-                    <div className="row">
+                    <div className="row pt-1">
                         <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
                             <label className="col-sm-4 col-form-label fix-label required-label"> Record Status </label>
                             <div className="col-sm-8 align-content-center">
@@ -212,6 +216,8 @@ const DistrictMaster = () => {
                         </div>
 
                     </div>
+
+                    <hr className='my-2' />
 
                     <div>
                         <GlobalTable column={columns} data={listData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}

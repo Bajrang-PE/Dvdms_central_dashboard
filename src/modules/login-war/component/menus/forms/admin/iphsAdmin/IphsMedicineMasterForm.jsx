@@ -5,7 +5,7 @@ import { fetchPatchData, fetchPostData, fetchUpdateData } from '../../../../../.
 import { ToastAlert } from '../../../../../utils/CommonFunction'
 import { LoginContext } from '../../../../../context/LoginContext'
 
-const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput}) => {
+const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
 
     const { confirmSave, setShowConfirmSave, openPage, setOpenPage, selectedOption, setSelectedOption, setConfirmSave } = useContext(LoginContext)
 
