@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext';
-import { fetchDeleteData } from '../../../../../utils/ApiHooks';
+import { fetchDeleteData, fetchData } from '../../../../../utils/ApiHooks';
 import InputSelect from '../../InputSelect';
 import GlobalTable from '../../GlobalTable';
 import { functionalityData } from '../../../localData/HomeData';
@@ -10,9 +10,11 @@ import ViewPage from '../ViewPage';
 
 const ProgrammeMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave,confirmSave,setConfirmSave, getProgrammeListData, programmeListData } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [recordStatus, setRecordStatus] = useState('1');
+    //const [filterData, setFilterData] = useState(programmeListData);
+    const [programmeListData, setProgrammeListData] = useState([]);
     const [filterData, setFilterData] = useState(programmeListData);
 
 
@@ -22,10 +24,15 @@ const ProgrammeMaster = () => {
 
     }, [recordStatus])
 
-   // console.log(programmeListData,'programmeListData')
+    const uniqueRows = programmeListData
+        .filter(dt =>
+            programmeListData.filter(innerDt => innerDt.someUniqueKey === dt.someUniqueKey).length === 1
+        );
+    console.log(uniqueRows, 'programmeListData')
+
 
     const handleRowSelect = (row) => {
-       
+
         setSelectedOption((prev) => {
             if (prev.length > 0 && prev[0]?.cwhnumProgrammeId === row?.cwhnumProgrammeId) {
                 return [];
@@ -48,18 +55,31 @@ const ProgrammeMaster = () => {
         }
     }, [searchInput, programmeListData]);
 
+    const getProgrammeListData = (recordStatus) => {
+
+        fetchData(`http://10.226.17.20:8025/api/v1/programmes/all?isActive=${recordStatus}`).then((data) => {
+            if (data?.status === 1 && Array.isArray(data.data)) {
+                setProgrammeListData(data.data)
+            } else {
+                setProgrammeListData([])
+            }
+        })
+
+    };
+
 
     const deleteRecord = () => {
-        fetchDeleteData(`api/v1/programmes?programmeId=${selectedOption[0]?.cwhnumProgrammeId}`).then(data => {
+        fetchDeleteData(`http://10.226.17.20:8025/api/v1/programmes?programmeId=${selectedOption[0]?.cwhnumProgrammeId}`).then(data => {
             //http://10.226.17.20:8025/api/v1/programmes?programmeId=74
-            if (data) {
+            if (data?.status ===1) {
                 ToastAlert("Record Deleted Successfully", "success")
-                getProgrammeListData();
+                getProgrammeListData(1);
                 setSelectedOption([]);
                 setConfirmSave(false);
                 onClose();
             } else {
-                ToastAlert('Error while deleting record!', 'error')
+                ToastAlert(data?.message, 'error')
+                setConfirmSave(false);
             }
         })
     }
@@ -117,10 +137,10 @@ const ProgrammeMaster = () => {
 
         <div className='masters mx-3 my-2'>
             <div className='masters-header row'>
-                
+
                 <span className='col-6'><b>{`Programme Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
                 {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
-                
+
 
             </div>
             {(openPage === "home" || openPage === 'view' || openPage === 'delete') && (
@@ -146,7 +166,7 @@ const ProgrammeMaster = () => {
                     </div>
                     <hr className='my-2' />
 
-                    <GlobalTable column={column} data={programmeListData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                    <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
 
                     {openPage === 'view' &&
                         <ViewPage data={[{ value: selectedOption[0]?.cwhstrProgrammeName, label: "Pro Name" }]} onClose={onClose} title={"Programme Master"} />
@@ -156,7 +176,7 @@ const ProgrammeMaster = () => {
             )}
 
             {(openPage === "add" || openPage === 'modify') && (<>
-                <ProgrammeMasterForm />
+                <ProgrammeMasterForm getProgrammeListData={getProgrammeListData}/>
             </>)}
         </div>
 

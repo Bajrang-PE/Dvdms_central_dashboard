@@ -2,90 +2,232 @@ import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
-import { fetchData } from '../../../../../utils/ApiHooks';
+import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
+import { getAuthUserData } from '../../../../../utils/CommonFunction';
 
 const TestMappingMaster = () => {
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt,getFacilityTypeDrpData } = useContext(LoginContext);
+    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt,getFacilityTypeDrpData,facilityTypeDrpDt,setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
 
-    const [programmeId, setProgrammeId] = useState("");
+   
     const [stateId, setStateId] = useState("");
+    const [facilityId, setFacilityId] = useState("");
+    const [inOutFlag, setInoutFlag] = useState("");
     const [availableOptions, setAvailableOptions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [selectedAvailable, setSelectedAvailable] = useState([]);
     const [selectedSelected, setSelectedSelected] = useState([]);
+    const [initialMappedOptions, setInitialMappedOptions] = useState([]);
 
     useEffect(() => {
         if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
+        
+        if (facilityTypeDrpDt?.length === 0) getFacilityTypeDrpData();
         setOpenPage("add");
-        getFacilityTypeDrpData();
+       // getFacilityTypeDrpData();
     }, []);
+
 
     useEffect(() => {
         if (stateId) {
             setSelectedOptions([]);
-            getUnmappedList();
+           // getUnmappedList();
         }
         setSelectedAvailable([]);
         setSelectedSelected([]);
     }, [stateId]);
 
     useEffect(() => {
-        if (stateId && programmeId) {
+        if (stateId && facilityId && inOutFlag) {
             getMappedList();
+            getUnmappedList();
         }
-    }, [stateId, programmeId])
+    }, [stateId, facilityId, inOutFlag])
+
+
+    
 
     const getUnmappedList = () => {
-        fetchData(`api/v1/unmappedFclty/${stateId}`).then(data => {
-            if (data) {
-                setAvailableOptions(data)
+    
+            fetchData(`http://10.226.17.20:8025/api/v1/TestMap/unmap?isActive=1&facilityTypeId=${facilityId}&stateId=${stateId}&inhouseOutsourceFlag=1`).then(data => {
+            //http://10.226.17.20:8025/api/v1/TestMap/map?isActive=1&facilityTypeId=46&stateId=46&inhouseOutsourceFlag=1
+            if (data?.status === 1) {
+                const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
+                    value: dt?.cwhnumTestId,
+                    label: dt?.cwhstrTestDesc
+                })
+                )
+                setAvailableOptions(drpData)
             } else {
-                ToastAlert('Error while fetching record!', 'error')
+                console.error(data?.message, 'error')
+                setAvailableOptions([])
             }
         })
     }
 
     const getMappedList = () => {
-        fetchData(`api/v1/mapped/${facilityTypeId}/${stateId}`).then(data => {
-            if (data) {
-                setSelectedOptions(data)
+        fetchData(`http://10.226.17.20:8025/api/v1/TestMap/map?isActive=1&facilityTypeId=${facilityId}&stateId=${stateId}&inhouseOutsourceFlag=1`).then(data => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
+                    value: dt?.cwhnumTestId,
+                    label: dt?.cwhstrTestDesc
+                })
+                )
+                setSelectedOptions(drpData)
+                setInitialMappedOptions(drpData);
             } else {
-                ToastAlert('Error while fetching record!', 'error')
+                console.error(data?.message, 'error')
+                setSelectedOptions([])
+                setInitialMappedOptions([])
             }
         })
     }
 
+    const saveTestMappedData = () => {
+
+        const newMapped = selectedOptions.filter(
+            item => !initialMappedOptions.some(i => i.value == item.value)
+        );
+
+        const newUnMapped = initialMappedOptions.filter(
+            item => !selectedOptions.some(i => i.value == item.value)
+        );
+
+        console.log(newMapped,'m')
+        console.log(newUnMapped,'u')
+
+        const mappedData = newMapped?.length > 0 && newMapped?.map(dt => ({
+            "cwhnumStateId": parseInt(stateId),
+         //   "cwhnumStateFacilityTypeId": 0,
+            "cwhnumCentreFacilityTypeId":  parseInt(facilityId),
+            "cwhnumTestId": dt?.value,
+            "cwhnumInhouseOutsourceFlag": parseInt(inOutFlag),
+          //  "cwhstrTestDesc": dt?.label,
+           // "gnumSeatId": getAuthUserData('userSeatId'),
+            "cwhnumIsvalid": 1,
+           // "cwhnumProgrammeSlno": 0,
+           
+          
+
+        }))
+
+        const unMappedData = newUnMapped?.length > 0 && newUnMapped?.map(dt => ({
+          //  "cwhnumStateId": parseInt(stateId),
+            "cwhnumTestId": dt?.value,
+         //   "cwhstrTestDesc": dt?.label,            
+            "cwhnumDh": 0,
+            "cwhnumSdh": 0,
+            "cwhnumChc": 0,
+            "cwhnumAamphc": 0,
+            "cwhnumAamshc": 0,
+            "cwhnumIsvalid": 0,
+         //    "cwhnumEntryUid": 0,
+          //  "cwhdtEntryDate": "2025-06-30T05:34:24.275Z",
+          //  "cwhnumModUid": 0,
+          //  "cwhdtModDate": "2025-06-30T05:34:24.275Z",
+            "cwhnumInhouseOutsourceFlag":  parseInt(inOutFlag),
+            "cwhnumStateId": parseInt(stateId),
+       //     "cwhnumStateFacilityTypeId": 0,
+            "cwhnumCentreFacilityTypeId":parseInt(facilityId)
+        }))
+
+        const val = {
+            "arrTestMappedDtos": mappedData?.length > 0 ? mappedData : [],
+            "arrTestUnMapDtos": unMappedData?.length > 0 ? unMappedData : [],
+          //  "gnumSeatId": getAuthUserData('userSeatId'),
+        //    "cwhnumStateProgrammeId": 0,
+        //    "cwhstrStateProgrammeName": "",
+            "cwhnumStateId": parseInt(stateId)
+        }
+
+        fetchPostData(`http://10.226.17.20:8025/api/v1/TestMap/create`, val).then(data => {
+            if (data?.status === 1) {
+                console.log(data?.data)
+                setConfirmSave(false)
+                reset();
+            } else {
+                ToastAlert(data?.message, 'error')
+                setConfirmSave(false)
+            }
+        })
+
+    }
+
+    const handleValidation = () => {
+        let isValid = true;
+
+        if (stateId === "") {
+            setErrors(prev => ({ ...prev, "stateIdErr": "Please select state name" }))
+            isValid = false;
+        }
+        if (facilityId === "") {
+            setErrors(prev => ({ ...prev, "facilityIdErr": "Please select facility type" }))
+            isValid = false;
+        }//    "arrTestMappedDtos": [
+   // {
+        if (inOutFlag === "") {
+            setErrors(prev => ({ ...prev, "inOutFlagErr": "Please select inhouse/outsource flag" }))
+            isValid = false;
+        }
+
+        if (isValid) {
+            setShowConfirmSave(true)
+        }
+    }
+
+    useEffect(() => {
+        if (confirmSave) {
+            saveTestMappedData();
+        }
+    }, [confirmSave])
+
+    const reset = () => {
+        setInoutFlag('');
+        setStateId('');
+        setFacilityId('');
+     //   setInitialMappedOptions();
+     //   setSelectedSelected();
+      //  setSelectedAvailable();
+      //  setSelectedOptions();
+      //  setAvailableOptions();
+        setInitialMappedOptions([]);
+        setSelectedSelected([]);
+        setSelectedAvailable([]);
+        setSelectedOptions([]);
+        setAvailableOptions([]);
+    }
+
     const moveToSelected = () => {
-        if (programmeId) {
+     //   if (cwhnumTestId) {
             const itemsToMove = availableOptions.filter(opt =>
-                selectedAvailable.includes(String(opt.programmeId))
+                selectedAvailable.includes(String(opt.value))
             );
             const newSelected = itemsToMove.filter(item =>
-                !selectedOptions.some(selected => selected.programmeId === item.programmeId)
+                !selectedOptions.some(selected => selected.value === item.value)
             );
             setSelectedOptions(prev => [...prev, ...newSelected]);
             setAvailableOptions(prev => prev.filter(opt =>
-                !selectedAvailable.includes(String(opt.programmeId))
+                !selectedAvailable.includes(String(opt.value))
             ));
             setSelectedAvailable([]);
-        } else {
-            ToastAlert('Please select programme name!', 'warning')
-        }
+      //  } else {
+          //  ToastAlert('Please select test name!', 'warning')
+      //  }
     };
 
+
     const moveToAvailable = () => {
-        if (programmeId) {
+      //  if (cwhnumTestId) {
             const itemsToMove = selectedOptions.filter(opt =>
-                selectedSelected.includes(String(opt.programmeId))
+                selectedSelected.includes(String(opt.value))
             );
             setAvailableOptions(prev => [...prev, ...itemsToMove]);
             setSelectedOptions(prev => prev.filter(opt =>
-                !selectedSelected.includes(String(opt.programmeId))
+                !selectedSelected.includes(String(opt.value))
             ));
             setSelectedSelected([]);
-        } else {
-            ToastAlert('Please select programme name!', 'warning')
-        }
+     //   } else {
+          //  ToastAlert('Please select test name!', 'warning')
+    //    }
     };
 
 
@@ -110,7 +252,7 @@ const TestMappingMaster = () => {
                                     /*options={[{ value: '44', label: 'District Hospital' }]}*/
                                     options={stateNameDrpDt}
                                     className="aliceblue-bg border-dark-subtle"
-                                    value={programmeId}
+                                    value={stateId}
                                     onChange={(e) => setStateId(e.target.value)}
                                 />
 
@@ -125,10 +267,10 @@ const TestMappingMaster = () => {
                                     id="hintquestion"
                                     name="hintquestion"
                                     placeholder="Select value"
-                                    options={stateNameDrpDt}
+                                    options={facilityTypeDrpDt}
                                     className="aliceblue-bg border-dark-subtle"
-                                    value={stateId}
-                                    onChange={(e) => setStateId(e.target.value)}
+                                    value={facilityId}
+                                    onChange={(e) => setFacilityId(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -149,8 +291,8 @@ const TestMappingMaster = () => {
                                       ]}
                                     /*options={stateNameDrpDt}*/
                                     className="aliceblue-bg border-dark-subtle"
-                                    value={programmeId}
-                                    onChange={(e) => setStateId(e.target.value)}
+                                    value={inOutFlag}
+                                    onChange={(e) => setInoutFlag(e.target.value)}
                                 />
 
                             </div>
@@ -178,9 +320,9 @@ const TestMappingMaster = () => {
                                 setSelectedAvailable(selected);
                             }}
                         >
-                            {availableOptions.map(opt => (
-                                <option key={opt.facilityTypeId} value={opt.facilityTypeId}>
-                                    {opt.facilityTypeName}
+                             {availableOptions?.length > 0 && availableOptions?.map(opt => (
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
                                 </option>
                             ))}
                         </select>
@@ -223,9 +365,9 @@ const TestMappingMaster = () => {
                                 setSelectedSelected(selected);
                             }}
                         >
-                            {selectedOptions.map(opt => (
-                                <option key={opt.facilityTypeId} value={opt.facilityTypeId}>
-                                    {opt.facilityTypeName}
+                            {selectedOptions?.length > 0 && selectedOptions?.map(opt => (
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
                                 </option>
                             ))}
                         </select>
@@ -238,9 +380,9 @@ const TestMappingMaster = () => {
                 </div>
 
                 <div className='text-center'>
-                    <button className='btn btn-sm datatable-btns py-0' >
+                <button className='btn btn-sm datatable-btns py-0' onClick={handleValidation}>
                         <i className="fa fa-save me-1 fs-13 text-success"></i>Save</button>
-                    <button className='btn btn-sm datatable-btns py-0'  >
+                        <button className='btn btn-sm datatable-btns py-0' onClick={reset} >
                         <i className="fa fa-broom me-1 fs-13 text-warning"></i>Clear</button>
                 </div>
             </div>

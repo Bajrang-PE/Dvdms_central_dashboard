@@ -137,6 +137,7 @@ const DrugMaster = () => {
     }
 
     const handleSelectAll = (isChecked) => {
+        
         setSelectAll(isChecked);
         if (isChecked) {
             const allIds = listData.map(drug => drug.cwhnumDrugId);
@@ -301,6 +302,7 @@ const DrugMaster = () => {
                         <hr className='my-2' />
 
                         <div>
+                            
                             <GlobalTable column={columns} data={filterData} onDelete={handleDeleteRecord}
                                 onReport={null} setSearchInput={setSearchInput} searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
                         </div>

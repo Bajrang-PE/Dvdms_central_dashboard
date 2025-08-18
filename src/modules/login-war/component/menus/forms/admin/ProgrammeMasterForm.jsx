@@ -6,77 +6,68 @@ import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchData, fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
-const ProgrammeMasterForm = () => {
-    const { openPage, selectedOption, setOpenPage, setSelectedOption, getProgrammeListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+const ProgrammeMasterForm = ({getProgrammeListData}) => {
+    const { openPage, selectedOption, setOpenPage, setSelectedOption, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [programmeName, setProgrammeName] = useState('');
     const [recordStatus, setRecordStatus] = useState('1');
-    const [singleData, setSingleData] = useState([]);
+    // const [singleData, setSingleData] = useState([]);
     const [errors, setErrors] = useState({
         "programmeNameErr": ""
     })
 
-    // const getSingleData = (id) => {
-    //     fetchData(`api/v1/zones/${id}`).then(data => {
-    //         if (data) {
-    //             setSingleData([data]);
-    //         } else {
-    //             ToastAlert('Error while fetching data!', 'error')
-    //         }
-    //     })
-    // }
-
-    // useEffect(() => {
-    //     if (selectedOption?.length > 0 && openPage === 'modify') {
-    //         getSingleData(selectedOption[0]?.cwhnumZoneId)
-    //     }
-    // }, [selectedOption, openPage])
-
 
     const saveProgrammeData = () => {
         const val = {
-            "seatId": getAuthUserData('userSeatId'),
+            "gnumSeatId": getAuthUserData('userSeatId'),
             // "cwhnumProgrammeId":programmeId,
+            //  "cwhnumProgrammeId":109,
+            // "cwhstrProgrammeName": "string"
             "cwhstrProgrammeName": programmeName,
-            "status": "Active"
+            "gnumIsValid": 1,
+            // "status": "Active"
         }
-        fetchPostData(`/api/v1/programmes`, val).then(data => {
+        fetchPostData(`http://10.226.17.20:8025/api/v1/programmes`, val).then(data => {
+
             if (data?.status === 1) {
-                ToastAlert('Record created successfully', 'success');
+                // ToastAlert('Record created successfully', 'success');
                 setOpenPage('home');
-                getProgrammeListData();
+                getProgrammeListData(1);
                 reset();
-                setConfirmSave(false);
+                //  setConfirmSave(false);
+                ToastAlert("Data saved successfully", "success")
+           
             } else {
-                ToastAlert(data?.message, "error");
+                ToastAlert(data?.message, "error")
+                setConfirmSave(false);
             }
         })
     }
 
     const updateProgrammeData = () => {
-       // alert("111111");
+        // alert("111111");
         const val = {
             "gnumSeatid": 10001,
-          //  "gnumSeatid": getAuthUserData('userSeatId'),
+            //  "gnumSeatid": getAuthUserData('userSeatId'),
             "cwhstrProgrammeName": programmeName,
             "gnumIsValid": recordStatus,
             "cwhnumProgrammeId": selectedOption[0]?.cwhnumProgrammeId,
-          //  "centralDrugId": selectedOption[0]?.centralDrugId,
-           // "cwhstrProgrammeShortName": "",
+            //  "centralDrugId": selectedOption[0]?.centralDrugId,
+            // "cwhstrProgrammeShortName": "",
             //"cwhnumFlagForNhm": 0,
         }
-        fetchUpdateData(`api/v1/programmes`, val).then(data => {
-            console.log("data :::",data);
+        fetchUpdateData(`http://10.226.17.20:8025/api/v1/programmes`, val).then(data => {
+            console.log("data :::", data);
             if (data?.status === 1) {
 
                 ToastAlert('Record Updated Successfully', 'success');
+                getProgrammeListData(1);
                 setOpenPage('home');
-                getProgrammeListData();
-               // setOpenPage('home');
                 reset();
                 setSelectedOption([]);
                 setConfirmSave(false);
             } else {
-                ToastAlert('error while updating record!', error)
+                ToastAlert(data?.message, "error")
+                setConfirmSave(false);
             }
         })
     }
@@ -150,7 +141,7 @@ const ProgrammeMasterForm = () => {
                                         className="border-dark-subtle form-check-input"
                                         type="radio"
                                         name="recordStatus"
-                                        id="recordStatus1"
+                                        id="recordStatus"
                                         value={'1'}
                                         onChange={(e) => setRecordStatus(e.target.value)}
                                         checked={recordStatus === "1"}
