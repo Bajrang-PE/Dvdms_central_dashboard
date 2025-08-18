@@ -40,9 +40,9 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
 
     const fetchCaptchaData = () => {
         fetchData('/api/v1/captcha').then(data => {
-            if (data) {
-                setCaptchaImage(data?.captchaImage);
-                setCaptchaToken(data?.captchaToken);
+            if (data?.status === 1) {
+                setCaptchaImage(data?.data?.captchaImage);
+                setCaptchaToken(data?.data?.captchaToken);
             } else {
                 console.error('Request failed');
                 setCaptchaImage(null);
@@ -78,28 +78,25 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                 "captchaToken": captchaToken
             }
             fetchPostData("/api/v1/auth/login", val).then(data => {
-                if (data) {
-                    if (!data?.message && data?.accessToken) {
-                        ToastAlert("Login successful", 'success')
-                        const { gnumSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode, } = data;
-                        const auth = {
-                            'isLogin': true,
-                            //   'userType': (gstrUserName)?.toLowerCase(),
-                            'username': gstrUserName,
-                            'userSeatId': gnumSeatId,
-                            //   'hospitalName': gstrHospitalName,
-                            'hospitalCode': gnumHospitalCode
-                        }
-                        localStorage.setItem('data', encryptData(JSON.stringify(auth)));
-                        Cookies.set('csrfToken', csrfToken);
-                        localStorage.setItem('accessToken', accessToken);
-                        localStorage.setItem('refreshToken', refreshToken);
-                        navigate('/dvdms/user-dashboard');
-                    } else {
-                        ToastAlert(data?.message, 'error');
+                console.log(data, 'data')
+                if (data?.status === 1) {
+                    ToastAlert("Login successful", 'success')
+                    const { gnumSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode, } = data?.data;
+                    const auth = {
+                        'isLogin': true,
+                        //   'userType': (gstrUserName)?.toLowerCase(),
+                        'username': gstrUserName,
+                        'userSeatId': gnumSeatId,
+                        //   'hospitalName': gstrHospitalName,
+                        'hospitalCode': gnumHospitalCode
                     }
+                    localStorage.setItem('data', encryptData(JSON.stringify(auth)));
+                    Cookies.set('csrfToken', csrfToken);
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    navigate('/dvdms/user-dashboard');
                 } else {
-                    ToastAlert('login failed!', 'error')
+                    ToastAlert(data?.message, 'error');
                 }
             })
         }
