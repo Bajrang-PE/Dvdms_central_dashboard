@@ -202,7 +202,7 @@ const LoginContextApi = ({ children }) => {
 
         // localhost:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=27&stateID=58
 
-        fetchData('http://10.226.27.247:8025/api/v1/supplierMappingMaster/getAllSuppliers').then((data) => {
+        fetchData('http://10.226.26.247:8025/api/v1/supplierMappingMaster/getAllSuppliers').then((data) => {
             if (data) {
                 console.log("data-------", data)
 
