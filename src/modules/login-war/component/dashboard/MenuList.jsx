@@ -122,9 +122,8 @@ const MenuList = (props) => {
         try {
             setLoading(true);
             const data = await fetchData("http://10.226.25.164:8025/api/v1/getMenuBySeatId/10001");
-
-            if (data && Array.isArray(data)) {
-                const formattedMenuData = transformMenuData(data);
+            if (data?.status === 1) {
+                const formattedMenuData = transformMenuData(data?.data);
                 setMenuData(formattedMenuData);
             } else {
                 throw new Error("Invalid menu data format");
