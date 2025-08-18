@@ -13,6 +13,7 @@ const ParamsDetails = (props) => {
 
     const leftSelectEle = document.getElementById('leftRightSelect');
     const rightSelectEle = document.getElementById('leftRightSelect1');
+    
     const [filterData, setFilterData] = useState([]);
     const [filterData2, setFilterData2] = useState([]);
     const [searchInput, setSearchInput] = useState('');

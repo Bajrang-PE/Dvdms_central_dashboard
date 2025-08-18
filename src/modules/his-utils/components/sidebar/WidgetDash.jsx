@@ -61,7 +61,7 @@ const WidgetDash = React.memo(({ widgetDetail, presentWidgets, presentTabs, pk }
             default: return null;
         }
     };
-
+console.log(presentTabs,'bghththth')
 
     return (
         <Suspense fallback={<div>Loading...</div>}>
@@ -118,7 +118,10 @@ const WidgetDash = React.memo(({ widgetDetail, presentWidgets, presentTabs, pk }
                             // Normal widget rendering with col class
                             <div
                                 className={`col-sm-${presentTabs?.find(dt => dt?.rptId == widgetData?.rptId)?.widgetWidth || 12}`}
-                                style={{ padding: "5px 3px" }}
+                                style={{ 
+                                    padding: "5px 3px",
+                                    height :`${presentTabs?.find(dt => dt?.rptId == widgetData?.rptId)?.widgetWidth || 12}`
+                                }}
                             >
                                 {renderWidget(widgetData)}
                             </div>

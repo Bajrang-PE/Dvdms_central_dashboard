@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { decryptAesOrRsa } from './SecurityConfig';
 
 
 // const BaseUrl = import.meta.env.VITE_API_BASE_URL
@@ -68,10 +69,16 @@ export const fetchData = async (url, params) => {
     try {
         if (params) {
             const response = await apiLogin.get(url, { params: params ? params : '' });
-            return response?.data
+            const decryptedData = decryptAesOrRsa(response?.data)
+            // console.log(JSON.parse(decryptedData),url,'bajrang');
+            return JSON.parse(decryptedData);
+            // return response?.data
         } else {
             const response = await apiLogin.get(url);
-            return response?.data
+            const decryptedData = decryptAesOrRsa(response?.data)
+            // console.log(JSON.parse(decryptedData),url);
+            return JSON.parse(decryptedData);
+            // return response?.data
         }
     } catch (error) {
         console.error('API Error:', error);

@@ -13,7 +13,7 @@ const PopUpWidget = (props) => {
     const dashboardFor = atob(searchParams.get("dashboardFor"));
 
     const getWidgetData = (widid) => {
-        fetchData(`hisutils/getWdgtSnglData?id=${widid}&dashboardFor=${dashboardFor}&masterName=DashboardWidgetMst`).then(data => {
+        fetchData(`/hisutils/getWdgtSnglData?id=${widid}&dashboardFor=${dashboardFor}&masterName=DashboardWidgetMst`).then(data => {
             if (data?.status === 1) {
                 setWidgetData(data?.data);
             } else {
