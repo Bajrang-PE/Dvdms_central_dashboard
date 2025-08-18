@@ -9,7 +9,7 @@ import InputSelect from './InputSelect';
 
 
 const GlobalDataTable = (props) => {
-    const { showDataTable, setShowDataTable} = useContext(HISContext);
+    const { showDataTable, setShowDataTable, dt } = useContext(HISContext);
     const { title, column, data, onModify, onDelete, onClose, setSearchInput, isShowBtn } = props;
 
     const handleClose = () => { setShowDataTable(false); onClose(); }
@@ -29,26 +29,26 @@ const GlobalDataTable = (props) => {
         <div>
             <Modal show={showDataTable} onHide={handleClose} size='xl'>
                 <Modal.Header closeButton className='p-2'></Modal.Header>
-                <b><h4 className='datatable-header mx-3 py-1 mt-1 px-1'>{title}</h4></b>
+                <b><h4 className='datatable-header mx-3 py-1 mt-1 px-1'>{dt(title)}</h4></b>
                 <div className='datatable-btns-his row mx-3 my-1 '>
                     <div className='col-6 m-0 p-0 align-content-center'>
                         {isShowBtn &&
                             <>
-                                <button className='btn btn-sm me-1' onClick={()=>onModify()}><FontAwesomeIcon icon={faEdit}
-                                    className="dropdown-gear-icon me-1" />Modify</button>
-                                <button className='btn btn-sm ms-1' onClick={()=>onDelete()}><FontAwesomeIcon icon={faRemove}
-                                    className="dropdown-gear-icon me-1" />Delete</button>
+                                <button className='btn btn-sm me-1' onClick={() => onModify()}><FontAwesomeIcon icon={faEdit}
+                                    className="dropdown-gear-icon me-1" />{dt('Modify')}</button>
+                                <button className='btn btn-sm ms-1' onClick={() => onDelete()}><FontAwesomeIcon icon={faRemove}
+                                    className="dropdown-gear-icon me-1" />{dt('Delete')}</button>
                             </>
                         }
                     </div>
                     <div className="col-6 d-flex justify-content-end align-items-center p-0">
-                        <label className="col-form-label me-2">Search :</label>
+                        <label className="col-form-label me-2 d-none d-lg-block">{dt('Search')} :</label>
                         <div className=''>
                             <InputField
                                 type="search"
                                 id="customMsgForNoData"
                                 name="customMsgForNoData"
-                                placeholder="Enter"
+                                placeholder="Search..."
                                 className="backcolorinput"
                                 onChange={(e) => { setSearchInput(e?.target?.value); }}
                             // value={values?.customMsgForNoData}
@@ -73,6 +73,7 @@ const GlobalDataTable = (props) => {
                         pagination
                         // pointerOnHover
                         customStyles={tableCustomStyles}
+                        
                     />
                 </Modal.Body>
             </Modal>

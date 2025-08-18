@@ -5,17 +5,17 @@ import InputField from '../../commons/InputField';
 import { mapNameOptions } from '../../../localData/DropDownData';
 
 const MapWidget = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values, parentWidget, setValues,errors } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, parentWidget, setValues, errors, dt } = props;
 
     return (
         <div>
-            <b><h6 className='header-devider mb-1'>Map Details</h6></b>
+            <b><h6 className='header-devider mb-1'>{dt('Map Details')}</h6></b>
             {/* SECTION DEVIDER */}
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Map Name : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt('Map Name')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 className="backcolorinput"
@@ -33,7 +33,7 @@ const MapWidget = (props) => {
                     {values?.parentWidgetMap &&
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Is Child Based On Primary Key :
+                                {dt('Is Child Based On Primary Key')} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -47,7 +47,7 @@ const MapWidget = (props) => {
                                         checked={radioValues?.isChildBasedPrimaryKey === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt('Yes')}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -61,7 +61,7 @@ const MapWidget = (props) => {
                                         checked={radioValues?.isChildBasedPrimaryKey === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt('No')}
                                     </label>
                                 </div>
                             </div>
@@ -87,7 +87,7 @@ const MapWidget = (props) => {
                     </div> */}
 
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Parent Widget : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Parent Widget')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 id='parentWidgetMap'
@@ -105,7 +105,7 @@ const MapWidget = (props) => {
                     {values?.parentWidgetMap &&
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Is Hide Parent :
+                                {dt('Is Hide Parent')} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -119,7 +119,7 @@ const MapWidget = (props) => {
                                         checked={radioValues?.isHideParentMap === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt('Yes')}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -133,7 +133,7 @@ const MapWidget = (props) => {
                                         checked={radioValues?.isHideParentMap === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt('No')}
                                     </label>
                                 </div>
                             </div>
@@ -142,12 +142,12 @@ const MapWidget = (props) => {
                 </div>
             </div>
             {/* SECTION DEVIDER*/}
-            <b><h6 className='header-devider mb-1'>Legend Details</h6></b>
+            <b><h6 className='header-devider mb-1'>{dt('Legend Details')}</h6></b>
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Increasing intensity of Green color shows : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Increasing intensity of Green color shows')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type={'text'}

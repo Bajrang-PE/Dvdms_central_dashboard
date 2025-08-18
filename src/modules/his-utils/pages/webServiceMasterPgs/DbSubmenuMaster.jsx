@@ -8,7 +8,7 @@ import { ToastAlert } from '../../utils/commonFunction'
 import { fetchPostData } from '../../../../utils/HisApiHooks'
 
 const DbSubmenuMaster = () => {
-  const { setShowDataTable, selectedOption, setSelectedOption, setActionMode, actionMode, dashboardSubmenuData, getDashboardSubmenuData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(HISContext);
+  const { setShowDataTable, selectedOption, setSelectedOption, setActionMode, actionMode, dashboardSubmenuData, getDashboardSubmenuData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave,dt } = useContext(HISContext);
 
   const [showServiceUserTable, setShowServiceUserTable] = useState(false);
   const [searchInput, setSearchInput] = useState('');
@@ -74,13 +74,13 @@ const DbSubmenuMaster = () => {
       width: "8%"
     },
     {
-      name: 'ID',
+      name: dt('ID'),
       selector: row => row.subMenuId,
       sortable: true,
       width: "10%"
     },
     {
-      name: 'Submenu Value',
+      name: dt('Submenu Value'),
       selector: row => row?.subMenuValue || "---",
       sortable: true,
     },
@@ -248,13 +248,13 @@ const DbSubmenuMaster = () => {
       <div className='main-master-page'>
         <GlobalButtonGroup isSave={true} isOpen={true} isReset={true} isParams={false} isWeb={false} onSave={handleSaveUpdate} onOpen={onOpenSubmenuTable} onReset={reset} onParams={null} onWeb={null} />
         <div className='form-card m-auto p-3'>
-          <b><h6 className='header-devider mt-0 mb-1'> Dashboard SubMenu Master</h6></b>
+          <b><h6 className='header-devider mt-0 mb-1'>{dt('Dashboard SubMenu Master')} </h6></b>
           {/* SECTION DEVIDER*/}
           <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
             {/* //left columns */}
             <div className='col-sm-6'>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0 required-label">SubMenu Value : </label>
+                <label className="col-sm-5 col-form-label pe-0 required-label">{dt('SubMenu Value')} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="text"
@@ -273,7 +273,7 @@ const DbSubmenuMaster = () => {
                 </div>
               </div>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0">Mobile BgColor : </label>
+                <label className="col-sm-5 col-form-label pe-0">{dt('Mobile BgColor')} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="color"
@@ -290,7 +290,7 @@ const DbSubmenuMaster = () => {
             {/* right columns */}
             <div className='col-sm-6'>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0 required-label">Mobile Icon : </label>
+                <label className="col-sm-5 col-form-label pe-0 required-label">{dt('Mobile Icon')} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="text"
@@ -310,7 +310,7 @@ const DbSubmenuMaster = () => {
               </div>
 
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0">Mobile FontColor : </label>
+                <label className="col-sm-5 col-form-label pe-0">{dt('Mobile FontColor')} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="color"
@@ -330,7 +330,7 @@ const DbSubmenuMaster = () => {
       </div>
 
       {showServiceUserTable &&
-        <GlobalDataTable title={"Dashboard Submenu List"} column={column} data={filterData} onModify={handleUpdateData} onDelete={handleDeleteSubmenu} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={true} />
+        <GlobalDataTable title={dt("Dashboard Submenu List")} column={column} data={filterData} onModify={handleUpdateData} onDelete={handleDeleteSubmenu} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={true} />
       }
     </div>
   )

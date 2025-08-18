@@ -20,7 +20,7 @@ import { fetchPostData } from '../../../../utils/HisApiHooks';
 
 const TabMaster = () => {
 
-  const { dashboardForDt, getDashboardForDrpData, widgetDrpData, getAllWidgetData, getAllParameterData, parameterDrpData, getAllTabsData, allTabsData, setShowDataTable, setSelectedOption, selectedOption, actionMode, setActionMode, tabDrpData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, getDashConfigData, singleConfigData } = useContext(HISContext);
+  const { dashboardForDt, getDashboardForDrpData, widgetDrpData, getAllWidgetData, getAllParameterData, parameterDrpData, getAllTabsData, allTabsData, setShowDataTable, setSelectedOption, selectedOption, actionMode, setActionMode, tabDrpData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, getDashConfigData, singleConfigData, dt } = useContext(HISContext);
   const [tabIndex, setTabIndex] = useState(1);
   const [tabName, setTabName] = useState({ value: 1, label: "About Tab" });
   const [showTabsTable, setShowTabsTable] = useState(false);
@@ -584,23 +584,23 @@ const TabMaster = () => {
       width: "8%"
     },
     {
-      name: 'Tab ID',
+      name: dt('Tab ID'),
       selector: row => row.id,
       sortable: true,
       width: "8%"
     },
     {
-      name: 'Tab Display Name',
+      name: dt('Tab Display Name'),
       selector: row => row?.jsonData?.dashboardName || "---",
       sortable: true,
     },
     {
-      name: 'Tab Name',
+      name: dt('Tab Name'),
       selector: row => row?.jsonData?.dashboardActualName || "---",
       sortable: true,
     },
     {
-      name: 'Parent Name',
+      name: dt('Parent Name'),
       selector: row => allTabsData.filter(dt => dt?.jsonData?.parentTabId && dt?.jsonData?.dashboardId === row?.jsonData?.parentTabId)[0]?.jsonData?.dashboardName || "No Parent",
       // selector: row => row?.jsonData?.parentTabId || "---",
       sortable: true,
@@ -627,25 +627,25 @@ const TabMaster = () => {
         <div className='form-card m-auto p-2'>
           <div className='p-1'>
             {tabName?.value === 1 &&
-              <AboutTab handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} dashboardForDt={dashboardForDt} setValues={setValues} tabDrpData={tabDrpData} errors={errors} />
+              <AboutTab handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} dashboardForDt={dashboardForDt} setValues={setValues} tabDrpData={tabDrpData} errors={errors} dt={dt} />
             }
             {tabName?.value === 2 &&
-              <TabDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} errors={errors} />
+              <TabDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} errors={errors} dt={dt} />
             }
             {tabName?.value === 3 &&
-              <WidgetMapping handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} widgetDrpData={widgetDrpData} setValues={setValues} rows={rows} setRows={setRows} errors={errors} setErrors={setErrors} />
+              <WidgetMapping handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} widgetDrpData={widgetDrpData} setValues={setValues} rows={rows} setRows={setRows} errors={errors} setErrors={setErrors} dt={dt} />
             }
             {tabName?.value === 4 &&
-              <ParamsDetail handleValueChange={handleValueChange} values={values} parameterDrpData={parameterDrpData} pageName={'tab'} availableOptions={availableOptions} setAvailableOptions={setAvailableOptions} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} />
+              <ParamsDetail handleValueChange={handleValueChange} values={values} parameterDrpData={parameterDrpData} pageName={'tab'} availableOptions={availableOptions} setAvailableOptions={setAvailableOptions} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} dt={dt} />
             }
             {tabName?.value === 5 &&
-              <JndiDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} />
+              <JndiDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} dt={dt} />
             }
             {tabName?.value === 6 &&
-              <FooterDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} />
+              <FooterDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} dt={dt} />
             }
             {tabName?.value === 7 &&
-              <HelpDocs handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} {...{ errors, setErrors }} />
+              <HelpDocs handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} {...{ errors, setErrors }} dt={dt} />
             }
 
 
@@ -657,11 +657,11 @@ const TabMaster = () => {
                   disabled={tabIndex > 1 ? false : true}
                 >
                   <FontAwesomeIcon icon={faArrowLeft} className="dropdown-gear-icon me-2" />
-                  Previous
+                  {dt('Previous')}
                 </button>
                 {tabIndex === tabNavMenus?.length ? <></> :
                   <button className='btn btn-sm ms-1' onClick={() => saveMenuTabsData()}>
-                    {`${tabIndex < tabNavMenus?.length ? 'Save & Next' : 'Save'}`}
+                    {`${tabIndex < tabNavMenus?.length ? dt('Save & Next') : dt('Save')}`}
                     {tabIndex < tabNavMenus?.length &&
                       <FontAwesomeIcon icon={faArrowRight} className="dropdown-gear-icon ms-2" />
                     }
@@ -672,7 +672,7 @@ const TabMaster = () => {
           </div>
         </div>
         {showTabsTable &&
-          <GlobalDataTable title={"Tab List"} column={column} data={filterData} onModify={handleUpdateData} onDelete={handleDeleteTab} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={true} />
+          <GlobalDataTable title={dt("Tab List")} column={column} data={filterData} onModify={handleUpdateData} onDelete={handleDeleteTab} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={true} />
         }
       </div>
     </>

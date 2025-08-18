@@ -4,6 +4,8 @@ import { ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
 import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
 import Select from 'react-select'
+import { CustomListWindow } from '../../../../../utils/CommonFunction';
+// import debounce from 'lodash.debounce';
 
 const DrugMappingMaster = () => {
     const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext);
@@ -12,6 +14,7 @@ const DrugMappingMaster = () => {
     const [itemName, setItemName] = useState(null);
     const [stateId, setStateId] = useState("");
     const [itemNameList, setItemNameList] = useState([]);
+    const [drugItemObject, setDrugItemObject] = useState(null);
 
     const [availableOptions, setAvailableOptions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState([]);
@@ -65,7 +68,7 @@ const DrugMappingMaster = () => {
                     label: item.cwhstrDrugName,
                 }));
 
-                setItemNameList(options);
+                setItemNameList(data?.data);
             } else {
                 setItemNameList([]);
                 setItemName({});
@@ -168,7 +171,22 @@ const DrugMappingMaster = () => {
         { value: "3", label: "All" }
     ];
 
- 
+    // const [inputValue, setInputValue] = useState('');
+
+    // const debouncedInputChange = debounce(value => {
+    //     setInputValue(value);
+    // }, 300);
+
+    // const filteredOptions = useMemo(() => {
+    //     return itemNameList
+    //         ?.filter(item =>
+    //             item.cwhstrDrugName.toLowerCase().includes(inputValue.toLowerCase())
+    //         )
+    //         .map(item => ({
+    //             value: item.cwhnumDrugId,
+    //             label: item.cwhstrDrugName,
+    //         }));
+    // }, [itemNameList, inputValue]);
 
     return (
         <>
@@ -176,7 +194,6 @@ const DrugMappingMaster = () => {
                 <div className='masters-header row'>
                     <span className='col-12'><b>{`Drug Mapping Master`}</b></span>
                 </div>
-
 
                 <div className='row pt-2'>
                     <div className='col-sm-6'>
@@ -190,7 +207,7 @@ const DrugMappingMaster = () => {
                                     options={mapCategoryOptions}
                                     className="aliceblue-bg border-dark-subtle"
                                     value={itemCategory}
-                                    onChange={(e) => { setItemCategory(e.target.value); getItemNameList(e.target.value) }}
+                                    onChange={(e) => { setItemCategory(e.target.value); getItemNameList(e.target.value); setItemName(''); setDrugItemObject(null) }}
 
                                 />
                             </div>
@@ -201,17 +218,74 @@ const DrugMappingMaster = () => {
                                 <Select
                                     id='itemName'
                                     name='itemName'
-                                    options={itemNameList}
+                                    options={itemNameList?.map(item => ({
+                                        value: item.cwhnumDrugId,
+                                        label: item.cwhstrDrugName,
+                                    }))}
+                                    // options={filteredOptions}
+                                    // onInputChange={debouncedInputChange}
                                     isMulti={false}
                                     className="aliceblue-bg border-dark-subtle react-select-login"
                                     value={itemName}
-                                    onChange={(e) => setItemName(e)}
+                                    onChange={(e) => {
+                                        setItemName(e);
+                                        const itemObj = itemNameList?.find(dt => dt?.cwhnumDrugId == e?.value);
+                                        console.log(itemObj)
+                                        setDrugItemObject(itemObj)
+                                    }}
                                     isSearchable={true}
                                     isDisabled={itemNameList?.length > 0 ? false : true}
                                     placeholder="select value"
+                                    components={{ MenuList: CustomListWindow }}
                                 />
                             </div>
                         </div>
+                        {(itemCategory != "2" && itemName && drugItemObject) &&
+                            <>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Generic Drug Name : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.centraldrugName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Group : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.groupName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Subgroup : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.subGroupName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Drug Type : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.drugtypeName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Category : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.drugCatName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">VED : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.vedName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Strength : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.cwhstrStrengthName || "---"}
+                                    </div>
+                                </div>
+                            </>
+                        }
                     </div>
                     <div className='col-sm-6'>
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>

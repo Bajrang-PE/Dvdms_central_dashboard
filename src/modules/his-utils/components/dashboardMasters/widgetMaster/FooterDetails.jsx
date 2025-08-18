@@ -3,18 +3,18 @@ import InputSelect from '../../commons/InputSelect'
 import InputField from '../../commons/InputField'
 
 const FooterDetails = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values,dt } = props;
     return (
         <>
             {/* MAIN DEVIDER FOR JNDI */}
-            <b><h6 className='header-devider'>Footer Details</h6></b>
+            <b><h6 className='header-devider'>{dt('Footer Details')}</h6></b>
 
             {/* SECTION DEVIDER jndi and time*/}
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Last Updated Query : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Last Updated Query')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <textarea
                                 className="form-control backcolorinput"
@@ -28,7 +28,7 @@ const FooterDetails = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Custom Message When Data not Available : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Custom Message When Data not Available')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
@@ -45,7 +45,7 @@ const FooterDetails = (props) => {
                 {/* right columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Footer Text : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('')}Footer Text : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <textarea
                                 className="form-control backcolorinput"

@@ -6,7 +6,7 @@ import InputField from '../../commons/InputField';
 import { parameterWidth } from '../../../localData/DropDownData';
 
 const WidgetMapping = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values, widgetDrpData, setValues, rows, setRows, errors, setErrors } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, widgetDrpData, setValues, rows, setRows, errors, setErrors, dt } = props;
 
     const handleInputChange = (index, field, value) => {
         const updatedRows = [...rows];
@@ -45,22 +45,22 @@ const WidgetMapping = (props) => {
 
     return (
         <>
-            <b><h6 className='header-devider my-1'>Widget Mapping Details</h6></b>
+            <b><h6 className='header-devider my-1'>{dt('Widget Mapping Details')}</h6></b>
 
             <div className="table-responsive row my-1 mx-0">
                 <table className="table table-borderless text-center mb-0">
                     <thead className="text-white">
                         <tr className='header-devider m-0   rounded-2'>
-                            <th style={{ width: "20%" }}>Widget Name</th>
-                            <th style={{ width: "10%" }}>Display Order</th>
-                            <th style={{ width: "15%" }}>Widget Width</th>
-                            <th style={{ width: "20%" }}>Widget Height(px)</th>
-                            <th style={{ width: "15%" }}>Widget Color</th>
-                            <th style={{ width: "15%" }}>Widget Display</th>
+                            <th style={{ width: "20%" }}>{dt('Widget Name')}</th>
+                            <th style={{ width: "10%" }}>{dt('Display Order')}</th>
+                            <th style={{ width: "15%" }}>{dt('Widget Width')}</th>
+                            <th style={{ width: "20%" }}>{dt('Widget Height(px)')}</th>
+                            <th style={{ width: "15%" }}>{dt('Widget Color')}</th>
+                            <th style={{ width: "15%" }}>{dt('Widget Display')}</th>
                             <th >
                                 <button
                                     className="btn btn-secondary btn-sm"
-                                    onClick={()=>handleAddRow()}
+                                    onClick={() => handleAddRow()}
                                     style={{ padding: "0 4px" }}
                                 >
                                     <FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size='sm' />
@@ -151,15 +151,15 @@ const WidgetMapping = (props) => {
 
                                 <td className='px-0'>
                                     {/* {rows.length > 1 && ( */}
-                                        <div>
-                                            <button
-                                                className="btn btn-outline-secondary btn-sm ms-1"
-                                                onClick={() => handleRemoveRow(index, "query")}
-                                                style={{ padding: "0 4px" }}
-                                            >
-                                                <FontAwesomeIcon icon={faMinus} className="dropdown-gear-icon" size='sm' />
-                                            </button>
-                                        </div>
+                                    <div>
+                                        <button
+                                            className="btn btn-outline-secondary btn-sm ms-1"
+                                            onClick={() => handleRemoveRow(index, "query")}
+                                            style={{ padding: "0 4px" }}
+                                        >
+                                            <FontAwesomeIcon icon={faMinus} className="dropdown-gear-icon" size='sm' />
+                                        </button>
+                                    </div>
                                     {/* )} */}
                                 </td>
                             </tr>

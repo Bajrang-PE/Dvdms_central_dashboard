@@ -3,7 +3,7 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog, faFileCsv, faFilePdf, faRefresh } from "@fortawesome/free-solid-svg-icons";
-import { fetchProcedureData, fetchQueryData, formatParams, getOrderedParamValues } from "../../utils/commonFunction";
+import { fetchProcedureData, fetchQueryData, formatDateFullYear, formatParams, getOrderedParamValues } from "../../utils/commonFunction";
 import { HISContext } from "../../contextApi/HISContext";
 import { highchartGraphOptions } from "../../localData/DropDownData";
 import { getAuthUserData } from "../../../../utils/CommonFunction";
@@ -12,8 +12,8 @@ import { useSearchParams } from "react-router-dom";
 
 const Parameters = lazy(() => import('./Parameters'));
 
-const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedColumns }) => {
-  const { theme, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery } = useContext(HISContext);
+const GraphDash = ({ widgetData, pkColumn, setPkColumn }) => {
+  const { theme, paramsValues, singleConfigData, isSearchQuery, setIsSearchQuery, setSearchScope, searchScope, dt } = useContext(HISContext);
   const [widParamsValues, setWidParamsValues] = useState();
   const [filteredGraphOptions, setFilteredGraphOptions] = useState([]);
   const [chartType, setChartType] = useState('BAR_GRAPH');
@@ -21,11 +21,11 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedCo
   const [queryParams] = useSearchParams();
   const isPrev = queryParams.get('isPreview');
 
-  const is3D = widgetData.is3d === "true";
+  const is3D = widgetData.is3d === "true" || widgetData.is3d === "Yes";
   const xAxisLabel = widgetData.xAxisLabel || "X Axis";
   const yAxisLabel = widgetData.yAxisLabel || "Y Axis";
-  const showLegend = widgetData.showInLegend === "true";
-  const dataLabelsEnabled = widgetData.dataLabels === "true";
+  const showLegend = widgetData.showInLegend === "true" || widgetData.showInLegend === "Yes";
+  const dataLabelsEnabled = widgetData.dataLabels === "true" || widgetData.dataLabels === "Yes";
   const colorList = widgetData.colorForBars ? widgetData.colorForBars.split(",") : ["red", "blue", "green"];
   const mainQuery = widgetData?.queryVO && widgetData?.queryVO?.length > 0 ? widgetData?.queryVO[0]?.mainQuery : ''
   const alpha = widgetData.alpha || 15;
@@ -138,13 +138,31 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedCo
     const params = getOrderedParamValues(widget?.queryVO[0]?.mainQuery, paramsValues, widget?.rptId);
     try {
       const data = await fetchQueryData(query, widgetData?.JNDIid, params);
+
+      let filteredData = data;
+
+      if (widget?.isQuerychild && widget?.isQuerychild === "1") {
+        const columnIndexes = widget?.columnIndexesParent || [];
+
+        if (data.length > 0 && columnIndexes.length > 0) {
+          const keys = Object.keys(data[0]);
+          filteredData = data.map(row => {
+            const filteredRow = {};
+            columnIndexes.forEach(idx => {
+              const key = keys[idx];
+              if (key) filteredRow[key] = row[key];
+            });
+            return filteredRow;
+          });
+        }
+      }
       const limit = widgetLimit
         ? parseInt(widgetLimit)
         : safeLimit
           ? parseInt(safeLimit)
-          : data.length;
+          : filteredData.length;
 
-      const limitedData = data.slice(0, limit);
+      const limitedData = filteredData.slice(0, limit);
 
       // If no data, do nothing
       if (!limitedData.length) {
@@ -175,30 +193,12 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedCo
 
       setGraphData({ categories, seriesData });
       setIsSearchQuery(false)
+      setSearchScope({ scope: "", id: "" })
 
     } catch (error) {
       console.error("Error loading query data:", error);
     }
   };
-
-  useEffect(() => {
-    if (injectedData && injectedColumns) {
-
-      const columnNames = Object.keys(injectedData[0])
-
-      const categoriesKey = columnNames[1];
-      const seriesKeys = columnNames.slice(0);
-
-      const categories = injectedData.map(item => item[categoriesKey]);
-      const seriesData = seriesKeys.map(key => ({
-        name: key,
-        data: injectedData.map(item => item[key]),
-        colorByPoint: true,
-      }));
-      setGraphData({ categories, seriesData });
-    }
-  }, [injectedData, injectedColumns]);
-
 
   const formatProcedureDataForGraph = (data) => {
     if (!data || data.length === 0) return { categories: [], seriesData: [] };
@@ -273,8 +273,8 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedCo
           initialRecord?.toString(), //initial record no.===
           finalRecord?.toString(), //final record no.===
           "", //date options
-          "16-Apr-2025",//from values
-          "16-Apr-2025" // to values
+          formatDateFullYear(new Date()),//from values
+          formatDateFullYear(new Date()) // to values
         ]
         const data = await fetchProcedureData(widget?.procedureMode, params, widgetData?.JNDIid);
         const limit = widgetLimit
@@ -287,21 +287,29 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedCo
         const formattedData = formatProcedureDataForGraph(limitedData);
         setGraphData(formattedData);
         setIsSearchQuery(false)
+        setSearchScope({ scope: "", id: "" })
       } catch (error) {
         console.error("Error loading query data:", error);
       }
     }
   }
+
   useEffect(() => {
-    if (widgetData && widgetData?.modeOfQuery === "Procedure") {
+    if (widgetData && widgetData?.modeOfQuery === "Procedure" && !isSearchQuery) {
       fetchProcedure(widgetData)
-    } else {
+    } else if (widgetData && !isSearchQuery) {
       fetchDataQry(widgetData);
     }
   }, [paramsValues, widgetData]);
 
   useEffect(() => {
-    if (isSearchQuery && widgetData && paramsValues) {
+    if (isSearchQuery && searchScope?.scope === "widgetParams" && searchScope?.id == widgetData?.rptId) {
+      if (widgetData?.modeOfQuery === "Procedure") {
+        fetchProcedure(widgetData);
+      } else {
+        fetchDataQry(widgetData);
+      }
+    } else if (isSearchQuery && searchScope?.scope !== "widgetParams" && searchScope?.scope !== "") {
       if (widgetData?.modeOfQuery === "Procedure") {
         fetchProcedure(widgetData);
       } else {
@@ -309,7 +317,6 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedCo
       }
     }
   }, [isSearchQuery]);
-
 
   const exportingOptions = {
     enabled: isActionButtonReq !== "No" && isActionButtonReq !== "None",
@@ -523,7 +530,7 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedCo
 
       <div className="row px-2 py-2 border-bottom">
         <div className="col-md-8 col-xs-7 fw-medium fs-6 pe-0">
-          {widgetData?.rptDisplayName}
+          {dt(widgetData?.rptDisplayName)}
         </div>
         {isDirectDownloadRequired === 'Yes' &&
           <div className="col-md-4">
@@ -537,7 +544,7 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedCo
             </button>
             <ul className="dropdown-menu p-2">
               <li className="p-1 dropdown-item text-primary" style={{ cursor: "pointer" }}>
-                <FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-2" />Refresh Data
+                <FontAwesomeIcon icon={faRefresh} className="dropdown-gear-icon me-2" />{dt('Refresh Data')}
               </li>
             </ul>
             <button type="button" className="small-box-btn-dwn"
@@ -557,7 +564,7 @@ const GraphDash = ({ widgetData, pkColumn, setPkColumn, injectedData, injectedCo
       </div>
 
       <div className="px-2 py-2" style={{ marginTop: `${widgetTopMargin}px` }}>
-        <h4 style={{ fontWeight: "500", fontSize: "20px" }}>Query :{widgetData?.rptId}</h4>
+        <h4 style={{ fontWeight: "500", fontSize: "20px" }}>{dt('Query')} :{widgetData?.rptId}</h4>
         {(widgetData?.modeOfQuery === 'Query' && isPrev == 1) &&
           <span>{mainQuery}</span>
         }

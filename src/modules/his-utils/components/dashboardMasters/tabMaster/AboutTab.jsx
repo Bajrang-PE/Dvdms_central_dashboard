@@ -5,7 +5,7 @@ import { FaIcons } from 'react-icons/fa';
 import IconPicker from '../../commons/IconPicker';
 
 const AboutTab = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values, dashboardForDt, setValues, tabDrpData, errors } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, dashboardForDt, setValues, tabDrpData, errors, dt } = props;
 
     const [tabIcon, setTabIcon] = useState('');
     const SelectedIconComponent = tabIcon ? FaIcons[tabIcon] : '';
@@ -20,28 +20,30 @@ const AboutTab = (props) => {
 
     return (
         <>
-            <b><h6 className='header-devider m-0'> Tab Master</h6></b>
+            <b><h6 className='header-devider m-0'>{dt("Tab Master")}</h6></b>
 
-            {/* SECTION DEVIDER tab for*/}
+            {/* SECTION DEVIDER tab for */}
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Tab For : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Tab For")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 id="tabFor"
                                 name="tabFor"
-                                placeholder="Select value..."
+                                placeholder={dt("Select value...")}
                                 options={dashboardForDt}
                                 className="backcolorinput"
                                 value={values?.tabFor}
-                                onChange={(e) => { handleValueChange(e); localStorage?.setItem("dfor", e.target.value) }}
-                            // disabled={actionMode === 'edit' ? true : false}
+                                onChange={(e) => {
+                                    handleValueChange(e);
+                                    localStorage?.setItem("dfor", e.target.value);
+                                }}
                             />
                             {errors?.tabForErr &&
                                 <div className="required-input">
-                                    {errors?.tabForErr}
+                                    {dt(errors?.tabForErr)}
                                 </div>
                             }
                         </div>
@@ -54,12 +56,12 @@ const AboutTab = (props) => {
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Tab Name (For Internal) : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Tab Name (For Internal)")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type="text"
                                 className="backcolorinput"
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='tabNameInternal'
                                 id="tabNameInternal"
                                 onChange={handleValueChange}
@@ -68,18 +70,18 @@ const AboutTab = (props) => {
                             />
                             {errors?.tabNameInternalErr &&
                                 <div className="required-input">
-                                    {errors?.tabNameInternalErr}
+                                    {dt(errors?.tabNameInternalErr)}
                                 </div>
                             }
                         </div>
                     </div>
+
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Parent Tab : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Parent Tab")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
-                                // type="text"
                                 className="backcolorinput"
-                                placeholder="No Parent"
+                                placeholder={dt("No Parent")}
                                 name='parentTab'
                                 id="parentTab"
                                 onChange={handleValueChange}
@@ -88,10 +90,9 @@ const AboutTab = (props) => {
                             />
                         </div>
                     </div>
+
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">
-                            Is Tab name in Report Required :
-                        </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Is Tab name in Report Required")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
                                 <input
@@ -104,7 +105,7 @@ const AboutTab = (props) => {
                                     checked={radioValues?.isTabNameInReportReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -118,15 +119,14 @@ const AboutTab = (props) => {
                                     checked={radioValues?.isTabNameInReportReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
                     </div>
+
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">
-                            Is CSS Tab Icon Required :
-                        </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Is CSS Tab Icon Required")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
                                 <input
@@ -139,7 +139,7 @@ const AboutTab = (props) => {
                                     checked={radioValues?.isCssTabIconReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -153,21 +153,22 @@ const AboutTab = (props) => {
                                     checked={radioValues?.isCssTabIconReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 {/* right columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label fix-label pe-0 required-label">Tab Name (For Display) : </label>
+                        <label className="col-sm-5 col-form-label fix-label pe-0 required-label">{dt("Tab Name (For Display)")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type="text"
                                 className="backcolorinput"
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='tabNameDisplay'
                                 id="tabNameDisplay"
                                 onChange={handleValueChange}
@@ -175,15 +176,14 @@ const AboutTab = (props) => {
                             />
                             {errors?.tabNameDisplayErr &&
                                 <div className="required-input">
-                                    {errors?.tabNameDisplayErr}
+                                    {dt(errors?.tabNameDisplayErr)}
                                 </div>
                             }
                         </div>
                     </div>
+
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">
-                            Is Tab Used For Drill Down :
-                        </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Is Tab Used For Drill Down")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
                                 <input
@@ -196,7 +196,7 @@ const AboutTab = (props) => {
                                     checked={radioValues?.isTabUsedForDrill === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -210,18 +210,19 @@ const AboutTab = (props) => {
                                     checked={radioValues?.isTabUsedForDrill === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
                     </div>
+
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                        <label className="col-sm-5 col-form-label fix-label pe-0">Ellipse After No. Of Character In Tab Display Name : </label>
+                        <label className="col-sm-5 col-form-label fix-label pe-0">{dt("Ellipse After No. Of Character In Tab Display Name")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type="text"
                                 className="backcolorinput"
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='ellipseInDisplay'
                                 id="ellipseInDisplay"
                                 onChange={handleValueChange}
@@ -229,13 +230,14 @@ const AboutTab = (props) => {
                             />
                         </div>
                     </div>
+
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Tab Icon Image : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Tab Icon Image")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             {radioValues?.isCssTabIconReq === 'No' &&
                                 <InputSelect
                                     className="backcolorinput "
-                                    placeholder="Select Image"
+                                    placeholder={dt("Select Image")}
                                     name='tabIconImage'
                                     id="tabIconImage"
                                     options={[{ value: "default", label: "Default-Image.png" }]}
@@ -245,22 +247,12 @@ const AboutTab = (props) => {
                             }
                             {radioValues?.isCssTabIconReq === 'Yes' &&
                                 <IconPicker setTabIcon={setTabIcon} tabIcon={tabIcon} setValues={setValues} values={values} />
-                                // <InputSelect
-                                //     className="backcolorinput "
-                                //     placeholder="Select Icon"
-                                //     name='kpiTabIconImage'
-                                //     id="kpiTabIconImage"
-                                //     options={iconOptions}
-                                //     onChange={handleChange}
-                                //     value={selectedIcon}
-                                //     style={{ width: "100%", padding: "5px" }}
-                                // />
                             }
                         </div>
                     </div>
-
                 </div>
             </div>
+
         </>
     )
 }

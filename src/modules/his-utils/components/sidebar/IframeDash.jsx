@@ -4,7 +4,7 @@ import { HISContext } from '../../contextApi/HISContext';
 const IframeComponent = React.lazy(() => import('../commons/IframeComponent'));
 
 const IframeDash = ({ widgetData }) => {
-    const { theme, setLoading } = useContext(HISContext);
+    const { theme, setLoading,dt } = useContext(HISContext);
     return (
         <div className={`tabular-box ${theme === 'Dark' ? 'dark-theme' : ''} tabular-box-border tabular-box-border`} style={{ border: `1px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
 
@@ -17,7 +17,7 @@ const IframeDash = ({ widgetData }) => {
             <Suspense
                 fallback={
                     <div className="pt-3 text-center">
-                        Loading...
+                       {dt('Loading')}...
                     </div>
                 }
             >

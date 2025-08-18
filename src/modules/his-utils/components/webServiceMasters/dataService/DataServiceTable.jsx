@@ -10,7 +10,7 @@ import InputSelect from '../../commons/InputSelect';
 
 const DataServiceTable = (props) => {
     const { data, onModify, onDelete, onClose, isShowBtn, } = props;
-    const { selectedOption, setSelectedOption, showDataTable, setShowDataTable, serviceCategoryDrpData, getServiceCategoryDrpData, } = useContext(HISContext);
+    const { selectedOption, setSelectedOption, showDataTable, setShowDataTable, serviceCategoryDrpData, getServiceCategoryDrpData,dt } = useContext(HISContext);
     const [searchInput, setSearchInput] = useState('');
     const [filterData, setFilterData] = useState(data);
     const [category, setCategory] = useState('');
@@ -69,23 +69,23 @@ const DataServiceTable = (props) => {
             width: "8%"
         },
         {
-            name: 'Service ID',
+            name: dt('Service ID'),
             selector: row => row.id,
             sortable: true,
             width: "10%"
         },
         {
-            name: 'Service Name',
+            name: dt('Service Name'),
             selector: row => row?.jsonData?.serviceInternalName,
             sortable: true,
         },
         {
-            name: 'Service Display Name',
+            name: dt('Service Display Name'),
             selector: row => row?.jsonData?.serviceName,
             sortable: true,
         },
         {
-            name: 'Service Category',
+            name: dt('Service Category'),
             selector: row => row?.jsonData?.serviceCategory || "---",
             sortable: true,
         },
@@ -111,10 +111,10 @@ const DataServiceTable = (props) => {
         <div>
             <Modal show={showDataTable} onHide={handleClose} size='xl'>
                 <Modal.Header closeButton className='p-2'></Modal.Header>
-                <b><h4 className='datatable-header mx-3 py-1 mt-1 px-1'>Data Service List</h4></b>
+                <b><h4 className='datatable-header mx-3 py-1 mt-1 px-1'>{dt('Data Service List')}</h4></b>
 
                 <div className="d-flex align-items-center p-0 mx-3">
-                    <label className="me-2">Search Service Category :</label>
+                    <label className="me-2">{dt('Search Service Category')} :</label>
                     <div className=''>
                         <InputSelect
                             id="serviceCategory"
@@ -128,19 +128,19 @@ const DataServiceTable = (props) => {
                     </div>
                 </div>
 
-                <div className='datatable-btns row mx-3 my-1 '>
+                <div className='datatable-btns-his row mx-3 my-1 '>
                     <div className='col-6 m-0 p-0 align-content-center'>
                         {isShowBtn &&
                             <>
                                 <button className='btn btn-sm me-1' onClick={()=>onModify()}><FontAwesomeIcon icon={faEdit}
-                                    className="dropdown-gear-icon me-1" />Modify</button>
+                                    className="dropdown-gear-icon me-1" />{dt('Modify')}</button>
                                 <button className='btn btn-sm ms-1' onClick={()=>onDelete()}><FontAwesomeIcon icon={faRemove}
-                                    className="dropdown-gear-icon me-1" />Delete</button>
+                                    className="dropdown-gear-icon me-1" />{dt('Delete')}</button>
                             </>
                         }
                     </div>
                     <div className="col-6 d-flex justify-content-end align-items-center p-0">
-                        <label className="col-form-label me-2">Search :</label>
+                        <label className="col-form-label me-2">{dt('Search')} :</label>
                         <div className=''>
                             <InputField
                                 type="search"

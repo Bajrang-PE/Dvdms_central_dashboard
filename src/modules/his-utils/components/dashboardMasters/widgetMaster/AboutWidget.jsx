@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAdd, faMinus } from '@fortawesome/free-solid-svg-icons'
 
 const AboutWidget = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values, dashboardForDt, setValues, widgetDrpData, errors, otherLinkData, setOtherLinkData, newRow, setNewRow, setErrors } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, dashboardForDt, setValues, widgetDrpData, errors, otherLinkData, setOtherLinkData, newRow, setNewRow, setErrors,dt } = props;
 
     const [rows, setRows] = useState([]);
     const [isEditing, setIsEditing] = useState(null);
@@ -95,17 +95,15 @@ const AboutWidget = (props) => {
         setValues({ ...values, ['sqChildJsonString']: updatedRows })
     };
 
-    console.log(rows)
-
     return (
         <>
-            <b><h6 className='header-devider m-0'>Widget Master - Basic Details</h6></b>
+            <b><h6 className='header-devider m-0'>{dt('Widget Master - Basic Details')}</h6></b>
             {/* SECTION DEVIDER widget type and for*/}
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Widget For : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt('Widget For')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 id="widgetFor"
@@ -123,7 +121,7 @@ const AboutWidget = (props) => {
                 {/* right columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Widget Type : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Widget Type')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 className="backcolorinput"
@@ -144,8 +142,8 @@ const AboutWidget = (props) => {
                     <table className="table table-borderless text-center mb-0">
                         <thead className="text-white">
                             <tr className='header-devider m-0'>
-                                <th style={{ width: "35%" }}>Column No.</th>
-                                <th style={{ width: "45%" }}>Widget</th>
+                                <th style={{ width: "35%" }}>{dt('Column No.')}</th>
+                                <th style={{ width: "45%" }}>{dt('Widget')}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -176,7 +174,7 @@ const AboutWidget = (props) => {
                                     />
                                 </td>
                                 <td className='px-0 action-buttons'>
-                                    <button className='btn btn-sm me-1 py-0 px-0' style={{ background: "#34495e", color: "white" }} onClick={() => handleAddRow()}><FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size='sm' />Add</button>
+                                    <button className='btn btn-sm me-1 py-0 px-0' style={{ background: "#34495e", color: "white" }} onClick={() => handleAddRow()}><FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size='sm' />{dt('Add')}</button>
                                 </td>
                             </tr>
                             {rows.map((row, index) => (
@@ -188,13 +186,13 @@ const AboutWidget = (props) => {
                                             <button
                                                 className="btn btn-secondary btn-sm me-1 py-0 px-1"
                                                 onClick={() => handleEditRow(index)}
-                                            >Edit
+                                            >{dt('Edit')}
                                                 {/* <FontAwesomeIcon icon={faEdit} className="dropdown-gear-icon" size='xs' /> */}
                                             </button>
                                             <button
                                                 className="btn btn-secondary btn-sm ms-1 py-0 px-1"
                                                 onClick={() => handleRemoveRow(index)}
-                                            >Delete
+                                            >{dt('Delete')}
                                                 {/* <FontAwesomeIcon icon={faTrash} className="dropdown-gear-icon" size='xs' /> */}
                                             </button>
                                         </div>
@@ -213,7 +211,7 @@ const AboutWidget = (props) => {
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0 required-label">
-                            Widget Viewed :
+                           {dt('Widget Viewed')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -227,7 +225,7 @@ const AboutWidget = (props) => {
                                     checked={radioValues?.widgetViewed === "Tabular"}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Tabular
+                                    {dt('Tabular')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -241,7 +239,7 @@ const AboutWidget = (props) => {
                                     checked={radioValues?.widgetViewed === "Graph"}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    Graph
+                                   {dt('Graph')} 
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -255,7 +253,7 @@ const AboutWidget = (props) => {
                                     checked={radioValues?.widgetViewed === "KPI"}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    KPI
+                                   {dt('KPI')} 
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -269,7 +267,7 @@ const AboutWidget = (props) => {
                                     checked={radioValues?.widgetViewed === "Criteria_Map"}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    Map
+                                    {dt('Map')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -283,7 +281,7 @@ const AboutWidget = (props) => {
                                     checked={radioValues?.widgetViewed === "News_Ticker"}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    News Ticker
+                                   {dt('News Ticker')} 
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -297,7 +295,7 @@ const AboutWidget = (props) => {
                                     checked={radioValues?.widgetViewed === "Other_Link"}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    Other Link
+                                   {dt(' Other Link')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -311,7 +309,7 @@ const AboutWidget = (props) => {
                                     checked={radioValues?.widgetViewed === "Iframe"}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    Iframe
+                                   {dt('Iframe')} 
                                 </label>
                             </div>
                             {errors?.widgetViewedErr &&
@@ -327,7 +325,7 @@ const AboutWidget = (props) => {
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0 required-label">
-                            Is Widget Name Visible? :
+                           {dt('Is Widget Name Visible?')}  :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -341,7 +339,7 @@ const AboutWidget = (props) => {
                                     checked={radioValues?.isWidgetNameVisible === "Yes"}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                   {dt('Yes')} 
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -355,7 +353,7 @@ const AboutWidget = (props) => {
                                     checked={radioValues?.isWidgetNameVisible === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                   {dt('No')} 
                                 </label>
                             </div>
                             {errors?.isWidgetNameVisibleErr &&
@@ -373,7 +371,7 @@ const AboutWidget = (props) => {
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Widget Name(For Display) : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt('Widget Name(For Display)')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type="text"
@@ -392,7 +390,7 @@ const AboutWidget = (props) => {
                 {/* right columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Widget Name(Internal) : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt('Widget Name(Internal)')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type="text"
@@ -416,7 +414,7 @@ const AboutWidget = (props) => {
                         {/* //left columns */}
                         <div className='col-sm-6'>
                             <div className="form-group row">
-                                <label className="col-sm-5 col-form-label pe-0">Widget Refresh Time : </label>
+                                <label className="col-sm-5 col-form-label pe-0">{dt('Widget Refresh Time')} : </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <InputSelect
                                         id="widgetRefreshTime"
@@ -433,7 +431,7 @@ const AboutWidget = (props) => {
                         {/* right columns */}
                         <div className='col-sm-6'>
                             <div className="form-group row">
-                                <label className="col-sm-5 col-form-label pe-0">Widget Refresh Delay Time : </label>
+                                <label className="col-sm-5 col-form-label pe-0">{dt('Widget Refresh Delay Time')} : </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <InputSelect
                                         className="backcolorinput"
@@ -455,7 +453,7 @@ const AboutWidget = (props) => {
                         {/* //left columns */}
                         <div className='col-sm-6'>
                             <div className="form-group row">
-                                <label className="col-sm-5 col-form-label pe-0">Caching Status : </label>
+                                <label className="col-sm-5 col-form-label pe-0">{dt('Caching Status')} : </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <InputSelect
                                         id="cachingStatus"
@@ -473,7 +471,7 @@ const AboutWidget = (props) => {
                         <div className='col-sm-6'>
                             <div className="form-group row">
                                 <label className="col-sm-5 col-form-label pe-0">
-                                    Widget Heading Alignment :
+                                    {dt('Widget Heading Alignment')} :
                                 </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <div className="form-check form-check-inline">
@@ -487,7 +485,7 @@ const AboutWidget = (props) => {
                                             checked={radioValues?.widgetHeadingAlign === "left"}
                                         />
                                         <label className="form-check-label" htmlFor="dbYes">
-                                            Left
+                                           {dt('Left')} 
                                         </label>
                                     </div>
                                     <div className="form-check form-check-inline">
@@ -501,7 +499,7 @@ const AboutWidget = (props) => {
                                             checked={radioValues?.widgetHeadingAlign === "center"}
                                         />
                                         <label className="form-check-label" htmlFor="dbNo">
-                                            Center
+                                           {dt('Center')} 
                                         </label>
                                     </div>
                                     <div className="form-check form-check-inline">
@@ -515,7 +513,7 @@ const AboutWidget = (props) => {
                                             checked={radioValues?.widgetHeadingAlign === "right"}
                                         />
                                         <label className="form-check-label" htmlFor="dbNo">
-                                            Right
+                                           {dt('Right')} 
                                         </label>
                                     </div>
                                 </div>
@@ -570,7 +568,7 @@ const AboutWidget = (props) => {
                             {/* //left columns */}
                             <div className='col-sm-6'>
                                 <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                                    <label className="col-sm-5 col-form-label pe-0">LIMIT : </label>
+                                    <label className="col-sm-5 col-form-label pe-0">{dt('LIMIT')} : </label>
                                     <div className="col-sm-7 ps-0 align-content-center">
                                         <InputField
                                             type="text"
@@ -589,7 +587,7 @@ const AboutWidget = (props) => {
 
                                 <div className="form-group row">
                                     <label className="col-sm-5 col-form-label pe-0">
-                                        Is Records Limited Line Required :
+                                        {dt('Is Records Limited Line Required')} :
                                     </label>
                                     <div className="col-sm-7 ps-0 align-content-center">
                                         <div className="form-check form-check-inline">
@@ -603,7 +601,7 @@ const AboutWidget = (props) => {
                                                 checked={radioValues?.isRecordLimitReq === "Yes"}
                                             />
                                             <label className="form-check-label" htmlFor="dbYes">
-                                                Yes
+                                               {dt('Yes')} 
                                             </label>
                                         </div>
                                         <div className="form-check form-check-inline">
@@ -617,7 +615,7 @@ const AboutWidget = (props) => {
                                                 checked={radioValues?.isRecordLimitReq === "No"}
                                             />
                                             <label className="form-check-label" htmlFor="dbNo">
-                                                No
+                                                {dt('No')}
                                             </label>
                                         </div>
                                     </div>
@@ -632,7 +630,7 @@ const AboutWidget = (props) => {
                         {/* //left columns */}
                         <div className='col-sm-6'>
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                                <label className="col-sm-5 col-form-label pe-0">Widget Heading Color : </label>
+                                <label className="col-sm-5 col-form-label pe-0">{dt('Widget Heading Color')} : </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <InputField
                                         type="color"
@@ -646,7 +644,7 @@ const AboutWidget = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                                <label className="col-sm-5 col-form-label pe-0">Widget Top Margin : </label>
+                                <label className="col-sm-5 col-form-label pe-0">{dt('Widget Top Margin')} : </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <InputField
                                         type="text"
@@ -664,7 +662,7 @@ const AboutWidget = (props) => {
                         <div className='col-sm-6'>
                             <div className="form-group row">
                                 <label className="col-sm-5 col-form-label pe-0">
-                                    Widget Border Required :
+                                    {dt('Widget Border Required')} :
                                 </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <div className="form-check form-check-inline">
@@ -678,7 +676,7 @@ const AboutWidget = (props) => {
                                             checked={radioValues?.isWidgetBorderReq === 'Yes'}
                                         />
                                         <label className="form-check-label" htmlFor="dbYes">
-                                            Yes
+                                           {dt('Yes')} 
                                         </label>
                                     </div>
                                     <div className="form-check form-check-inline">
@@ -692,7 +690,7 @@ const AboutWidget = (props) => {
                                             checked={radioValues?.isWidgetBorderReq === 'No'}
                                         />
                                         <label className="form-check-label" htmlFor="dbNo">
-                                            No
+                                           {dt('No')} 
                                         </label>
                                     </div>
                                 </div>
@@ -709,8 +707,8 @@ const AboutWidget = (props) => {
                     <table className="table table-borderless text-center mb-0">
                         <thead className="text-white">
                             <tr className='header-devider m-0'>
-                                <th style={{ width: "40%" }}>Other Link Name</th>
-                                <th style={{ width: "40%" }}>Other Link URL</th>
+                                <th style={{ width: "40%" }}>{dt('Other Link Name')}</th>
+                                <th style={{ width: "40%" }}>{dt('Other Link URL')}</th>
                                 <th >
                                     <button
                                         className="btn btn-secondary btn-sm"
@@ -776,7 +774,7 @@ const AboutWidget = (props) => {
                     {/* //left columns */}
                     <div className='col-sm-6'>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Enter URL for Iframe : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Enter URL for Iframe')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type={'text'}
@@ -794,7 +792,7 @@ const AboutWidget = (props) => {
                     <div className='col-sm-6'>
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Is SSO Url :
+                                {dt('Is SSO Url')} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -808,7 +806,7 @@ const AboutWidget = (props) => {
                                         checked={radioValues?.isSsoUrl === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                       {dt('Yes')} 
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -822,7 +820,7 @@ const AboutWidget = (props) => {
                                         checked={radioValues?.isSsoUrl === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt('No')}
                                     </label>
                                 </div>
                             </div>

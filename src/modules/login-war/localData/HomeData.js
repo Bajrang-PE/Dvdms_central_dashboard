@@ -197,3 +197,70 @@ export const vedOptions = [
     { value: "2", label: "Essential" },
     { value: "3", label: "Desirable" }
   ];
+
+
+     const menuData = [
+        {
+            title: 'Services',
+            items: [
+                { dataVal: 'state', menuName: 'State Job Details', icon: 'fa-desktop', link: "/dvdms/menus/state-job-details" },
+                { dataVal: 'country', menuName: 'Get Nin Data', icon: 'fa-desktop' },
+                { dataVal: 'district', menuName: 'Covid Drig Availability Status', icon: 'fa-desktop' },
+            ],
+        },
+        {
+            title: 'Admin',
+            subMenuTypes: [
+                {
+                    title: 'Admin Master',
+                    items: [
+                        { dataVal: 'addUser', menuName: 'Dashboard Setup', icon: 'fa-gear', link: "/dvdms/HIS_dashboard" },
+                        { dataVal: 'editUser', menuName: 'Zone Master', icon: 'fa-gear', link: "/dvdms/menus/zone-master" },
+                        { dataVal: 'editUser', menuName: 'State Master', icon: 'fa-gear', link: "/dvdms/menus/state-master" },
+                        { dataVal: 'editUser', menuName: 'District Master', icon: 'fa-gear', link: "/dvdms/menus/district-master" },
+                        { dataVal: 'editUser', menuName: 'State Config Cwh', icon: 'fa-gear', link: "/dvdms/menus/state-config-cwh" },
+                        { dataVal: 'editUser', menuName: 'Facility Type Master', icon: 'fa-gear', link: "/dvdms/menus/facility-type-master" },
+                        { dataVal: 'editUser', menuName: 'Group Master', icon: 'fa-gear', link: "/dvdms/menus/group-master" },
+                        { dataVal: 'editUser', menuName: 'Sub Group Master', icon: 'fa-gear' },
+                        { dataVal: 'editUser', menuName: 'Drug Type Master', icon: 'fa-gear', link: "/dvdms/menus/drug-type-master" },
+                        { dataVal: 'editUser', menuName: 'Supplier Master', icon: 'fa-gear', link: "/dvdms/menus/supplier-master" },
+                        { dataVal: 'editUser', menuName: 'Supplier Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/supplier-mapping-master" },
+                        { dataVal: 'editUser', menuName: 'Drug Type Master', icon: 'fa-gear' },
+                        { dataVal: 'editUser', menuName: 'Nin Facility Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/nin-facility-mapping-master" },
+                        { dataVal: 'editUser', menuName: 'Sub Group Master', icon: 'fa-gear', link: "/dvdms/menus/sub-group-master" },
+                        { dataVal: 'editUser', menuName: 'Drug Master', icon: 'fa-gear', link: "/dvdms/menus/drug-master" },
+                        { dataVal: 'editUser', menuName: 'Outsource Master', icon: 'fa-gear', link: "/dvdms/menus/outsource-master" },
+                        { dataVal: 'editUser', menuName: 'Test Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/test-mapping-master" },
+
+                        { dataVal: 'editUser', menuName: 'Generic Drug Master', icon: 'fa-gear', link: "/dvdms/menus/generic-drug-master" },
+                        { dataVal: 'editUser', menuName: 'Facility Type Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/facility-type-mapping-master" },
+                        { dataVal: 'editUser', menuName: 'Job Order', icon: 'fa-gear', link: "/dvdms/menus/job-order-status-master" },
+                        { dataVal: 'editUser', menuName: 'State CDB Sync Master', icon: 'fa-gear', link: "/dvdms/menus/state-cdb-sync-master" },
+                        { dataVal: 'editUser', menuName: 'Drug Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/drug-mapping-master" },
+                    ],
+                },
+                {
+                    title: 'IPHS Admin',
+                    items: [
+                        { dataVal: 'addRole', menuName: 'Iphs Group Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-group-master" },
+                        { dataVal: 'editRole', menuName: 'Iphs Sub Group Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-sub-group-master" },
+                        { dataVal: 'editRole', menuName: 'Iphs Medicine Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-medicine-master" },
+                        { dataVal: 'editRole', menuName: 'Iphs Molecule Drug Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-molecule-drug-master" },
+                        { dataVal: 'editRole', menuName: 'Iphs Medicine Molecule Detail Mapping', icon: 'fa-gear', link: "/dvdms/menus/iphs-medicine-molecule-mapping" },
+                        { dataVal: 'editRole', menuName: 'Iphs Drug Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-drug-mapping-mst" },
+                    ],
+                },
+            ],
+        },
+        {
+            title: 'Reports',
+            items: [
+                { dataVal: 'contact', menuName: 'Dashboard', icon: 'fa-bar-chart' },
+                { dataVal: 'help', menuName: 'Report Set', icon: 'fa-bar-chart' },
+                { dataVal: 'help', menuName: 'Admin Dashboard (Uat Dashboard)', icon: 'fa-bar-chart' },
+                { dataVal: 'help', menuName: 'Admin New', icon: 'fa-bar-chart' },
+                { dataVal: 'help', menuName: 'Job Dashboard', icon: 'fa-bar-chart' },
+                { dataVal: 'help', menuName: 'Stockout V 2.0', icon: 'fa-bar-chart' },
+            ],
+        },
+    ];

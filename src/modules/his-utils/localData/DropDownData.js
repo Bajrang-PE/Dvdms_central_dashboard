@@ -160,9 +160,9 @@ export const kpiTypes = [
 
 export const kpiBoxClickOptions = [
     { value: '0', label: 'Not Required' },
-    { value: '1', label: 'Show Tab' },
-    { value: '2', label: 'Show Widget' },
-    { value: '3', label: 'Show Dashboard' },
+    { value: 'showTab', label: 'Show Tab' },
+    { value: 'showWidget', label: 'Show Widget' },
+    { value: 'showDashboard', label: 'Show Dashboard' },
 ]
 
 export const tabDisplayOptions = [

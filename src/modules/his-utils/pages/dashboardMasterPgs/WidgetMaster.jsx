@@ -16,15 +16,15 @@ import NewsTickWidget from '../../components/dashboardMasters/widgetMaster/NewsT
 import GlobalDataTable from '../../components/commons/GlobalDataTable'
 import { HISContext } from '../../contextApi/HISContext'
 import DataServiceTable from '../../components/webServiceMasters/dataService/DataServiceTable'
-import { graphOptions, highchartGraphOptions, parameterType } from '../../localData/DropDownData'
+import { highchartGraphOptions, parameterType } from '../../localData/DropDownData'
 import ParamsDetail from '../../components/dashboardMasters/tabMaster/ParamsDetail'
 import InputSelect from '../../components/commons/InputSelect'
 import { ToastAlert } from '../../utils/commonFunction'
-import { fetchPostData, fetchUpdateData } from '../../../../utils/HisApiHooks'
+import { fetchPostData } from '../../../../utils/HisApiHooks'
 
 const WidgetMaster = () => {
 
-  const { setShowDataTable, allWidgetData, getAllWidgetData, dashboardForDt, getDashboardForDrpData, parameterData, getAllParameterData, widgetDrpData, getAllServiceData, dataServiceData, selectedOption, setSelectedOption, actionMode, setActionMode, parameterDrpData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, getAllTabsData, tabDrpData, getDashConfigData, singleConfigData } = useContext(HISContext);
+  const { setShowDataTable, allWidgetData, getAllWidgetData, dashboardForDt, getDashboardForDrpData, parameterData, getAllParameterData, widgetDrpData, getAllServiceData, dataServiceData, selectedOption, setSelectedOption, actionMode, setActionMode, parameterDrpData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, getAllTabsData, tabDrpData, getDashConfigData, singleConfigData, dt } = useContext(HISContext);
 
   const [values, setValues] = useState({
     "id": "", "widgetFor": "", "widgetType": "columnBased", "widgetNameDisplay": "", "widgetNameInternal": "", "widgetRefreshTime": "", "widgetRefreshDelayTime": "", "cachingStatus": "", "limit": "", "widgetHadingClr": "", "widgetTopMargin": "", "headingBgColor": "", "headingFontColor": "", "headingDisplayStyle": "", "recordsPerPage": "", "pagePerBlock": "", "DataScrollHeight": "", "parentWidget": "", "columnNoToDisplay": "", "leftClmNoToFixed": "", "rightClmNoToFixed": "", "linkedWidget": [], "actionBtnReq": "", "pdfTableFontSize": "", "pdfTableHeadBarClr": "", "pdfTableHeadTxtFontClr": "", "groupClmNoComma": "", "query": "", "webQuery": "", "procedureName": "", "recordsPerPageTreeCh": "", "parameterOption": "", "loadOption": "ONWINDOWLOAD", "paraComboBgColor": "", "paraComboFontColor": "", "paraLabelFontColor": "", "jndiSavingData": "", "stmtTimeOut": "", "lastUpdatedQuery": "", "FooterText": "", "customMsgForNoData": "", "treeChildQuery": "", "treeChildProcedure": "", "popUpDetails": [], "queryLabel": '', "htmlText": '', 'iconName': "",
@@ -43,8 +43,8 @@ const WidgetMaster = () => {
     "lstOtherLink": [],
     "sqChildJsonString": [],
     "selFilterIds": ""
-
   })
+
   const [radioValues, setRadioValues] = useState({
     widgetViewed: 'Tabular', isWidgetNameVisible: 'Yes', selectedModeQuery: 'Query', widgetPurpose: 'HTML',
     widgetHeadingAlign: 'left', isRecordLimitReq: 'Yes', isWidgetBorderReq: 'Yes',
@@ -60,7 +60,6 @@ const WidgetMaster = () => {
     isChildBasedPrimaryKey: "Yes", isHideParentMap: "Yes",
     //iframe
     isSsoUrl: "Yes"
-
   })
 
   const [tabIndex, setTabIndex] = useState(1);
@@ -80,12 +79,15 @@ const WidgetMaster = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
 
   const [newRow, setNewRow] = useState({ modeForSQCHILDColumnNo: "", SQCHILDWidgetId: "", drillSQCHILDWidgetName: "" });
+
   const [otherLinkData, setOtherLinkData] = useState([{ otherLinkName: "", otherLinkURL: "" }]);
+
   const [rows, setRows] = useState([{ queryLabel: "", mainQuery: "", isMultiRowDataTable: "", tableDataDisplay: "horizontal", totalRecordCountQuery: "" }]);
+
   const [procedureRows, setProcedureRows] = useState([{ queryLabel: "", serviceReferenceNumber: "", webserviceName: "", isMultiRowDataTable: "", tableDataDisplay: "horizontal" }]);
 
   const [errors, setErrors] = useState({
-    widgetForErr: "", widgetNameDisplayErr: "", widgetNameInternalErr: "", defaultGraphTypeErr: "",  clmNameForLineGraphErr: "", defaultPluginNameErr: "", noOfNewsVisibleErr: "",
+    widgetForErr: "", widgetNameDisplayErr: "", widgetNameInternalErr: "", defaultGraphTypeErr: "", clmNameForLineGraphErr: "", defaultPluginNameErr: "",
     alphaGraph3DErr: "", betaGraph3DErr: "", xAxisLabelErr: "", yAxisLabelErr: "", kpiTypeErr: "", kpiIconTypeErr: "", kpiDefaultBgColorErr: "", noOfNewsVisibleErr: "", mapNameErr: "",
 
     modeForSQCHILDColumnNoErr: "", SQCHILDWidgetIdErr: "", otherLinkNameErr: "", otherLinkURLErr: "", mainQueryErr: "", serviceReferenceNumberErr: "", webserviceNameErr: "", procedureNameErr: "",
@@ -284,7 +286,7 @@ const WidgetMaster = () => {
     // const isReset = window.confirm('Do you want to reset whole form!');
     // if (isReset) {
     setValues({
-      "id": "", "widgetFor": "", "widgetType": "columnBased", "widgetNameDisplay": "", "widgetNameInternal": "", "widgetRefreshTime": "", "widgetRefreshDelayTime": "", "cachingStatus": "", "limit": "", "widgetHadingClr": "", "widgetTopMargin": "", "headingBgColor": "", "headingFontColor": "", "headingDisplayStyle": "", "recordsPerPage": "", "pagePerBlock": "", "DataScrollHeight": "", "parentWidget": "", "columnNoToDisplay": "", "leftClmNoToFixed": "", "rightClmNoToFixed": "", "linkedWidget": [], "actionBtnReq": "", "pdfTableFontSize": "", "pdfTableHeadBarClr": "", "pdfTableHeadTxtFontClr": "", "groupClmNoComma": "", "query": "", "procedureName": "", "recordsPerPageTreeCh": "", "parameterOption": "", "loadOption": "ONWINDOWLOAD", "paraComboBgColor": "", "paraComboFontColor": "", "paraLabelFontColor": "", "jndiSavingData": "", "stmtTimeOut": "", "lastUpdatedQuery": "", "FooterText": "", "customMsgForNoData": "", "treeChildQuery": "", "treeChildProcedure": "", "popUpDetails": [], "webQuery": "", "queryLabel": '', "htmlText": '', 'iconName': "",
+      "id": "", "widgetFor": dashFor || "", "widgetType": "columnBased", "widgetNameDisplay": "", "widgetNameInternal": "", "widgetRefreshTime": "", "widgetRefreshDelayTime": "", "cachingStatus": "", "limit": "", "widgetHadingClr": "", "widgetTopMargin": "", "headingBgColor": "", "headingFontColor": "", "headingDisplayStyle": "", "recordsPerPage": "", "pagePerBlock": "", "DataScrollHeight": "", "parentWidget": "", "columnNoToDisplay": "", "leftClmNoToFixed": "", "rightClmNoToFixed": "", "linkedWidget": [], "actionBtnReq": "", "pdfTableFontSize": "", "pdfTableHeadBarClr": "", "pdfTableHeadTxtFontClr": "", "groupClmNoComma": "", "query": "", "procedureName": "", "recordsPerPageTreeCh": "", "parameterOption": "", "loadOption": "ONWINDOWLOAD", "paraComboBgColor": "", "paraComboFontColor": "", "paraLabelFontColor": "", "jndiSavingData": "", "stmtTimeOut": "", "lastUpdatedQuery": "", "FooterText": "", "customMsgForNoData": "", "treeChildQuery": "", "treeChildProcedure": "", "popUpDetails": [], "webQuery": "", "queryLabel": '', "htmlText": '', 'iconName': "",
       //graphs fields
       "defaultPluginName": "highchart", "defaultGraphType": "BAR_GRAPH", "graphTypes": [], "clmNameForLineGraph": "", "colorsForBars": "", "graphHeight": "", "graphBottomMargin": "", "graphBgStartColor": "", "graphBgEndColor": "", "graphFontColor": "", "graphTypeBgColor": "", "graphTypeFontColor": "", "labelRotation": "", "alphaGraph3D": "", "betaGraph3D": "", "xAxisLabel": "", "yAxisLabel": "", "xAxisFontSize": "", "yAxisFontSize": "", "annotationFontSize": "", "maxValueOfAxis": "", "parentWidgetGraph": "", "isActionBtnReqGraph": "Yes", "minValueOfAxis": "",
       //kpi details
@@ -315,7 +317,7 @@ const WidgetMaster = () => {
       isSsoUrl: "Yes"
     });
     setErrors({
-      widgetForErr: "", widgetNameDisplayErr: "", widgetNameInternalErr: "", defaultGraphTypeErr: "", graphTypesErr: "", clmNameForLineGraphErr: "", defaultPluginNameErr: "", noOfNewsVisibleErr: "",
+      widgetForErr: "", widgetNameDisplayErr: "", widgetNameInternalErr: "", defaultGraphTypeErr: "", graphTypesErr: "", clmNameForLineGraphErr: "", defaultPluginNameErr: "",
       alphaGraph3DErr: "", betaGraph3DErr: "", xAxisLabelErr: "", yAxisLabelErr: "", kpiTypeErr: "", kpiIconTypeErr: "", kpiDefaultBgColorErr: "", noOfNewsVisibleErr: "", mapNameErr: "",
 
       modeForSQCHILDColumnNoErr: "", SQCHILDWidgetIdErr: "", otherLinkNameErr: "", otherLinkURLErr: "", mainQueryErr: "", serviceReferenceNumberErr: "", webserviceNameErr: "", procedureNameErr: "",
@@ -328,6 +330,14 @@ const WidgetMaster = () => {
     localStorage.removeItem('radio');
     setLoading(false)
     onTableClose()
+
+    setNewRow({ modeForSQCHILDColumnNo: "", SQCHILDWidgetId: "", drillSQCHILDWidgetName: "" });
+
+    setOtherLinkData([{ otherLinkName: "", otherLinkURL: "" }]);
+
+    setRows([{ queryLabel: "", mainQuery: "", isMultiRowDataTable: "", tableDataDisplay: "horizontal", totalRecordCountQuery: "" }]);
+
+    setProcedureRows([{ queryLabel: "", serviceReferenceNumber: "", webserviceName: "", isMultiRowDataTable: "", tableDataDisplay: "horizontal" }]);
     // setIsInputChanged(false)
   }
 
@@ -361,18 +371,17 @@ const WidgetMaster = () => {
   const returnLinkedData = (linkedWidgetRptId) => {
     if (!linkedWidgetRptId || !widgetDrpData) return [];
 
-    const ids = linkedWidgetRptId.split(",").map(id => id.trim());
+    const ids = linkedWidgetRptId?.split(",").map(id => id.trim());
 
-    return widgetDrpData.filter(item => ids.includes(item.value));
+    return widgetDrpData.filter(item => ids.includes(String(item.value)));
   }
-
   useEffect(() => {
     if (singleData?.length > 0) {
       setLoading(true)
       setValues({
         ...values,
         id: singleData[0]?.rptId,
-        widgetFor: singleData[0]?.dashboardFor || 'CENTRAL DASHBOARD',//
+        widgetFor: singleData[0]?.dashboardFor || '',//
         widgetType: singleData[0]?.widgetType,//
         widgetNameDisplay: singleData[0]?.rptDisplayName,//
         widgetNameInternal: singleData[0]?.rptName,//
@@ -456,7 +465,7 @@ const WidgetMaster = () => {
         kpiDefaultFontColor: singleData[0]?.widgetFontColour,//
         kpiDefaultHoverBg: singleData[0]?.widgetHoverBackground,//
         kpiIconColor: singleData[0]?.widgetIconColour,//
-        kpiBoxClickOptions: singleData[0]?.onClickKPITypeOption,//======
+        kpiBoxClickOptions: singleData[0]?.onClickKPITypeOption || '0',//======
         kpiTabOpenOnClick: singleData[0]?.onClickOfKPITabId,//
         kpiWidgetOpenOnClick: singleData[0]?.onClickOfKPIWidgetId,//
         kpiDashboardOpenOnClick: singleData[0]?.onClickOfKPIDashboardId,//
@@ -528,9 +537,9 @@ const WidgetMaster = () => {
         isShowLegendOnExport: singleData[0]?.showLegendOnExport,//
         isFullLabelReq: singleData[0]?.isFullLabelRequired,//
         isGraphScrollBarReq: singleData[0]?.isScrollbarRequired,//
-        isShowLegend: singleData[0]?.showInLegend === 'true' ? 'Yes' : 'No',//
-        isDataLabels: singleData[0]?.dataLabels === 'true' ? "Yes" : 'No',//
-        isThree3D: singleData[0]?.is3d === 'true' ? 'Yes' : 'No',//
+        isShowLegend: singleData[0]?.showInLegend === 'true' || singleData[0]?.showInLegend === 'Yes' ? 'Yes' : 'No',//
+        isDataLabels: singleData[0]?.dataLabels === 'true' || singleData[0]?.dataLabels === 'Yes' ? "Yes" : 'No',//
+        isThree3D: singleData[0]?.is3d === 'true' || singleData[0]?.is3d === 'Yes' ? 'Yes' : 'No',//
         isDirectDownloadBtnGraph: singleData[0]?.isDirectDownloadRequired,//
         isFirstClmGraphHeading: singleData[0]?.isFirstClmGraphHeading,//========
         isShowPrntHeadChildGraph: singleData[0]?.showParentDetailsinChild,//
@@ -655,7 +664,7 @@ const WidgetMaster = () => {
         parentDisplaycolumnno: columnNoToDisplay,
         leftColumnsToBeFixed: leftClmNoToFixed,
         rightColumnsToBeFixed: rightClmNoToFixed,
-        linkWidget: linkedWidget?.length > 0 ? linkedWidget : kpiWidgetLinkName?.length > 0 ? kpiWidgetLinkName : [],
+        linkedWidgetRptId: linkedWidget?.length > 0 ? linkedWidget.map(item => item.value).join(',') : '',
         isActionButtonReq: actionBtnReq,
         pdfTableFontSize: pdfTableFontSize,
         pdfTableheaderBarColor: pdfTableHeadBarClr,
@@ -715,11 +724,11 @@ const WidgetMaster = () => {
         widgetHoverBackground: kpiDefaultHoverBg,
         widgetIconColour: kpiIconColor,
         onClickKPITypeOption: kpiBoxClickOptions,
-        onClickOfKPITabId: kpiTabOpenOnClick,
-        onClickOfKPIWidgetId: kpiWidgetOpenOnClick,
-        onClickOfKPIDashboardId: kpiDashboardOpenOnClick,
+        onClickOfKPITabId: kpiBoxClickOptions === "showTab" ? kpiTabOpenOnClick : "",
+        onClickOfKPIWidgetId: kpiBoxClickOptions === "showWidget" ? kpiWidgetOpenOnClick : "",
+        onClickOfKPIDashboardId: kpiBoxClickOptions === "showDashboard" ? kpiDashboardOpenOnClick : "",
         linkTab: kpiTabLinkName,
-        // linkWidget: kpiWidgetLinkName,
+        linkWidget: kpiWidgetLinkName,
         kpiLinkColor: kpiLinkColor,
         kpiLinkFontColor: kpiLinkFontColor,
         iconName: iconName,//
@@ -884,7 +893,7 @@ const WidgetMaster = () => {
         parentDisplaycolumnno: columnNoToDisplay,
         leftColumnsToBeFixed: leftClmNoToFixed,
         rightColumnsToBeFixed: rightClmNoToFixed,
-        linkWidget: linkedWidget?.length > 0 ? linkedWidget : kpiWidgetLinkName?.length > 0 ? kpiWidgetLinkName : [],
+        linkedWidgetRptId: linkedWidget?.length > 0 ? linkedWidget.map(item => item.value).join(',') : '',
         isActionButtonReq: actionBtnReq,
         pdfTableFontSize: pdfTableFontSize,
         pdfTableheaderBarColor: pdfTableHeadBarClr,
@@ -945,11 +954,11 @@ const WidgetMaster = () => {
         widgetHoverBackground: kpiDefaultHoverBg,
         widgetIconColour: kpiIconColor,
         onClickKPITypeOption: kpiBoxClickOptions,
-        onClickOfKPITabId: kpiTabOpenOnClick,
-        onClickOfKPIWidgetId: kpiWidgetOpenOnClick,
-        onClickOfKPIDashboardId: kpiDashboardOpenOnClick,
+        onClickOfKPITabId: kpiBoxClickOptions === "showTab" ? kpiTabOpenOnClick : "",
+        onClickOfKPIWidgetId: kpiBoxClickOptions === "showWidget" ? kpiWidgetOpenOnClick : "",
+        onClickOfKPIDashboardId: kpiBoxClickOptions === "showDashboard" ? kpiDashboardOpenOnClick : "",
         linkTab: kpiTabLinkName,
-        // linkWidget: kpiWidgetLinkName,
+        linkWidget: kpiWidgetLinkName,
         kpiLinkColor: kpiLinkColor,
         kpiLinkFontColor: kpiLinkFontColor,
         iconName: iconName,//
@@ -1027,7 +1036,7 @@ const WidgetMaster = () => {
         isSSOUrl: isSsoUrl
       }
     }
-    fetchUpdateData("/hisutils/updateWidget", val).then((data) => {
+    fetchPostData("/hisutils/updateWidget", val).then((data) => {
       if (data?.status === 1) {
         ToastAlert("Data Updated Successfully", "success");
         getAllWidgetData(values?.widgetFor)
@@ -1103,10 +1112,10 @@ const WidgetMaster = () => {
       //   newErrors.graphTypesErr = "Graph type selection is required";
       //   isValid = false;
       // }
-      if (!values?.clmNameForLineGraph?.trim()) {
-        newErrors.clmNameForLineGraphErr = "Column name for Line Graph is required";
-        isValid = false;
-      }
+      // if (!values?.clmNameForLineGraph?.trim()) {
+      //   newErrors.clmNameForLineGraphErr = "Column name for Line Graph is required";
+      //   isValid = false;
+      // }
       if (!values?.defaultPluginName?.trim()) {
         newErrors.defaultPluginNameErr = "Default plugin name is required";
         isValid = false;
@@ -1147,10 +1156,10 @@ const WidgetMaster = () => {
         newErrors.isGraphScrollBarReqErr = "Graph scrollbar requirement is needed";
         isValid = false;
       }
-      if (!radioValues?.isFullLabelReq?.trim()) {
-        newErrors.isFullLabelReqErr = "Full label requirement is needed";
-        isValid = false;
-      }
+      // if (!radioValues?.isFullLabelReq?.trim()) {
+      //   newErrors.isFullLabelReqErr = "Full label requirement is needed";
+      //   isValid = false;
+      // }
     }
 
     //  KPI-Specific Validations
@@ -1235,7 +1244,7 @@ const WidgetMaster = () => {
       } else if (newErrors.mainQueryErr || newErrors.serviceReferenceNumberErr || newErrors.webserviceNameErr || newErrors.procedureNameErr) {
         setTabIndex(2);
         setTabName({ value: 2, label: "Query Details" });
-      } else if (newErrors.kpiTypeErr || newErrors.kpiIconTypeErr || newErrors.kpiDefaultBgColorErr || newErrors.noOfNewsVisibleErr || newErrors.mapNameErr || newErrors.defaultGraphTypeErr  || newErrors.clmNameForLineGraphErr || newErrors.defaultPluginNameErr || newErrors.defaultPluginNameErr || newErrors.alphaGraph3DErr || newErrors.betaGraph3DErr || newErrors.xAxisLabelErr || newErrors.yAxisLabelErr || newErrors.isThree3DErr || newErrors.isDataLabelsErr || newErrors.isShowLegendErr || newErrors.isDisplayGraphPluginErr || newErrors.isGraphScrollBarReqErr || newErrors.isFullLabelReqErr) {
+      } else if (newErrors.kpiTypeErr || newErrors.kpiIconTypeErr || newErrors.kpiDefaultBgColorErr || newErrors.noOfNewsVisibleErr || newErrors.mapNameErr || newErrors.defaultGraphTypeErr || newErrors.defaultPluginNameErr || newErrors.defaultPluginNameErr || newErrors.alphaGraph3DErr || newErrors.betaGraph3DErr || newErrors.xAxisLabelErr || newErrors.yAxisLabelErr || newErrors.isThree3DErr || newErrors.isDataLabelsErr || newErrors.isShowLegendErr || newErrors.isDisplayGraphPluginErr || newErrors.isGraphScrollBarReqErr) {
         setTabIndex(3);
         setTabName({ value: 3, label: "" });
       }
@@ -1276,23 +1285,23 @@ const WidgetMaster = () => {
       width: "8%"
     },
     {
-      name: 'Widget ID',
+      name: dt('Widget ID'),
       selector: row => parseInt(row?.rptId),
       sortable: true,
       width: "10%"
     },
     {
-      name: 'Widget Name',
+      name: dt('Widget Name'),
       selector: row => row?.rptName,
       sortable: true,
     },
     {
-      name: 'Display Name',
+      name: dt('Display Name'),
       selector: row => row?.rptDisplayName,
       sortable: true,
     },
     {
-      name: 'Type',
+      name: dt('Type'),
       selector: row => row?.reportViewed,
       sortable: true,
     }
@@ -1320,30 +1329,28 @@ const WidgetMaster = () => {
       width: "8%"
     },
     {
-      name: 'ID',
+      name: dt('ID'),
       selector: row => row.id,
       sortable: true,
       width: "8%"
     },
     {
-      name: 'Parameter Name',
+      name: dt('Parameter Name'),
       selector: row => row?.jsonData?.parameterName,
       sortable: true,
     },
     {
-      name: 'Display Name',
+      name: dt('Display Name'),
       selector: row => row?.jsonData?.parameterDisplayName,
       sortable: true,
     },
     {
-      name: 'Type',
+      name: dt('Type'),
       selector: row => parameterType?.filter(dt => dt?.value === row?.jsonData?.parameterType)[0]?.label || "---",
       sortable: true,
     },
   ]
 
-  console.log(singleData,'singlawid')
-  console.log(values?.sqChildJsonString,'singlawidb')
 
   return (
     <>
@@ -1364,52 +1371,52 @@ const WidgetMaster = () => {
             <div className='p-1'>
 
               {tabName?.value === 1 &&
-                <AboutWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} dashboardForDt={dashboardForDt} setValues={setValues} widgetDrpData={widgetDrpData} errors={errors} setErrors={setErrors} {...{ otherLinkData, setOtherLinkData, newRow, setNewRow }} />
+                <AboutWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} dashboardForDt={dashboardForDt} setValues={setValues} widgetDrpData={widgetDrpData} errors={errors} setErrors={setErrors} {...{ otherLinkData, setOtherLinkData, newRow, setNewRow }} dt={dt} />
               }
 
               {tabName?.value === 2 &&
-                <QueryDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} singleData={singleData} errors={errors} setErrors={setErrors} {...{ rows, setRows, procedureRows, setProcedureRows }} />
+                <QueryDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} singleData={singleData} errors={errors} setErrors={setErrors} {...{ rows, setRows, procedureRows, setProcedureRows }} dt={dt} />
               }
 
               {tabName?.value === 3 &&
                 <>
                   {radioValues?.widgetViewed === "Tabular" &&
-                    <TableDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} parentWidget={widgetDrpData} setValues={setValues} errors={errors} />
+                    <TableDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} parentWidget={widgetDrpData} setValues={setValues} errors={errors} dt={dt} />
                   }
 
                   {radioValues?.widgetViewed === "Graph" &&
-                    <GraphWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} parentWidget={widgetDrpData} errors={errors} setErrors={setErrors} />
+                    <GraphWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} parentWidget={widgetDrpData} errors={errors} setErrors={setErrors} dt={dt} />
                   }
 
                   {radioValues?.widgetViewed === "KPI" &&
-                    <KpiWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} errors={errors} widgetDrpData={widgetDrpData} tabDrpData={tabDrpData} />
+                    <KpiWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} errors={errors} widgetDrpData={widgetDrpData} tabDrpData={tabDrpData} dt={dt} />
                   }
 
                   {radioValues?.widgetViewed === "Criteria_Map" &&
-                    <MapWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} parentWidget={widgetDrpData} errors={errors} />
+                    <MapWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} parentWidget={widgetDrpData} errors={errors} dt={dt} />
                   }
 
                   {radioValues?.widgetViewed === "News_Ticker" &&
-                    <NewsTickWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} errors={errors} />
+                    <NewsTickWidget handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} errors={errors} dt={dt} />
                   }
                 </>
 
               }
 
               {(tabName?.value === 4 && (radioValues?.widgetViewed === "Criteria_Map" || radioValues?.widgetViewed === "Graph" || radioValues?.widgetViewed === "Tabular")) &&
-                <ParamsDetail handleValueChange={handleValueChange} values={values} pageName={'widget'} parameterDrpData={parameterDrpData} availableOptions={availableOptions} setAvailableOptions={setAvailableOptions} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} errors={errors} />}
+                <ParamsDetail handleValueChange={handleValueChange} values={values} pageName={'widget'} parameterDrpData={parameterDrpData} availableOptions={availableOptions} setAvailableOptions={setAvailableOptions} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} errors={errors} dt={dt} />}
 
               {tabName?.value === 5 &&
-                <JndiDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} errors={errors} />}
+                <JndiDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} errors={errors} dt={dt} />}
 
               {tabName?.value === 6 &&
-                <FooterDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} errors={errors} />}
+                <FooterDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} errors={errors} dt={dt} />}
 
               {showWidgetTable &&
-                <GlobalDataTable title={"Widget List"} column={widgetColumn} data={widgetFilterData} onModify={handleUpdateData} onDelete={handleDeleteParams} onClose={onTableClose} setSearchInput={setWidgetSearchInput} isShowBtn={true} />
+                <GlobalDataTable title={dt("Widget List")} column={widgetColumn} data={widgetFilterData} onModify={handleUpdateData} onDelete={handleDeleteParams} onClose={onTableClose} setSearchInput={setWidgetSearchInput} isShowBtn={true} />
               }
               {showParamsTable &&
-                <GlobalDataTable title={"Parameter List"} column={paramsColumn} data={filterData} onModify={null} onDelete={null} onClose={onTableClose} setSearchInput={setSearchInput} isShowBtn={false} />
+                <GlobalDataTable title={dt("Parameter List")} column={paramsColumn} data={filterData} onModify={null} onDelete={null} onClose={onTableClose} setSearchInput={setSearchInput} isShowBtn={false} />
               }
               {showWebServiceTable &&
                 <DataServiceTable data={dataServiceData} onModify={null} onDelete={null} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={false} />
@@ -1424,11 +1431,11 @@ const WidgetMaster = () => {
                   disabled={tabIndex > 1 ? false : true}
                 >
                   <FontAwesomeIcon icon={faArrowLeft} className="dropdown-gear-icon me-2" />
-                  Previous
+                  {dt('Previous')}
                 </button>
                 {tabIndex === tabNavMenus?.length ? <></> :
                   <button className='btn btn-sm ms-1' onClick={() => saveTabsData()}>
-                    {`${tabIndex < tabNavMenus?.length ? 'Save & Next' : 'Save'}`}
+                    {`${tabIndex < tabNavMenus?.length ? dt('Save & Next') : dt('Save')}`}
                     {tabIndex < tabNavMenus?.length &&
                       <FontAwesomeIcon icon={faArrowRight} className="dropdown-gear-icon ms-2" />
                     }
@@ -1439,11 +1446,11 @@ const WidgetMaster = () => {
             </div>
             :
             <>
-              <b><h6 className='header-devider m-0'>Widget Master - Basic Details</h6></b>
+              <b><h6 className='header-devider m-0'>{dt('Widget Master - Basic Details')}</h6></b>
               <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 <div className='col-sm-6'>
                   <div className="form-group row">
-                    <label className="col-sm-5 col-form-label pe-0 required-label">Widget For : </label>
+                    <label className="col-sm-5 col-form-label pe-0 required-label">{dt('Widget For')} : </label>
                     <div className="col-sm-7 ps-0 align-content-center">
                       <InputSelect
                         id="widgetFor"

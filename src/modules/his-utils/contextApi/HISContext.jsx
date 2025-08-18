@@ -1,6 +1,7 @@
 import React, { createContext, useState } from 'react'
 import { DrpDataValLab, ToastAlert } from '../utils/commonFunction';
-import { fetchData, fetchDeleteData } from '../../../utils/HisApiHooks';
+import { fetchData, fetchDeleteData, fetchPostData } from '../../../utils/HisApiHooks';
+import axios from 'axios';
 
 export const HISContext = createContext();
 
@@ -18,7 +19,7 @@ const HISContextData = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [singleConfigData, setSingleConfigData] = useState();
 
-  const [prevKpiTab,setPrevKpiTab] = useState([]);
+  const [prevKpiTab, setPrevKpiTab] = useState([]);
 
   const [paramsValues, setParamsValues] = useState({
     tabParams: {},
@@ -29,8 +30,12 @@ const HISContextData = ({ children }) => {
     widgetParams: {},
   });
   const [isSearchQuery, setIsSearchQuery] = useState(false);
+  const [searchScope, setSearchScope] = useState({
+    scope: "", id: ""
+  });
 
   const [presentWidgets, setPresentWidgets] = useState([]);
+  const [presentTabsDash, setPresentTabsDash] = useState([]);
 
 
   // ALL DATA
@@ -51,9 +56,39 @@ const HISContextData = ({ children }) => {
   const [serviceCategoryDrpData, setServiceCategoryDrpData] = useState([]);
   const [jndiServerDrpData, setJndiServerDrpData] = useState([]);
 
+
+  //language provider
+
+  const [extractedTexts, setExtractedTexts] = useState([]);
+  const [showTranslateModal, setShowTranslateModal] = useState(false);
+  const [language, setLanguage] = useState('english');
+  const [translations, setTranslations] = useState([]);
+
+
+  const fetchTranslations = async (lang) => {
+    try {
+      const response = await axios.get(`/usm/translations/getAllTranslatedData`);
+      const data = await response?.data?.data;
+      // setTranslations(prev => ({ ...prev, [lang]: data }));
+      setTranslations(data);
+    } catch (error) {
+      console.error('Error fetching translations:', error);
+    }
+  };
+
+  const changeLanguage = async (lang) => {
+    setLanguage(lang);
+    localStorage.setItem('language', lang)
+  };
+
+  const dt = (key) => {
+    const translation = translations?.length > 0 && translations?.find(item => item.keyName === key);
+    return translation?.[language] || key;
+  };
+
   // dropdowns api call
   const getDashboardForDrpData = () => {
-    fetchData("hisutils/dashboardfor").then((data) => {
+    fetchData("/hisutils/dashboardfor").then((data) => {
       if (data?.status === 1) {
         setDashboardForDt(data?.data);
       } else {
@@ -63,7 +98,7 @@ const HISContextData = ({ children }) => {
   }
 
   const getServiceCategoryDrpData = () => {
-    fetchData("hisutils/serviceCategory").then((data) => {
+    fetchData("/hisutils/serviceCategory").then((data) => {
       if (data?.status === 1) {
         setServiceCategoryDrpData(data?.data);
       } else {
@@ -190,7 +225,7 @@ const HISContextData = ({ children }) => {
   }
 
   const clearAllCache = () => {
-    fetchDeleteData('hisutils/clearCache').then((data) => {
+    fetchPostData('/hisutils/clearCache').then((data) => {
       if (data?.status === 1) {
         ToastAlert(data?.message)
       } else {
@@ -212,11 +247,11 @@ const HISContextData = ({ children }) => {
       theme, setTheme,
       mainDashData, setMainDashData,
       singleConfigData, getDashConfigData, jndiServerDrpData,
-      clearAllCache,prevKpiTab,setPrevKpiTab,
+      clearAllCache, prevKpiTab, setPrevKpiTab,
 
       paramsValues, setParamsValues,
       paramsValuesPro, setParamsValuesPro,
-      isSearchQuery, setIsSearchQuery,
+      isSearchQuery, setIsSearchQuery, searchScope, setSearchScope,
 
       // DROP DOWNS-------------------------------
       // DASHBOARD FOR
@@ -243,7 +278,16 @@ const HISContextData = ({ children }) => {
       //dashboard submenu
       dashboardSubmenuData, getDashboardSubmenuData,
 
-      presentWidgets, setPresentWidgets
+      presentWidgets, setPresentWidgets,presentTabsDash, setPresentTabsDash,
+
+      //language provider
+      language,
+      dt,
+      changeLanguage,
+      fetchTranslations,
+      setLanguage,
+      showTranslateModal, setShowTranslateModal,
+      extractedTexts, setExtractedTexts
     }}>
       {children}
     </HISContext.Provider>

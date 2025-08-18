@@ -4,20 +4,20 @@ import InputSelect from '../../commons/InputSelect'
 import { HISContext } from '../../../contextApi/HISContext';
 
 const JndiDetails = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values,dt } = props;
     const {jndiServerDrpData} = useContext(HISContext)
 
     return (
         <>
             {/* MAIN DEVIDER FOR JNDI */}
-            <b><h6 className='header-devider'>JNDI Details</h6></b>
+            <b><h6 className='header-devider'>{dt('JNDI Details')}</h6></b>
 
             {/* SECTION DEVIDER jndi and time*/}
             <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">JNDI For Saving Data : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('JNDI For Saving Data')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 id="jndiSavingData"
@@ -34,7 +34,7 @@ const JndiDetails = (props) => {
                 {/* right columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Statement Time Out : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Statement Time Out')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 id="stmtTimeOut"

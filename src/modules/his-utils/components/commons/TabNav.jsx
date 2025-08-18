@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { HISContext } from '../../contextApi/HISContext';
 
 const TabNav = ({ isTabNav, tabNavData, tabName, setTabName, setTabIndex }) => {
+
+  const { dt } = useContext(HISContext);
 
   const [visibleTabCount, setVisibleTabCount] = useState(4);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -63,7 +66,7 @@ const TabNav = ({ isTabNav, tabNavData, tabName, setTabName, setTabIndex }) => {
                 className={`btn btn-sm ms-1 nav-tab-btn ${tabName?.value === tab.value ? 'active-tab' : ''}`}
                 onClick={() => handleTabClick(index, tab)}
               >
-                {tab.label}
+                {dt(tab.label)}
               </button>
             ))}
 
@@ -86,7 +89,7 @@ const TabNav = ({ isTabNav, tabNavData, tabName, setTabName, setTabIndex }) => {
                         className="dropdown-item"
                         onClick={() => { handleTabClick(visibleTabCount + index, tab); setShowDropdown((prev) => !prev); }}
                       >
-                        {tab.label}
+                        {dt(tab.label)}
                       </button>
                     ))}
                   </div>
@@ -113,7 +116,7 @@ const TabNav = ({ isTabNav, tabNavData, tabName, setTabName, setTabIndex }) => {
                       className="dropdown-item"
                       onClick={() => { handleTabClick(index, tab); setShowDropdown((prev) => !prev) }}
                     >
-                      {tab.label}
+                      {dt(tab.label)}
                     </button>
                   ))}
                 </div>

@@ -83,7 +83,7 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
-    const getGenericDrugListData = (grpId, sbGrpId, status) => {
+    const getGenericDrugListData = (grpId, sbGrpId, status,categoryOptions) => {
         const params = {
             groupId: grpId ? grpId : '0',
             subgroupId: sbGrpId ? sbGrpId : "0",

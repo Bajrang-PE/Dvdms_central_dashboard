@@ -1,133 +1,3 @@
-@keyframes shimmerMove {
-  0% {
-    left: -150%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-@keyframes pulsatingAnimation {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.02);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-:root {
-  --cta-buttons: #fbc02d;
-  --bright-yellow: #ffeb3b;
-  --primary-background: #055275;
-  --secondary-background: #005b88;
-  --light-blue: #3182ce;
-  --form-field: #97dbed4a;
-  --primary-gradient: linear-gradient(135deg, #05396c, #05213c);
-  --button-group-gradient: linear-gradient(135deg, #2c3e50, #4a3933);
-}
-
-.grid_container {
-  width: 65%;
-  display: flex;
-  padding: 10px;
-  gap: 25px;
-  height: 100%;
-  align-items: center;
-}
-
-.flex_item {
-  position: relative;
-  cursor: pointer;
-  /* transform: translateZ(-4px); */
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
-  padding: 10px 20px;
-  flex: 0 1 30%;
-  border-radius: 10%;
-  text-align: center;
-  overflow: hidden;
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-.flex_item::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 200%;
-  height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    transparent 100%
-  );
-  transition: all 0.5s ease-in-out;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.flex_item:hover::before {
-  left: 100%;
-  animation: shimmerMove ease-out 2.5s infinite;
-}
-
-.flex_item:hover {
-  .database_logo {
-    animation: pulsatingAnimation ease-out 2.5s infinite;
-  }
-}
-
-.form_body {
-  width: 60.6%;
-  margin-left: 10px;
-  margin-bottom: 20px;
-  padding: 10px;
-  display: flex;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.form_element_wrapper {
-  flex: 0 1 45%;
-  padding: 10px 10px;
-  display: flex;
-  margin-bottom: 13px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.form_label {
-  text-align: left;
-  font-family: "Roboto", sans-serif;
-  color: #1a1a1ad8;
-  font-size: 15px;
-  font-weight: 500;
-}
-
-.form_field {
-  border: none;
-  padding: 5px 10px;
-  border-radius: 3%;
-  background-color: var(--form-field);
-}
-
-.grid_cell h3 {
-  position: relative;
-  z-index: 2; /* Keeps the text above the shimmer */
-}
-
-.database_logo {
-  height: 120px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
 .App {
   text-align: center;
 }
@@ -153,6 +23,7 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
 
 .App-link {
   color: #61dafb;
@@ -185,8 +56,8 @@
 }
 
 .header-devider {
-  background: var(--secondary-background);
-  background-color: var(--secondary-background) !important;
+  background: #005b88;
+  background-color: #005b88 !important;
   color: #fff;
   border: #4a3933;
   padding-bottom: 2px;
@@ -194,15 +65,15 @@
 }
 
 .datatable-header {
-  /* background: var(--secondary-background); */
-  /* background-color: var(--secondary-background);!important; */
-  background-color: palegreen;
-  color: var(--cta-buttons) !important;
+  /* background: #005b88; */
+  /* background-color: #005b88 !important; */
+  background: linear-gradient(135deg, #05213c, #05396c);
+  color: #FBC02D !important;
   border-radius: 5px;
 }
 
 .header-devider th {
-  background-color: var(--secondary-background) !important;
+  background-color: #005b88 !important;
   color: white !important;
   height: 10px !important;
   padding: 1px !important;
@@ -234,25 +105,26 @@
 }
 
 select:focus {
-  border-color: var(--light-blue) !important;
+  border-color: #3182ce !important;
   /* Primary blue focus */
   outline: none !important;
   box-shadow: 0 0 4px rgba(49, 130, 206, 0.5) !important;
 }
 
-input[type="text"]:focus {
-  border-color: var(--light-blue) !important;
-  /* Primary blue focus */
+input[type="text"]:focus,
+input[type="search"]:focus {
+  border-color: #3182ce !important;
   outline: none;
   box-shadow: 0 0 4px rgba(49, 130, 206, 0.5) !important;
 }
 
 .backcolorinput {
-  background-color: var(--form-field) !important;
+  background-color: #97dbed4a !important;
   border-radius: 10px !important;
   /* border: 1px solid !important; */
   border-color: gray !important;
 }
+
 
 .backcolorinput-dark {
   border-radius: 10px !important;
@@ -261,19 +133,19 @@ input[type="text"]:focus {
 }
 
 .backcolorinput-icons {
-  background-color: var(--form-field) !important;
+  background-color: #97dbed4a !important;
   border-color: gray !important;
   border-radius: 0px 10px 10px 0px !important;
 }
 
 .backcolorinput-icon {
-  background-color: var(--form-field) !important;
+  background-color: #97dbed4a !important;
   border-color: gray !important;
   border-radius: 10px 0px 0px 10px !important;
 }
 
 .form-check-input:checked {
-  background-color: var(--light-blue) !important;
+  background-color: #3182ce !important;
   outline: none !important;
   box-shadow: 0 0 4px rgba(49, 130, 206, 0.5) !important;
   /* border-color: #82dcf54a !important; */
@@ -295,7 +167,7 @@ label {
 }
 
 .required-label::before {
-  content: "*";
+  content: '*';
   /* margin-left: 2px; */
   color: red;
   /* Optional: Change the color */
@@ -305,17 +177,18 @@ label {
 .required-input {
   color: #dc3545;
   width: 100%;
-  margin-bottom: 0.25rem;
-  font-size: 0.875em;
+  margin-bottom: .25rem;
+  font-size: .875em;
 }
 
 .dropdown-gear-icon {
   transition: color 0.3s ease, transform 0.3s ease;
 }
 
+
 /* FOR CONFIGURATION BUTTONS */
 .configuration-buttons button:hover .dropdown-gear-icon {
-  color: #2c2c2c;
+  color: #2C2C2C;
   transform: rotate(360deg);
 }
 
@@ -324,68 +197,69 @@ label {
 }
 
 .configuration-buttons button:hover {
-  background-color: var(--bright-yellow) !important;
-  color: #2c2c2c;
+  background-color: #FFEB3B !important;
+  color: #2C2C2C;
 }
 
 .configuration-buttons button {
-  background-color: var(--cta-buttons) !important;
+  background-color: #FBC02D !important;
 }
 
 .configuration-buttons {
-  background-image: var(--primary-gradient);
+  background: linear-gradient(135deg, #2c3e50, #34495e);
 }
 
 /* FOR GLOBAL BUTTON GROUP */
 .global-button-group button {
-  border: 2px solid var(--cta-buttons);
+  border: 2px solid #FBC02D;
   border-radius: 35% 35% 0% 0%;
-  background-color: var(--secondary-background);
+  background-color: #005b88;
   color: white;
   padding: 2px 5px;
 }
 
 .datatable-btns-his button {
-  border: 1px solid var(--cta-buttons);
+  border: 1px solid #FBC02D;
   border-radius: 5px;
-  background-color: var(--secondary-background);
+  background-color: #005b88;
   color: white;
   padding: 2px 5px;
 }
 
 .datatable-btns-his button:hover {
-  border: 1px solid var(--secondary-background);
-  background-color: var(--cta-buttons);
+  border: 1px solid #005b88;
+  background-color: #FBC02D;
 }
 
 .pre-nxt-btn button {
-  border: 2px solid var(--cta-buttons);
+  border: 2px solid #FBC02D;
   /* border-radius: 35% 35% 0% 0%; */
-  background-color: var(--secondary-background);
+  background-color: #005b88;
   color: white;
   /* padding: 2px 5px; */
 }
 
 .pre-nxt-btn button:hover {
-  border: 2px solid var(--cta-buttons);
+  border: 2px solid #f7c852;
   /* border-radius: 35% 35% 0% 0%; */
   background-color: #059de9;
   color: white;
+
 }
 
 .global-tab-group .nav-tab-btn {
-  border: 1px solid var(--cta-buttons);
+  border: 1px solid #FBC02D;
   /* border-radius: 0% 30% 0% 30%; */
-  background-color: var(--secondary-background);
+  background-color: #005b88;
   color: white;
   padding: 3px 5px;
 }
 
-@media (max-width: 475px) {
+@media (max-width:475px) {
   .global-button-group button {
-    border: 1px solid var(--cta-buttons) !important;
+    border: 1px solid #FBC02D !important;
     border-radius: 35% 35% 0% 0%;
-    background-color: var(--secondary-background);
+    background-color: #005b88;
     color: white;
     padding: 2px 2px !important;
     font-size: x-small;
@@ -394,16 +268,16 @@ label {
 
 @media (min-width: 475px) and (max-width: 768px) {
   .global-button-group button {
-    border: 2px solid var(--cta-buttons) !important;
+    border: 2px solid #FBC02D !important;
     border-radius: 35% 35% 0% 0%;
-    background-color: var(--secondary-background);
+    background-color: #005b88;
     color: white;
     padding: 2px 2px !important;
     font-size: small;
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width:475px) {
   .global-button-group {
     width: 90% !important;
   }
@@ -417,15 +291,16 @@ label {
   transform: rotate(360deg);
 }
 
+
 .global-button-group button:hover .dropdown-gear-icon,
 .datatable-btns-his button:hover .dropdown-gear-icon {
-  color: #2c2c2c;
+  color: #2C2C2C;
   transform: rotate(360deg);
 }
 
 .global-button-group button:hover {
-  border: 2px solid var(--secondary-background);
-  background-color: var(--cta-buttons);
+  border: 2px solid #005b88;
+  background-color: #FBC02D;
 }
 
 .back-button-kpi {
@@ -434,7 +309,7 @@ label {
   padding: 1px 8px;
   border-radius: 60% 10% 10% 60%;
   border: 1px solid transparent;
-  transition: 
+  transition:
     background-color 0.3s ease,
     color 0.3s ease,
     border-color 0.3s ease,
@@ -452,21 +327,22 @@ label {
 
 .global-tab-group .nav-tab-btn:hover {
   padding: 2px 5px;
-  border: 1px solid var(--bright-yellow);
+  border: 1px solid #FFEB3B;
   /* border-radius: 0% 30% 0% 30%; */
-  background-color: var(--primary-background);
+  background-color: #055275;
   color: rgb(243, 192, 81);
 }
 
 .active-tab {
-  border: 1px solid var(--bright-yellow) !important;
-  background-color: var(--primary-background) !important;
+  border: 1px solid #FFEB3B !important;
+  background-color: #055275 !important;
   color: rgb(248, 208, 123) !important;
   /* border-radius: 0% 30% 0% 30% !important; */
+
 }
 
 .global-button-group {
-  background-image: var(--button-group-gradient);
+  background: linear-gradient(135deg, #2c3e50, #4a3933);
   border-top: 1px solid white;
   position: sticky;
   top: 0;
@@ -476,7 +352,7 @@ label {
 }
 
 .global-tab-group {
-  background-image: var(--primary-gradient);
+  background: linear-gradient(300deg, #2c3e50, #4a3933);
   border-top: 1px solid white;
   position: sticky;
   top: 0;
@@ -505,7 +381,7 @@ label {
 }
 
 .react-select-multi .css-t3ipsp-control {
-  border-color: var(--light-blue) !important;
+  border-color: #3182ce !important;
   outline: none;
   box-shadow: 0 0 4px rgba(49, 130, 206, 0.5) !important;
   background-color: transparent !important;
@@ -574,6 +450,7 @@ label {
 }
 
 @keyframes bounce {
+
   0%,
   100% {
     transform: translateY(0);
@@ -589,6 +466,7 @@ label {
   color: #ffffff;
 }
 
+
 .submenu-tab-side div {
   background-color: #071b2f;
   color: #ccac7c;
@@ -602,7 +480,7 @@ label {
   padding-left: 20px !important;
 }
 
-.menu-item-container a > span {
+.menu-item-container a>span {
   display: flex !important;
   justify-content: space-between;
   align-items: center !important;
@@ -795,6 +673,7 @@ label {
   /* padding: 10px;  */
 }
 
+
 .dark-theme {
   background: #1f1f1f !important;
   background-color: #1f1f1f !important;
@@ -809,6 +688,7 @@ label {
   color: red;
 }
 
+
 /* For desktop - 2 columns */
 @media (min-width: 768px) {
   .db-connection-grid {
@@ -816,6 +696,7 @@ label {
     grid-template-columns: 1fr 1fr;
     gap: 0px 25px;
   }
+
 }
 
 /* For mobile - single column */

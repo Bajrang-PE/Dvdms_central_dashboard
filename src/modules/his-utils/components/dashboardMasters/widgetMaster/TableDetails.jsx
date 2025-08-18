@@ -7,7 +7,7 @@ import { faAdd, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { headingDisplayStyleOptions, isActionButtonReqOptions } from '../../../localData/DropDownData'
 
 const TableDetails = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values, setValues, parentWidget } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, setValues, parentWidget,dt } = props;
 
     const [rows, setRows] = useState([]);
     const [newRow, setNewRow] = useState({ modeForOpeningPopup: "", drillWidgetName: "", titleMsg: "", drillDownType: "", popupWidgetId: "" });
@@ -56,17 +56,17 @@ const TableDetails = (props) => {
         setValues({ ...values, ['popUpDetails']: updatedRows })
     };
 
-console.log(values?.linkedWidget,'linkwd')
+
     return (
         <>
-            <b><h6 className='header-devider m-0'>Table Heading Related Details</h6></b>
+            <b><h6 className='header-devider m-0'>{dt('Table Heading Related Details')}</h6></b>
             {/* SECTION DEVIDER table heading*/}
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Table Heading Required :
+                           {dt('Is Table Heading Required')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -80,7 +80,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isTableHeadingReq === "Yes"}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -94,7 +94,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isTableHeadingReq === "No"}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                   {dt('No')} 
                                 </label>
                             </div>
                         </div>
@@ -102,7 +102,7 @@ console.log(values?.linkedWidget,'linkwd')
                     {radioValues?.isTableHeadingReq === "Yes" &&
                         <>
                             <div className="form-group row">
-                                <label className="col-sm-5 col-form-label pe-0">Heading Background Color : </label>
+                                <label className="col-sm-5 col-form-label pe-0">{dt('Heading Background Color')} : </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <InputField
                                         type="color"
@@ -116,7 +116,7 @@ console.log(values?.linkedWidget,'linkwd')
                                 </div>
                             </div>
                             <div className="form-group row">
-                                <label className="col-sm-5 col-form-label pe-0">Heading Display Style : </label>
+                                <label className="col-sm-5 col-form-label pe-0">{dt('Heading Display Style')} : </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <InputSelect
                                         className="backcolorinput "
@@ -139,7 +139,7 @@ console.log(values?.linkedWidget,'linkwd')
                     <div className='col-sm-6'>
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Table Heading Alignment :
+                                {dt('Table Heading Alignment')} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -153,7 +153,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.tableHeadingAlign === "0"}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        As per Data Type
+                                        {dt('As per Data Type')}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -167,13 +167,13 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.tableHeadingAlign === "1"}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        Center
+                                        {dt('Center')}
                                     </label>
                                 </div>
                             </div>
                         </div>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Heading Font Color : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Heading Font Color')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type="color"
@@ -188,7 +188,7 @@ console.log(values?.linkedWidget,'linkwd')
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Is First Row Heading :
+                                {dt('Is First Row Heading')} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -202,7 +202,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.isFirstRowHeading === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt('Yes')}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -216,7 +216,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.isFirstRowHeading === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt('No')}
                                     </label>
                                 </div>
                             </div>
@@ -225,14 +225,14 @@ console.log(values?.linkedWidget,'linkwd')
                 }
             </div>
 
-            <b><h6 className='header-devider m-0'>Table - Pagination and Records</h6></b>
+            <b><h6 className='header-devider m-0'>{dt('Table - Pagination and Records')}</h6></b>
             {/* SECTION DEVIDER pagination and records*/}
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Pagination Required :
+                            {dt('Is Pagination Required')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -246,7 +246,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isPaginationReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -260,14 +260,14 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isPaginationReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt('No')}
                                 </label>
                             </div>
                         </div>
                     </div>
                     {radioValues?.isPaginationReq === 'Yes' &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Records per Page : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Records per Page')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type="text"
@@ -284,7 +284,7 @@ console.log(values?.linkedWidget,'linkwd')
                     {radioValues?.isDataTblReq === 'Yes' &&
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Is Heading Fixed :
+                                {dt('Is Heading Fixed')} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -298,7 +298,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.isHeadingFixed === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt('Yes')}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -312,7 +312,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.isHeadingFixed === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                       {dt('No')} 
                                     </label>
                                 </div>
                             </div>
@@ -320,7 +320,7 @@ console.log(values?.linkedWidget,'linkwd')
                     }
                     {(radioValues?.isDataTblReq === 'Yes' && radioValues?.isHeadingFixed === 'Yes') &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Data Scroll Height : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Data Scroll Height')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type="text"
@@ -336,7 +336,7 @@ console.log(values?.linkedWidget,'linkwd')
                     }
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Last row Total :
+                           {dt('Is Last row Total')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -350,7 +350,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isLastRowTotal === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                   {dt('Yes')} 
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -364,7 +364,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isLastRowTotal === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt('No')}
                                 </label>
                             </div>
                         </div>
@@ -375,7 +375,7 @@ console.log(values?.linkedWidget,'linkwd')
                     {radioValues?.isDataTblReq === 'Yes' &&
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Is Index Number Required :
+                                {dt('Is Index Number Required')} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -389,7 +389,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.isIndexNumReq === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt('Yes')}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -403,7 +403,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.isIndexNumReq === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt('No')}
                                     </label>
                                 </div>
                             </div>
@@ -411,7 +411,7 @@ console.log(values?.linkedWidget,'linkwd')
                     }
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Search Required :
+                            {dt('Is Search Required')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -425,7 +425,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isSearchReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                   {dt('Yes')} 
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -439,14 +439,14 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isSearchReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                   {dt('No')} 
                                 </label>
                             </div>
                         </div>
                     </div>
                     {radioValues?.isPaginationReq === 'Yes' &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Page per Block : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Page per Block')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type="text"
@@ -462,7 +462,7 @@ console.log(values?.linkedWidget,'linkwd')
                     }
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Card view(for Mobile) :
+                            {dt('Is Card view(for Mobile)')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -476,7 +476,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isCardViewMobile === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -490,7 +490,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isCardViewMobile === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt('No')}
                                 </label>
                             </div>
                         </div>
@@ -498,13 +498,13 @@ console.log(values?.linkedWidget,'linkwd')
                 </div>
             </div>
 
-            <b><h6 className='header-devider m-0'>Table - Parent and Widgets</h6></b>
+            <b><h6 className='header-devider m-0'>{dt('Table - Parent and Widgets')}</h6></b>
             {/* SECTION DEVIDER parents and widgets*/}
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Parent Widget : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Parent Widget')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 className="backcolorinput "
@@ -520,7 +520,7 @@ console.log(values?.linkedWidget,'linkwd')
                     {values?.parentWidget &&
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Is Hide Parent :
+                                {dt('Is Hide Parent')} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -534,7 +534,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.isHideParent === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt('Yes')}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -548,7 +548,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.isHideParent === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                       {dt('No')} 
                                     </label>
                                 </div>
                             </div>
@@ -556,7 +556,7 @@ console.log(values?.linkedWidget,'linkwd')
                     }
                     {radioValues?.isShowPrntHeadChild === 'Yes' &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Column Nos. to Display : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt('Column Nos. to Display')} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type='text'
@@ -571,7 +571,7 @@ console.log(values?.linkedWidget,'linkwd')
                         </div>
                     }
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Left Column Nos. to be fixed : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Left Column Nos. to be fixed')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
@@ -585,7 +585,7 @@ console.log(values?.linkedWidget,'linkwd')
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Linked Widget : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Linked Widget')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <Select
                                 id='linkedWidget'
@@ -605,7 +605,7 @@ console.log(values?.linkedWidget,'linkwd')
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Show Parent Heading in Child :
+                            {dt('Show Parent Heading in Child')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -619,7 +619,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isShowPrntHeadChild === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -633,7 +633,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isShowPrntHeadChild === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                   {dt('No')} 
                                 </label>
                             </div>
                         </div>
@@ -641,7 +641,7 @@ console.log(values?.linkedWidget,'linkwd')
                     {values?.parentWidget &&
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Is Row Clickable :
+                                {dt('Is Row Clickable')} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -655,7 +655,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.isRowClickable === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt('Yes')}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -669,7 +669,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.isRowClickable === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt('No')}
                                     </label>
                                 </div>
                             </div>
@@ -678,7 +678,7 @@ console.log(values?.linkedWidget,'linkwd')
                     {radioValues?.isShowPrntHeadChild === 'Yes' &&
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Show Parent Parameter details in Child :
+                                {dt('Show Parent Parameter details in Child')} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -692,7 +692,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.isShowPrntParamsChild === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt('Yes')}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -706,14 +706,14 @@ console.log(values?.linkedWidget,'linkwd')
                                         checked={radioValues?.isShowPrntParamsChild === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt('No')}
                                     </label>
                                 </div>
                             </div>
                         </div>
                     }
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Right Column Nos. to be fixed : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Right Column Nos. to be fixed')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
@@ -727,7 +727,7 @@ console.log(values?.linkedWidget,'linkwd')
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Action Button Required : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Action Button Required')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 className="backcolorinput "
@@ -743,14 +743,14 @@ console.log(values?.linkedWidget,'linkwd')
                 </div>
             </div>
 
-            <b><h6 className='header-devider mt-2'>Table - PDF</h6></b>
+            <b><h6 className='header-devider mt-2'>{dt('Table - PDF')}</h6></b>
             {/* SECTION DEVIDER pdf*/}
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Print PDF In :
+                            {dt('Print PDF In')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -764,7 +764,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.printPdfIn === 'landscape'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Landscape
+                                    {dt('Landscape')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -778,14 +778,14 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.printPdfIn === 'Potrait'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    Potrait
+                                   {dt('Potrait')} 
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            PDF Theme :
+                            {dt('PDF Theme')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -799,7 +799,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.pdfTheme === 'grid'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Grid
+                                    {dt('Grid')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -813,7 +813,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.pdfTheme === 'striped'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    Striped
+                                    {dt('Striped')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -827,13 +827,13 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.pdfTheme === 'plain'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    Plain
+                                   {dt('Plain')} 
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">PDF Table Header Bar Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('PDF Table Header Bar Color')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='color'
@@ -848,7 +848,7 @@ console.log(values?.linkedWidget,'linkwd')
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Show Filter Details In PDF/Print :
+                            {dt('Show Filter Details In PDF/Print')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -862,7 +862,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.showFilterDtlsInPdf === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -876,14 +876,14 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.showFilterDtlsInPdf === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt('No')}
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Report Print Date Required :
+                            {dt('Is Report Print Date Required')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -898,7 +898,7 @@ console.log(values?.linkedWidget,'linkwd')
 
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                   {dt('Yes')} 
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -912,14 +912,14 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isReportPrintDtReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                   {dt('No')} 
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Table Border Required :
+                            {dt('Is Table Border Required')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -933,7 +933,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isTableBorderReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -947,14 +947,14 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isTableBorderReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                   {dt('No')} 
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Positive Widget :
+                            {dt('Is Positive Widget')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -968,7 +968,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isPositiveWidget === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -982,14 +982,14 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isPositiveWidget === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt('No')}
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Popup Based On Data Click Required :
+                            {dt('Is Popup Based On Data Click Required')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -1003,7 +1003,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isPopupBasedReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -1017,7 +1017,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isPopupBasedReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt('No')}
                                 </label>
                             </div>
                         </div>
@@ -1026,7 +1026,7 @@ console.log(values?.linkedWidget,'linkwd')
                 {/* right columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">PDF Table Font Size : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('PDF Table Font Size')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
@@ -1041,7 +1041,7 @@ console.log(values?.linkedWidget,'linkwd')
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is PDF Header Required in all pages :
+                           {dt('Is PDF Header Required in all pages')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -1055,7 +1055,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isPdfHeadReqAllPgs === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                   {dt('Yes')} 
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -1069,13 +1069,13 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isPdfHeadReqAllPgs === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                   {dt('No')} 
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">PDF Table Heading Text Font Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('PDF Table Heading Text Font Color')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='color'
@@ -1090,7 +1090,7 @@ console.log(values?.linkedWidget,'linkwd')
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Report By jsPDF Plugin :
+                            {dt('Is Report By jsPDF Plugin')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -1104,7 +1104,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isReportByJsPdfPlug === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -1118,14 +1118,14 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isReportByJsPdfPlug === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt('No')}
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Global Header Required :
+                            {dt('Is Global Header Required')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -1139,7 +1139,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isGlobalHeaderReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -1153,13 +1153,13 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isGlobalHeaderReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt('No')}
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Group Column No.(commaseparated) : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt('Group Column No.(commaseparated)')} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
@@ -1174,7 +1174,7 @@ console.log(values?.linkedWidget,'linkwd')
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Direct Download Button Required :
+                            {dt('Is Direct Download Button Required')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -1188,7 +1188,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isDirectDownloadBtn === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                   {dt('Yes')} 
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -1202,14 +1202,14 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isDirectDownloadBtn === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt('No')}
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Tree Child Required :
+                            {dt('Is Tree Child Required')} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -1223,7 +1223,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isTreeChildReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt('Yes')}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -1237,7 +1237,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     checked={radioValues?.isTreeChildReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt('No')}
                                 </label>
                             </div>
                         </div>
@@ -1248,17 +1248,17 @@ console.log(values?.linkedWidget,'linkwd')
             {/* <b><h6 className='header-devider m-0'>Table - Popup Details</h6></b> */}
             {radioValues?.isPopupBasedReq === 'Yes' &&
                 <>
-                    <b>Popup Details:-</b><br />
+                    <b>{dt('Popup Details')}:-</b><br />
                     {/* SECTION DEVIDER parents and widgets*/}
                     <div className="table-responsive row p-1">
                         <table className="table table-borderless text-center mb-0">
                             <thead className="text-white">
                                 <tr className='header-devider m-0'>
-                                    <th style={{ width: "15%" }}>Mode No.</th>
-                                    <th style={{ width: "25%" }}>Drill Down Type</th>
-                                    <th style={{ width: "25%" }}>Widget</th>
-                                    <th style={{ width: "15%" }}>Title Message</th>
-                                    <th>Actions</th>
+                                    <th style={{ width: "15%" }}>{dt('Mode No.')}</th>
+                                    <th style={{ width: "25%" }}>{dt('Drill Down Type')}</th>
+                                    <th style={{ width: "25%" }}>{dt('Widget')}</th>
+                                    <th style={{ width: "15%" }}>{dt('Title Message')}</th>
+                                    <th>{dt('Actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1307,7 +1307,7 @@ console.log(values?.linkedWidget,'linkwd')
                                         />
                                     </td>
                                     <td className='px-0 action-buttons'>
-                                        <button className='btn btn-sm me-1 py-0 px-0' style={{ background: "#34495e", color: "white" }} onClick={()=>handleAddRow()}><FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size='sm' />Add</button>
+                                        <button className='btn btn-sm me-1 py-0 px-0' style={{ background: "#34495e", color: "white" }} onClick={()=>handleAddRow()}><FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size='sm' />{dt('Add')}</button>
                                     </td>
                                 </tr>
                                 {rows.map((row, index) => (
@@ -1341,14 +1341,14 @@ console.log(values?.linkedWidget,'linkwd')
             }
             {radioValues?.isTreeChildReq === 'Yes' &&
                 <>
-                    <b><h6 className='header-devider m-0'>Table - Tree Child</h6></b>
+                    <b><h6 className='header-devider m-0'>{dt('Table - Tree Child')}</h6></b>
                     {/* SECTION DEVIDER parents and widgets*/}
                     <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                         {/* //left columns */}
                         <div className='col-sm-6'>
                             <div className="form-group row">
                                 <label className="col-sm-5 col-form-label pe-0">
-                                    Tree Child Data By :
+                                    {dt('Tree Child Data By')} :
                                 </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <div className="form-check form-check-inline">
@@ -1362,7 +1362,7 @@ console.log(values?.linkedWidget,'linkwd')
                                             checked={radioValues?.treeChildDataBy === 'Query'}
                                         />
                                         <label className="form-check-label" htmlFor="dbYes">
-                                            By Query
+                                           {dt('By Query')} 
                                         </label>
                                     </div>
                                     <div className="form-check form-check-inline">
@@ -1376,7 +1376,7 @@ console.log(values?.linkedWidget,'linkwd')
                                             checked={radioValues?.treeChildDataBy === 'Procedure'}
                                         />
                                         <label className="form-check-label" htmlFor="dbNo">
-                                            By Procedure
+                                            {dt('By Procedure')}
                                         </label>
                                     </div>
                                 </div>
@@ -1385,7 +1385,7 @@ console.log(values?.linkedWidget,'linkwd')
                                 <>
                                     <div className="form-group row">
                                         <label className="col-sm-5 col-form-label pe-0">
-                                            Is Datatable Required :
+                                            {dt('Is Datatable Required')} :
                                         </label>
                                         <div className="col-sm-7 ps-0 align-content-center">
                                             <div className="form-check form-check-inline">
@@ -1399,7 +1399,7 @@ console.log(values?.linkedWidget,'linkwd')
                                                     checked={radioValues?.isDataTblReqTree === 'Yes'}
                                                 />
                                                 <label className="form-check-label" htmlFor="dbYes">
-                                                    Yes
+                                                    {dt('Yes')}
                                                 </label>
                                             </div>
                                             <div className="form-check form-check-inline">
@@ -1413,7 +1413,7 @@ console.log(values?.linkedWidget,'linkwd')
                                                     checked={radioValues?.isDataTblReqTree === 'No'}
                                                 />
                                                 <label className="form-check-label" htmlFor="dbNo">
-                                                    No
+                                                    {dt('No')}
                                                 </label>
                                             </div>
                                         </div>
@@ -1421,7 +1421,7 @@ console.log(values?.linkedWidget,'linkwd')
                                     {radioValues?.isDataTblReqTree === 'Yes' &&
                                         <div className="form-group row">
                                             <label className="col-sm-5 col-form-label pe-0">
-                                                Is Pagination Required :
+                                                {dt('Is Pagination Required')} :
                                             </label>
                                             <div className="col-sm-7 ps-0 align-content-center">
                                                 <div className="form-check form-check-inline">
@@ -1435,7 +1435,7 @@ console.log(values?.linkedWidget,'linkwd')
                                                         checked={radioValues?.isPaginationReqTree === 'Yes'}
                                                     />
                                                     <label className="form-check-label" htmlFor="dbYes">
-                                                        Yes
+                                                        {dt('Yes')}
                                                     </label>
                                                 </div>
                                                 <div className="form-check form-check-inline">
@@ -1449,7 +1449,7 @@ console.log(values?.linkedWidget,'linkwd')
                                                         checked={radioValues?.isPaginationReqTree === 'No'}
                                                     />
                                                     <label className="form-check-label" htmlFor="dbNo">
-                                                        No
+                                                        {dt('No')}
                                                     </label>
                                                 </div>
                                             </div>
@@ -1460,7 +1460,7 @@ console.log(values?.linkedWidget,'linkwd')
 
                             {radioValues?.treeChildDataBy === 'Query' &&
                                 <div className="form-group row">
-                                    <label className="col-sm-5 col-form-label pe-0">Query : </label>
+                                    <label className="col-sm-5 col-form-label pe-0">{dt('Query')} : </label>
                                     <div className="col-sm-7 ps-0 align-content-center">
                                         <textarea
                                             className="form-control backcolorinput"
@@ -1476,7 +1476,7 @@ console.log(values?.linkedWidget,'linkwd')
                             }
                             {radioValues?.treeChildDataBy === 'Procedure' &&
                                 <div className="form-group row">
-                                    <label className="col-sm-5 col-form-label pe-0">Procedure Name : </label>
+                                    <label className="col-sm-5 col-form-label pe-0">{dt('Procedure Name')} : </label>
                                     <div className="col-sm-7 ps-0 align-content-center">
                                         <InputField
                                             type='text'
@@ -1496,7 +1496,7 @@ console.log(values?.linkedWidget,'linkwd')
                         <div className='col-sm-6'>
                             <div className="form-group row">
                                 <label className="col-sm-5 col-form-label pe-0">
-                                    Data Display :
+                                    {dt('Data Display')} :
                                 </label>
                                 <div className="col-sm-7 ps-0 align-content-center">
                                     <div className="form-check form-check-inline">
@@ -1510,7 +1510,7 @@ console.log(values?.linkedWidget,'linkwd')
                                             checked={radioValues?.dataDisplay === 'horizontal'}
                                         />
                                         <label className="form-check-label" htmlFor="dbYes">
-                                            Horizontal
+                                            {dt('Horizontal')}
                                         </label>
                                     </div>
                                     <div className="form-check form-check-inline">
@@ -1524,7 +1524,7 @@ console.log(values?.linkedWidget,'linkwd')
                                             checked={radioValues?.dataDisplay === 'vertical'}
                                         />
                                         <label className="form-check-label" htmlFor="dbNo">
-                                            Vertical
+                                           {dt('Vertical')} 
                                         </label>
                                     </div>
                                 </div>
@@ -1533,7 +1533,7 @@ console.log(values?.linkedWidget,'linkwd')
                                 <>
                                     <div className="form-group row">
                                         <label className="col-sm-5 col-form-label pe-0">
-                                            Is Search Required :
+                                            {dt('Is Search Required')} :
                                         </label>
                                         <div className="col-sm-7 ps-0 align-content-center">
                                             <div className="form-check form-check-inline">
@@ -1547,7 +1547,7 @@ console.log(values?.linkedWidget,'linkwd')
                                                     checked={radioValues?.isSearchReqTree === 'Yes'}
                                                 />
                                                 <label className="form-check-label" htmlFor="dbYes">
-                                                    Yes
+                                                    {dt('Yes')}
                                                 </label>
                                             </div>
                                             <div className="form-check form-check-inline">
@@ -1561,14 +1561,14 @@ console.log(values?.linkedWidget,'linkwd')
                                                     checked={radioValues?.isSearchReqTree === 'No'}
                                                 />
                                                 <label className="form-check-label" htmlFor="dbNo">
-                                                    No
+                                                    {dt('No')}
                                                 </label>
                                             </div>
                                         </div>
                                     </div>
                                     {radioValues?.isPaginationReqTree === 'Yes' &&
                                         <div className="form-group row">
-                                            <label className="col-sm-5 col-form-label pe-0">Record Per Page : </label>
+                                            <label className="col-sm-5 col-form-label pe-0">{dt('Record Per Page')} : </label>
                                             <div className="col-sm-7 ps-0 align-content-center">
                                                 <InputField
                                                     type='text'

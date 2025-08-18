@@ -4,7 +4,7 @@ import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DropdownPortal from '../commons/DropdownPortal';
 
-const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab }) => {
+const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab,dt }) => {
     const [openSubMenu, setOpenSubMenu] = useState(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
@@ -103,11 +103,10 @@ const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab }) => {
                                                 e.preventDefault();
                                                 setActiveTab(tab);
                                                 setOpenSubMenu(openSubMenu === tab.id ? null : tab.id);
-                                                setPrevKpiTab([]);
                                             }}
                                         >
                                             <FontAwesomeIcon icon={getDynamicIcon(tab?.jsonData?.iconName)} className="me-2 dropdown-gear-icon" />
-                                            {tab?.jsonData?.dashboardName}
+                                            {dt(tab?.jsonData?.dashboardName)}
                                         </a>
 
                                         {childTabs.length > 0 && openSubMenu === tab.id && tabRefs.current[tab.id] && (
@@ -122,11 +121,10 @@ const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab }) => {
                                                                     e.preventDefault();
                                                                     setActiveTab(child);
                                                                     setOpenSubMenu(null);
-                                                                    setPrevKpiTab([]);
                                                                 }}
                                                             >
                                                                 <FontAwesomeIcon icon={getDynamicIcon(child?.jsonData?.iconName)} className="me-2 dropdown-gear-icon" />
-                                                                {child?.jsonData?.dashboardName}
+                                                                {dt(child?.jsonData?.dashboardName)}
                                                             </a>
                                                         </li>
                                                     ))}

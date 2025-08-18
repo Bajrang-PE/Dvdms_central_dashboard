@@ -60,7 +60,7 @@ export const convertToISODate = (dateStr) => {
   return `${formattedYear}-${formattedMonth}-${day}`;
 };
 
-export const fetchQueryData = async (queryVO = [], jndiServer, params,pkColumn) => {
+export const fetchQueryData = async (queryVO = [], jndiServer, params, pkColumn) => {
   if (!Array.isArray(queryVO) || queryVO.length === 0) {
     console.error("Invalid or empty queryVO array provided.");
     return [];
@@ -72,13 +72,18 @@ export const fetchQueryData = async (queryVO = [], jndiServer, params,pkColumn) 
       console.error("No valid query found in queryVO.");
       return [];
     }
+
+    const popupIds = [...query?.matchAll(/#(PK\d+)#/gi)]?.map(match => match[1]);
+    const popupIdStr = popupIds?.join(",");
+
     const requestBody = {
       query, params: {},
       jndi: jndiServer,
       strGroupParaId: params?.strGroupParaId,
       strGroupParaValue: params?.strGroupParaValue,
-       popupId: "#PK0#",
-      popupValue: pkColumn?.toString()
+      popupId: popupIdStr ? popupIdStr : "",
+      popupValue: pkColumn ? pkColumn?.toString() : ""
+      // popupValue: "22@2020@"
     };
     const response = await fetchPostData("/hisutils/GenericApiQry", requestBody);
 
@@ -100,7 +105,7 @@ export const fetchProcedureData = async (procedure, params, jndiServer) => {
       "parameters": params,
       "jndi": jndiServer
     };
-    const response = await fetchPostData(`api/procedures/execute`, requestBody);
+    const response = await fetchPostData(`/hisutils/procedures/execute`, requestBody);
 
     return response?.data || [];
   } catch (error) {
@@ -168,7 +173,7 @@ export const formatParams = (allParams, widgetId) => {
 };
 
 
-export const getOrderedParamValues = (query, paramsValues, widgetId) => {
+export const getOrderedParamValues = (query, paramsValues,widgetId) => {
   const paramVal = formatParams(paramsValues ? paramsValues : null, widgetId || '');
 
   const paramOrder = [];
@@ -176,7 +181,7 @@ export const getOrderedParamValues = (query, paramsValues, widgetId) => {
   let match;
   while ((match = regex.exec(query)) !== null) {
     // paramOrder.push(match[1]);
-    const id = match[1];
+     const id = match[1];
     if (!paramOrder.includes(id)) {
       paramOrder.push(id); // Add only if not already included
     }
@@ -195,7 +200,7 @@ export const getOrderedParamValues = (query, paramsValues, widgetId) => {
   //   strGroupParaValue: Object.values(idToValue).join(',')
   // };
 
-  const filteredIds = [];
+ const filteredIds = [];
   const filteredValues = [];
 
   paramOrder.forEach((id) => {
@@ -219,5 +224,87 @@ export const formatDate1 = (isoDate) => {
   const day = dateObject.getUTCDate().toString().padStart(2, '0');
   const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dateObject.getUTCMonth()];
   const year = dateObject.getUTCFullYear();
-  return `${day}-${month}-${year.toString().slice(-2)}`;
+  return `${day}-${month}-${year?.toString()?.slice(-2)}`;
 }
+
+export const formatDateFullYear = (isoDate) => {
+  const dateObject = new Date(isoDate);
+  // dateObject.setUTCHours(dateObject.getUTCHours() + dateObject.getTimezoneOffset() / 60);
+
+  const day = dateObject.getUTCDate().toString().padStart(2, '0');
+  const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dateObject.getUTCMonth()];
+  const year = dateObject.getUTCFullYear();
+  return `${day}-${month}-${year}`;
+}
+
+export const extractAllPageText = (config = {}) => {
+  const {
+    includeTags: userIncludeTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'label', 'span', 'button', 'a', 'li', 'th'],
+    excludeTags: userExcludeTags = [],
+    excludeClasses: userExcludeClasses = [],
+    includeClasses: userIncludeClasses = ['card-header-count','apexcharts-title-text','apexcharts-text','rdt_TableCol']
+  } = config;
+
+  const texts = new Set();
+
+  const strictExcludeTags = new Set([
+    'script', 'style', 'noscript', 'input', 'textarea', 'select', 'option', 'td',
+    'canvas', 'svg',
+  ]);
+  userExcludeTags.forEach(tag => strictExcludeTags.add(tag.toLowerCase()));
+
+
+  const includeTagsSet = new Set(userIncludeTags.map(tag => tag.toLowerCase()));
+  const excludeClassesSet = new Set(userExcludeClasses);
+  const includeClassesSet = new Set(userIncludeClasses);
+
+  const walker = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_TEXT,
+    null,
+    false
+  );
+
+  let node;
+  while ((node = walker.nextNode())) {
+    // Ensure the text node has a parent element
+    const parentElement = node.parentElement;
+    if (!parentElement) {
+      continue;
+    }
+
+    const tagName = parentElement.tagName.toLowerCase();
+    const parentClassList = Array.from(parentElement.classList);
+
+    if (strictExcludeTags.has(tagName)) {
+      continue;
+    }
+
+    let isExcludedByClass = false;
+    let currentAncestor = parentElement;
+    while (currentAncestor && currentAncestor !== document.body) {
+      if (excludeClassesSet.size > 0 && Array.from(currentAncestor.classList).some(cls => excludeClassesSet.has(cls))) {
+        isExcludedByClass = true;
+        break;
+      }
+      currentAncestor = currentAncestor.parentElement;
+    }
+    if (isExcludedByClass) {
+      continue;
+    }
+
+    let shouldInclude = false;
+    if (includeTagsSet.has(tagName) || includeClassesSet.size > 0 && parentClassList.some(cls => includeClassesSet.has(cls))) {
+      shouldInclude = true;
+    }
+
+    if (shouldInclude) {
+      const text = node.textContent.trim();
+      if (text && text.length > 1) {
+        texts.add(text);
+      }
+    }
+  }
+
+  return Array.from(texts);
+};

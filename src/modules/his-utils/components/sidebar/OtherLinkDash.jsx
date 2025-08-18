@@ -4,7 +4,7 @@ import { HISContext } from '../../contextApi/HISContext';
 const GlobalModal = React.lazy(() => import('../commons/GlobalModal'));
 
 const OtherLinkDash = ({ widgetData }) => {
-    const { theme, setLoading } = useContext(HISContext);
+    const { theme, setLoading,dt } = useContext(HISContext);
 
     const [currentLink, setCurrentLink] = useState({});
     const [isShowModal, setIsShowModal] = useState(false);
@@ -23,13 +23,13 @@ const OtherLinkDash = ({ widgetData }) => {
         <div className={`tabular-box ${theme === 'Dark' ? 'dark-theme' : ''} tabular-box-border tabular-box-border`} style={{ border: `1px solid ${theme === 'Dark' ? 'white' : 'black'}` }}>
 
             <div className="row px-2 py-2 border-bottom" >
-                <div className={`col-md-12 fw-medium fs-6`} >{widgetData?.rptDisplayName} : {widgetData?.rptId}</div>
+                <div className={`col-md-12 fw-medium fs-6`} >{dt(widgetData?.rptDisplayName)} : {widgetData?.rptId}</div>
 
             </div>
 
-            <ul class="list-group m-1">
+            <ul className="list-group m-1">
                 {linkData?.map((link, index) =>
-                    <li class="list-group-item list-group-item-primary list-group-item-action p-1 pointer" key={index} onClick={() => onLinkClicked(link)}>{link?.otherLinkName}</li>
+                    <li className="list-group-item list-group-item-primary list-group-item-action p-1 pointer" key={index} onClick={() => onLinkClicked(link)}>{dt(link?.otherLinkName)}</li>
                 )}
             </ul>
             <b><h6 className='header-devider mt-2'></h6></b>
@@ -43,7 +43,7 @@ const OtherLinkDash = ({ widgetData }) => {
                 <Suspense
                     fallback={
                         <div className="pt-3 text-center">
-                            Loading...
+                           {dt('Loading')}...
                         </div>
                     }
                 >

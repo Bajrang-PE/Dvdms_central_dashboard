@@ -5,18 +5,18 @@ import Select from 'react-select'
 import { googleChartOptions, graphOptions, highchartGraphOptions, isActionButtonReqOptions } from '../../../localData/DropDownData'
 
 const GraphWidget = (props) => {
-    const { handleValueChange, handleRadioChange, radioValues, values, setValues, parentWidget, errors, setErrors } = props;
+    const { handleValueChange, handleRadioChange, radioValues, values, setValues, parentWidget, errors, setErrors, dt } = props;
 
     return (
         <div>
-            <b><h6 className='header-devider m-0'>Graph Master</h6></b>
+            <b><h6 className='header-devider m-0'>{dt("Graph Master")}</h6></b>
             {/* SECTION DEVIDER graph plugin and color*/}
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0 required-label">
-                            Display Graph Plugin Name Option :
+                            {dt("Display Graph Plugin Name Option")} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -30,7 +30,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isDisplayGraphPlugin === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -44,7 +44,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isDisplayGraphPlugin === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                             {errors?.isDisplayGraphPluginErr &&
@@ -55,7 +55,7 @@ const GraphWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Default Graph Type : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Default Graph Type")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 className="backcolorinput "
@@ -73,14 +73,14 @@ const GraphWidget = (props) => {
                 {/* right columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Default Plugin Name : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Default Plugin Name")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 className="backcolorinput "
                                 // placeholder="Enter value..."
                                 name='defaultPluginName'
                                 id="defaultPluginName"
-                                options={[{ value: "highchart", label: "High Charts" }, { value: "googlechart", label: "Google Charts" }]}
+                                options={[{ value: "highchart", label: dt("High Charts") }, { value: "googlechart", label: dt("Google Charts") }]}
                                 onChange={handleValueChange}
                                 value={values?.defaultPluginName}
                                 errorMessage={errors?.defaultPluginNameErr}
@@ -90,7 +90,7 @@ const GraphWidget = (props) => {
                     {values?.defaultGraphType === 'BAR_GRAPH' &&
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0">
-                                Is Color By Point (graph color) :
+                                {dt("Is Color By Point (graph color)")} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -104,7 +104,7 @@ const GraphWidget = (props) => {
                                         checked={radioValues?.isColorByPoint === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt("Yes")}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -118,7 +118,7 @@ const GraphWidget = (props) => {
                                         checked={radioValues?.isColorByPoint === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt("No")}
                                     </label>
                                 </div>
                             </div>
@@ -132,14 +132,14 @@ const GraphWidget = (props) => {
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Graph Type : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Graph Type")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <Select
                                 id='graphTypes'
                                 name='graphTypes'
                                 options={values?.defaultPluginName === "googlechart" ? googleChartOptions : highchartGraphOptions}
                                 isMulti
-                                placeholder="Select value..."
+                                placeholder={dt("Select value...")}
                                 className="backcolorinput react-select-multi"
                                 value={values?.graphTypes}
                                 onChange={(e) => {
@@ -147,17 +147,15 @@ const GraphWidget = (props) => {
                                     setErrors(prev => ({ ...prev, 'graphTypesErr': "" }));
                                 }}
                             />
-                            
-
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Color For Bars : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Color For Bars")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='colorsForBars'
                                 id="colorsForBars"
                                 onChange={handleValueChange}
@@ -166,12 +164,12 @@ const GraphWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Graph Bottom Margin : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Graph Bottom Margin")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='graphBottomMargin'
                                 id="graphBottomMargin"
                                 onChange={handleValueChange}
@@ -180,12 +178,12 @@ const GraphWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Graph Background Start Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Graph Background Start Color")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='color'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='graphBgStartColor'
                                 id="graphBgStartColor"
                                 onChange={handleValueChange}
@@ -194,12 +192,12 @@ const GraphWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Graph Font Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Graph Font Color")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='color'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='graphFontColor'
                                 id="graphFontColor"
                                 onChange={handleValueChange}
@@ -208,12 +206,12 @@ const GraphWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Graph Type Background Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Graph Type Background Color")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='color'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='graphTypeBgColor'
                                 id="graphTypeBgColor"
                                 onChange={handleValueChange}
@@ -223,7 +221,7 @@ const GraphWidget = (props) => {
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0 required-label">
-                            Is Graph Scrollbar Required:
+                            {dt("Is Graph Scrollbar Required")}:
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -237,7 +235,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isGraphScrollBarReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -251,7 +249,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isGraphScrollBarReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                             {errors?.isGraphScrollBarReqErr &&
@@ -261,17 +259,16 @@ const GraphWidget = (props) => {
                             }
                         </div>
                     </div>
-
                 </div>
                 {/* right columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Column Name for Line graph : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Column Name for Line graph")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='clmNameForLineGraph'
                                 id="clmNameForLineGraph"
                                 onChange={handleValueChange}
@@ -281,12 +278,12 @@ const GraphWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Graph Height : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Graph Height")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='graphHeight'
                                 id="graphHeight"
                                 onChange={handleValueChange}
@@ -296,7 +293,7 @@ const GraphWidget = (props) => {
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Show Legend On Export :
+                            {dt("Show Legend On Export")} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -310,7 +307,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isShowLegendOnExport === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -324,18 +321,18 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isShowLegendOnExport === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Graph Background End Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Graph Background End Color")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='color'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='graphBgEndColor'
                                 id="graphBgEndColor"
                                 onChange={handleValueChange}
@@ -345,7 +342,7 @@ const GraphWidget = (props) => {
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0 required-label">
-                            Is Full Label Required:
+                            {dt("Is Full Label Required")}:
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -359,7 +356,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isFullLabelReq === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -373,7 +370,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isFullLabelReq === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                             {errors?.isFullLabelReqErr &&
@@ -384,12 +381,12 @@ const GraphWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Graph Type Font Color : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Graph Type Font Color")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='color'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='graphTypeFontColor'
                                 id="graphTypeFontColor"
                                 onChange={handleValueChange}
@@ -398,12 +395,12 @@ const GraphWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">label rotation : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("label rotation")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='labelRotation'
                                 id="labelRotation"
                                 onChange={handleValueChange}
@@ -414,14 +411,14 @@ const GraphWidget = (props) => {
                 </div>
             </div>
 
-            <b><h6 className='header-devider m-0'>Graph Parameters</h6></b>
+            <b><h6 className='header-devider m-0'>{dt("Graph Parameters")}</h6></b>
             {/* SECTION DEVIDER graph params legend label 3d*/}
             <div className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
                 {/* //left columns */}
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0 required-label">
-                            Show Legend :
+                            {dt("Show Legend")} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -435,7 +432,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isShowLegend === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -449,7 +446,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isShowLegend === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                             {errors?.isShowLegendErr &&
@@ -461,7 +458,7 @@ const GraphWidget = (props) => {
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0 required-label">
-                            Is 3D :
+                            {dt("Is 3D")} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -475,7 +472,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isThree3D === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -489,7 +486,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isThree3D === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                             {errors?.isThree3DErr &&
@@ -499,14 +496,12 @@ const GraphWidget = (props) => {
                             }
                         </div>
                     </div>
-
                 </div>
                 {/* right columns */}
-
                 <div className='col-sm-6'>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0 required-label">
-                            Data Labels :
+                            {dt("Data Labels")} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -520,7 +515,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isDataLabels === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -534,7 +529,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isDataLabels === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                             {errors?.isDataLabelsErr &&
@@ -553,12 +548,12 @@ const GraphWidget = (props) => {
                 <div className='col-sm-6'>
                     {radioValues?.isThree3D === 'Yes' &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0 required-label">Alpha : </label>
+                            <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Alpha")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type='text'
                                     className="backcolorinput "
-                                    placeholder="Enter value..."
+                                    placeholder={dt("Enter value...")}
                                     name='alphaGraph3D'
                                     id="alphaGraph3D"
                                     onChange={handleValueChange}
@@ -569,12 +564,12 @@ const GraphWidget = (props) => {
                         </div>
                     }
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">X-axis Label : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt("X-axis Label")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='xAxisLabel'
                                 id="xAxisLabel"
                                 onChange={handleValueChange}
@@ -584,12 +579,12 @@ const GraphWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">X-axis Font Size : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("X-axis Font Size")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='xAxisFontSize'
                                 id="xAxisFontSize"
                                 onChange={handleValueChange}
@@ -598,12 +593,12 @@ const GraphWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Annotation Font Size : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Annotation Font Size")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='annotationFontSize'
                                 id="annotationFontSize"
                                 onChange={handleValueChange}
@@ -612,11 +607,11 @@ const GraphWidget = (props) => {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Parent Widget : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Parent Widget")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='parentWidgetGraph'
                                 id="parentWidgetGraph"
                                 options={parentWidget}
@@ -627,7 +622,7 @@ const GraphWidget = (props) => {
                     </div>
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is Direct Download Button Required :
+                            {dt("Is Direct Download Button Required")} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -641,7 +636,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isDirectDownloadBtnGraph === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -655,7 +650,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isDirectDownloadBtnGraph === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
@@ -663,7 +658,7 @@ const GraphWidget = (props) => {
                     {values?.parentWidgetGraph &&
                         <div className="form-group row">
                             <label className="col-sm-5 col-form-label pe-0 required-label">
-                                Is Hide Parent :
+                                {dt("Is Hide Parent")} :
                             </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <div className="form-check form-check-inline">
@@ -677,7 +672,7 @@ const GraphWidget = (props) => {
                                         checked={radioValues?.isHideParent === 'Yes'}
                                     />
                                     <label className="form-check-label" htmlFor="dbYes">
-                                        Yes
+                                        {dt("Yes")}
                                     </label>
                                 </div>
                                 <div className="form-check form-check-inline">
@@ -691,7 +686,7 @@ const GraphWidget = (props) => {
                                         checked={radioValues?.isHideParent === 'No'}
                                     />
                                     <label className="form-check-label" htmlFor="dbNo">
-                                        No
+                                        {dt("No")}
                                     </label>
                                 </div>
                             </div>
@@ -699,16 +694,15 @@ const GraphWidget = (props) => {
                     }
                 </div>
                 {/* right columns */}
-
                 <div className='col-sm-6'>
                     {radioValues?.isThree3D === 'Yes' &&
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0 required-label">Beta : </label>
+                            <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Beta")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputField
                                     type='text'
                                     className="backcolorinput "
-                                    placeholder="Enter value..."
+                                    placeholder={dt("Enter value...")}
                                     name='betaGraph3D'
                                     id="betaGraph3D"
                                     onChange={handleValueChange}
@@ -719,12 +713,12 @@ const GraphWidget = (props) => {
                         </div>
                     }
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0 required-label">Y-axis Label : </label>
+                        <label className="col-sm-5 col-form-label pe-0 required-label">{dt("Y-axis Label")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='yAxisLabel'
                                 id="yAxisLabel"
                                 onChange={handleValueChange}
@@ -735,12 +729,12 @@ const GraphWidget = (props) => {
                     </div>
 
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Y-axis Font Size : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Y-axis Font Size")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputField
                                 type='text'
                                 className="backcolorinput "
-                                placeholder="Enter value..."
+                                placeholder={dt("Enter value...")}
                                 name='yAxisFontSize'
                                 id="yAxisFontSize"
                                 onChange={handleValueChange}
@@ -749,39 +743,9 @@ const GraphWidget = (props) => {
                         </div>
                     </div>
 
-                    {/* <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Maximum value of axis : </label>
-                        <div className="col-sm-7 ps-0 align-content-center">
-                            <InputField
-                                type='text'
-                                className="backcolorinput "
-                                placeholder="Enter value..."
-                                name='maxValueOfAxis'
-                                id="maxValueOfAxis"
-                                onChange={handleValueChange}
-                                value={values?.maxValueOfAxis}
-                            />
-                        </div>
-                    </div> */}
-
-                    {/* <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Minimum value of axis : </label>
-                        <div className="col-sm-7 ps-0 align-content-center">
-                            <InputField
-                                type='text'
-                                className="backcolorinput "
-                                placeholder="Enter value..."
-                                name='minValueOfAxis'
-                                id="minValueOfAxis"
-                                onChange={handleValueChange}
-                                value={values?.minValueOfAxis}
-                            />
-                        </div>
-                    </div> */}
-
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Show Parent Heading in Child :
+                            {dt("Show Parent Heading in Child")} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -795,7 +759,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isShowPrntHeadChildGraph === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -809,13 +773,13 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isShowPrntHeadChildGraph === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-5 col-form-label pe-0">Is Action Button Required : </label>
+                        <label className="col-sm-5 col-form-label pe-0">{dt("Is Action Button Required")} : </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <InputSelect
                                 className="backcolorinput "
@@ -831,7 +795,7 @@ const GraphWidget = (props) => {
 
                     <div className="form-group row">
                         <label className="col-sm-5 col-form-label pe-0">
-                            Is First Column Graph Heading :
+                            {dt("Is First Column Graph Heading")} :
                         </label>
                         <div className="col-sm-7 ps-0 align-content-center">
                             <div className="form-check form-check-inline">
@@ -845,7 +809,7 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isFirstClmGraphHeading === 'Yes'}
                                 />
                                 <label className="form-check-label" htmlFor="dbYes">
-                                    Yes
+                                    {dt("Yes")}
                                 </label>
                             </div>
                             <div className="form-check form-check-inline">
@@ -859,14 +823,13 @@ const GraphWidget = (props) => {
                                     checked={radioValues?.isFirstClmGraphHeading === 'No'}
                                 />
                                 <label className="form-check-label" htmlFor="dbNo">
-                                    No
+                                    {dt("No")}
                                 </label>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     )
 }

@@ -11,7 +11,7 @@ import GlobalDataTable from '../../components/commons/GlobalDataTable'
 import { fetchPostData } from '../../../../utils/HisApiHooks'
 
 const ServiceUserMaster = () => {
-  const { setShowDataTable, getAllServiceData, dataServiceDrpData, selectedOption, setSelectedOption, setActionMode, actionMode, getUserServiceData, userServiceData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, } = useContext(HISContext);
+  const { setShowDataTable, getAllServiceData, dataServiceDrpData, selectedOption, setSelectedOption, setActionMode, actionMode, getUserServiceData, userServiceData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, dt } = useContext(HISContext);
 
   const [values, setValues] = useState({
     "username": "", "password": "", "id": '', "dashboardFor": ""
@@ -216,7 +216,7 @@ const ServiceUserMaster = () => {
   const reset = () => {
     setValues({ "username": "", "password": "", "id": '', "dashboardFor": "" });
     setRows([{ serviceId: "", noOfServiceUsageAllowed: "-1" }]);
-    setErrors({usernameErr: "", passwordErr: "", serviceIdErr: "" })
+    setErrors({ usernameErr: "", passwordErr: "", serviceIdErr: "" })
     setPrevilegeFor('allServices');
     setActionMode('home');
     setShowServiceUserTable(false);
@@ -271,23 +271,22 @@ const ServiceUserMaster = () => {
       width: "8%"
     },
     {
-      name: 'ID',
+      name: dt('ID'),
       selector: row => row.id,
       sortable: true,
       width: "10%"
     },
     {
-      name: 'Service User Name',
+      name: dt('Service User Name'),
       selector: row => row?.jsonData?.userName || "---",
       sortable: true,
     },
     {
-      name: 'Previlege For',
+      name: dt('Previlege For'),
       selector: row => row?.jsonData?.previlege || "---",
       sortable: true,
     },
   ]
-
 
   const onOpenUserService = () => {
     setShowDataTable(true);
@@ -306,13 +305,13 @@ const ServiceUserMaster = () => {
       <div className='main-master-page'>
         <GlobalButtonGroup isSave={true} isOpen={true} isReset={true} isParams={false} isWeb={false} onSave={handleSaveUpdate} onOpen={onOpenUserService} onReset={reset} onParams={null} onWeb={null} />
         <div className='form-card m-auto p-3'>
-          <b><h6 className='header-devider mt-0 mb-1'>Service User Master</h6></b>
+          <b><h6 className='header-devider mt-0 mb-1'>{dt('Service User Master')}</h6></b>
           {/* SECTION DEVIDER*/}
           <div iv className='row role-theme user-form' style={{ paddingBottom: "1px" }}>
             {/* //left columns */}
             <div className='col-sm-6'>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0 required-label">UserName : </label>
+                <label className="col-sm-5 col-form-label pe-0 required-label">{dt('UserName')} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="text"
@@ -334,7 +333,7 @@ const ServiceUserMaster = () => {
             {/* right columns */}
             <div className='col-sm-6'>
               <div className="form-group row">
-                <label className="col-sm-5 col-form-label pe-0 required-label">Password : </label>
+                <label className="col-sm-5 col-form-label pe-0 required-label">{dt('Password')} : </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <InputField
                     type="text"
@@ -361,7 +360,7 @@ const ServiceUserMaster = () => {
             <div className='col-sm-6'>
               <div className="form-group row">
                 <label className="col-sm-5 col-form-label pe-0">
-                  Previlege For :
+                  {dt('Previlege For')} :
                 </label>
                 <div className="col-sm-7 ps-0 align-content-center">
                   <div className="form-check form-check-inline">
@@ -375,7 +374,7 @@ const ServiceUserMaster = () => {
                       checked={previlegeFor === "allServices"}
                     />
                     <label className="form-check-label" htmlFor="dbYes">
-                      All Services
+                      {dt('All Services')}
                     </label>
                   </div>
                   <div className="form-check form-check-inline">
@@ -389,7 +388,7 @@ const ServiceUserMaster = () => {
                       checked={previlegeFor === "selectedServices"}
                     />
                     <label className="form-check-label" htmlFor="dbNo">
-                      Selected Services
+                      {dt('Selected Services')}
                     </label>
                   </div>
                 </div>
@@ -401,26 +400,27 @@ const ServiceUserMaster = () => {
           }
           {previlegeFor === "selectedServices" &&
             <>
-              <b><h6 className='header-devider mt-0 mb-1'>Service Previleges</h6></b>
+              <b><h6 className='header-devider mt-0 mb-1'>{dt('Service Previleges')}</h6></b>
               <div className="table-responsive">
                 <table className="table text-center mb-0 table-bordered">
                   <thead className="text-white">
                     <tr className='m-0' style={{ fontSize: "smaller" }}>
                       <th style={{ width: "40%" }}>
                         <span className='required-label'>
-                          Service Name
+                          {dt('Service Name')}
                         </span>
                       </th>
                       <th style={{ width: "20%" }}>
                         <span className='required-label'>
-                          No. of use in one day
-                          ( "-1" means indefinite usage)
+                          {dt('No. of use in one day')}
+                          {dt('( "-1" means indefinite usage)')}
+
                         </span>
                       </th>
                       <th style={{ width: "10%" }}>
                         <button
                           className="btn btn-outline-secondary btn-sm"
-                          onClick={()=>handleAddRow()}
+                          onClick={() => handleAddRow()}
                           style={{ padding: "0 4px" }}
                         >
                           <FontAwesomeIcon icon={faAdd} className="dropdown-gear-icon" size='sm' />
@@ -481,7 +481,7 @@ const ServiceUserMaster = () => {
         </div>
       </div>
       {showServiceUserTable &&
-        <GlobalDataTable title={"Service User List"} column={column} data={filterData} onModify={handleUpdateData} onDelete={handleDeleteServiceUser} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={true} />
+        <GlobalDataTable title={dt("Service User List")} column={column} data={filterData} onModify={handleUpdateData} onDelete={handleDeleteServiceUser} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={true} />
       }
     </div>
   )

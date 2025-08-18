@@ -18,9 +18,12 @@ const GenericDrugMaster = () => {
     const [groupId, setGroupId] = useState('');
     const [subGroupId, setSubGroupId] = useState('');
     const [filterData, setFilterData] = useState(genericDrugListData);
+    const [errors, setErrors] = useState({
+        "groupIdErr": ""
+    })
 
     useEffect(() => {
-        getGenericDrugListData(groupId, subGroupId, recordStatus)
+        getGenericDrugListData(groupId, subGroupId, recordStatus,categoryOptions)
     }, [recordStatus, groupId, subGroupId])
 
     useEffect(() => {
@@ -93,6 +96,15 @@ const GenericDrugMaster = () => {
         setSelectedOption([]);
     }
 
+    const validate = () => {
+        let isValid = true;
+        if (!groupId) {
+            setErrors(prev => ({ ...prev, groupIdErr: "Please select group" }));
+            isValid = false
+        }
+
+        return isValid;
+    }
 
     const column = [
         {
@@ -156,7 +168,8 @@ const GenericDrugMaster = () => {
                                         options={groupDrpData}
                                         className="aliceblue-bg border-dark-subtle"
                                         value={groupId}
-                                        onChange={(e) => { setGroupId(e.target.value) }}
+                                        onChange={(e) => { setGroupId(e.target.value); setErrors({ ...errors, groupIdErr: "" }); }}
+                                        errorMessage={errors?.groupIdErr}
                                     />
                                 </div>
                             </div>
@@ -194,7 +207,7 @@ const GenericDrugMaster = () => {
                     </div>
 
                     <hr className='my-2' />
-                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={groupId ? true : false} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} />
+                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} onValidate={validate} />
 
                     {(openPage === 'view' && !isShowReport) &&
                         <ViewPage data={[{ value: selectedOption[0]?.cwhstrCentraldrugName, label: "Drug Name" }, { value: selectedOption[0]?.drugTypeName, label: "Drug Type" },

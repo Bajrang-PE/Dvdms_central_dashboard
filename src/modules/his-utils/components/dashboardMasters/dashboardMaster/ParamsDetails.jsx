@@ -6,14 +6,18 @@ import { parameterOptions } from '../../../localData/DropDownData';
 const InputSelect = lazy(() => import('../../commons/InputSelect'));
 
 const ParamsDetails = (props) => {
-    const { availableOptions, setAvailableOptions, selectedOptions, setSelectedOptions, handleValueChange, values } = props;
+    const { availableOptions, setAvailableOptions, selectedOptions, setSelectedOptions, handleValueChange, values, dt } = props;
 
     const [leftSelectedValues, setLeftSelectedValues] = useState([]);
     const [rightSelectedValues, setRightSelectedValues] = useState([]);
 
     const leftSelectEle = document.getElementById('leftRightSelect');
     const rightSelectEle = document.getElementById('leftRightSelect1');
-
+    
+    const [filterData, setFilterData] = useState([]);
+    const [filterData2, setFilterData2] = useState([]);
+    const [searchInput, setSearchInput] = useState('');
+    const [searchInput2, setSearchInput2] = useState('');
 
     const handleLeftSelect = (e) => {
         const value = Array.from(e.target.selectedOptions, option => option.value);
@@ -61,14 +65,44 @@ const ParamsDetails = (props) => {
         }
     };
 
+    useEffect(() => {
+        if (!searchInput) {
+            setFilterData(availableOptions);
+        } else {
+            const lowercasedText = searchInput.toLowerCase();
+            const newFilteredData = availableOptions.filter(row => {
+                const paramId = row?.label?.toString()?.toLowerCase() || "";
+                return paramId?.includes(lowercasedText);
+            });
+            setFilterData(newFilteredData);
+        }
+    }, [searchInput, availableOptions]);
+
+    useEffect(() => {
+        if (!searchInput2) {
+            setFilterData2(selectedOptions);
+        } else {
+            const lowercasedText = searchInput2.toLowerCase();
+            const newFilteredData = selectedOptions.filter(row => {
+                const paramId = row?.label?.toString()?.toLowerCase() || "";
+                return paramId?.includes(lowercasedText);
+            });
+            setFilterData2(newFilteredData);
+        }
+    }, [searchInput2, selectedOptions]);
+
+
     return (
         <>
-            <b><h6 className='header-devider m-0'>Parameter Details</h6></b>
+            <b><h6 className='header-devider m-0'>{dt("Parameter Details")}</h6></b>
             <div className='d-flex justify-content-center mt-1 mb-2 role-theme'>
                 <div className='' style={{ width: "30%" }}>
-                    <b><h6 className='mb-2 text-center'>Parameter Name</h6></b>
+                    <b><h6 className='mb-2 text-center'>{dt("Parameter Name")}</h6></b>
+
+                    <input className='form-control form-control-sm backcolorinput mb-1' type="search" placeholder='search...' value={searchInput} onChange={(e) => setSearchInput(e?.target?.value)} />
+
                     <select className="form-select form-select-sm backcolorinput" id='leftRightSelect' size="6" aria-label="size 4 select example" onChange={handleLeftSelect}>
-                        {availableOptions?.map((opt, index) => (
+                        {filterData?.map((opt, index) => (
                             <option value={opt.value} key={index}>{opt.label}</option>
                         ))}
                     </select>
@@ -77,23 +111,26 @@ const ParamsDetails = (props) => {
                 <div className='align-self-center' style={{ marginLeft: "2%", marginRight: "2%" }}>
 
                     <div className='d-flex justify-content-center'>
-                        <button type='button' className='btn btn-outline-secondary btn-sm m-1' disabled={availableOptions?.length > 0 ? false : true} onClick={()=>moveRight()}>
+                        <button type='button' className='btn btn-outline-secondary btn-sm m-1' disabled={availableOptions?.length > 0 ? false : true} onClick={() => moveRight()}>
                             <svg dangerouslySetInnerHTML={{ __html: rightCaret }} height={16} width={16} />
                         </button>
 
                     </div>
 
                     <div className='d-flex justify-content-center'>
-                        <button type='button' className='btn btn-outline-secondary btn-sm m-1' disabled={selectedOptions?.length > 0 ? false : true} onClick={()=>moveLeft()}>
+                        <button type='button' className='btn btn-outline-secondary btn-sm m-1' disabled={selectedOptions?.length > 0 ? false : true} onClick={() => moveLeft()}>
                             <svg dangerouslySetInnerHTML={{ __html: leftCaret }} height={16} width={16} />
                         </button>
                     </div>
                 </div>
 
                 <div className='' style={{ width: "30%" }}>
-                    <b><h6 className='mb-2 text-center'>Selected Parameter Name</h6></b>
+                    <b><h6 className='mb-2 text-center'>{dt("Selected Parameter Name")}</h6></b>
+
+                    <input className='form-control form-control-sm backcolorinput mb-1' type="search" placeholder='search...' value={searchInput2} onChange={(e) => setSearchInput2(e?.target?.value)} />
+
                     <select className="form-select form-select-sm backcolorinput" id='leftRightSelect1' size="6" aria-label="size 4 select example" onChange={handleRightSelect}>
-                        {selectedOptions?.map((opt, index) => (
+                        {filterData2?.map((opt, index) => (
                             <option value={opt.value} key={index}>{opt.label}</option>
                         ))}
                     </select>
@@ -106,11 +143,11 @@ const ParamsDetails = (props) => {
                     {/* //left columns */}
                     <div className='col-sm-6'>
                         <div className="form-group row">
-                            <label className="col-sm-5 col-form-label pe-0">Parameter Options : </label>
+                            <label className="col-sm-5 col-form-label pe-0">{dt("Parameter Options")} : </label>
                             <div className="col-sm-7 ps-0 align-content-center">
                                 <InputSelect
                                     className="backcolorinput "
-                                    // placeholder="Enter value..."
+                                    // placeholder={dt("Enter value...")}
                                     name='parameterOption'
                                     id="parameterOption"
                                     options={parameterOptions}

@@ -9,6 +9,7 @@ import { useReactToPrint } from 'react-to-print';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileCsv, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import useReportColumns from '../hooks/useReportColumns';
+import { ToastAlert } from '../utils/CommonFunction';
 
 const MasterReport = (props) => {
 
@@ -27,76 +28,84 @@ const MasterReport = (props) => {
 
     //FUNCTION TO DOWNLOAD CSV FILE
     const downloadCSV = () => {
-        const filteredData = data.map((row, index) => {
-            let filteredRow = {};
-            column.forEach(col => {
-                if (col.name === 'S.No') {
-                    filteredRow['S.No'] = index + 1;
-                } else {
-                    filteredRow[col.name] = col.selector(row);
-                }
+        if (data?.length > 0) {
+            const filteredData = data.map((row, index) => {
+                let filteredRow = {};
+                column.forEach(col => {
+                    if (col.name === 'S.No') {
+                        filteredRow['S.No'] = index + 1;
+                    } else {
+                        filteredRow[col.name] = col.selector(row);
+                    }
+                });
+                return filteredRow;
             });
-            return filteredRow;
-        });
 
-        const csv = Papa.unparse(filteredData);
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute('download', 'data-report.csv');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            const csv = Papa.unparse(filteredData);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', 'data-report.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            ToastAlert('Data not available to download report', 'warning')
+        }
     };
 
 
     //FUNCTION TO DOWNLOAD PDF FILE
     const downloadPDF = () => {
-        const doc = new jsPDF('p', 'mm', 'a4');
-        const columns = column.map(col => col.name);
-        const rows = data.map((row, index) => {
-            return column.map(col => {
-                if (col.name === 'S.No') {
-                    return index + 1;
-                }
-                return col.selector(row);
+        if (data?.length > 0) {
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const columns = column.map(col => col.name);
+            const rows = data.map((row, index) => {
+                return column.map(col => {
+                    if (col.name === 'S.No') {
+                        return index + 1;
+                    }
+                    return col.selector(row);
+                });
             });
-        });
 
-        doc.autoTable({
-            head: [columns],
-            body: rows,
-            startY: 20,
-            theme: 'grid',
-            headStyles: {
-                fillColor: [0, 32, 96],
-                textColor: [255, 255, 255],
-                fontSize: 8
-            },
-            bodyStyles: {
-                fontSize: 8,
-            },
-            styles: {
-                cellPadding: 2,
-                halign: 'left',
-            },
-            margin: { top: 30 },
-            didDrawPage: () => {
-                const pageWidth = doc.internal.pageSize.getWidth();
-                doc.setFontSize(14);
-                const titleWidth = doc.getTextWidth(title);
-                const titleX = (pageWidth - titleWidth) / 2;
-                doc.text(title, titleX, 15);
+            doc.autoTable({
+                head: [columns],
+                body: rows,
+                startY: 20,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [0, 32, 96],
+                    textColor: [255, 255, 255],
+                    fontSize: 8
+                },
+                bodyStyles: {
+                    fontSize: 8,
+                },
+                styles: {
+                    cellPadding: 2,
+                    halign: 'left',
+                },
+                margin: { top: 30 },
+                didDrawPage: () => {
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    doc.setFontSize(14);
+                    const titleWidth = doc.getTextWidth(title);
+                    const titleX = (pageWidth - titleWidth) / 2;
+                    doc.text(title, titleX, 15);
 
-                doc.setFontSize(8);
-                const dateText = `Date: ${new Date().toDateString()}`;
-                const dateWidth = doc.getTextWidth(dateText);
-                doc.text(dateText, pageWidth - dateWidth - 14, 18);
-            },
+                    doc.setFontSize(8);
+                    const dateText = `Date: ${new Date().toDateString()}`;
+                    const dateWidth = doc.getTextWidth(dateText);
+                    doc.text(dateText, pageWidth - dateWidth - 14, 18);
+                },
 
-        });
+            });
 
-        doc.save('DataReport.pdf');
+            doc.save('DataReport.pdf');
+        } else {
+            ToastAlert('Data not available to download report', 'warning')
+        }
     };
 
 

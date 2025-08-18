@@ -15,7 +15,7 @@ import { fetchPostData } from '../../../../utils/HisApiHooks'
 
 const DashboardMaster = () => {
 
-  const { dashboardForDt, getDashboardForDrpData, getAllParameterData, parameterDrpData, getAllTabsData, setShowDataTable, setSelectedOption, selectedOption, actionMode, setActionMode, tabDrpData, getAllDashboardData, dashboardData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave,getDashConfigData,singleConfigData } = useContext(HISContext);
+  const { dashboardForDt, getDashboardForDrpData, getAllParameterData, parameterDrpData, getAllTabsData, setShowDataTable, setSelectedOption, selectedOption, actionMode, setActionMode, tabDrpData, getAllDashboardData, dashboardData, setLoading, setShowConfirmSave, confirmSave, setConfirmSave, getDashConfigData, singleConfigData, dt } = useContext(HISContext);
 
   const [tabIndex, setTabIndex] = useState(1);
   const [tabName, setTabName] = useState({ value: 1, label: "About Dashboard" });
@@ -29,7 +29,7 @@ const DashboardMaster = () => {
 
   const [availableOptionsTab, setAvailableOptionsTab] = useState([]);
   const [selectedOptionsTab, setSelectedOptionsTab] = useState();
-  
+
 
   const [values, setValues] = useState({
     "dashboardFor": "", "dashNameDisplay": "", "dashNameInternal": "", "menuContainerBgColor": "", "dashTitlefontColor": "", "iconColor": "", "menuContainerBgImage": "", "cachingStatus": '', "dataLoad": "ALL", "id": "",
@@ -63,7 +63,7 @@ const DashboardMaster = () => {
     if (dashboardForDt?.length === 0) { getDashboardForDrpData(); }
     if (!singleConfigData) {
       getDashConfigData()
-  }
+    }
   }, [])
 
 
@@ -77,7 +77,7 @@ const DashboardMaster = () => {
       setRadioValues(JSON.parse(localRadio));
     }
   }, []);
-  
+
   const dashFor = localStorage.getItem('dfor');
   useEffect(() => {
     if (dashFor) {
@@ -521,6 +521,7 @@ const DashboardMaster = () => {
       setShowDataTable(false);
       setShowDashboardTable(false);
       setSelectedOption([]);
+      setSearchInput('');
       // setIsInputChanged(true)
 
     } else {
@@ -570,7 +571,7 @@ const DashboardMaster = () => {
         className="form-check-input log-select"
       />,
       cell: row =>
-        <div style={{ position: 'absolute', top: 4, left: 10 }}>
+        <div style={{ position: 'absolute', top: 4, left: 10, alignSelf: "anchor-center" }}>
           <span className="btn btn-sm text-white px-1 py-0 mr-1" >
             <input
               type="checkbox"
@@ -579,19 +580,19 @@ const DashboardMaster = () => {
             />
           </span>
         </div>,
-      width: "8%"
+      width: "60px"
     },
     {
-      name: 'Group ID',
+      name: dt('Group ID'),
       selector: row => row.id,
       sortable: true,
-      width: "10%"
+      width: "120px"
     },
     {
-      name: 'Group Name',
+      name: dt('Group Name'),
       selector: row => row?.jsonData?.groupName || "---",
       cell: row => <a
-        href={`/dvdms/HIS_dashboard/dashboard?groupId=${row.id}&dashboardFor=${row?.dashboardFor}&data=${""}&isPreview=1`}
+        href={`/dvdms/HIS_dashboard/dashboard?groupId=${row?.id ? encodeURIComponent(btoa(row?.id)) : "0"}&dashboardFor=${row?.dashboardFor ? encodeURIComponent(btoa(row?.dashboardFor)) : ""}&isPreview=1`}
         target="_blank"
         rel="noopener noreferrer"
         className='text-decoration-none'
@@ -599,11 +600,13 @@ const DashboardMaster = () => {
         {row?.jsonData?.groupName}
       </a>,
       sortable: true,
+      wrap: false
     },
     {
-      name: 'URL',
-      selector: row => `/dashboard?groupId=${row.id}&dashboardFor=${row?.dashboardFor}` || "---",
+      name: dt('URL'),
+      selector: row => `/dvdms/HIS_dashboard/dashboard?groupId=${row.id ? btoa(row?.id) : "0"}&dashboardFor=${row?.dashboardFor ? btoa(row?.dashboardFor) : ""}` || "---",
       sortable: true,
+      wrap: true
     }
   ]
 
@@ -626,13 +629,13 @@ const DashboardMaster = () => {
         <div className='form-card m-auto p-2'>
           <div className='p-1'>
             {tabName?.value === 1 &&
-              <AboutDashboard handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} dashboardForDt={dashboardForDt} errors={errors} />}
+              <AboutDashboard handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} dashboardForDt={dashboardForDt} errors={errors} dt={dt} />}
             {tabName?.value === 2 &&
-              <TabDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} availableOptions={availableOptionsTab} setAvailableOptions={setAvailableOptionsTab} selectedOptions={selectedOptionsTab} setSelectedOptions={setSelectedOptionsTab} />}
+              <TabDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} availableOptions={availableOptionsTab} setAvailableOptions={setAvailableOptionsTab} selectedOptions={selectedOptionsTab} setSelectedOptions={setSelectedOptionsTab} dt={dt} />}
             {tabName?.value === 3 &&
-              <HeaderDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} errors={errors} />}
+              <HeaderDetails handleValueChange={handleValueChange} handleRadioChange={handleRadioChange} radioValues={radioValues} values={values} setValues={setValues} errors={errors} dt={dt} />}
             {tabName?.value === 4 &&
-              <ParamsDetails handleValueChange={handleValueChange} values={values} parameterDrpData={parameterDrpData} availableOptions={availableOptions} setAvailableOptions={setAvailableOptions} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} />}
+              <ParamsDetails handleValueChange={handleValueChange} values={values} parameterDrpData={parameterDrpData} availableOptions={availableOptions} setAvailableOptions={setAvailableOptions} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} dt={dt} />}
 
             <b><h6 className='header-devider mt-4'></h6></b>
             {values?.dashboardFor &&
@@ -642,11 +645,11 @@ const DashboardMaster = () => {
                   disabled={tabIndex > 1 ? false : true}
                 >
                   <FontAwesomeIcon icon={faArrowLeft} className="dropdown-gear-icon me-2" />
-                  Previous
+                  {dt('Previous')}
                 </button>
                 {tabIndex === tabNavMenus?.length ? <></> :
                   <button className='btn btn-sm ms-1' onClick={() => saveMenuTabsData()}>
-                    {`${tabIndex < tabNavMenus?.length ? 'Save & Next' : 'Save'}`}
+                    {`${tabIndex < tabNavMenus?.length ? dt('Save & Next') : dt('Save')}`}
                     {tabIndex < tabNavMenus?.length &&
                       <FontAwesomeIcon icon={faArrowRight} className="dropdown-gear-icon ms-2" />
                     }
@@ -658,7 +661,7 @@ const DashboardMaster = () => {
         </div>
       </div>
       {showDashboardTable &&
-        <GlobalDataTable title={"Group List"} column={column} data={filterData} onModify={handleUpdateData} onDelete={handleDeleteDashboard} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={true} />
+        <GlobalDataTable title={dt("Group List")} column={column} data={filterData} onModify={handleUpdateData} onDelete={handleDeleteDashboard} setSearchInput={setSearchInput} onClose={onTableClose} isShowBtn={true} />
       }
     </div>
   )
