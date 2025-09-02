@@ -46,7 +46,7 @@ const DrugTypeForm = ({ setValues, values, setSearchInput }) => {
                     cwhstrDrugTypeName: drugTypeName,
                     gnumSeatId: getAuthUserData('userSeatId')
                 }
-                fetchUpdatePostData("http://10.226.27.173:8025/api/v1/drug-types", data).then(data => {
+                fetchUpdatePostData("/api/v1/drug-types", data).then(data => {
                     if (data && data?.status === 1) {
                         ToastAlert('Drug Type Added successfully', 'success')
                         refresh();
@@ -71,7 +71,7 @@ const DrugTypeForm = ({ setValues, values, setSearchInput }) => {
                     gnumIsvalid: recordStatus,
                     cwhnumDrugTypeId: cwhnumDrugTypeId,
                 }
-                const response = await fetchUpdateData(`http://10.226.27.173:8025/api/v1/drug-types/${cwhnumDrugTypeId}`, data);
+                const response = await fetchUpdateData(`/api/v1/drug-types/${cwhnumDrugTypeId}`, data);
                 ToastAlert('Record Updated Successfully', 'success');
                 refresh();
                 setSelectedOption([]);

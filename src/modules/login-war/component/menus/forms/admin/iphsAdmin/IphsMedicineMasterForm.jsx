@@ -66,7 +66,7 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
                 "isAAMSHC": values?.isAamshc
             }
 
-            fetchPostData("http://10.226.26.247:8025/api/v1/IphsMoleculeMedicineMaster/createMoleculeMedicine", val).then(data => {
+            fetchPostData("/api/v1/IphsMoleculeMedicineMaster/createMoleculeMedicine", val).then(data => {
                 if (data?.status === 1) {
                     ToastAlert("Data saved successfully", "success")
                     refersh();
@@ -88,7 +88,7 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
                 "isAAMSHC": values?.isAamshc
             }
 
-            fetchUpdateData(`http://10.226.26.247:8025/api/v1/IphsMoleculeMedicineMaster/modifyMoleculeMedicine?packID=${selectedOption[0]?.packID}`, val).then(data => {
+            fetchUpdateData(`/api/v1/IphsMoleculeMedicineMaster/modifyMoleculeMedicine?packID=${selectedOption[0]?.packID}`, val).then(data => {
                 if (data?.status === 1) {
                     ToastAlert("Data updated successfully", "success")
                     setSelectedOption([]);

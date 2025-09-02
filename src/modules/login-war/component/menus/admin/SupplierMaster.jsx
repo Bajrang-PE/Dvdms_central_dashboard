@@ -47,7 +47,7 @@ const SupplierMaster = () => {
     };
 
     const getListData = (isActive) => {
-        fetchData(`http://10.226.27.173:8025/api/v1/suppliers?isActive=${isActive}`).then((data) => {
+        fetchData(`/api/v1/suppliers?isActive=${isActive}`).then((data) => {
             if (data && data.status === 1) {
                 setSuppliers(data.data);
             } else {
@@ -74,7 +74,7 @@ const SupplierMaster = () => {
 
     const handleDelete = () => {
         const suppId = String(selectedOption[0]?.cwhnumSupplierId)
-        fetchUpdateData(`http://10.226.27.173:8025/api/v1/suppliers/del/${suppId}`).then(data => {
+        fetchUpdateData(`/api/v1/suppliers/del/${suppId}`).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 setSelectedOption([]);

@@ -42,7 +42,7 @@ const FacilityTypeMappingMaster = () => {
     }, [stateId, facilityTypeId])
 
     const getUnmappedList = () => {
-        fetchData(`http://10.226.17.20:8025/api/v1/facilityMap/unmappedFcility?facilityTypeId=${facilityTypeId}&stateId=${stateId}`).then(data => {
+        fetchData(`/api/v1/facilityMap/unmappedFcility?facilityTypeId=${facilityTypeId}&stateId=${stateId}`).then(data => {
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.facilityTypeId,
@@ -57,7 +57,7 @@ const FacilityTypeMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`http://10.226.17.20:8025/api/v1/facilityMap/mapped?facilityTypeId=${facilityTypeId}&stateId=${47}`).then(data => {
+        fetchData(`/api/v1/facilityMap/mapped?facilityTypeId=${facilityTypeId}&stateId=${47}`).then(data => {
             if (data.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.stateFacilityTypeId,
@@ -110,7 +110,7 @@ const FacilityTypeMappingMaster = () => {
             "stateFacilityTypeId": parseInt(facilityTypeId)
         }
 
-        fetchPostData(`http://10.226.17.20:8025/api/v1/facilityMap/saveFacilityMap`, val).then(data => {
+        fetchPostData(`/api/v1/facilityMap/saveFacilityMap`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Facility type mapped successfully", 'success')
                 setConfirmSave(false)

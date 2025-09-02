@@ -76,7 +76,7 @@ const IphsMoleculeDrugMaster = () => {
       "isActive ": values?.record || 0
     }
 
-    fetchData(`http://10.226.26.247:8025/api/v1/IphsMoleculeDrugMst/getMoleculeDrugs`, val).then(data => {
+    fetchData(`/api/v1/IphsMoleculeDrugMst/getMoleculeDrugs`, val).then(data => {
       if (data?.status === 1) {
         setListData(data.data)
       } else {
@@ -142,7 +142,7 @@ const IphsMoleculeDrugMaster = () => {
 
   const handleDelete = () => {
 
-    fetchDeleteData(`http://10.226.26.247:8025/api/v1/IphsMoleculeDrugMst/deleteMoleculeDrug?drugID=${selectedOption[0].drugID}&isActive=0`).then(data => {
+    fetchDeleteData(`/api/v1/IphsMoleculeDrugMst/deleteMoleculeDrug?drugID=${selectedOption[0].drugID}&isActive=0`).then(data => {
       if (data?.status === 1) {
         ToastAlert("Data deleted successfully", "success")
         setSelectedOption([]);

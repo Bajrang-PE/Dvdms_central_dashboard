@@ -78,7 +78,7 @@ const OutsourceMaster = () => {
             "date": values?.date.toString() || 0
         }
 
-        fetchData('http://10.226.26.247:8025/api/v1/outsourceMaster/getOutsourceMappingDetails', val).then(data => {
+        fetchData('/api/v1/outsourceMaster/getOutsourceMappingDetails', val).then(data => {
             if (data.status == 1) {
                 setListData(data.data)
             } else {
@@ -168,7 +168,7 @@ const OutsourceMaster = () => {
 
     const handleDelete = () => {
 
-        fetchPatchData(`http://10.226.26.247:8025/api/v1/outsourceMaster/updateMappingStatus?recordID=${[selectedOption[0].recordID]}&isActive=${0}`).then(data => {
+        fetchPatchData(`/api/v1/outsourceMaster/updateMappingStatus?recordID=${[selectedOption[0].recordID]}&isActive=${0}`).then(data => {
             if (data) {
                 ToastAlert('Data deleted successfully', 'success')
                 setConfirmSave(false);

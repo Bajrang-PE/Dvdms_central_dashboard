@@ -42,7 +42,7 @@ const SupplierMappingMaster = () => {
 
     const getStateSuppUnmapList = () => {
 
-        fetchData(`http://10.226.26.247:8025/api/v1/supplierMappingMaster/getUnmappedSuppliers?stateID=${stateId || 0}`).then((data) => {
+        fetchData(`/api/v1/supplierMappingMaster/getUnmappedSuppliers?stateID=${stateId || 0}`).then((data) => {
             if (data.data) {
                 const drpData = Array.from(
                     new Map(
@@ -64,7 +64,7 @@ const SupplierMappingMaster = () => {
 
     const getStateSuppMappedList = () => {
 
-        fetchData(`http://10.226.26.247:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=${suppId || 0}&stateID=${stateId || 0}`)
+        fetchData(`/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=${suppId || 0}&stateID=${stateId || 0}`)
             .then((data) => {
                 if (data?.data) {
                     const drpData = Array.from(
@@ -181,7 +181,7 @@ const SupplierMappingMaster = () => {
 
             if (selectedOptions.length > 0) {
 
-                fetchUpdatePostData("http://10.226.26.247:8025/api/v1/supplierMappingMaster/postSupplierData", val).then(data => {
+                fetchUpdatePostData("/api/v1/supplierMappingMaster/postSupplierData", val).then(data => {
                     if (data.status == 1) {
                         ToastAlert('Data mapped successfully', 'success');
                         reset();

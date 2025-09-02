@@ -36,7 +36,7 @@ const MedicineMoleculeMapMst = () => {
     }, [medicineId])
 
     const getUnmappedList = () => {
-        fetchData(`http://10.226.26.247:8025/api/v1/IphsMoleculeDrugMst/getUnmappedMoleculeDrugs?packID=${medicineId}`).then(data => {
+        fetchData(`/api/v1/IphsMoleculeDrugMst/getUnmappedMoleculeDrugs?packID=${medicineId}`).then(data => {
             console.log("===unmapped===", data)
             if (data?.status === 200) {
                 const drpData = Array.from(
@@ -59,7 +59,7 @@ const MedicineMoleculeMapMst = () => {
 
     const getMappedList = () => {
 
-        fetchData(`http://10.226.26.247:8025/api/v1/IphsMoleculeDrugMst/getMappedMoleculeDrugs?packID=${medicineId}`)
+        fetchData(`/api/v1/IphsMoleculeDrugMst/getMappedMoleculeDrugs?packID=${medicineId}`)
             .then((data) => {
                 console.log("===mapped==", data)
                 if (data.status === 1) {
@@ -158,7 +158,7 @@ const MedicineMoleculeMapMst = () => {
             console.log(JSON.stringify(val, null, 2));
 
             if (mappedData.length > 0 || unMappedData.length > 0) {
-                    fetchPostData("http://10.226.26.247:8025/api/v1/IphsMoleculeDrugMst/mapMoleculeDrug", val).then(data=>{
+                    fetchPostData("/api/v1/IphsMoleculeDrugMst/mapMoleculeDrug", val).then(data=>{
                         if(data?.status === 1){
                             ToastAlert("Data mapped successfully","success")
                             reset();     

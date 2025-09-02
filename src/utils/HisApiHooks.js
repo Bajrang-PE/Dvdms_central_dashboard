@@ -4,7 +4,7 @@ import { decryptAesOrRsa, encryptAesData } from './SecurityConfig';
 
 // const BaseUrl = import.meta.env.VITE_HIS_API_BASE_URL
 // 
-const BaseUrl = 'http://10.226.25.164:8024'; //prSitee//
+// const BaseUrl = 'http://10.226.25.164:8024'; //prSitee//
 // const BaseUrl = 'http://10.10.10.177:8024'; //prSitee//
 // const BaseUrl = 'http://10.226.17.6:8024';  //BG     
 // const BaseUrl = 'http://10.226.29.211:8025/';  //Disha
@@ -15,7 +15,7 @@ const BaseUrl = 'http://10.226.25.164:8024'; //prSitee//
 // const BaseUrl = 'https://nppa.uat.dcservices.in';  //se
 
 const apiHis = axios.create({
-    baseURL: BaseUrl
+    baseURL: ''
 });
 
 //axios.defaults.baseURL = BaseUrl;

@@ -61,7 +61,7 @@ export const DrugTypeMaster = () => {
 
     const fetchListData = async (isActive) => {
 
-        fetchData(`http://10.226.27.173:8025/api/v1/drug-types?isActive=${isActive}`).then((data) => {
+        fetchData(`/api/v1/drug-types?isActive=${isActive}`).then((data) => {
 
             if (data && data?.status === 1) {
                 setDrugs(data.data);
@@ -110,7 +110,7 @@ export const DrugTypeMaster = () => {
 
     const handleDelete = () => {
         const drugTypeId = String(selectedOption[0]?.cwhnumDrugTypeId)
-        fetchDeleteData(`http://10.226.27.173:8025/api/v1/drug-types/${drugTypeId}`).then(data => {
+        fetchDeleteData(`/api/v1/drug-types/${drugTypeId}`).then(data => {
             if (data) {
                 ToastAlert("Record Deleted Successfully", "success")
                 fetchListData(1);

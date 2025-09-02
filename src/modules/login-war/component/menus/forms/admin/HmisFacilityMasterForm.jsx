@@ -49,7 +49,7 @@ const HmisFacilityMasterForm = (props) => {
             "cwhnumNoofHmisFac": values.noOfFacility,
             "seatId": getAuthUserData('userSeatId')            
         }
-        fetchUpdatePostData("http://10.226.17.20:8025/api/v1/hmisFacility", val).then(data => {
+        fetchUpdatePostData("/api/v1/hmisFacility", val).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Data saved successfully", "success")
                 refresh();
@@ -69,7 +69,7 @@ const HmisFacilityMasterForm = (props) => {
             "cwhnumStateId": selectedOption[0]?.cwhnumStateId,
             "cwhnumNoofHmisFac": selectedOption[0]?.cwhnumNoofHmisFac,
         }
-        fetchUpdateData("http://10.226.17.20:8025/api/v1/hmisFacility", val).then(data => {
+        fetchUpdateData("/api/v1/hmisFacility", val).then(data => {
             if (data?.status ===1) {
                 ToastAlert("Data updated successfully", "success")
                 refresh();

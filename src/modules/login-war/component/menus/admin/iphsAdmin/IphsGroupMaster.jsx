@@ -22,7 +22,7 @@ const IphsGroupMaster = () => {
     }, [record])
 
     const getListData = (recordStatus) => {
-        fetchData(`http://10.226.26.247:8025/api/v1/IphsGroupMaster/getAllGroups?isActive=${recordStatus}`).then(data => {
+        fetchData(`/api/v1/IphsGroupMaster/getAllGroups?isActive=${recordStatus}`).then(data => {
             if (data.status == 1) {
                 setListData(data.data)
             } else {
@@ -92,7 +92,7 @@ const IphsGroupMaster = () => {
 
     const handleDelete = () => {
 
-        fetchDeleteData(`http://10.226.26.247:8025/api/v1/IphsGroupMaster/deleteGroups?groupIDs=${[selectedOption[0].cwhnumIphsGroupID]}`).then(data => {
+        fetchDeleteData(`/api/v1/IphsGroupMaster/deleteGroups?groupIDs=${[selectedOption[0].cwhnumIphsGroupID]}`).then(data => {
             if (data) {
                 ToastAlert("Data deleted successfully", "success")
                 setConfirmSave(false);

@@ -46,7 +46,7 @@ const GenericDrugMasterForm = (props) => {
             "gnumIsValid": recordStatus,
             "isMotherHealth": 0
         }
-        fetchPostData(`api/v1/drugs`, val).then(data => {
+        fetchPostData(`/api/v1/drugs`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
                 getGenericDrugListData(groupId, values?.subGroupName, recordStatus);
@@ -75,7 +75,7 @@ const GenericDrugMasterForm = (props) => {
             "gnumIsValid": recordStatus,
             "isMotherHealth": 0
         }
-        fetchUpdateData(`api/v1/drugs/${selectedOption[0]?.cwhnumCentralDrugId}`, val).then(data => {
+        fetchUpdateData(`/api/v1/drugs/${selectedOption[0]?.cwhnumCentralDrugId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
                 getGenericDrugListData(groupId, values?.subGroupName, recordStatus);

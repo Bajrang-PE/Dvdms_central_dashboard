@@ -82,7 +82,7 @@ const HmisFacilityMaster = () => {
     }, [searchInput, listData]);
 
     const deleteRecord = () => {
-        fetchDeleteData(`http://10.226.17.20:8025/api/v1/hmisFacility?facilityTypeId=${selectedOption[0]?.cwhnumFacilityTypeId}&isActive=1`).then(data => {
+        fetchDeleteData(`/api/v1/hmisFacility?facilityTypeId=${selectedOption[0]?.cwhnumFacilityTypeId}&isActive=1`).then(data => {
             if (data?.status ===1) {
                 ToastAlert('Data deleted successfully', 'success')
                 setConfirmSave(false);
@@ -114,7 +114,7 @@ const HmisFacilityMaster = () => {
   
      const getListData = (stateId, recordStatus) => {
 
-        fetchData(`http://10.226.17.20:8025/api/v1/hmisFacility?stateId=${stateId}&isActive=${recordStatus}`).then((data) => {
+        fetchData(`/api/v1/hmisFacility?stateId=${stateId}&isActive=${recordStatus}`).then((data) => {
          if (data?.status === 1 && Array.isArray(data.data)) {
             setListData(data.data)
           } else {

@@ -64,7 +64,7 @@ const SubGroupMaster = () => {
 
 
         if (recStatus && grpId === "") {
-            fetchData(`http://10.226.27.173:8025/api/v1/subgroup/all?isActive=${recStatus}`).then((data) => {
+            fetchData(`/api/v1/subgroup/all?isActive=${recStatus}`).then((data) => {
 
                 if (data?.status === 1 && Array.isArray(data.data)) {
                     setListData(data.data);
@@ -76,7 +76,7 @@ const SubGroupMaster = () => {
         }
 
         if (recStatus && grpId) {
-            fetchData(`http://10.226.27.173:8025/api/v1/subgroup?groupId=${grpId}&isActive=${recStatus}`).then((data) => {
+            fetchData(`/api/v1/subgroup?groupId=${grpId}&isActive=${recStatus}`).then((data) => {
 
                 if (data?.status === 1 && Array.isArray(data.data)) {
                     setListData(data.data);
@@ -167,7 +167,7 @@ const SubGroupMaster = () => {
 
     const handleDelete = () => {
         const subGrpId = String(selectedOption[0]?.cwhnumSubgroupId)
-        fetchDeleteData(`http://10.226.17.20:8025/api/v1/subgroup?groupId=${selectedGroupId}&subGroupId=${subGrpId}&isActive=1`).then(data => {
+        fetchDeleteData(`/api/v1/subgroup?groupId=${selectedGroupId}&subGroupId=${subGrpId}&isActive=1`).then(data => {
             if (data) {
                 ToastAlert("Record Deleted Successfully", "success")
                 setSelectedOption([]);

@@ -85,7 +85,7 @@ const OutsourceMasterForm = (props) => {
     }
 
     const getSingleData = (id) => {
-        fetchData(`http://10.226.26.247:8025/api/v1/outsourceMaster/getTestdetails?recordID=${id}`).then(data => {
+        fetchData(`/api/v1/outsourceMaster/getTestdetails?recordID=${id}`).then(data => {
             if (data?.status === 1) {
                 setSingleData(data?.data);
             } else {
@@ -168,7 +168,7 @@ const OutsourceMasterForm = (props) => {
                 "date": values?.date
             }))
 
-            fetch('http://10.226.26.247:8025/api/v1/outsourceMaster/createNewTest', {
+            fetch('/api/v1/outsourceMaster/createNewTest', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -201,7 +201,7 @@ const OutsourceMasterForm = (props) => {
                 "testsConducted": Number(dt.number),
                 "isValid": 1
             }))
-            fetchUpdateData(`http://10.226.26.247:8025/api/v1/outsourceMaster/updateTestData?recordID=${selectedOption[0].recordID}`, val).then(data => {
+            fetchUpdateData(`/api/v1/outsourceMaster/updateTestData?recordID=${selectedOption[0].recordID}`, val).then(data => {
                 if (data?.status === 1) {
                     ToastAlert("Data updated successfully", "success")
                     setOpenPage("home")
@@ -233,7 +233,7 @@ const OutsourceMasterForm = (props) => {
                     "storeID": values?.hospId,
                     "date": values?.date,
                 }
-                fetchData(`http://10.226.26.247:8025/api/v1/outsourceMaster/checkIfAlreadyPresent`, val).then(data => {
+                fetchData(`/api/v1/outsourceMaster/checkIfAlreadyPresent`, val).then(data => {
                     if (data.status == 1) {
                         ToastAlert("An entry already exists for the selected date with the same hospital name. Please modify the existing entry.", "warning");
                         setValues(prev => ({ ...prev, date: "" }))

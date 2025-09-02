@@ -154,7 +154,7 @@ const SupplierMasterForm = (props) => {
                 gnumSeatId: getAuthUserData('userSeatId'),
             }
 
-            fetchUpdatePostData("http://10.226.27.173:8025/api/v1/suppliers", data).then(data => {
+            fetchUpdatePostData("/api/v1/suppliers", data).then(data => {
                 if (data?.status === 1) {
                     ToastAlert('Supplier Added successfully', 'success');
                     refresh();
@@ -183,7 +183,7 @@ const SupplierMasterForm = (props) => {
                 gnumSeatId: getAuthUserData('userSeatId'),
             }
 
-            fetchUpdateData(`http://10.226.27.173:8025/api/v1/suppliers/${values?.suppId}`, data).then(data => {
+            fetchUpdateData(`/api/v1/suppliers/${values?.suppId}`, data).then(data => {
                 if (data?.status === 1) {
                     ToastAlert('Supplier updated successfully', 'success')
                     setSelectedOption([]);

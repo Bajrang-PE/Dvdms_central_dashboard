@@ -28,20 +28,20 @@ const getCsrfToken = () => {
 };
 
 // Set the Authorization header globally using an interceptor
-// axios.interceptors.request.use(
-//     (config) => {
-//         const accessToken = getAccessToken();
-//         // const CsrfToken = getCsrfToken();
-//         if (accessToken) {
-//             config.headers['Authorization'] = `Bearer ${accessToken}`;
-//             // config.headers['X-CSRF-TOKEN'] = CsrfToken;
-//         }
-//         return config;
-//     },
-//     (error) => {
-//         return Promise.reject(error);
-//     }
-// );
+apiLogin.interceptors.request.use(
+    (config) => {
+        const accessToken = getAccessToken();
+        // const CsrfToken = getCsrfToken();
+        if (accessToken) {
+            config.headers['Authorization'] = `Bearer ${accessToken}`;
+            // config.headers['X-CSRF-TOKEN'] = CsrfToken;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 // axios.interceptors.response.use(
 //     async (response) => {
@@ -91,7 +91,7 @@ export const fetchPostData = async (url, data) => {
         // const response = await apiLogin.post(url, data);
         // return response.data;
         const response = await apiLogin.post(url, encodeURIComponent(encryptAesData(JSON?.stringify(data))));
-        const decryptedData = decryptAesOrRsa(response?.data)
+        const decryptedData = decryptAesOrRsa(response?.data);
         return JSON.parse(decryptedData);
     } catch (error) {
         console.log('API Error:', error);
@@ -101,11 +101,7 @@ export const fetchPostData = async (url, data) => {
 
 export const fetchUpdateData = async (url, data) => {
     try {
-        const response = await apiLogin.put(url, encodeURIComponent(encryptAesData(JSON?.stringify(data))), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+        const response = await apiLogin.put(url, encodeURIComponent(encryptAesData(JSON?.stringify(data))));
         // return response.data;
         const decryptedData = decryptAesOrRsa(response?.data)
         return JSON.parse(decryptedData);
@@ -119,11 +115,7 @@ export const fetchUpdateData = async (url, data) => {
 
 export const fetchUpdatePostData = async (url, data) => {
     try {
-        const response = await apiLogin.post(url, encodeURIComponent(encryptAesData(JSON?.stringify(data))), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+        const response = await apiLogin.post(url, encodeURIComponent(encryptAesData(JSON?.stringify(data))));
         const decryptedData = decryptAesOrRsa(response?.data)
         return JSON.parse(decryptedData);
         // return response.data;

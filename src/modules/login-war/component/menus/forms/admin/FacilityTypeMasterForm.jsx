@@ -20,7 +20,7 @@ const FacilityTypeMasterForm = () => {
             "cwhstrFacilityTypeName": facilityName,
             "status": "Active"
         }
-        fetchPostData(`api/v1/Facility/create`, val).then(data => {
+        fetchPostData(`/api/v1/Facility/create`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
                 getFacilityTypeListData();
@@ -44,7 +44,7 @@ const FacilityTypeMasterForm = () => {
             "cwhnumNinFacilityTypeId": 0,
             "cwhnumOrder": 0,
         }
-        fetchUpdateData(`api/v1/Facility/${selectedOption[0]?.cwhnumFacilityTypeId}`, val).then(data => {
+        fetchUpdateData(`/api/v1/Facility/${selectedOption[0]?.cwhnumFacilityTypeId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record Updated Successfully', 'success');
                 getFacilityTypeListData();

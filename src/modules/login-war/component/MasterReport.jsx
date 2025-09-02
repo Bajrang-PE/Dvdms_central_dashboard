@@ -31,7 +31,7 @@ const MasterReport = (props) => {
         if (data?.length > 0) {
             const filteredData = data.map((row, index) => {
                 let filteredRow = {};
-                column.forEach(col => {
+                reportColumns.forEach(col => {
                     if (col.name === 'S.No') {
                         filteredRow['S.No'] = index + 1;
                     } else {
@@ -59,9 +59,9 @@ const MasterReport = (props) => {
     const downloadPDF = () => {
         if (data?.length > 0) {
             const doc = new jsPDF('p', 'mm', 'a4');
-            const columns = column.map(col => col.name);
+            const columns = reportColumns.map(col => col.name);
             const rows = data.map((row, index) => {
-                return column.map(col => {
+                return reportColumns.map(col => {
                     if (col.name === 'S.No') {
                         return index + 1;
                     }
