@@ -96,7 +96,7 @@ const DrugMasterForm = (props) => {
 
     const fetchgenericDrugdetails = (drugId, isModify) => {
         if (drugId) {
-            fetchData(`http://10.226.27.173:8025/api/v1/drug-mst/genericDrugCodeDetails?centralDrugId=${drugId}`).then(data => {
+            fetchData(`/api/v1/drug-mst/genericDrugCodeDetails?centralDrugId=${drugId}`).then(data => {
                 if (data?.status == 1) {
                     setCategoryDtl(data?.data?.drugCatName ?? '');
                     setDrugCodeDtl(data?.data?.vedName ?? '');
@@ -118,7 +118,7 @@ const DrugMasterForm = (props) => {
 
     // useEffect(() => {
     //     if (toString(values?.genericDrugId).trim()) {
-    //         fetchData(`http://10.226.27.173:8025/api/v1/drug-mst/genericDrugCodeDetails?centralDrugId=${values?.genericDrugId}`).then(data => {
+    //         fetchData(`/api/v1/drug-mst/genericDrugCodeDetails?centralDrugId=${values?.genericDrugId}`).then(data => {
     //             if (data?.status == 1) {
     //                 setCategoryDtl(data?.data?.drugCatName ?? '');
     //                 setDrugCodeDtl(data?.data?.vedName ?? '');
@@ -152,7 +152,7 @@ const DrugMasterForm = (props) => {
                 cwhnumDrugVedCode: drugCodeId,
             }
 
-            fetchUpdatePostData("http://10.226.27.173:8025/api/v1/drug-mst", val).then(data => {
+            fetchUpdatePostData("/api/v1/drug-mst", val).then(data => {
                 if (data) {
                     ToastAlert("Data saved successfully", "success")
                     refresh();
@@ -173,7 +173,7 @@ const DrugMasterForm = (props) => {
                 cwhnumDrugVedCode: drugCodeId,
             }
 
-            fetchUpdateData("http://10.226.27.173:8025/api/v1/drug-mst", val).then(data => {
+            fetchUpdateData("/api/v1/drug-mst", val).then(data => {
                 if (data) {
                     ToastAlert("Data updated successfully", "success")
                     refresh();

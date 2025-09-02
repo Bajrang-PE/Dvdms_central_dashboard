@@ -33,7 +33,7 @@ const IphsSubGroupMaster = () => {
         }, [groupId, record])
 
     const getListData = () => {
-        fetchData(`http://10.226.26.247:8025/api/v1/IphsSubGroupMaster/getSubgroupsConditionally?groupID=${(groupId || groupId === 0) ? groupId : 0}&isActive=${record}`).then(data => {
+        fetchData(`/api/v1/IphsSubGroupMaster/getSubgroupsConditionally?groupID=${(groupId || groupId === 0) ? groupId : 0}&isActive=${record}`).then(data => {
             if (data?.status === 1) {
                 setListData(data.data);
             } else {
@@ -112,7 +112,7 @@ const IphsSubGroupMaster = () => {
     
         const handleDelete = () => {
     
-            fetchDeleteData(`http://10.226.26.247:8025/api/v1/IphsSubGroupMaster/deleteSubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}&isActive=0`).then(data => {
+            fetchDeleteData(`/api/v1/IphsSubGroupMaster/deleteSubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}&isActive=0`).then(data => {
                 if (data?.status === 1) {
                     ToastAlert("Data deleted successfully", "success")
                     setConfirmSave(false);

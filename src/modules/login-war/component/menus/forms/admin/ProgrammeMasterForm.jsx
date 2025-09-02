@@ -26,7 +26,7 @@ const ProgrammeMasterForm = ({getProgrammeListData}) => {
             "gnumIsValid": 1,
             // "status": "Active"
         }
-        fetchPostData(`http://10.226.17.20:8025/api/v1/programmes`, val).then(data => {
+        fetchPostData(`/api/v1/programmes`, val).then(data => {
 
             if (data?.status === 1) {
                 // ToastAlert('Record created successfully', 'success');
@@ -55,7 +55,7 @@ const ProgrammeMasterForm = ({getProgrammeListData}) => {
             // "cwhstrProgrammeShortName": "",
             //"cwhnumFlagForNhm": 0,
         }
-        fetchUpdateData(`http://10.226.17.20:8025/api/v1/programmes`, val).then(data => {
+        fetchUpdateData(`/api/v1/programmes`, val).then(data => {
             console.log("data :::", data);
             if (data?.status === 1) {
 

@@ -62,7 +62,7 @@ const StateConfigCwh = () => {
     const fetchDataByState = async (stateId) => {
         try {
 
-            fetchData(`http://10.226.27.173:8025/api/v1/state/getStateConfig/${stateId}`).then((data) => {
+            fetchData(`/api/v1/state/getStateConfig/${stateId}`).then((data) => {
 
                 if (data?.status === 1) {
 
@@ -95,7 +95,7 @@ const StateConfigCwh = () => {
     };
 
     const getJobDrpData = async (stateId) => {
-        fetchData(`http://10.226.27.173:8025/api/v1/state/getjob/${stateId}`).then((data) => {
+        fetchData(`/api/v1/state/getjob/${stateId}`).then((data) => {
 
             if (data?.status === 1) {
 
@@ -205,7 +205,7 @@ const StateConfigCwh = () => {
             cwhstrDatabasepassword: values?.isDbCredAvl == "0" ? '' : values?.dbPass,
         };
 
-        await fetchUpdateData("http://10.226.27.173:8025/api/v1/state", data).then(data => {
+        await fetchUpdateData("/api/v1/state", data).then(data => {
             if (data?.status === 1) {
                 ToastAlert('State configuration saved successfully', 'success');
                 setConfirmSave(false);

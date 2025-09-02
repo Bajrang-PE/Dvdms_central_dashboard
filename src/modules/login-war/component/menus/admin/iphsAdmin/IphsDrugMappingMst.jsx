@@ -35,7 +35,7 @@ const IphsDrugMappingMst = () => {
     }, [drugId])
 
     const getUnmappedList = () => {
-        fetchData(`http://10.226.27.173:8025/api/v1/IphsDrugMappingMst/getUnmappedDrugs`).then(data => {
+        fetchData(`/api/v1/IphsDrugMappingMst/getUnmappedDrugs`).then(data => {
             if (data.data) {
                 const drpData = Array.from(
                     new Map(
@@ -57,7 +57,7 @@ const IphsDrugMappingMst = () => {
 
     const getMappedList = () => {
 
-        fetchData(`http://10.226.27.173:8025/api/v1/IphsDrugMappingMst/getMappedDrugs?drugID=${drugId}`)
+        fetchData(`/api/v1/IphsDrugMappingMst/getMappedDrugs?drugID=${drugId}`)
             .then((data) => {
                 if (data.data) {
                     const drpData = Array.from(
@@ -152,7 +152,7 @@ const IphsDrugMappingMst = () => {
             if (mappedData.length > 0 || unMappedData.length > 0) {
 
                 if (mappedData.length > 0) {
-                    await fetchPatchData("http://10.226.27.173:8025/api/v1/IphsDrugMappingMst/mapDrugs", mappedData).then(data => {
+                    await fetchPatchData("/api/v1/IphsDrugMappingMst/mapDrugs", mappedData).then(data => {
                         if (data?.status == 1) {
                             isMapped = true;
                         } else {
@@ -161,7 +161,7 @@ const IphsDrugMappingMst = () => {
                     })
                 }
                 if (unMappedData.length > 0) {
-                    await fetchPatchData("http://10.226.27.173:8025/api/v1/IphsDrugMappingMst/unmapDrugs", unMappedData).then(data => {
+                    await fetchPatchData("/api/v1/IphsDrugMappingMst/unmapDrugs", unMappedData).then(data => {
                         if (data?.status == 1) {
                             isMapped = true;
 

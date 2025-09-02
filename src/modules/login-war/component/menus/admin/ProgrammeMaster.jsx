@@ -57,7 +57,7 @@ const ProgrammeMaster = () => {
 
     const getProgrammeListData = (recordStatus) => {
 
-        fetchData(`http://10.226.17.20:8025/api/v1/programmes/all?isActive=${recordStatus}`).then((data) => {
+        fetchData(`/api/v1/programmes/all?isActive=${recordStatus}`).then((data) => {
             if (data?.status === 1 && Array.isArray(data.data)) {
                 setProgrammeListData(data.data)
             } else {
@@ -69,8 +69,7 @@ const ProgrammeMaster = () => {
 
 
     const deleteRecord = () => {
-        fetchDeleteData(`http://10.226.17.20:8025/api/v1/programmes?programmeId=${selectedOption[0]?.cwhnumProgrammeId}`).then(data => {
-            //http://10.226.17.20:8025/api/v1/programmes?programmeId=74
+        fetchDeleteData(`/api/v1/programmes?programmeId=${selectedOption[0]?.cwhnumProgrammeId}`).then(data => {
             if (data?.status ===1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getProgrammeListData(1);

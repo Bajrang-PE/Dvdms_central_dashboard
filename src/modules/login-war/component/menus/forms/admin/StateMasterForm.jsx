@@ -41,7 +41,7 @@ const StateMasterForm = ({setSearchInput}) => {
             "cwhstrStateShortName": stShortName,
             "cwhnumZoneId": zoneName,
         }
-        fetchPostData(`api/v1/State`, val).then(data => {
+        fetchPostData(`/api/v1/State`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
                 getStateListData();

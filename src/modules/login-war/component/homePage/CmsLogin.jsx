@@ -77,6 +77,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                 "captchaValue": captchaInput,
                 "captchaToken": captchaToken
             }
+            console.log(val,'avl')
             fetchPostData("/api/v1/auth/login", val).then(data => {
                 console.log(data, 'data')
                 if (data?.status === 1) {

@@ -20,7 +20,7 @@ const GroupMasterForm = ({ setSearchInput }) => {
             "cwhstrGroupName": groupName,
             "status": "Active"
         }
-        fetchPostData(`api/v1/Group`, val).then(data => {
+        fetchPostData(`/api/v1/Group`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
                 getGroupListData();
@@ -42,7 +42,8 @@ const GroupMasterForm = ({ setSearchInput }) => {
             "cwhnumGroupId": selectedOption[0]?.cwhnumGroupId,
             "gnumIsValid": 1,
         }
-        fetchUpdateData(`api/v1/Group/${selectedOption[0]?.cwhnumGroupId}`, val).then(data => {
+        console.log(val,'bbb')
+        fetchUpdateData(`/api/v1/Group/${selectedOption[0]?.cwhnumGroupId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record Updated Successfully', 'success');
                 getGroupListData();

@@ -48,7 +48,7 @@ const ProgrammeMappingMaster = () => {
     }, [stateId, programmeId])
 
     const getProgrammeNameList = () => {
-        fetchData(`http://10.226.17.20:8025/api/v1/ProgrammeMap/all?isActive=1`).then(data => {
+        fetchData(`/api/v1/ProgrammeMap/all?isActive=1`).then(data => {
             if (data?.status === 1) {
                 console.log(data?.data, 'listpname')
                 const drpData = data?.data?.map((dt) => ({
@@ -64,7 +64,7 @@ const ProgrammeMappingMaster = () => {
     }
 
     const getUnmappedList = () => {
-        fetchData(`http://10.226.17.20:8025/api/v1/ProgrammeMap/unmap?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
+        fetchData(`/api/v1/ProgrammeMap/unmap?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumProgrammeId,
@@ -80,7 +80,7 @@ const ProgrammeMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`http://10.226.17.20:8025/api/v1/ProgrammeMap/map?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
+        fetchData(`/api/v1/ProgrammeMap/map?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumStateProgrammeId,
@@ -148,8 +148,7 @@ const ProgrammeMappingMaster = () => {
         }
 
 
-       // fetchPostData(`http://10.226.17.20:8025/api/v1/ProgrammeMap`, JSON.stringify(val)).then(data => {
-        fetchPostData(`http://10.226.17.20:8025/api/v1/ProgrammeMap`,val).then(data => {
+        fetchPostData(`/api/v1/ProgrammeMap`,val).then(data => {
             if (data?.status === 1) {
                 console.log(data?.data)
                 setConfirmSave(false)

@@ -58,7 +58,7 @@ const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, val
             "gnumSeatId": getAuthUserData('userSeatId') || "10001"
         }
 
-        const response = await axios.post("http://10.226.27.173:8025/api/v1/subgroup", data)
+        const response = await axios.post("/api/v1/subgroup", data)
         ToastAlert('Subgroup Added Successfully', 'success');
        }
 
@@ -71,7 +71,7 @@ const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, val
             "gnumSeatId": getAuthUserData('userSeatId') 
         }
 
-        const response = await axios.put("http://10.226.27.173:8025/api/v1/subgroup", data) 
+        const response = await axios.put("/api/v1/subgroup", data) 
         ToastAlert('Subgroup updated Successfully', 'success');
         setSelectedOption([])
        }

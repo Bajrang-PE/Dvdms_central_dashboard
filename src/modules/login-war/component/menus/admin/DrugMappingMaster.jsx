@@ -78,7 +78,7 @@ const DrugMappingMaster = () => {
 
 
     const getUnmappedList = () => {
-        fetchData(`api/v1/UnmapDrug/${stateId}`).then(data => {
+        fetchData(`/api/v1/UnmapDrug/${stateId}`).then(data => {
             if (data?.status === 1) {
                 setAvailableOptions(data?.data)
             } else {
@@ -89,7 +89,7 @@ const DrugMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`api/v1/MappedDrug/${itemName?.value}/${stateId}`).then(data => {
+        fetchData(`/api/v1/MappedDrug/${itemName?.value}/${stateId}`).then(data => {
             if (data.status === 1) {
                 setSelectedOptions(data?.data)
             } else {
@@ -118,7 +118,7 @@ const DrugMappingMaster = () => {
             "reagentId": 0
         }
 
-        fetchPostData(`api/v1/facility-type`, val).then(data => {
+        fetchPostData(`/api/v1/facility-type`, val).then(data => {
             if (data?.status === 1) {
                 console.log(data?.data)
             } else {

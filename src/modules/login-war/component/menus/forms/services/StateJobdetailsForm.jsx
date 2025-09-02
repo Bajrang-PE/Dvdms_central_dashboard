@@ -86,7 +86,7 @@ const StateJobdetailsForm = (props) => {
             "postProcedureMode": parseInt(values?.procedureMode),
             "isActive": parseInt(recordStatus) || 0
         }
-        fetchUpdateData(`api/v1/stateJobDetails/updateJob?jobID=${selectedOption[0]?.jobID}&jobName=${selectedOption[0]?.jobName}`, val).then(data => {
+        fetchUpdateData(`/api/v1/stateJobDetails/updateJob?jobID=${selectedOption[0]?.jobID}&jobName=${selectedOption[0]?.jobName}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
                 getStateJobDetailsListData(stateData[0]?.value, recordStatus);

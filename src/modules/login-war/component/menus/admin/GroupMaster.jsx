@@ -41,7 +41,7 @@ const GroupMaster = () => {
     }, [searchInput, groupListData]);
 
     const deleteRecord = () => {
-        fetchDeleteData(`api/v1/Group/${selectedOption[0]?.cwhnumGroupId}`).then(data => {
+        fetchDeleteData(`/api/v1/Group/${selectedOption[0]?.cwhnumGroupId}`).then(data => {
             if (data.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getGroupListData();

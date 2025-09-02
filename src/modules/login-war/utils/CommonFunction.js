@@ -16,7 +16,7 @@ export const fetchQueryData = async (queryVO = [], jndiServer) => {
     }
 
     const requestBody = { query, params: {} };
-    const response = await fetchPostData("http://10.226.25.164:8024/hisutils/GenericApiQry", requestBody);
+    const response = await fetchPostData("/hisutils/GenericApiQry", requestBody);
 
     return response;
   } catch (error) {

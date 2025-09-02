@@ -108,7 +108,7 @@ const DrugMaster = () => {
 
     const getListData = (grpId, sbGrpId, recStatus) => {
 
-        fetchData(`http://10.226.27.173:8025/api/v1/drug-mst?groupId=${grpId}&subGroupId=${sbGrpId}&isActive=${recStatus}`).then((data) => {
+        fetchData(`/api/v1/drug-mst?groupId=${grpId}&subGroupId=${sbGrpId}&isActive=${recStatus}`).then((data) => {
 
             if (data?.status === 1 && Array.isArray(data.data)) {
                 //alert("Data avl")
@@ -217,7 +217,7 @@ const DrugMaster = () => {
 
         const handleDelete = () => {
 
-            fetchDeleteData(`http://10.226.27.173:8025/api/v1/drug-mst?drugId=${selectedOption[0]?.cwhnumDrugId}`).then(data => {
+            fetchDeleteData(`/api/v1/drug-mst?drugId=${selectedOption[0]?.cwhnumDrugId}`).then(data => {
                 if (data) {
                     ToastAlert('Data deleted successfully', 'success')
                     setConfirmSave(false);

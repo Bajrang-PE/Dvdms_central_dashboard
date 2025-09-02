@@ -20,7 +20,7 @@ const IphsMedicineMaster = () => {
     },[record])
 
     const getListData=()=>{
-        fetchData(`http://10.226.26.247:8025/api/v1/IphsMoleculeMedicineMaster/getMoleculeMedicineNames?isActive=${record}`).then(data=>{
+        fetchData(`/api/v1/IphsMoleculeMedicineMaster/getMoleculeMedicineNames?isActive=${record}`).then(data=>{
             if(data.status == 1){
                 setListData(data.data);
             }else{
@@ -90,7 +90,7 @@ const IphsMedicineMaster = () => {
         
             const handleDelete = () => {
         
-                fetchDeleteData(`http://10.226.26.247:8025/api/v1/IphsMoleculeMedicineMaster/deleteMoleculeMedicine?packID=${selectedOption[0].packID}&isActive=0`).then(data => {
+                fetchDeleteData(`/api/v1/IphsMoleculeMedicineMaster/deleteMoleculeMedicine?packID=${selectedOption[0].packID}&isActive=0`).then(data => {
                     if (data?.status === 1) {
                         ToastAlert("Data deleted successfully", "success")
                         setConfirmSave(false);
