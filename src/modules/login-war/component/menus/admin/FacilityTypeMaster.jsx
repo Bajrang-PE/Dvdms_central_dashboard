@@ -6,10 +6,11 @@ import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction
 import FacilityTypeMasterForm from '../forms/admin/FacilityTypeMasterForm';
 import { fetchDeleteData } from '../../../../../utils/ApiHooks';
 import ViewPage from '../ViewPage';
+import MasterReport from '../../MasterReport';
 
 const FacilityTypeMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, getFacilityTypeListData, facilityTypeListData, setConfirmSave, confirmSave, setShowConfirmSave } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, getFacilityTypeListData, facilityTypeListData, setConfirmSave, confirmSave, setShowConfirmSave, isShowReport } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active')
     const [filterData, setFilterData] = useState(facilityTypeListData);
@@ -33,9 +34,10 @@ const FacilityTypeMaster = () => {
         } else {
             const lowercasedText = searchInput.toLowerCase();
             const newFilteredData = facilityTypeListData.filter(row => {
-                const paramName = row?.facilityTypeName?.toLowerCase() || "";
+                const fname = row?.cwhstrFacilityTypeName?.toLowerCase() || "";
+                const sname = row?.cwhstrFacilityTypeShortName?.toLowerCase() || "";
 
-                return paramName.includes(lowercasedText);
+                return fname.includes(lowercasedText) || sname.includes(lowercasedText);
             });
             setFilterData(newFilteredData);
         }
@@ -113,42 +115,50 @@ const FacilityTypeMaster = () => {
     return (
         <>
             <div className='masters mx-3 my-2'>
-                <div className='masters-header row'>
-                    <span className='col-6'><b>{`Facility Type Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
 
-                </div>
-                {(openPage === "home" || openPage === 'view' || openPage === 'delete') && (<>
-                    <div className='row pt-2'>
-                        <div className='col-sm-6'>
-                            <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                                <label className="col-sm-5 col-form-label fix-label">Record Status : </label>
-                                <div className="col-sm-7 align-content-center">
-                                    <InputSelect
-                                        id="recordStatus"
-                                        name="recordStatus"
-                                        placeholder="Select Status"
-                                        options={[{ value: "Active", label: 'Active' }, { value: "InActive", label: 'InActive' }]}
-                                        className="aliceblue-bg border-dark-subtle"
-                                        value={recordStatus}
-                                        onChange={(e) => { setRecordStatus(e.target.value) }}
-                                    />
+                {!isShowReport &&
+                    <>
+                        <div className='masters-header row'>
+                            <span className='col-6'><b>{`Facility Type Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                            {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
+
+                        </div>
+                        {(openPage === "home" || openPage === 'view' || openPage === 'delete') && (<>
+                            <div className='row pt-2'>
+                                <div className='col-sm-6'>
+                                    <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                        <label className="col-sm-5 col-form-label fix-label">Record Status : </label>
+                                        <div className="col-sm-7 align-content-center">
+                                            <InputSelect
+                                                id="recordStatus"
+                                                name="recordStatus"
+                                                placeholder="Select Status"
+                                                options={[{ value: "Active", label: 'Active' }, { value: "InActive", label: 'InActive' }]}
+                                                className="aliceblue-bg border-dark-subtle"
+                                                value={recordStatus}
+                                                onChange={(e) => { setRecordStatus(e.target.value) }}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <hr className='my-2' />
-                    <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput}/>
+                            <hr className='my-2' />
+                            <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} />
 
-                    {openPage === 'view' &&
-                        <ViewPage data={[{ value: selectedOption[0]?.cwhstrFacilityTypeName, label: "Facility Type Name" }]} onClose={onClose} title={"Facility Type Master"} />
-                    }
-                </>)}
+                            {openPage === 'view' &&
+                                <ViewPage data={[{ value: selectedOption[0]?.cwhstrFacilityTypeName, label: "Facility Type Name" }]} onClose={onClose} title={"Facility Type Master"} />
+                            }
+                        </>)}
 
-                {(openPage === "add" || openPage === 'modify') && (<>
-                    <FacilityTypeMasterForm />
-                </>)}
+                        {(openPage === "add" || openPage === 'modify') && (<>
+                            <FacilityTypeMasterForm setSearchInput={setSearchInput} />
+                        </>)}
+                    </>}
+
+                {isShowReport &&
+                    <MasterReport title={"Facility Type Master"} column={column} data={facilityTypeListData} />
+                }
             </div>
         </>
     )

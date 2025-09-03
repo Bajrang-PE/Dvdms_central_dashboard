@@ -49,6 +49,7 @@ const ProgrammeMappingMaster = () => {
 
     const getProgrammeNameList = () => {
         fetchData(`/api/v1/ProgrammeMap/all?isActive=1`).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
                 console.log(data?.data, 'listpname')
                 const drpData = data?.data?.map((dt) => ({

@@ -4,8 +4,8 @@ import { decryptAesOrRsa, encryptAesData } from './SecurityConfig';
 
 // const BaseUrl = import.meta.env.VITE_API_BASE_URL
 
-const BaseUrl = 'http://10.226.25.164:8025'; //prSitee
-//  const BaseUrl = 'http://10.226.17.6:8025';  //BG     
+const BaseUrl = 'http://10.226.25.164:8025'; //prSite
+// const BaseUrl = 'http://10.226.17.6:8025';  //BG     
 // const BaseUrl = 'http://10.226.29.211:8025/';  //Disha
 //  const BaseUrl = 'http://10.226.29.102:8025/';  //shubham
 // const BaseUrl = 'http://10.226.30.45:8025/';  //pradeep
@@ -128,7 +128,9 @@ export const fetchUpdatePostData = async (url, data) => {
 export const fetchDeleteData = async (url, payload) => {
     try {
         const response = await apiLogin.delete(url, { data: payload });
-        return response.data;
+        // return response.data;
+         const decryptedData = decryptAesOrRsa(response?.data)
+        return JSON.parse(decryptedData);
     } catch (error) {
         console.log('API Error:', error);
         // return error?.response?.data;

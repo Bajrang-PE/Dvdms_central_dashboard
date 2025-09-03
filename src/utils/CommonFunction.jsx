@@ -1,5 +1,5 @@
 import { decryptData } from "../modules/login-war/utils/SecurityConfig";
-import { FixedSizeList as List } from 'react-window';
+import { VariableSizeList  as List } from 'react-window';
 
 
 export const getAuthUserData = (key) => {

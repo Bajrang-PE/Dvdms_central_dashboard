@@ -30,16 +30,18 @@ const DrugMappingMaster = () => {
         if (stateId) {
             setSelectedOptions([]);
             getUnmappedList();
+              getMappedList();
         }
         setSelectedAvailable([]);
         setSelectedSelected([]);
-    }, [stateId]);
+    }, [stateId,itemName]);
 
-    useEffect(() => {
-        if (stateId && itemName) {
-            getMappedList();
-        }
-    }, [stateId, itemName])
+    // useEffect(() => {
+    //     if (stateId && itemName) {
+    //         getMappedList();
+    //         getUnmappedList();
+    //     }
+    // }, [stateId, itemName])
 
 
     const getItemNameList = (selectedValue) => {
@@ -62,6 +64,7 @@ const DrugMappingMaster = () => {
         }
 
         fetchData(url).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
                 const options = data?.data?.map(item => ({
                     value: item.cwhnumDrugId,
@@ -79,8 +82,14 @@ const DrugMappingMaster = () => {
 
     const getUnmappedList = () => {
         fetchData(`/api/v1/UnmapDrug/${stateId}`).then(data => {
+            console.log('unmap', data)
             if (data?.status === 1) {
-                setAvailableOptions(data?.data)
+                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
+                    value: dt?.cwhnumDrugId,
+                    label: dt?.cwhstrDrugName
+                })
+                )
+                setAvailableOptions(drpData);
             } else {
                 // ToastAlert('Error while fetching record!', 'error')
                 setAvailableOptions([])
@@ -90,8 +99,14 @@ const DrugMappingMaster = () => {
 
     const getMappedList = () => {
         fetchData(`/api/v1/MappedDrug/${itemName?.value}/${stateId}`).then(data => {
+            console.log('map', data)
             if (data.status === 1) {
-                setSelectedOptions(data?.data)
+                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
+                    value: dt?.cwhnumStateDrugId,
+                    label: dt?.cwhstrStateDrugName
+                })
+                )
+                setSelectedOptions(drpData)
             } else {
                 // ToastAlert('Error while fetching record!', 'error')
                 setSelectedOptions([])
@@ -130,14 +145,14 @@ const DrugMappingMaster = () => {
     const moveToSelected = () => {
         if (itemCategory) {
             const itemsToMove = availableOptions.filter(opt =>
-                selectedAvailable.includes(String(opt.cwhnumDrugId))
+                selectedAvailable.includes(String(opt.value))
             );
             const newSelected = itemsToMove.filter(item =>
-                !selectedOptions.some(selected => selected.cwhnumDrugId === item.cwhnumDrugId)
+                !selectedOptions.some(selected => selected.value === item.value)
             );
             setSelectedOptions(prev => [...prev, ...newSelected]);
             setAvailableOptions(prev => prev.filter(opt =>
-                !selectedAvailable.includes(String(opt.cwhnumDrugId))
+                !selectedAvailable.includes(String(opt.value))
             ));
             setSelectedAvailable([]);
         } else {
@@ -148,11 +163,11 @@ const DrugMappingMaster = () => {
     const moveToAvailable = () => {
         if (itemCategory) {
             const itemsToMove = selectedOptions.filter(opt =>
-                selectedSelected.includes(String(opt.cwhnumDrugId))
+                selectedSelected.includes(String(opt.value))
             );
             setAvailableOptions(prev => [...prev, ...itemsToMove]);
             setSelectedOptions(prev => prev.filter(opt =>
-                !selectedSelected.includes(String(opt.cwhnumDrugId))
+                !selectedSelected.includes(String(opt.value))
             ));
             setSelectedSelected([]);
         } else {
@@ -171,22 +186,6 @@ const DrugMappingMaster = () => {
         { value: "3", label: "All" }
     ];
 
-    // const [inputValue, setInputValue] = useState('');
-
-    // const debouncedInputChange = debounce(value => {
-    //     setInputValue(value);
-    // }, 300);
-
-    // const filteredOptions = useMemo(() => {
-    //     return itemNameList
-    //         ?.filter(item =>
-    //             item.cwhstrDrugName.toLowerCase().includes(inputValue.toLowerCase())
-    //         )
-    //         .map(item => ({
-    //             value: item.cwhnumDrugId,
-    //             label: item.cwhstrDrugName,
-    //         }));
-    // }, [itemNameList, inputValue]);
 
     return (
         <>
@@ -230,7 +229,7 @@ const DrugMappingMaster = () => {
                                     onChange={(e) => {
                                         setItemName(e);
                                         const itemObj = itemNameList?.find(dt => dt?.cwhnumDrugId == e?.value);
-                                        console.log(itemObj)
+                                        console.log(itemObj,'bgbgbg')
                                         setDrugItemObject(itemObj)
                                     }}
                                     isSearchable={true}
@@ -326,8 +325,8 @@ const DrugMappingMaster = () => {
                             }}
                         >
                             {availableOptions.map(opt => (
-                                <option key={opt.cwhnumDrugId} value={opt.cwhnumDrugId}>
-                                    {opt.cwhstrDrugName}
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
                                 </option>
                             ))}
                         </select>
@@ -371,8 +370,8 @@ const DrugMappingMaster = () => {
                             }}
                         >
                             {selectedOptions.map(opt => (
-                                <option key={opt.stateDrugId} value={opt.stateDrugId}>
-                                    {opt.stateDrugName}
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
                                 </option>
                             ))}
                         </select>

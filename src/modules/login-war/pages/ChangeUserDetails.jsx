@@ -42,7 +42,7 @@ const ChangeUserDetails = () => {
         }
 
         if (isValid) {
-            alert('ye nhi krna tha');
+            alert('pending');
             setIsValidate(true);
         }
     }
@@ -62,7 +62,7 @@ const ChangeUserDetails = () => {
         }
 
         if (isValid) {
-            alert('bhai save ni krna tha, ab tu gaya, ab tu dekh')
+            alert('not working')
         }
     }
 

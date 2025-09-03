@@ -75,6 +75,7 @@ const SupplierMasterForm = (props) => {
 
 
     const handleValidation = () => {
+        setConfirmSave(false);
         let isValid = true;
         if (!values?.suppName.trim()) {
             setErrors(prev => ({ ...prev, suppNameErr: "Please enter supplier name " }));
@@ -155,11 +156,14 @@ const SupplierMasterForm = (props) => {
             }
 
             fetchUpdatePostData("/api/v1/suppliers", data).then(data => {
+                console.log('data', data)
                 if (data?.status === 1) {
                     ToastAlert('Supplier Added successfully', 'success');
                     refresh();
+                    
                 } else {
                     ToastAlert('Error', 'error');
+                    setConfirmSave(false);
                 }
             })
 
@@ -190,6 +194,7 @@ const SupplierMasterForm = (props) => {
                     refresh();
                 } else {
                     ToastAlert('Error', 'error')
+                    setConfirmSave(false);
                 }
             })
         }

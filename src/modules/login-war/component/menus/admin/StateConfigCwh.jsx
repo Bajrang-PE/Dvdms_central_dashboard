@@ -63,7 +63,7 @@ const StateConfigCwh = () => {
         try {
 
             fetchData(`/api/v1/state/getStateConfig/${stateId}`).then((data) => {
-
+console.log('data', data)
                 if (data?.status === 1) {
 
                     setValues({

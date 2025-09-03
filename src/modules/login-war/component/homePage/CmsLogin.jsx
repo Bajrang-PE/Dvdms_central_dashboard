@@ -205,9 +205,9 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                             </div>
                         }
                     </div>
-                    <div className="ps-0 align-content-center mt-4 mb-3 mx-4">
+                    {/* <div className="ps-0 align-content-center mt-4 mb-3 mx-4">
                         <Link to={'/'} onClick={() => setShowForgotPass(true)}>Forgot Password ?</Link>
-                    </div>
+                    </div> */}
 
                     <button className='btn cms-login-btn w-100 mb-1' onClick={executeLogin}>
                         <b> <span>Login</span></b>

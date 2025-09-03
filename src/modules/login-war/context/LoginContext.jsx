@@ -228,7 +228,8 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getGroupDrpData = () => {
-        fetchData('/api/v1/group-mst/dropdown').then((data) => {
+        fetchData('/api/v1/GrpDrpdwn').then((data) => {
+            
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
@@ -267,7 +268,7 @@ const LoginContextApi = ({ children }) => {
 
 
     const getDrugTypeDrpData = () => {
-        fetchData('/api/v1/drug-types/DrugTypeDropdown').then((data) => {
+        fetchData('/api/v1/DrugTypeDropdown').then((data) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
@@ -284,12 +285,13 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getSubGroupDrpData = (grpId) => {
-        fetchData(`/api/v1/subgroup/subGrpDrpDwn/${grpId}`).then((data) => {
+        fetchData(`/api/v1/SubGrpDrpDwn/${grpId}`).then((data) => {
+            console.log('data', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
-                        value: dt?.id,
-                        label: dt?.name
+                        value: dt?.cwhnumSubgroupId,
+                        label: dt?.cwhstrSubgroupName
                     }
                     return val;
                 })

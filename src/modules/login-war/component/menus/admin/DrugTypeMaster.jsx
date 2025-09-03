@@ -62,7 +62,7 @@ export const DrugTypeMaster = () => {
     const fetchListData = async (isActive) => {
 
         fetchData(`/api/v1/drug-types?isActive=${isActive}`).then((data) => {
-
+console.log(data,'data')
             if (data && data?.status === 1) {
                 setDrugs(data.data);
             }else{

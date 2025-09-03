@@ -11,7 +11,7 @@ const LoginWarRoutes = () => {
         <Routes>
             <Route path="/user-dashboard" element={<DvdmsDashboard />} />
             <Route path="/change-password" element={<Auth comp={ChangeDvdmsPass} />} />
-            <Route path="/change-user" element={<Auth comp={ChangeUserDetails} />} />
+            {/* <Route path="/change-user" element={<Auth comp={ChangeUserDetails} />} /> */}
             {/* <Route path="/zone-master" element={<ZoneMaster />} /> */}
             <Route path="/menus/*" element={<Menus />} />
         </Routes>

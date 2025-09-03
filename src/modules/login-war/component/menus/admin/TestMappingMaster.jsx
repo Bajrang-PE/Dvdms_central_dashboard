@@ -49,7 +49,8 @@ const TestMappingMaster = () => {
     const getUnmappedList = () => {
     
             fetchData(`/api/v1/TestMap/unmap?isActive=1&facilityTypeId=${facilityId}&stateId=${stateId}&inhouseOutsourceFlag=1`).then(data => {
-            if (data?.status === 1) {
+           console.log('data', data)
+                if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumTestId,
                     label: dt?.cwhstrTestDesc
@@ -65,6 +66,7 @@ const TestMappingMaster = () => {
 
     const getMappedList = () => {
         fetchData(`/api/v1/TestMap/map?isActive=1&facilityTypeId=${facilityId}&stateId=${stateId}&inhouseOutsourceFlag=1`).then(data => {
+           console.log('data', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumTestId,

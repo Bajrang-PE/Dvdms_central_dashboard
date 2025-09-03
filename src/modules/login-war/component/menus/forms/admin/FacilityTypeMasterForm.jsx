@@ -6,7 +6,7 @@ import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
-const FacilityTypeMasterForm = () => {
+const FacilityTypeMasterForm = ({setSearchInput}) => {
     const { openPage, selectedOption, setOpenPage, setSelectedOption, getFacilityTypeListData, setShowConfirmSave, confirmSave,setConfirmSave } = useContext(LoginContext);
     const [facilityName, setFacilityName] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active');
@@ -92,6 +92,7 @@ const FacilityTypeMasterForm = () => {
         setFacilityName('');
         setRecordStatus('Active')
         setConfirmSave(false);
+        setSearchInput(false);
     }
 
     return (

@@ -34,6 +34,8 @@ const GenericDrugMaster = () => {
         getGroupDrpData()
     }, [])
 
+    console.log('genericDrugListData', genericDrugListData)
+
     useEffect(() => {
         if (!searchInput) {
             setFilterData(genericDrugListData);
@@ -41,7 +43,7 @@ const GenericDrugMaster = () => {
             const lowercasedText = searchInput.toLowerCase();
             const newFilteredData = genericDrugListData.filter(row => {
 
-                const drugName = row?.drugName?.toLowerCase() || "";
+                const drugName = row?.cwhstrCentraldrugName?.toLowerCase() || "";
                 const drugType = row?.drugTypeName?.toString() || "";
                 const drugCat = row?.drugCatCode?.toString() || "";
 

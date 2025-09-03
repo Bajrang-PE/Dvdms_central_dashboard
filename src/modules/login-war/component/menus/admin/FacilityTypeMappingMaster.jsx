@@ -42,7 +42,8 @@ const FacilityTypeMappingMaster = () => {
     }, [stateId, facilityTypeId])
 
     const getUnmappedList = () => {
-        fetchData(`/api/v1/facilityMap/unmappedFcility?facilityTypeId=${facilityTypeId}&stateId=${stateId}`).then(data => {
+        fetchData(`/api/v1/unmappedFcility?facilityTypeId=${facilityTypeId}&stateId=${stateId}`).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.facilityTypeId,
@@ -57,7 +58,8 @@ const FacilityTypeMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`/api/v1/facilityMap/mapped?facilityTypeId=${facilityTypeId}&stateId=${47}`).then(data => {
+        fetchData(`/api/v1/mapped?facilityTypeId=${facilityTypeId}&stateId=${47}`).then(data => {
+             console.log('data2', data)
             if (data.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.stateFacilityTypeId,

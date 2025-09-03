@@ -20,7 +20,7 @@ const IphsGroupMaster = () => {
     useEffect(() => {
         getListData(record);
     }, [record])
-
+console.log(listData)
     const getListData = (recordStatus) => {
         fetchData(`/api/v1/IphsGroupMaster/getAllGroups?isActive=${recordStatus}`).then(data => {
             if (data.status == 1) {

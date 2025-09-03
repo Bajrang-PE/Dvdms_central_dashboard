@@ -79,9 +79,9 @@ const HomePage = () => {
             {showCmsLogin &&
                 <CmsLogin isShow={showCmsLogin} onClose={onCloseModal} setShowForgotPass={setShowForgotPass}/>
             }
-            {showForgotPass &&
+            {/* {showForgotPass &&
                 <ForgotPassForm isShow={showForgotPass} onClose={onCloseModal} />
-            }
+            } */}
 
         </div>
     )

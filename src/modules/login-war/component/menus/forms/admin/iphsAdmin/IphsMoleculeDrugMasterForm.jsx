@@ -88,6 +88,7 @@ const IphsMoleculeDrugMasterForm = ({ selectedGroupName, selectedGroupId, getLis
         "subgroupID": values?.subGroupId
       }
       fetchUpdateData(`/api/v1/IphsMoleculeDrugMst/modifyMoleculeDrug?drugID=${selectedOption[0]?.drugID}`, val).then(data => {
+       console.log('data', data)
         if (data?.status === 1) {
           ToastAlert("Data updated successfully", "success")
           setSelectedOption([])

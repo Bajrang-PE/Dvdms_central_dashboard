@@ -14,7 +14,7 @@ import { formatDateHmis } from '../../../../../utils/CommonFunction';
 
 const HmisFacilityMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, getStateListData, getSteteNameDrpData, stateNameDrpDt,getFacilityTypeDrpData,stateListData, setConfirmSave, confirmSave, setShowConfirmSave } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, getStateListData, getSteteNameDrpData, stateNameDrpDt, getFacilityTypeDrpData, stateListData, setConfirmSave, confirmSave, setShowConfirmSave,isShowReport } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [selectAll, setSelectAll] = useState(false);
     const [recordStatus, setRecordStatus] = useState('1');
@@ -23,9 +23,9 @@ const HmisFacilityMaster = () => {
     const [listData, setListData] = useState([]);
     const [filterData, setFilterData] = useState(listData);
 
-//    const [values, setValues] = useState({
-//        "groupId": "0", "subGroupId": "0", "recordStatus": "1"
-//    })
+    //    const [values, setValues] = useState({
+    //        "groupId": "0", "subGroupId": "0", "recordStatus": "1"
+    //    })
 
     useEffect(() => {
         getStateListData(recordStatus ? recordStatus : '1')
@@ -37,7 +37,7 @@ const HmisFacilityMaster = () => {
     }, []);
 
     useEffect(() => {
-        
+
         getListData(stateId, recordStatus);
     }, [stateId, recordStatus])
 
@@ -47,13 +47,13 @@ const HmisFacilityMaster = () => {
         if (name === "stateId") {
             const selectOptionGrp = stateNameDrpDt.find(opt => String(opt.value) === String(value));
             setSelectedStateName(selectOptionGrp?.label || "");
-           // setSelectedGroupId(selectOptionGrp?.value || "")
+            // setSelectedGroupId(selectOptionGrp?.value || "")
         }
-        
-  //      if (name) {
-   //         setValues({ ...values, [name]: value });
-   //         setErrors({ ...errors, [errName]: "" });
-   //     }
+
+        //      if (name) {
+        //         setValues({ ...values, [name]: value });
+        //         setErrors({ ...errors, [errName]: "" });
+        //     }
 
     }
 
@@ -83,12 +83,12 @@ const HmisFacilityMaster = () => {
 
     const deleteRecord = () => {
         fetchDeleteData(`/api/v1/hmisFacility?facilityTypeId=${selectedOption[0]?.cwhnumFacilityTypeId}&isActive=1`).then(data => {
-            if (data?.status ===1) {
+            if (data?.status === 1) {
                 ToastAlert('Data deleted successfully', 'success')
                 setConfirmSave(false);
                 setSelectedOption([]);
                 setOpenPage("home");
-                getListData(stateId,recordStatus);
+                getListData(stateId, recordStatus);
             } else {
                 ToastAlert(data?.message, 'error')
                 setOpenPage("home")
@@ -111,22 +111,23 @@ const HmisFacilityMaster = () => {
         }
     }, [confirmSave])
 
-  
-     const getListData = (stateId, recordStatus) => {
+
+    const getListData = (stateId, recordStatus) => {
 
         fetchData(`/api/v1/hmisFacility?stateId=${stateId}&isActive=${recordStatus}`).then((data) => {
-         if (data?.status === 1 && Array.isArray(data.data)) {
-            setListData(data.data)
-          } else {
-              setListData([])
-          }
+            console.log('data', data)
+            if (data?.status === 1 && Array.isArray(data.data)) {
+                setListData(data.data)
+            } else {
+                setListData([])
+            }
 
         })
 
     };
 
     const handleSelectAll = (isChecked) => {
-        
+
         setSelectAll(isChecked);
         if (isChecked) {
             const allIds = listData.map(drug => drug.cwhnumDrugId);
@@ -141,10 +142,10 @@ const HmisFacilityMaster = () => {
             name: <input
                 type="checkbox"
                 checked={selectAll}
-                 onChange={(e) => handleSelectAll(e.target.checked)}
-                 disabled={listData.length === 0}
+                onChange={(e) => handleSelectAll(e.target.checked)}
+                disabled={listData.length === 0}
                 className="form-check-input log-select"
-               
+
             />,
             cell: row =>
                 <div style={{ position: 'absolute', top: 4, left: 10 }}>
@@ -181,91 +182,94 @@ const HmisFacilityMaster = () => {
     }
 
 
-    console.log(listData,'listsdata')
-    console.log(filterData,'filterData')
-
     return (
         <>
             <div className='masters mx-3 my-2'>
-                <div className='masters-header row'>
-                    <span className='col-6'><b>{`Hmis Facility Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length || 0}</span>}
-                </div>
-
-                {(openPage === "home" || openPage === 'view' || openPage === 'delete') && (<>
-                    <div className='row pt-2'>
-                        <div className='col-sm-6'>
-                            <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                                <label className="col-sm-5 col-form-label fix-label required-label">State : </label>
-                                <div className="col-sm-7 align-content-center">
-                                    <InputSelect
-                                        id="hintquestion"
-                                        name="hintquestion"
-                                        placeholder="Select State"
-                                        //options={[{ value: 1, label: 'Assam' }]}
-                                        options={stateNameDrpDt}
-                                        className="aliceblue-bg border-dark-subtle"
-                                        value={stateId}
-                                        onChange={(e) => setStateId(e.target.value)}
-                                    />
-
-                                </div>
-                            </div>
-                        </div>
-                        <div className='col-sm-6'>
-                            <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                                <label className="col-sm-5 col-form-label fix-label">Record Status : </label>
-                                <div className="col-sm-7 align-content-center">
-                                    <InputSelect
-                                        id="hintquestion"
-                                        name="hintquestion"
-                                        placeholder="Select Status"
-                                        options={[{ value: 1, label: 'Active' }, { value: 0, label: 'InActive' }]}
-                                        className="aliceblue-bg border-dark-subtle"
-                                        value={recordStatus}
-                                        onChange={(e) => setRecordStatus(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                {!isShowReport && <>
+                    <div className='masters-header row'>
+                        <span className='col-6'><b>{`Hmis Facility Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                        {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length || 0}</span>}
                     </div>
-                    <hr className='my-2' />
-                    <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
 
-                </>)}
+                    {(openPage === "home" || openPage === 'view' || openPage === 'delete') && (<>
+                        <div className='row pt-2'>
+                            <div className='col-sm-6'>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label required-label">State : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        <InputSelect
+                                            id="hintquestion"
+                                            name="hintquestion"
+                                            placeholder="Select State"
+                                            //options={[{ value: 1, label: 'Assam' }]}
+                                            options={stateNameDrpDt}
+                                            className="aliceblue-bg border-dark-subtle"
+                                            value={stateId}
+                                            onChange={(e) => setStateId(e.target.value)}
+                                        />
 
-                {openPage === 'view' &&
-                            <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
-                                <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
-                                    <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
-                                </Modal.Header>
-                                <Modal.Body className='px-2 py-1'>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='col-sm-6'>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Record Status : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        <InputSelect
+                                            id="hintquestion"
+                                            name="hintquestion"
+                                            placeholder="Select Status"
+                                            options={[{ value: 1, label: 'Active' }, { value: 0, label: 'InActive' }]}
+                                            className="aliceblue-bg border-dark-subtle"
+                                            value={recordStatus}
+                                            onChange={(e) => setRecordStatus(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr className='my-2' />
+                        <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
 
-                                    <div className='text-left'>
-                                        {/* <label><b>Group Name : </b></label>&nbsp;{selectedGroupName}<br />
+                    </>)}
+
+                    {openPage === 'view' &&
+                        <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
+                            <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
+                                <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
+                            </Modal.Header>
+                            <Modal.Body className='px-2 py-1'>
+
+                                <div className='text-left'>
+                                    {/* <label><b>Group Name : </b></label>&nbsp;{selectedGroupName}<br />
                                         <label><b>Subgroup Name : </b></label>&nbsp;{selectedSubGroupName}<br /> */}
-                                        <label><b>facility Type Name: </b></label>&nbsp;{selectedOption[0]?.cwhnumFacilityTypeId}<br />
-                                        <label><b>No. Of Facility : </b></label>&nbsp;{selectedOption[0]?.cwhnumNoofHmisFac}<br />
-                                        <label><b>Hmis Date : </b></label>&nbsp;{selectedOption[0]?.cwhdtHmisDate}<br />
-                                        
-                                       
-                                    </div>
+                                    <label><b>facility Type Name: </b></label>&nbsp;{selectedOption[0]?.cwhnumFacilityTypeId}<br />
+                                    <label><b>No. Of Facility : </b></label>&nbsp;{selectedOption[0]?.cwhnumNoofHmisFac}<br />
+                                    <label><b>Hmis Date : </b></label>&nbsp;{selectedOption[0]?.cwhdtHmisDate}<br />
 
-                                    <div className='text-center mt-1'>
 
-                                        <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
-                                            <i className="fa fa-broom me-1"></i> Close
-                                        </button>
-                                    </div>
+                                </div>
 
-                                </Modal.Body>
-                            </Modal>
-                        }
+                                <div className='text-center mt-1'>
 
-                {(openPage === "add" || openPage === 'modify') && (<>
-                    <HmisFacilityMasterForm selectedStateName={selectedStateName} />
-                </>)}
+                                    <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
+                                        <i className="fa fa-broom me-1"></i> Close
+                                    </button>
+                                </div>
 
+                            </Modal.Body>
+                        </Modal>
+                    }
+
+                    {(openPage === "add" || openPage === 'modify') && (<>
+                        <HmisFacilityMasterForm selectedStateName={selectedStateName} />
+                    </>)}
+                </>}
+
+
+                {isShowReport &&
+                    <MasterReport title={"HMIS Facility Master"} column={column} data={listData} />
+                }
             </div>
         </>
     )
