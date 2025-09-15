@@ -157,9 +157,7 @@ const HmisFacilityMasterForm = (props) => {
 
     }, [selectedOption, openPage])
 
-    console.log(values, 'selectedOption')
 
-    console.log(values)
     return (
         <div>
             <GlobalButtons onSave={handleValidation} onClear={reset} />

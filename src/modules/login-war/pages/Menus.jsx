@@ -30,6 +30,7 @@ import ProgrammeMappingMaster from '../component/menus/admin/ProgrammeMappingMas
 import ProgrammeMaster from '../component/menus/admin/ProgrammeMaster'
 import HmisFacilityMaster from '../component/menus/admin/HmisFacilityMaster'
 import TestMappingMaster from '../component/menus/admin/TestMappingMaster'
+import NotFoundPage from './NotFound'
 
 const Menus = () => {
     return (
@@ -78,6 +79,8 @@ const Menus = () => {
 
                 {/*---------------------------- SERVICES-------------------------------------------- */}
                 <Route path="state-job-details" element={<StateJobDetailsService />} />
+
+                  <Route path="*" element={<NotFoundPage />} />
 
             </Routes>
         </>

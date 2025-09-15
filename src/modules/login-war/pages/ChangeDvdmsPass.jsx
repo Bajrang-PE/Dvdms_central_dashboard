@@ -55,7 +55,6 @@ const ChangeDvdmsPass = () => {
                 "newPassword": values?.newPassword,
             }
 
-            console.log(val,'val')
             fetchPostData("/api/v1/change-password", val).then(data => {
                 if (data) {
                     console.log(data, 'data')

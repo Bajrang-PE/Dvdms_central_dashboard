@@ -53,7 +53,6 @@ const ServiceUserMaster = () => {
         return paramId?.includes(lowercasedText) || paramName.includes(lowercasedText) || paramDisplayName.includes(lowercasedText);
       });
       setFilterData(newFilteredData);
-      console.log(newFilteredData, 'newFilteredData')
     }
   }, [searchInput, userServiceData]);
 

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import './Menu.css';
 import { LoginContext } from '../../context/LoginContext';
 import { fetchData } from '../../../../utils/ApiHooks';
+import { getAuthUserData } from '../../../../utils/CommonFunction';
 
 const MenuList = (props) => {
     const { activeDropdown } = props;
@@ -12,6 +13,7 @@ const MenuList = (props) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+  
     // Function to transform API data into the required menu structure
     const transformMenuData = (apiData) => {
         const menuStructure = {};
@@ -121,8 +123,7 @@ const MenuList = (props) => {
     const getAllMenusList = async () => {
         try {
             setLoading(true);
-            const data = await fetchData("/api/v1/getMenuBySeatId/10001");
-            console.log(data, 'data')
+            const data = await fetchData(`/api/v1/getMenuBySeatId/${getAuthUserData('userSeatId')}`);
             if (data?.status === 1) {
                 const formattedMenuData = transformMenuData(data?.data);
                 setMenuData(formattedMenuData);

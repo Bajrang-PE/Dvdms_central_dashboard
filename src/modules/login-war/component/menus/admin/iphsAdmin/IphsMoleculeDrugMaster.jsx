@@ -3,7 +3,7 @@ import { capitalizeFirstLetter, ToastAlert } from '../../../../utils/CommonFunct
 import { LoginContext } from '../../../../context/LoginContext';
 import InputSelect from '../../../InputSelect';
 import GlobalTable from '../../../GlobalTable';
-import { fetchData, fetchDeleteData } from '../../../../../../utils/ApiHooks';
+import { fetchData, fetchDeleteData, fetchPostData } from '../../../../../../utils/ApiHooks';
 import IphsMoleculeDrugMasterForm from '../../forms/admin/iphsAdmin/IphsMoleculeDrugMasterForm';
 
 const IphsMoleculeDrugMaster = () => {
@@ -142,7 +142,7 @@ const IphsMoleculeDrugMaster = () => {
 
   const handleDelete = () => {
 
-    fetchDeleteData(`/api/v1/IphsMoleculeDrugMst/deleteMoleculeDrug?drugID=${selectedOption[0].drugID}&isActive=0`).then(data => {
+    fetchPostData(`/api/v1/IphsMoleculeDrugMst/deleteMoleculeDrug?drugID=${selectedOption[0].drugID}&isActive=0`).then(data => {
       if (data?.status === 1) {
         ToastAlert("Data deleted successfully", "success")
         setSelectedOption([]);

@@ -24,7 +24,6 @@ const JobOrderMaster = () => {
             const data = await fetchData(`/api/v1/jobOrder/${id}`);
             if (data.status === 1) {
                 setJobList(data.data);
-
                 const defaultSelected = data.data.find(job => job.cwhnumJobRunId === 1);
                 if (defaultSelected) {
                     setSelectedOption([defaultSelected]);
@@ -49,7 +48,7 @@ const JobOrderMaster = () => {
         } else {
             fetchPostData(`/api/v1/${stateId}/resetJobRunId?encryptedCurrentJobRunId=${id}`).then(data => {
                 if (data.status === 1) {
-                    console.log(data?.data)
+                    ToastAlert(data?.message,'success')
                 } else {
                     ToastAlert(data?.message, 'error')
                 }

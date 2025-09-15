@@ -156,7 +156,6 @@ const SupplierMasterForm = (props) => {
             }
 
             fetchUpdatePostData("/api/v1/suppliers", data).then(data => {
-                console.log('data', data)
                 if (data?.status === 1) {
                     ToastAlert('Supplier Added successfully', 'success');
                     refresh();

@@ -25,6 +25,7 @@ const TabDash = React.memo(() => {
 
     const getAllAvailableWidgets = useCallback(async (idArr, dashFor) => {
         try {
+            console.log('dashFor', dashFor)
             const val = {
                 ids: idArr || [],
                 dashboardFor: dashFor || 'CENTRAL DASHBOARD',
@@ -146,7 +147,6 @@ const TabDash = React.memo(() => {
         setPrevKpiTab([])
     }
 
-    // console.log(activeTab,'activeTab')
 
     return (
         <>

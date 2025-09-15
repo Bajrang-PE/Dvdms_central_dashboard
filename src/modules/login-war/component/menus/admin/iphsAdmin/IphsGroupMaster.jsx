@@ -3,7 +3,7 @@ import { LoginContext } from '../../../../context/LoginContext'
 import { capitalizeFirstLetter, ToastAlert } from '../../../../utils/CommonFunction';
 import InputSelect from '../../../InputSelect';
 import GlobalTable from '../../../GlobalTable';
-import { fetchData, fetchDeleteData } from '../../../../../../utils/ApiHooks';
+import { fetchData, fetchDeleteData, fetchPostData } from '../../../../../../utils/ApiHooks';
 import InputField from '../../../InputField';
 import IphsGroupMasterForm from '../../forms/admin/iphsAdmin/IphsGroupMasterForm';
 import { Modal } from 'react-bootstrap';
@@ -20,7 +20,6 @@ const IphsGroupMaster = () => {
     useEffect(() => {
         getListData(record);
     }, [record])
-console.log(listData)
     const getListData = (recordStatus) => {
         fetchData(`/api/v1/IphsGroupMaster/getAllGroups?isActive=${recordStatus}`).then(data => {
             if (data.status == 1) {
@@ -92,13 +91,14 @@ console.log(listData)
 
     const handleDelete = () => {
 
-        fetchDeleteData(`/api/v1/IphsGroupMaster/deleteGroups?groupIDs=${[selectedOption[0].cwhnumIphsGroupID]}`).then(data => {
-            if (data) {
+        fetchPostData(`/api/v1/IphsGroupMaster/deleteGroups?groupIDs=${[selectedOption[0].cwhnumIphsGroupID]}`).then(data => {
+            if (data?.status === 1) {
                 ToastAlert("Data deleted successfully", "success")
                 setConfirmSave(false);
                 setSelectedOption([]);
                 setOpenPage("home");
                 getListData(1);
+                
             } else {
                 ToastAlert('Error while deleting record!', 'error')
                 setOpenPage("home")

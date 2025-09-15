@@ -77,18 +77,15 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                 "captchaValue": captchaInput,
                 "captchaToken": captchaToken
             }
-            console.log(val,'avl')
             fetchPostData("/api/v1/auth/login", val).then(data => {
-                console.log(data, 'data')
+                console.log('data', data)
                 if (data?.status === 1) {
                     ToastAlert("Login successful", 'success')
-                    const { gnumSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode, } = data?.data;
+                    const { gnumUserSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode, } = data?.data;
                     const auth = {
                         'isLogin': true,
-                        //   'userType': (gstrUserName)?.toLowerCase(),
                         'username': gstrUserName,
-                        'userSeatId': gnumSeatId,
-                        //   'hospitalName': gstrHospitalName,
+                        'userSeatId': gnumUserSeatId,
                         'hospitalCode': gnumHospitalCode
                     }
                     localStorage.setItem('data', encryptData(JSON.stringify(auth)));

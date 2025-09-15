@@ -92,7 +92,6 @@ const Facilities = () => {
         const total = data?.reduce((a, b) => a + b)
         return total || ''
     }
-    console.log(graphWidgets)
 
     return (
         <div className="facility row pl-5 pr-5" style={{ padding: "10px" }} id='facilities'>

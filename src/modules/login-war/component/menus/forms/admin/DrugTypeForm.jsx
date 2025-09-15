@@ -3,7 +3,7 @@ import InputField from '../../../InputField'
 import GlobalButtons from '../../GlobalButtons'
 import { LoginContext } from '../../../../context/LoginContext';
 import { ToastAlert } from '../../../../utils/CommonFunction';
-import { fetchUpdateData, fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
+import { fetchPostData, fetchUpdateData, fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
 const DrugTypeForm = ({ setValues, values, setSearchInput }) => {
@@ -46,7 +46,7 @@ const DrugTypeForm = ({ setValues, values, setSearchInput }) => {
                     cwhstrDrugTypeName: drugTypeName,
                     gnumSeatId: getAuthUserData('userSeatId')
                 }
-                fetchUpdatePostData("/api/v1/drug-types", data).then(data => {
+                fetchPostData("/api/v1/addDrug", data).then(data => {
                     if (data && data?.status === 1) {
                         ToastAlert('Drug Type Added successfully', 'success')
                         refresh();
@@ -71,10 +71,15 @@ const DrugTypeForm = ({ setValues, values, setSearchInput }) => {
                     gnumIsvalid: recordStatus,
                     cwhnumDrugTypeId: cwhnumDrugTypeId,
                 }
-                const response = await fetchUpdateData(`/api/v1/drug-types/${cwhnumDrugTypeId}`, data);
-                ToastAlert('Record Updated Successfully', 'success');
-                refresh();
-                setSelectedOption([]);
+                fetchPostData(`/api/v1/modifyDrugType/${cwhnumDrugTypeId}`, data).then(data => {
+                    if (data?.status === 1) {
+                        ToastAlert('Record Updated Successfully', 'success')
+                        refresh();
+                        setSelectedOption([]);
+                    } else {
+                        ToastAlert('Error', 'error')
+                    }
+                });
             }
         }
 

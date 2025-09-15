@@ -120,7 +120,6 @@ const LoginContextApi = ({ children }) => {
 
     const getStateJobDetailsListData = (stateId, status) => {
         fetchData(`/api/v1/stateJobDetails/getJobDetailsByStateID?stateID=${stateId ? stateId : '0'}&isActive=${status ? status : "1"}`).then((data) => {
-            console.log('data', data)
             if (data?.status === 1) {
                 setStateJobListData(data?.data)
             } else {
@@ -182,14 +181,13 @@ const LoginContextApi = ({ children }) => {
             });
     };
 
-    const getDistrictNameDrpData = (id) => {
-        fetchData('/state/getstate').then((data) => {
-            if (data) {
-
-                const drpData = data?.map((dt) => {
+    const getDistrictNameDrpData = (stateid) => {
+        fetchData(`/api/v1/districts/getAllDistrictList?stateId=${stateid}&isActive=1`).then((data) => {
+            if (data?.status ===1) {
+                const drpData = data?.data?.map((dt) => {
                     const val = {
-                        value: dt?.cwhnumStateId,
-                        label: dt?.cwhstrStateName
+                        value: dt?.cwhnumDistId,
+                        label: dt?.cwhstrDistName
                     }
 
                     return val;
@@ -229,7 +227,6 @@ const LoginContextApi = ({ children }) => {
 
     const getGroupDrpData = () => {
         fetchData('/api/v1/GrpDrpdwn').then((data) => {
-            
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
@@ -252,8 +249,8 @@ const LoginContextApi = ({ children }) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
-                        value: dt?.centralDrugId,
-                        label: dt?.drugName
+                        value: dt?.cwhnumCentralDrugId,
+                        label: dt?.cwhstrCentraldrugName
                     }
 
                     return val;
@@ -286,7 +283,6 @@ const LoginContextApi = ({ children }) => {
 
     const getSubGroupDrpData = (grpId) => {
         fetchData(`/api/v1/SubGrpDrpDwn/${grpId}`).then((data) => {
-            console.log('data', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {

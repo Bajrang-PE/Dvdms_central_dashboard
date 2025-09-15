@@ -21,7 +21,6 @@ const TableDetails = (props) => {
     const [isEditing, setIsEditing] = useState(null);
 
     const handleInputChange = (field, e) => {
-        console.log(e, 'e')
         if (e.target.name === 'popupWidgetId') {
             setNewRow({ ...newRow, [field]: e.target.value, ['drillWidgetName']: e.target.label })
         } else {

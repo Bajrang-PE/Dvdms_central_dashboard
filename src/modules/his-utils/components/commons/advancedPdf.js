@@ -694,7 +694,6 @@ export const generateGraphPDF = async (widgetData, tableData, config, filters = 
     tabData.push(row);
   });
 
-  console.log(tableData, 'tableData')
   pdf.autoTable({
     startY: yPosition,
     head: [headers],

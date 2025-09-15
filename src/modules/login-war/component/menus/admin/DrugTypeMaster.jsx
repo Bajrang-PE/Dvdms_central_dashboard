@@ -6,11 +6,12 @@ import { LoginContext } from '../../../context/LoginContext';
 import DrugTypeForm from '../forms/admin/DrugTypeForm';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import { Modal } from 'react-bootstrap';
-import { fetchData, fetchDeleteData, fetchUpdateData } from '../../../../../utils/ApiHooks';
+import { fetchData, fetchDeleteData, fetchPostData, fetchUpdateData } from '../../../../../utils/ApiHooks';
+import MasterReport from '../../MasterReport';
 
 export const DrugTypeMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, isShowReport } = useContext(LoginContext);
 
     const [stateNameDrpDt, setStateNameDrpDt] = useState([]);
     const [drugs, setDrugs] = useState([]);
@@ -61,11 +62,10 @@ export const DrugTypeMaster = () => {
 
     const fetchListData = async (isActive) => {
 
-        fetchData(`/api/v1/drug-types?isActive=${isActive}`).then((data) => {
-console.log(data,'data')
+        fetchData(`/api/v1/getdruglist?isActive=${isActive}`).then((data) => {
             if (data && data?.status === 1) {
                 setDrugs(data.data);
-            }else{
+            } else {
                 setDrugs([]);
             }
 
@@ -110,8 +110,8 @@ console.log(data,'data')
 
     const handleDelete = () => {
         const drugTypeId = String(selectedOption[0]?.cwhnumDrugTypeId)
-        fetchDeleteData(`/api/v1/drug-types/${drugTypeId}`).then(data => {
-            if (data) {
+        fetchPostData(`/api/v1/DeleteDrugType/${drugTypeId}`).then(data => {
+            if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 fetchListData(1);
                 setSelectedOption([]);
@@ -234,6 +234,10 @@ console.log(data,'data')
 
             {(openPage === "add" || openPage === 'modify') &&
                 <DrugTypeForm setValues={setValues} values={values} setSearchInput={setSearchInput} />
+            }
+
+            {isShowReport &&
+                <MasterReport title={"Drug Type Master"} column={columns} data={drugs} />
             }
 
         </div>

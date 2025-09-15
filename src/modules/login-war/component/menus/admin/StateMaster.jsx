@@ -4,7 +4,7 @@ import InputSelect from '../../InputSelect';
 import GlobalTable from '../../GlobalTable';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import StateMasterForm from '../forms/admin/StateMasterForm';
-import { fetchDeleteData } from '../../../../../utils/ApiHooks';
+import { fetchDeleteData, fetchPostData } from '../../../../../utils/ApiHooks';
 import ViewPage from '../ViewPage';
 import MasterReport from '../../MasterReport';
 
@@ -45,7 +45,7 @@ const StateMaster = () => {
     }, [searchInput, stateListData]);
 
     const deleteRecord = () => {
-        fetchDeleteData(`api/v1/State/${selectedOption[0]?.cwhnumStateId}`).then(data => {
+        fetchPostData(`api/v1/softDelete/${selectedOption[0]?.cwhnumStateId}`).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getStateListData();

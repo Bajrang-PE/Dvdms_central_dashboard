@@ -45,6 +45,7 @@ const IphsGroupMasterForm = ({ setRecord, record, getListData, setSearchInput })
                 refresh();    
             }else{
                 ToastAlert("Error", "error");
+                  setConfirmSave(false);
             }
         })
     }
@@ -55,13 +56,14 @@ const IphsGroupMasterForm = ({ setRecord, record, getListData, setSearchInput })
             "isValid":recordStatus,
             "gnumSeatid": getAuthUserData('userSeatId') 
         }
-        fetchPatchData(`/api/v1/IphsGroupMaster/modifyGroupStatus?groupID=${selectedOption[0].cwhnumIphsGroupID}`,val).then(data=>{
+        fetchPostData(`/api/v1/IphsGroupMaster/modifyGroupStatus?groupID=${selectedOption[0].cwhnumIphsGroupID}`,val).then(data=>{
             if(data.status == 1){
                 ToastAlert("Data updated successfully", "success");  
                 setSelectedOption([]);
                 refresh();             
             }else{
                 ToastAlert("Error", "error");
+                  setConfirmSave(false);
             }
         })
     }

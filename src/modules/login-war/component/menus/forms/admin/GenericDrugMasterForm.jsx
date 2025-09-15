@@ -3,7 +3,7 @@ import { LoginContext } from '../../../../context/LoginContext';
 import GlobalButtons from '../../GlobalButtons';
 import InputField from '../../../InputField';
 import InputSelect from '../../../InputSelect';
-import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
+import { fetchPostData } from '../../../../../../utils/ApiHooks';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 import { categoryOptions, vedOptions } from '../../../../localData/HomeData';
@@ -46,7 +46,7 @@ const GenericDrugMasterForm = (props) => {
             "gnumIsValid": recordStatus,
             "isMotherHealth": 0
         }
-        fetchPostData(`/api/v1/drugs`, val).then(data => {
+        fetchPostData(`/api/v1/saveDrug`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
                 getGenericDrugListData(groupId, values?.subGroupName, recordStatus);
@@ -75,7 +75,7 @@ const GenericDrugMasterForm = (props) => {
             "gnumIsValid": recordStatus,
             "isMotherHealth": 0
         }
-        fetchUpdateData(`/api/v1/drugs/${selectedOption[0]?.cwhnumCentralDrugId}`, val).then(data => {
+        fetchPostData(`/api/v1/updateDrug/${selectedOption[0]?.cwhnumCentralDrugId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
                 getGenericDrugListData(groupId, values?.subGroupName, recordStatus);

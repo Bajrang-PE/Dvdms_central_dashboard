@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext';
-import { fetchDeleteData } from '../../../../../utils/ApiHooks';
+import {  fetchPostData } from '../../../../../utils/ApiHooks';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
 import GlobalTable from '../../GlobalTable';
@@ -42,7 +42,7 @@ const GroupMaster = () => {
     }, [searchInput, groupListData]);
 
     const deleteRecord = () => {
-        fetchDeleteData(`/api/v1/Group/${selectedOption[0]?.cwhnumGroupId}`).then(data => {
+        fetchPostData(`/api/v1/deleteGroup/${selectedOption[0]?.cwhnumGroupId}`).then(data => {
             if (data.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getGroupListData();

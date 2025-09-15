@@ -40,11 +40,11 @@ const FacilityTypeMasterForm = ({setSearchInput}) => {
             "cwhstrFacilityTypeName": facilityName,
             "status": recordStatus,
             "cwhnumFacilityTypeId": selectedOption[0]?.cwhnumFacilityTypeId,
-            "cwhstrFacilityTypeShortName": "",
+            "cwhstrFacilityTypeShortName": "null",
             "cwhnumNinFacilityTypeId": 0,
             "cwhnumOrder": 0,
         }
-        fetchUpdateData(`/api/v1/Facility/${selectedOption[0]?.cwhnumFacilityTypeId}`, val).then(data => {
+        fetchPostData(`/api/v1/updateFacility/${selectedOption[0]?.cwhnumFacilityTypeId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record Updated Successfully', 'success');
                 getFacilityTypeListData();

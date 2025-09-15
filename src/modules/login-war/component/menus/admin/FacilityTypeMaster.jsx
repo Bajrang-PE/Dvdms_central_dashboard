@@ -4,7 +4,7 @@ import InputSelect from '../../InputSelect';
 import GlobalTable from '../../GlobalTable';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import FacilityTypeMasterForm from '../forms/admin/FacilityTypeMasterForm';
-import { fetchDeleteData } from '../../../../../utils/ApiHooks';
+import { fetchPostData } from '../../../../../utils/ApiHooks';
 import ViewPage from '../ViewPage';
 import MasterReport from '../../MasterReport';
 
@@ -45,7 +45,7 @@ const FacilityTypeMaster = () => {
 
 
     const deleteRecord = () => {
-        fetchDeleteData(`api/v1/Facility/${selectedOption[0]?.cwhnumFacilityTypeId}`).then(data => {
+        fetchPostData(`/api/v1/deleteFacility/${selectedOption[0]?.cwhnumFacilityTypeId}`).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getFacilityTypeListData();

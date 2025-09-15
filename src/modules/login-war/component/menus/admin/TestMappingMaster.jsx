@@ -49,7 +49,6 @@ const TestMappingMaster = () => {
     const getUnmappedList = () => {
     
             fetchData(`/api/v1/TestMap/unmap?isActive=1&facilityTypeId=${facilityId}&stateId=${stateId}&inhouseOutsourceFlag=1`).then(data => {
-           console.log('data', data)
                 if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumTestId,
@@ -66,7 +65,6 @@ const TestMappingMaster = () => {
 
     const getMappedList = () => {
         fetchData(`/api/v1/TestMap/map?isActive=1&facilityTypeId=${facilityId}&stateId=${stateId}&inhouseOutsourceFlag=1`).then(data => {
-           console.log('data', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumTestId,
@@ -93,8 +91,7 @@ const TestMappingMaster = () => {
             item => !selectedOptions.some(i => i.value == item.value)
         );
 
-        console.log(newMapped,'m')
-        console.log(newUnMapped,'u')
+
 
         const mappedData = newMapped?.length > 0 && newMapped?.map(dt => ({
             "cwhnumStateId": parseInt(stateId),
@@ -142,7 +139,6 @@ const TestMappingMaster = () => {
 
         fetchPostData(`/api/v1/TestMap/create`, val).then(data => {
             if (data?.status === 1) {
-                console.log(data?.data)
                 setConfirmSave(false)
                 reset();
             } else {

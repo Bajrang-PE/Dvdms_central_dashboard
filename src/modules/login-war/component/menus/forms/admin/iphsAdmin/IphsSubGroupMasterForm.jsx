@@ -66,7 +66,7 @@ const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGro
                 "subgroupName": subGroupName,
             }
 
-            fetchPatchData(`/api/v1/IphsSubGroupMaster/modifySubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}`, val).then(data => {
+            fetchPostData(`/api/v1/IphsSubGroupMaster/modifySubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}`, val).then(data => {
                 if (data?.status === 1) {
                     ToastAlert("Data updated successfully", "success");
                     setSelectedOption([]);

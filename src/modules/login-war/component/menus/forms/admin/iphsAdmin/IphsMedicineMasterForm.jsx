@@ -88,7 +88,7 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
                 "isAAMSHC": values?.isAamshc
             }
 
-            fetchUpdateData(`/api/v1/IphsMoleculeMedicineMaster/modifyMoleculeMedicine?packID=${selectedOption[0]?.packID}`, val).then(data => {
+            fetchPostData(`/api/v1/IphsMoleculeMedicineMaster/modifyMoleculeMedicine?encryptedPackID=${selectedOption[0]?.packID}`, val).then(data => {
                 if (data?.status === 1) {
                     ToastAlert("Data updated successfully", "success")
                     setSelectedOption([]);

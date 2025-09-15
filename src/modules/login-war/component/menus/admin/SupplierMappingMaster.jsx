@@ -155,8 +155,7 @@ const SupplierMappingMaster = () => {
             );
 
 
-            console.log("Added55555555:", addedToRight);
-            console.log("Removed6666666:", removedFromRight);
+
 
             const mappedData = addedToRight?.map(dt => ({
                 "stateID": stateId,
@@ -180,9 +179,7 @@ const SupplierMappingMaster = () => {
             }
 
             if (selectedOptions.length > 0) {
-console.log(val)
                 fetchUpdatePostData("/api/v1/supplierMappingMaster/postSupplierData", val).then(data => {
-                    console.log('data', data)
                     if (data.status == 1) {
                         ToastAlert('Data mapped successfully', 'success');
                         reset();

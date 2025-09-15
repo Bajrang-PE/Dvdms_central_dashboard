@@ -115,7 +115,6 @@ const HmisFacilityMaster = () => {
     const getListData = (stateId, recordStatus) => {
 
         fetchData(`/api/v1/hmisFacility?stateId=${stateId}&isActive=${recordStatus}`).then((data) => {
-            console.log('data', data)
             if (data?.status === 1 && Array.isArray(data.data)) {
                 setListData(data.data)
             } else {

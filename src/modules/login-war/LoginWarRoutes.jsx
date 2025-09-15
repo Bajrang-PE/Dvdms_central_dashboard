@@ -5,6 +5,7 @@ import ChangeUserDetails from "./pages/ChangeUserDetails";
 import ChangeDvdmsPass from "./pages/ChangeDvdmsPass";
 import Menus from "./pages/Menus";
 import Auth from "../../Auth";
+import NotFoundPage from "./pages/NotFound";
 
 const LoginWarRoutes = () => {
     return (
@@ -14,6 +15,7 @@ const LoginWarRoutes = () => {
             {/* <Route path="/change-user" element={<Auth comp={ChangeUserDetails} />} /> */}
             {/* <Route path="/zone-master" element={<ZoneMaster />} /> */}
             <Route path="/menus/*" element={<Menus />} />
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     );
 };

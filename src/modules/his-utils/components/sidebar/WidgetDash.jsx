@@ -61,7 +61,6 @@ const WidgetDash = React.memo(({ widgetDetail, presentWidgets, presentTabs, pk }
             default: return null;
         }
     };
-console.log(presentTabs,'bghththth')
 
     return (
         <Suspense fallback={<div>Loading...</div>}>

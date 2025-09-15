@@ -42,8 +42,7 @@ const FacilityTypeMappingMaster = () => {
     }, [stateId, facilityTypeId])
 
     const getUnmappedList = () => {
-        fetchData(`/api/v1/unmappedFcility?facilityTypeId=${facilityTypeId}&stateId=${stateId}`).then(data => {
-            console.log('data', data)
+        fetchData(`/api/v1/unmappedFclty?stateId=${stateId}&facilityTypeId=${facilityTypeId}`).then(data => {
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.facilityTypeId,
@@ -59,7 +58,6 @@ const FacilityTypeMappingMaster = () => {
 
     const getMappedList = () => {
         fetchData(`/api/v1/mapped?facilityTypeId=${facilityTypeId}&stateId=${47}`).then(data => {
-             console.log('data2', data)
             if (data.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.stateFacilityTypeId,
@@ -112,7 +110,7 @@ const FacilityTypeMappingMaster = () => {
             "stateFacilityTypeId": parseInt(facilityTypeId)
         }
 
-        fetchPostData(`/api/v1/facilityMap/saveFacilityMap`, val).then(data => {
+        fetchPostData(`/api/v1/facility-type`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Facility type mapped successfully", 'success')
                 setConfirmSave(false)
@@ -184,7 +182,7 @@ const FacilityTypeMappingMaster = () => {
     const reset = () => {
         setFacilityTypeId('');
         setStateId('');
-        setInitialMappedOptions();
+        setInitialMappedOptions([]);
         setSelectedSelected();
         setSelectedAvailable();
         setSelectedOptions();
@@ -192,7 +190,7 @@ const FacilityTypeMappingMaster = () => {
     }
 
     const refresh = () => {
-        setInitialMappedOptions();
+        setInitialMappedOptions([]);
         setSelectedSelected();
         setSelectedAvailable();
         setSelectedOptions();

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import InputSelect from '../../InputSelect'
 import { LoginContext } from '../../../context/LoginContext'
 import GlobalTable from '../../GlobalTable'
-import { fetchData, fetchDeleteData, fetchPatchData } from '../../../../../utils/ApiHooks'
+import { fetchData, fetchDeleteData, fetchPatchData, fetchPostData } from '../../../../../utils/ApiHooks'
 import OutsourceMasterForm from '../forms/OutsourceMasterForm'
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction'
 import { Modal } from 'react-bootstrap'
@@ -70,7 +70,6 @@ const OutsourceMaster = () => {
 
     const getListData = () => {
 
-        //alert("called")
         const val = {
             "stateID": values?.stateId || 0,
             "facilityTypeID": values?.facilityTypeId || 0,
@@ -168,7 +167,7 @@ const OutsourceMaster = () => {
 
     const handleDelete = () => {
 
-        fetchPatchData(`/api/v1/outsourceMaster/updateMappingStatus?recordID=${[selectedOption[0].recordID]}&isActive=${0}`).then(data => {
+        fetchPostData(`/api/v1/outsourceMaster/updateMappingStatus?recordID=${[selectedOption[0].recordID]}&isActive=${0}`).then(data => {
             if (data) {
                 ToastAlert('Data deleted successfully', 'success')
                 setConfirmSave(false);

@@ -13,13 +13,14 @@ const Auth = (props) => {
     const sessionData = localStorage.getItem('data');
     const userData = sessionData ? decryptData(sessionData) : '';
 
+
     const Component = comp;
 
     useEffect(() => {
         if (userData?.isLogin === 'true' || userData?.isLogin === true) {
             console.log('Login Success')
         } else {
-            navigate('/')
+            navigate('/dvdms/')
             localStorage.clear();
 
         }
@@ -29,7 +30,7 @@ const Auth = (props) => {
         if (userData?.isLogin === 'true' || userData?.isLogin === true) {
             console.log("Login Sucess")
         } else {
-            navigate('/');
+            navigate('/dvdms/');
             localStorage.clear();
 
         }
@@ -37,7 +38,7 @@ const Auth = (props) => {
 
     // to sign out if user is not active from a long time
     const timerRef = useRef(null);
-    const timeout = 60000 * 30;
+    const timeout = 60000 * 20;
 
     const resetTimer = () => {
         if (timerRef.current) {
@@ -48,10 +49,8 @@ const Auth = (props) => {
 
     const logout = () => {
         localStorage.clear();
-        window.location.href = '/'
-        localStorage.clear();
         Cookies.remove('csrfToken');
-        navigate('/');
+        navigate('/dvdms/');
 
     };
 
@@ -78,7 +77,7 @@ const Auth = (props) => {
     return (
         <>
             {
-                userData?.isLogin === 'true' || userData?.isLogin === true ? <Component /> : navigate('/')
+                userData?.isLogin === 'true' || userData?.isLogin === true ? <Component /> : navigate('/dvdms/')
             }
         </>
     )

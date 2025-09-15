@@ -147,8 +147,7 @@ const SupplierMaster = () => {
             sortable: true,
         },
     ];
-    console.log(selectedOption, 'selectedOption')
-    console.log(suppliers, 'suppliers')
+
     return (
         <div className="masters mx-3 my-2">
 

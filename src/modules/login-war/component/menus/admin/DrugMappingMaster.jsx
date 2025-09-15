@@ -4,11 +4,11 @@ import { ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
 import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
 import Select from 'react-select'
-import { CustomListWindow } from '../../../../../utils/CommonFunction';
+import { CustomListWindow, getAuthUserData } from '../../../../../utils/CommonFunction';
 // import debounce from 'lodash.debounce';
 
 const DrugMappingMaster = () => {
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext);
+    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
 
     const [itemCategory, setItemCategory] = useState("");
     const [itemName, setItemName] = useState(null);
@@ -20,6 +20,11 @@ const DrugMappingMaster = () => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [selectedAvailable, setSelectedAvailable] = useState([]);
     const [selectedSelected, setSelectedSelected] = useState([]);
+    const [initialMappedOptions, setInitialMappedOptions] = useState([]);
+
+    const [errors, setErrors] = useState({
+        "itemNameErr": "", "stateIdErr": ""
+    })
 
     useEffect(() => {
         if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
@@ -27,21 +32,19 @@ const DrugMappingMaster = () => {
     }, []);
 
     useEffect(() => {
-        if (stateId) {
-            setSelectedOptions([]);
-            getUnmappedList();
-              getMappedList();
-        }
+        setSelectedOptions([]);
+        setAvailableOptions([]);
         setSelectedAvailable([]);
         setSelectedSelected([]);
-    }, [stateId,itemName]);
+    }, [stateId]);
 
-    // useEffect(() => {
-    //     if (stateId && itemName) {
-    //         getMappedList();
-    //         getUnmappedList();
-    //     }
-    // }, [stateId, itemName])
+    useEffect(() => {
+        if (stateId && itemName) {
+
+            getMappedList();
+            getUnmappedList();
+        }
+    }, [stateId, itemName])
 
 
     const getItemNameList = (selectedValue) => {
@@ -49,13 +52,13 @@ const DrugMappingMaster = () => {
 
         switch (selectedValue) {
             case "1":
-                url = `api/v1/fetchDrugs`;
+                url = `api/v1/drug-mst/fetchDrugs`;
                 break;
             case "2":
-                url = `api/v1/fetchReagentDrugs`;
+                url = `api/v1/drug-mst/fetchReagentDrugs`;
                 break;
             case "3":
-                url = `api/v1/fetchDetailedDrugs`;
+                url = `api/v1/drug-mst/fetchDetailedDrugs`;
                 break;
             default:
                 setItemNameList([]);
@@ -64,7 +67,6 @@ const DrugMappingMaster = () => {
         }
 
         fetchData(url).then(data => {
-            console.log('data', data)
             if (data?.status === 1) {
                 const options = data?.data?.map(item => ({
                     value: item.cwhnumDrugId,
@@ -81,10 +83,9 @@ const DrugMappingMaster = () => {
 
 
     const getUnmappedList = () => {
-        fetchData(`/api/v1/UnmapDrug/${stateId}`).then(data => {
-            console.log('unmap', data)
+        fetchData(`/api/v1/mapDrug/UnmapDrug?stateId=${stateId}`).then(data => {
             if (data?.status === 1) {
-                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
+                const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumDrugId,
                     label: dt?.cwhstrDrugName
                 })
@@ -98,49 +99,101 @@ const DrugMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`/api/v1/MappedDrug/${itemName?.value}/${stateId}`).then(data => {
-            console.log('map', data)
+        fetchData(`/api/v1/mapDrug/MappedDrug?drugId=${itemName?.value}&stateId=${stateId}`).then(data => {
             if (data.status === 1) {
-                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
-                    value: dt?.cwhnumStateDrugId,
-                    label: dt?.cwhstrStateDrugName
+                const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
+                    value: dt?.stateDrugId,
+                    label: dt?.stateDrugName
                 })
                 )
                 setSelectedOptions(drpData)
+                setInitialMappedOptions(drpData)
             } else {
                 // ToastAlert('Error while fetching record!', 'error')
                 setSelectedOptions([])
+                setInitialMappedOptions([])
             }
         })
     }
 
-    const saveFacilityMappedData = () => {
+    const saveDrugMappedData = () => {
 
-        const val = {
-            "stateDrugId": 0,
-            "stateId": 0,
-            "entryDate": "2025-05-05T09:17:11.477Z",
-            "seatId": 0,
-            "isValid": 0,
-            "stateDrugIdTxt": "string",
-            "stateDrugName": "string",
-            "drugId": 0,
-            "deletedDate": "2025-05-05T09:17:11.477Z",
+        const newMapped = selectedOptions.filter(
+            item => !initialMappedOptions.some(i => i.value === item.value)
+        );
+
+        const newUnMapped = initialMappedOptions.filter(
+            item => !selectedOptions.some(i => i.value === item.value)
+        );
+
+        const mappedData = newMapped?.length > 0 && newMapped?.map(dt => ({
+            "stateDrugId": parseInt(dt?.value),
+            "stateId": parseInt(stateId),
+            "seatId": getAuthUserData('userSeatId'),
+            "isValid": 1,
+            "stateDrugIdTxt": "",
+            "stateDrugName": dt?.label,
+            "drugId": parseInt(itemName?.value),
             "drugSlno": 0,
             "mappedCorrectly": 0,
             "itemCategoryId": 0,
             "isEdl": 0,
             "reagentId": 0
+        }))
+
+        const unMappedData = newUnMapped?.length > 0 && newUnMapped?.map(dt => ({
+            "cwhnumDrugIdTxt": "",
+            "cwhstrDrugName": dt?.label,
+            "cwhnumClassCode": 0,
+            "cwhnumStateId": parseInt(dt?.value),
+            "cwhnumDrugId": parseInt(itemName?.value),
+            "iphsName": "",
+            "iphsCode": 0,
+            "cwhnumStateItemCategoryId": 0,
+            "cwhnumIsEdl": 0,
+            "idWithFlag": ""
+        }))
+
+        const val = {
+            "arrdrugMappedDtos": mappedData,
+            "arrdrugUnMapDtos": unMappedData,
+            "seatId": getAuthUserData('userSeatId'),
+            "stateId": parseInt(stateId)
         }
 
-        fetchPostData(`/api/v1/facility-type`, val).then(data => {
+        fetchPostData(`/api/v1/mapDrug/saveMappedDrugs`, val).then(data => {
             if (data?.status === 1) {
-                console.log(data?.data)
+                ToastAlert('Mapped successfully', 'success')
+                setConfirmSave(false)
             } else {
                 ToastAlert(data?.message, 'error')
+                setConfirmSave(false)
             }
         })
     }
+
+    const handleValidation = () => {
+        let isValid = true;
+
+        if (itemName?.value === "") {
+            setErrors(prev => ({ ...prev, "itemNameErr": "Please select Item name" }))
+            isValid = false;
+        }
+        if (stateId === "") {
+            setErrors(prev => ({ ...prev, "stateIdErr": "Please select state" }))
+            isValid = false;
+        }
+
+        if (isValid) {
+            setShowConfirmSave(true)
+        }
+    }
+
+    useEffect(() => {
+        if (confirmSave) {
+            saveDrugMappedData();
+        }
+    }, [confirmSave])
 
     const moveToSelected = () => {
         if (itemCategory) {
@@ -156,7 +209,7 @@ const DrugMappingMaster = () => {
             ));
             setSelectedAvailable([]);
         } else {
-            ToastAlert('Please select facility type!', 'warning')
+            ToastAlert('Please select drug!', 'warning')
         }
     };
 
@@ -171,13 +224,18 @@ const DrugMappingMaster = () => {
             ));
             setSelectedSelected([]);
         } else {
-            ToastAlert('Please select facility type!', 'warning')
+            ToastAlert('Please select drug!', 'warning')
         }
     };
 
     const reset = () => {
-        setFacilityTypeId('')
+        setItemName({});
         setStateId('')
+        setInitialMappedOptions([]);
+        setConfirmSave(false);
+        setInitialMappedOptions([]);
+        setSelectedOptions([]);
+        setAvailableOptions([]);
     }
 
     const mapCategoryOptions = [
@@ -229,7 +287,6 @@ const DrugMappingMaster = () => {
                                     onChange={(e) => {
                                         setItemName(e);
                                         const itemObj = itemNameList?.find(dt => dt?.cwhnumDrugId == e?.value);
-                                        console.log(itemObj,'bgbgbg')
                                         setDrugItemObject(itemObj)
                                     }}
                                     isSearchable={true}
@@ -384,9 +441,9 @@ const DrugMappingMaster = () => {
                 </div>
 
                 <div className='text-center'>
-                    <button className='btn btn-sm datatable-btns py-0' >
+                    <button className='btn btn-sm datatable-btns py-0' onClick={handleValidation}>
                         <i className="fa fa-save me-1 fs-13 text-success"></i>Save</button>
-                    <button className='btn btn-sm datatable-btns py-0'  >
+                    <button className='btn btn-sm datatable-btns py-0' onClick={reset}>
                         <i className="fa fa-broom me-1 fs-13 text-warning"></i>Clear</button>
                 </div>
             </div>

@@ -137,13 +137,13 @@ const IphsDrugMappingMst = () => {
             const mappedData = addedToRight?.map(dt => ({
                 "drugID": Number(dt?.value),
                 "drugName": dt?.label,
-                "packId":drugId,
+                // "packId":drugId,
             }))
 
             const unMappedData = removedFromRight?.map(dt => ({
                 "drugID": Number(dt?.value),
                 "drugName": dt?.label,
-                "packId":drugId,
+                // "packId":drugId,
             }))
 
 
@@ -152,7 +152,7 @@ const IphsDrugMappingMst = () => {
             if (mappedData.length > 0 || unMappedData.length > 0) {
 
                 if (mappedData.length > 0) {
-                    await fetchPatchData("/api/v1/IphsDrugMappingMst/mapDrugs", mappedData).then(data => {
+                    await fetchPostData("/api/v1/IphsDrugMappingMst/mapDrugs", mappedData).then(data => {
                         if (data?.status == 1) {
                             isMapped = true;
                         } else {
@@ -161,7 +161,7 @@ const IphsDrugMappingMst = () => {
                     })
                 }
                 if (unMappedData.length > 0) {
-                    await fetchPatchData("/api/v1/IphsDrugMappingMst/unmapDrugs", unMappedData).then(data => {
+                    await fetchPostData("/api/v1/IphsDrugMappingMst/unmapDrugs", unMappedData).then(data => {
                         if (data?.status == 1) {
                             isMapped = true;
 

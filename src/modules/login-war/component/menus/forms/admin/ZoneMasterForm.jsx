@@ -61,7 +61,7 @@ const ZoneMasterForm = ({setSearchInput}) => {
             "cwhnumFlagForNhm": 0,
         }
 
-        fetchPostData(`/api/v1/zones/${selectedOption[0]?.cwhnumZoneId}`, val).then(data => {
+        fetchPostData(`/api/v1/updateZone/${selectedOption[0]?.cwhnumZoneId}`, val).then(data => {
             if (data?.status ===1) {
                 ToastAlert('Record Updated Successfully', 'success');
                 getZoneListData();

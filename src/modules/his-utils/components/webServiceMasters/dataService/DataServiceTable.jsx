@@ -27,8 +27,6 @@ const DataServiceTable = (props) => {
         }
     }, [category])
 
-    // console.log(data, 'bg')
-    // console.log(category, 'bgcat')
 
     useEffect(() => {
         if (!searchInput) {
