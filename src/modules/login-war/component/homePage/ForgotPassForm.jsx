@@ -3,6 +3,7 @@ import { Modal } from 'react-bootstrap'
 import InputSelect from '../InputSelect'
 import { LoginContext } from '../../context/LoginContext';
 import { fetchData } from '../../../../utils/ApiHooks';
+import { sanitizeInput } from '../../../../utils/CommonFunction';
 
 const ForgotPassForm = ({ isShow, onClose }) => {
 
@@ -22,15 +23,16 @@ const ForgotPassForm = ({ isShow, onClose }) => {
     const handleValueChange = (e) => {
         const { value, name } = e.target;
         const errName = name + 'Err';
+        const nval = sanitizeInput(value);
         setErrors({ ...errors, [errName]: "" })
         if (name === "username") {
-            setUsername(value)
+            setUsername(nval)
         } else if (name === "hintquestion") {
             setHintquestion(value)
         } else if (name === "answer") {
-            setAnswer(value)
+            setAnswer(nval)
         } else if (name === "captchaInput") {
-            setCaptchaInput(value)
+            setCaptchaInput(nval)
         }
     }
 

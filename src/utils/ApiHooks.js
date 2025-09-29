@@ -2,10 +2,9 @@ import axios from 'axios';
 import { decryptAesOrRsa, encryptAesData } from './SecurityConfig';
 import { ToastAlert } from '../modules/login-war/utils/CommonFunction';
 
-
 // const BaseUrl = import.meta.env.VITE_API_BASE_URL
 
-// const BaseUrl = 'http://10.226.25.164:8025'; //pritee
+const BaseUrl = 'http://10.226.25.164:8025'; //pritee
 // const BaseUrl = 'http://10.226.17.6:8025';  //BG     
 // const BaseUrl = 'http://10.226.29.211:8025/';  //Disha
 //  const BaseUrl = 'http://10.226.29.102:8025/';  //shubham
@@ -15,7 +14,7 @@ import { ToastAlert } from '../modules/login-war/utils/CommonFunction';
 // const BaseUrl = 'http://10.226.17.20:8025/'; //himanshi
 
 const apiLogin = axios.create({
-    baseURL: ''
+    baseURL: BaseUrl
 });
 
 //axios.defaults.baseURL = BaseUrl;
@@ -26,6 +25,11 @@ const getAccessToken = () => {
 
 const getCsrfToken = () => {
     return Cookies.get('csrfToken');
+};
+
+const logout = () => {
+    localStorage.clear();
+    Cookies.remove('csrfToken');
 };
 
 // Set the Authorization header globally using an interceptor
@@ -44,10 +48,12 @@ apiLogin.interceptors.request.use(
     }
 );
 
-axios.interceptors.response.use(
+apiLogin.interceptors.response.use(
     async (response) => {
         if (response?.data?.status && response?.data?.status === 401) {
             ToastAlert('Session expired. Please log in again.', 'error');
+            logout();
+            window.location.href = "/dvdms/session-expired";
         } else {
             return response;
         }
@@ -57,14 +63,13 @@ axios.interceptors.response.use(
             const { status, data } = error.response;
             if (status === 401 || status === 403) {
                 // Token is expired or unauthorized
-                ToastAlert(data?.error, 'error');
+                ToastAlert(data?.error ? data?.error : "Origin not allowed!", 'error');
             }
         }
         // Return the error to allow further handling
         return Promise.reject(error);
     }
 );
-
 
 //API FUNCTION TO FETCH DATA
 export const fetchData = async (url, params) => {
@@ -77,6 +82,7 @@ export const fetchData = async (url, params) => {
             // return response?.data
         } else {
             const response = await apiLogin.get(url);
+            console.log('response', response)
             const decryptedData = decryptAesOrRsa(response?.data)
             // console.log(JSON.parse(decryptedData),url);
             return JSON.parse(decryptedData);
@@ -132,7 +138,7 @@ export const fetchDeleteData = async (url, payload) => {
     try {
         const response = await apiLogin.delete(url, { data: payload });
         // return response.data;
-         const decryptedData = decryptAesOrRsa(response?.data);
+        const decryptedData = decryptAesOrRsa(response?.data);
         return JSON.parse(decryptedData);
     } catch (error) {
         console.log('API Error:', error);

@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { DataSeries } from '../../localData/HomeData';
 import useScrollVisibility from '../../hooks/useScrollAnimation';
 import { LoginContext } from '../../context/LoginContext';
 import { fetchQueryData, ToastAlert } from '../../utils/CommonFunction';
@@ -15,9 +14,9 @@ const Facilities = () => {
     const [singleWidget, setSingleWidget] = useState();
     const [isLoading, setIsLoading] = useState(false)
 
-    useEffect(() => {
-        if (widgetData?.length === 0) { getWidgetData() }
-    }, [])
+    // useEffect(() => {
+    //     if (widgetData?.length === 0) { getWidgetData() }
+    // }, [])
 
     useEffect(() => {
         if (widgetData?.length > 0) {

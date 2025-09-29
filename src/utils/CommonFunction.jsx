@@ -1,5 +1,5 @@
 import { decryptData } from "../modules/login-war/utils/SecurityConfig";
-import { VariableSizeList  as List } from 'react-window';
+import { VariableSizeList as List } from 'react-window';
 
 
 export const getAuthUserData = (key) => {
@@ -80,12 +80,50 @@ export const CustomListWindow = (props) => {
   );
 };
 
-  export const formatDateHmis = (dateString) => {
-    const date = new Date(dateString);
-    
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-  
-    return `20${year}-${month}-${day}`;
-  };
+export const formatDateHmis = (dateString) => {
+  const date = new Date(dateString);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `20${year}-${month}-${day}`;
+};
+
+// Sanitizer with whitelist + escape rules
+export const sanitizeInput = (val, isSpecialChrs = false) => {
+  if (val == null) return val;
+  let clean = String(val);
+
+  // If special characters are allowed → skip sanitization
+  if (isSpecialChrs) {
+    return clean;
+  }
+
+  // Remove HTML tags completely
+  clean = clean.replace(/<[^>]*>/g, "");
+
+  //remove from starting
+  // clean = clean.replace(/^[=+\-@]+/, "");
+
+  //remove from everywhere
+  clean = clean.replace(/[=+\-@]/g, "");
+
+  return clean;
+};
+
+// Validator to enforce whitelist rules
+export const validateInput = (input) => {
+  if (input == null) return true;
+
+  const htmlPattern = /<[^>]*>/g;       // HTML not allowed
+  const dangerousPattern = /^[=+\-@]+/;  // invalid if starts with =,+,-,@
+
+  if (htmlPattern.test(input) || dangerousPattern.test(input)) {
+    return false; // invalid
+  }
+
+  return true; // valid
+};
+
+

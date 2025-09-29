@@ -66,7 +66,7 @@ const Header = () => {
                         <div className="buttons d-block d-md-flex align-items-center">
 
                             <a className="btn header-image me-lg-2 me-1" onClick={() => onCmsLogin()}>CMS Login</a>
-                            <a className="btn header-image  me-lg-2 me-1" href='bajrangi.com' target='_blank' onClick={(e) => { redirectUrl(e) }}>Access through Parichay</a>
+                            <a className="btn header-image  me-lg-2 me-1" href='#' target='_blank' onClick={(e) => { redirectUrl(e) }}>Access through Parichay</a>
                             <a className="btn header-image me-lg-2 me-1" href='https://dvdmsgen.prd.dcservices.in/IMCS/login' target='_blank' onClick={(e) => { redirectUrl(e) }}>Generalized DVDMS Login</a>
 
                         </div>

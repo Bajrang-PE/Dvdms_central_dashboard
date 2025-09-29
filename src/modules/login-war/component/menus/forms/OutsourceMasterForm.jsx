@@ -337,12 +337,12 @@ const OutsourceMasterForm = (props) => {
 
                                     </td>
                                     <td>
-                                        <input type='number' className='w-100' value={row?.number} onChange={(e) => handleChange(index, "number", e.target.value)}></input>
+                                        <InputField type='text' acceptType='number' className='w-100' value={row?.number} onChange={(e) => handleChange(index, "number", e.target.value)}></InputField>
                                     </td>
                                     <td>
-                                        <input type='text' className='w-100' value={row?.agency}
-                                            onChange={(e) => handleChange(index, "agency", e.target.value)}
-                                        ></input>
+                                        <InputField type='text' className='w-100' value={row?.agency}
+                                            onChange={(e) => {handleChange(index, "agency", e.target.value) }}
+                                        ></InputField>
                                     </td>
                                     <td>
                                         <button className='btn cms-login-btn m-1 btn-sm' onClick={() => removeRow(index)}>

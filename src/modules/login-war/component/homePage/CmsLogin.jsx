@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import { fetchData, fetchPostData } from '../../../../utils/ApiHooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { sanitizeInput } from '../../../../utils/CommonFunction';
 
 
 const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
@@ -26,20 +27,23 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
     const handleChange = (e) => {
         const { value, name } = e.target;
 
+        const nval = sanitizeInput(value, true);
+
         if (name === 'username') {
-            setUsername(value)
+            setUsername(nval)
             setErrors({ ...errors, "usernameErr": "" })
         } else if (name === 'password') {
-            setPassword(value)
+            setPassword(nval)
             setErrors({ ...errors, "passwordErr": "" })
         } else if (name === 'captchaInput') {
-            setCaptchaInput(value)
+            setCaptchaInput(nval)
             setErrors({ ...errors, "captchaInputErr": "" })
         }
     }
 
     const fetchCaptchaData = () => {
         fetchData('/api/v1/captcha').then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
                 setCaptchaImage(data?.data?.captchaImage);
                 setCaptchaToken(data?.data?.captchaToken);
@@ -81,12 +85,13 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                 console.log('data', data)
                 if (data?.status === 1) {
                     ToastAlert("Login successful", 'success')
-                    const { gnumUserSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode, } = data?.data;
+                    const { gnumUserSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode,gnumUserId } = data?.data;
                     const auth = {
                         'isLogin': true,
                         'username': gstrUserName,
                         'userSeatId': gnumUserSeatId,
-                        'hospitalCode': gnumHospitalCode
+                        'hospitalCode': gnumHospitalCode,
+                        'userId': gnumUserId,
                     }
                     localStorage.setItem('data', encryptData(JSON.stringify(auth)));
                     Cookies.set('csrfToken', csrfToken);
@@ -95,6 +100,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                     navigate('/dvdms/user-dashboard');
                 } else {
                     ToastAlert(data?.message, 'error');
+                    fetchCaptchaData();
                 }
             })
         }

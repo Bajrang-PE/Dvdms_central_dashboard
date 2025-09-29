@@ -62,7 +62,7 @@ const GenericDrugMaster = () => {
     };
 
     const deleteRecord = () => {
-        fetchPostData(`api/v1/DeleteDrug/${selectedOption[0]?.cwhnumCentralDrugId}`).then(data => {
+        fetchPostData(`/api/v1/DeleteDrug/${selectedOption[0]?.cwhnumCentralDrugId}`).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getGenericDrugListData(groupId, subGroupId, recordStatus);

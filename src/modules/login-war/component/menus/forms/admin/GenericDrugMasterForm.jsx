@@ -28,7 +28,7 @@ const GenericDrugMasterForm = (props) => {
     const handleInputChange = (e) => {
         const { name, value } = e?.target;
         const errName = name + "Err";
-        if (name && value) {
+        if (name) {
             setValues({ ...values, [name]: value });
             setErrors({ ...errors, [errName]: "" });
         }

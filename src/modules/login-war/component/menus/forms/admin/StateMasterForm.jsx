@@ -78,7 +78,7 @@ const StateMasterForm = ({setSearchInput}) => {
             "cwhnumLgdCode": ''
 
         }
-        fetchPostData(`api/v1/updateState/${selectedOption[0]?.cwhnumStateId}`, val).then(data => {
+        fetchPostData(`/api/v1/updateState/${selectedOption[0]?.cwhnumStateId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
                 getStateListData();

@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import DashHeader from '../component/dashboard/DashHeader'
 import InputSelect from '../component/InputSelect';
 import { LoginContext } from '../context/LoginContext';
+import { sanitizeInput } from '../../../utils/CommonFunction';
+import InputField from '../component/InputField';
 
 const ChangeUserDetails = () => {
 
@@ -20,6 +22,7 @@ const ChangeUserDetails = () => {
     const handleValueChange = (e) => {
         const { name, value } = e.target;
         const errName = name + "Err";
+
         if (name) {
             setValues({ ...values, [name]: value });
             setErrors({ ...errors, [errName]: "" });
@@ -136,9 +139,9 @@ const ChangeUserDetails = () => {
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
                                 <label className="col-sm-4 col-form-label fix-label required-label">Answer : </label>
                                 <div className="col-sm-8 align-content-center">
-                                    <input
+                                    <InputField
                                         type="text"
-                                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                        className="aliceblue-bg border-dark-subtle"
                                         placeholder="Answer"
                                         name='answer'
                                         id='answer'
@@ -156,9 +159,9 @@ const ChangeUserDetails = () => {
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
                                 <label className="col-sm-4 col-form-label fix-label">Mobile No. : </label>
                                 <div className="col-sm-8 align-content-center">
-                                    <input
+                                    <InputField
                                         type="text"
-                                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                        className="aliceblue-bg border-dark-subtle"
                                         placeholder="Mobile Number"
                                         name='mobileNo'
                                         id='mobileNo'
@@ -171,9 +174,9 @@ const ChangeUserDetails = () => {
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
                                 <label className="col-sm-4 col-form-label fix-label">E-mail : </label>
                                 <div className="col-sm-8 align-content-center">
-                                    <input
+                                    <InputField
                                         type="text"
-                                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                        className="aliceblue-bg border-dark-subtle"
                                         placeholder="E-mail"
                                         name='email'
                                         id='email'
@@ -186,9 +189,9 @@ const ChangeUserDetails = () => {
                             <div className="form-group row" style={{ paddingBottom: "1px" }}>
                                 <label className="col-sm-4 col-form-label fix-label">Parichay User Id : </label>
                                 <div className="col-sm-8 align-content-center">
-                                    <input
+                                    <InputField
                                         type="text"
-                                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                        className="aliceblue-bg border-dark-subtle"
                                         placeholder="Parichay Id"
                                         name='parichayId'
                                         id='parichayId'

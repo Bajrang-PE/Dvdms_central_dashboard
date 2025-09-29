@@ -45,7 +45,7 @@ const StateMaster = () => {
     }, [searchInput, stateListData]);
 
     const deleteRecord = () => {
-        fetchPostData(`api/v1/softDelete/${selectedOption[0]?.cwhnumStateId}`).then(data => {
+        fetchPostData(`/api/v1/softDelete/${selectedOption[0]?.cwhnumStateId}`).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getStateListData();

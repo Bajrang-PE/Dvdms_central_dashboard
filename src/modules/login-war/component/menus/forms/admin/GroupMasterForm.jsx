@@ -109,7 +109,7 @@ const GroupMasterForm = ({ setSearchInput }) => {
                                 placeholder="Enter value"
                                 className="aliceblue-bg border-dark-subtle"
                                 value={groupName}
-                                onChange={(e) => { setGroupName(e.target?.value); setErrors({ ...errors, "groupNameErr": "" }) }}
+                                onChange={(e) => {setGroupName(e.target?.value); setErrors({ ...errors, "groupNameErr": "" }) }}
                                 errorMessage={errors?.groupNameErr}
                             />
                         </div>

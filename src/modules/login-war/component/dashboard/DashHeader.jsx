@@ -84,12 +84,12 @@ const DashHeader = () => {
                                         Change Password
                                     </Link>
                                 </li>
-                                {/* <li>
+                                <li>
                                     <Link className="dropdown-item" to="/dvdms/change-user">
                                         <i className="fa fa-edit me-2"></i>
                                         Change User Details
                                     </Link>
-                                </li> */}
+                                </li>
                                 {/* <li onClick={() => setShowFeedback(true)}>
                                     <a className="dropdown-item" href="#">
                                         <i className="fa fa-comment me-2"></i>
