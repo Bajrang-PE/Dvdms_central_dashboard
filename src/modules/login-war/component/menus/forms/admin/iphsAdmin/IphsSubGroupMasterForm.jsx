@@ -56,6 +56,7 @@ const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGro
                     refresh();
                 } else {
                     ToastAlert(data?.message, "error");
+                    setConfirmSave(false);
                 }
             })
 
@@ -63,7 +64,7 @@ const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGro
 
         if (openPage === "modify") {
             const val = {
-                "subgroupName": subGroupName,
+                "subgroupName": subGroupName
             }
 
             fetchPostData(`/api/v1/IphsSubGroupMaster/modifySubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}`, val).then(data => {
@@ -73,6 +74,7 @@ const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGro
                     refresh();
                 } else {
                     ToastAlert(data?.message, "error")
+                    setConfirmSave(false);
                 }
             })
         }

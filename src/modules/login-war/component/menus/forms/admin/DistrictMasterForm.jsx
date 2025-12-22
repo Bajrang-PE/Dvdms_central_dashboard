@@ -7,7 +7,7 @@ import { ToastAlert } from '../../../../utils/CommonFunction';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 import { fetchPostData } from '../../../../../../utils/ApiHooks';
 
-const DistrictMasterForm = ({ setValues, values }) => {
+const DistrictMasterForm = ({ setValues, values, getListData,setSearchInput }) => {
 
     const { openPage, setOpenPage, selectedOption, setSelectedOption, getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext)
     const [stateId, setStateId] = useState("");
@@ -63,6 +63,7 @@ const DistrictMasterForm = ({ setValues, values }) => {
             fetchPostData("/api/v1/districts/createDistrict", data).then((data) => {
                 if (data?.status === 1) {
                     ToastAlert("Record added successfully", 'success');
+                    getListData(recordStatus || '1', stateId);
                 } else {
                     ToastAlert(data?.message, 'error');
                     setConfirmSave(false);
@@ -87,6 +88,7 @@ const DistrictMasterForm = ({ setValues, values }) => {
                 if (data?.status === 1) {
                     ToastAlert("Record Updated successfully", 'success');
                     setSelectedOption([])
+                    getListData(recordStatus || '1', stateId);
                 } else {
                     ToastAlert(data?.message, 'error');
                     setConfirmSave(false);
@@ -117,7 +119,7 @@ const DistrictMasterForm = ({ setValues, values }) => {
     return (
         <>
 
-            <GlobalButtons onSave={validate} onClear={reset} />
+            <GlobalButtons onSave={validate} onClear={reset} setSearchInput={setSearchInput}/>
             <hr className='my-2' />
             <div className="row mt-2">
                 {openPage === "add" &&

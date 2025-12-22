@@ -43,7 +43,6 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
 
     const fetchCaptchaData = () => {
         fetchData('/api/v1/captcha').then(data => {
-            console.log('data', data)
             if (data?.status === 1) {
                 setCaptchaImage(data?.data?.captchaImage);
                 setCaptchaToken(data?.data?.captchaToken);
@@ -85,7 +84,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                 console.log('data', data)
                 if (data?.status === 1) {
                     ToastAlert("Login successful", 'success')
-                    const { gnumUserSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode,gnumUserId } = data?.data;
+                    const { gnumUserSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode, gnumUserId } = data?.data;
                     const auth = {
                         'isLogin': true,
                         'username': gstrUserName,
@@ -94,7 +93,12 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                         'userId': gnumUserId,
                     }
                     localStorage.setItem('data', encryptData(JSON.stringify(auth)));
-                    Cookies.set('csrfToken', csrfToken);
+                    // Cookies.set('csrfToken', csrfToken);
+                    Cookies.set("csrfToken", csrfToken, {
+                        secure: true,
+                        sameSite: "Strict",
+                        httpOnly: true
+                    });
                     localStorage.setItem('accessToken', accessToken);
                     localStorage.setItem('refreshToken', refreshToken);
                     navigate('/dvdms/user-dashboard');
@@ -208,9 +212,9 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                             </div>
                         }
                     </div>
-                    {/* <div className="ps-0 align-content-center mt-4 mb-3 mx-4">
+                    <div className="ps-0 align-content-center mt-4 mb-3 mx-4">
                         <Link to={'/'} onClick={() => setShowForgotPass(true)}>Forgot Password ?</Link>
-                    </div> */}
+                    </div>
 
                     <button className='btn cms-login-btn w-100 mb-1' onClick={executeLogin}>
                         <b> <span>Login</span></b>

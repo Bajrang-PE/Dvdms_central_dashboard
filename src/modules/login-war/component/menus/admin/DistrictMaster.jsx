@@ -8,6 +8,7 @@ import { fetchData, fetchDeleteData, fetchPostData } from '../../../../../utils/
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction'
 import { Modal } from 'react-bootstrap';
 import MasterReport from '../../MasterReport'
+import InputDrpSelect from '../../InputDrpSelect'
 
 const DistrictMaster = () => {
 
@@ -16,24 +17,29 @@ const DistrictMaster = () => {
     })
 
     const [listData, setListData] = useState([]);
-
     const { getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext)
     const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, isShowReport } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [selectedRows, setSelectedRows] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [selectedStateName, setSelectedStateName] = useState("");
+    const [filterData, setFilterData] = useState(listData);
 
     const handleValueChange = (e) => {
         const { name, value } = e.target;
         const errName = name + "Err";
-
         if (name === "stateId") {
             const selectedOption = stateNameDrpDt.find(opt => opt.value.toString() === value.toString());
             const selectedStateLabel = selectedOption?.label || "";
             setSelectedStateName(selectedStateLabel);
         }
+        if (name) {
+            setValues({ ...values, [name]: value });
+        }
+    }
 
+    const handleMultiSelectChange = (data, name) => {
+        const { value, label } = data[0];
         if (name) {
             setValues({ ...values, [name]: value });
         }
@@ -44,6 +50,21 @@ const DistrictMaster = () => {
             reset()
         }
     }, [openPage])
+
+    useEffect(() => {
+        if (!searchInput) {
+            setFilterData(listData);
+        } else {
+            const lowercasedText = searchInput.toLowerCase();
+            const newFilteredData = listData.filter(row => {
+
+                const distName = row?.cwhstrDistName?.toLowerCase() || "";
+
+                return distName?.includes(lowercasedText);
+            });
+            setFilterData(newFilteredData);
+        }
+    }, [searchInput, listData]);
 
     const reset = () => {
         setValues({
@@ -73,6 +94,7 @@ const DistrictMaster = () => {
 
     }, [values?.stateId, values?.recordStatus])
 
+
     const getListData = async (recStatus, state) => {
         try {
             fetchData(`/api/v1/districts/getAllDistrictList?isActive=${recStatus}&stateId=${state ? state : 0}`).then((data) => {
@@ -86,8 +108,6 @@ const DistrictMaster = () => {
             setListData([]);
         }
     };
-
-
 
     const handleDeleteRecord = () => {
         if (selectedOption?.length > 0) {
@@ -107,14 +127,16 @@ const DistrictMaster = () => {
     const handleDelete = () => {
         const distId = selectedOption[0]?.cwhnumDistId;
         fetchPostData(`/api/v1/districts/deleteDistrict?stateId=${values?.stateId}&districtId=${distId}`).then(data => {
-            if (data) {
+            console.log('data', data)
+            if (data?.status === 1) {
+                getListData(values?.recordStatus, values?.stateId);
                 ToastAlert("Record Deleted Successfully", "success")
                 setSelectedOption([]);
                 setConfirmSave(false);
                 reset();
                 setOpenPage("home")
             } else {
-                ToastAlert('Error while deleting record!', 'error')
+                ToastAlert(data?.message, 'error')
                 setOpenPage("home")
             }
         })
@@ -151,6 +173,21 @@ const DistrictMaster = () => {
         },
     ];
 
+    const onClose = () => {
+        setOpenPage('home');
+        setSelectedOption([]);
+    }
+
+    const removeDuplicates = (options, key = 'value') => {
+        return Array.from(new Map(
+            options.map(item => [item[key], item])
+        ).values());
+    };
+
+    console.log('values', values)
+    console.log('selectedStateName', selectedStateName)
+
+
     return (
         <div className="masters mx-3 my-2">
 
@@ -174,12 +211,9 @@ const DistrictMaster = () => {
                                         options={[{ label: "India", value: "101" }]}
                                         value={values?.countryId}
                                         onChange={handleValueChange}
-
                                     />
                                 </div>
-
                             </div>
-
 
                             <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
                                 <label className="col-sm-4 col-form-label fix-label required-label"> State : </label>
@@ -193,9 +227,19 @@ const DistrictMaster = () => {
                                         onChange={handleValueChange}
                                         value={values?.stateId}
                                     />
+                                    {/* <InputDrpSelect
+                                        name='stateId'
+                                        id='stateId'
+                                        placeholder='Select Value'
+                                        options={removeDuplicates(stateNameDrpDt, 'value')}
+                                        onChange={(e) => handleMultiSelectChange(e, 'stateId')}
+                                        value={values?.stateId}
+                                        className="aliceblue-bg border-dark-subtle"
+                                        searchable={true}
+                                    // multiple={true}
+                                    /> */}
                                 </div>
                             </div>
-
                         </div>
 
                         <div className="row pt-1">
@@ -214,18 +258,17 @@ const DistrictMaster = () => {
                                     />
                                 </div>
                             </div>
-
                         </div>
 
                         <hr className='my-2' />
 
                         <div>
-                            <GlobalTable column={columns} data={listData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
+                            <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
                                 onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
                         </div>
 
                         {openPage === 'view' &&
-                            <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
+                            <Modal show={true} onHide={onClose} size='lg' dialogClassName="dialog-min">
                                 <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
                                     <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
                                 </Modal.Header>
@@ -237,8 +280,7 @@ const DistrictMaster = () => {
                                     </div>
 
                                     <div className='text-center mt-1'>
-
-                                        <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
+                                        <button className='btn cms-login-btn m-1 btn-sm' onClick={() => onClose()}>
                                             <i className="fa fa-broom me-1"></i> Close
                                         </button>
                                     </div>
@@ -250,7 +292,7 @@ const DistrictMaster = () => {
                     </>}
 
                 {(openPage === "add" || openPage === 'modify') &&
-                    <DistrictMasterForm setValues={setValues} values={values} />
+                    <DistrictMasterForm setValues={setValues} values={values} getListData={getListData} setSearchInput={setSearchInput}/>
                 }
             </>}
             {isShowReport &&

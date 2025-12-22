@@ -37,6 +37,10 @@ const HomePage = () => {
         setShowForgotPass(false);
     }
 
+    const onCloseForgotModal = () => {
+        setShowForgotPass(false);
+    }
+
 
     return (
         <div>
@@ -77,11 +81,11 @@ const HomePage = () => {
                 </div>
             </div>
             {showCmsLogin &&
-                <CmsLogin isShow={showCmsLogin} onClose={onCloseModal} setShowForgotPass={setShowForgotPass}/>
+                <CmsLogin isShow={showCmsLogin} onClose={onCloseModal} setShowForgotPass={setShowForgotPass} />
             }
-            {/* {showForgotPass &&
-                <ForgotPassForm isShow={showForgotPass} onClose={onCloseModal} />
-            } */}
+            {showForgotPass &&
+                <ForgotPassForm isShow={showForgotPass} onClose={onCloseForgotModal} />
+            }
 
         </div>
     )

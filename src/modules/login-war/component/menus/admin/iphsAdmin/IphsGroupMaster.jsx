@@ -98,7 +98,7 @@ const IphsGroupMaster = () => {
                 setSelectedOption([]);
                 setOpenPage("home");
                 getListData(1);
-                
+
             } else {
                 ToastAlert('Error while deleting record!', 'error')
                 setOpenPage("home")
@@ -106,6 +106,10 @@ const IphsGroupMaster = () => {
 
         })
 
+    }
+    const onClose = () => {
+        setOpenPage('home');
+        setSelectedOption([]);
     }
 
 
@@ -144,7 +148,7 @@ const IphsGroupMaster = () => {
                         </div>
 
                         {openPage === 'view' &&
-                            <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
+                            <Modal show={true} onHide={onClose} size='lg' dialogClassName="dialog-min">
                                 <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
                                     <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
                                 </Modal.Header>
@@ -156,7 +160,7 @@ const IphsGroupMaster = () => {
 
                                     <div className='text-center mt-1'>
 
-                                        <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
+                                        <button className='btn cms-login-btn m-1 btn-sm' onClick={() => onClose()}>
                                             <i className="fa fa-broom me-1"></i> Close
                                         </button>
                                     </div>

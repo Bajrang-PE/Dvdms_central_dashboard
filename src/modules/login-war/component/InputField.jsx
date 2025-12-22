@@ -19,7 +19,7 @@ const InputField = ({
     type,
     onClick,
     acceptType,
-    isSpecialChrs = false 
+    isSpecialChrs = false
 
 }) => {
 
@@ -56,7 +56,7 @@ const InputField = ({
                 newValue = newValue.replace(/[^0-9]/g, '');
             }
 
-            newValue = sanitizeInput(newValue,isSpecialChrs);
+            newValue = sanitizeInput(newValue, isSpecialChrs);
 
             // If the value changed due to sanitization, create a comprehensive event-like object
             if (newValue !== e.target.value) {
@@ -172,6 +172,7 @@ const InputField = ({
         }
     };
 
+
     return (
         <>
             <input
@@ -180,7 +181,7 @@ const InputField = ({
                 name={name}
                 value={value}
                 placeholder={placeholder}
-                onChange={handleChange}
+                onChange={(e) => { type === "date" ? onChange(e) : handleChange(e) }}
                 onBlur={onBlur}
                 onFocus={onFocus}
                 disabled={disabled}

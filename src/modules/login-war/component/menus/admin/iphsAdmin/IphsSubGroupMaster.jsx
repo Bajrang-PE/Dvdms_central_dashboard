@@ -95,40 +95,40 @@ const IphsSubGroupMaster = () => {
         },
     ];
 
-      const handleDeleteRecord = () => {
-            if (selectedOption?.length > 0) {
-                setOpenPage('delete');
-                setShowConfirmSave(true);
+    const handleDeleteRecord = () => {
+        if (selectedOption?.length > 0) {
+            setOpenPage('delete');
+            setShowConfirmSave(true);
+        } else {
+            ToastAlert("Please select a record", "warning");
+        }
+    }
+
+    useEffect(() => {
+        if (confirmSave && openPage === 'delete') {
+            handleDelete();
+        }
+    }, [confirmSave])
+
+    const handleDelete = () => {
+        alert('bbb')
+        fetchPostData(`/api/v1/IphsSubGroupMaster/deleteSubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}&isActive=0`).then(data => {
+            if (data?.status === 1) {
+                ToastAlert("Data deleted successfully", "success")
+                setConfirmSave(false);
+                setSelectedOption([]);
+                setOpenPage("home");
+                setRecord("1")
+                setGroupId("")
+                getListData();
             } else {
-                ToastAlert("Please select a record", "warning");
+                ToastAlert('Error while deleting record!', 'error')
+                setOpenPage("home")
             }
-        }
-    
-        useEffect(() => {
-            if (confirmSave && openPage === 'delete') {
-                handleDelete();
-            }
-        }, [confirmSave])
-    
-        const handleDelete = () => {
-    
-            fetchPostData(`/api/v1/IphsSubGroupMaster/deleteSubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}&isActive=0`).then(data => {
-                if (data?.status === 1) {
-                    ToastAlert("Data deleted successfully", "success")
-                    setConfirmSave(false);
-                    setSelectedOption([]);
-                    setOpenPage("home");
-                    setRecord("1")
-                    setGroupId("")
-                    getListData();
-                } else {
-                    ToastAlert('Error while deleting record!', 'error')
-                    setOpenPage("home")
-                }
-    
-            })
-    
-        }
+
+        })
+
+    }
 
 
     return (

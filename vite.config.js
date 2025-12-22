@@ -7,6 +7,13 @@ export default defineConfig({
   base: '/dvdms/',
   server: {
     host: '0.0.0.0',
-    port: 5174
+    port: 5174,
+    proxy: {
+      '/api/v1/': {
+        target: 'http://10.226.28.177:8025',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   }
 })

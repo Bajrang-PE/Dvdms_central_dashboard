@@ -9,7 +9,6 @@ import { Modal } from 'react-bootstrap'
 
 const OutsourceMaster = () => {
 
-
     const [values, setValues] = useState({
         "stateId": "", "facilityTypeId": "", "date": "", "recordStatus": "1"
     })
@@ -185,7 +184,6 @@ const OutsourceMaster = () => {
     return (
         <>
             <div className="masters mx-3 my-2">
-
 
                 <div className='masters-header row'>
                     <span className='col-6'><b>{`Outsource Master >>${capitalizeFirstLetter(openPage)}`}</b></span>

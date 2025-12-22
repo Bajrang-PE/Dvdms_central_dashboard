@@ -155,13 +155,14 @@ const SupplierMasterForm = (props) => {
                 gnumSeatId: getAuthUserData('userSeatId'),
             }
 
-            fetchUpdatePostData("/api/v1/suppliers", data).then(data => {
+            fetchUpdatePostData("/api/v1/suppliers/addSupplier", data).then(data => {
+                console.log('data', data)
                 if (data?.status === 1) {
                     ToastAlert('Supplier Added successfully', 'success');
                     refresh();
                     
                 } else {
-                    ToastAlert('Error', 'error');
+                    ToastAlert(data?.message, 'error');
                     setConfirmSave(false);
                 }
             })

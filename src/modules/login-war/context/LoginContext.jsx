@@ -439,10 +439,6 @@ const LoginContextApi = ({ children }) => {
     }
 
 
-
-
-
-
     return (
         <LoginContext.Provider value={{
             widgetData, getWidgetData,

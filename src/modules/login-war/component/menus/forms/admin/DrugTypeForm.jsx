@@ -34,7 +34,6 @@ const DrugTypeForm = ({ setValues, values, setSearchInput }) => {
 
 
     const save = async () => {
-
         if (openPage === 'add') {
             let isValid = true
             if (!drugTypeName.trim()) {

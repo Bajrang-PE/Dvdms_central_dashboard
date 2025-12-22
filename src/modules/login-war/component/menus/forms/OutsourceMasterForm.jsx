@@ -61,7 +61,6 @@ const OutsourceMasterForm = (props) => {
     };
 
 
-
     const removeRow = (index) => {
         if (rows.length === 1) return; // prevent removing last row
         setRows(rows.filter((_, i) => i !== index));
@@ -76,6 +75,7 @@ const OutsourceMasterForm = (props) => {
 
     const handleValueChange = (e) => {
         const { name, value } = e.target;
+        console.log('e.target', e.target)
         const errName = name + "Err";
         if (name) {
             setValues({ ...values, [name]: value });
@@ -235,6 +235,7 @@ const OutsourceMasterForm = (props) => {
         }
     }, [values?.hospId, values?.date])
 
+
     return (
 
         <>
@@ -341,7 +342,7 @@ const OutsourceMasterForm = (props) => {
                                     </td>
                                     <td>
                                         <InputField type='text' className='w-100' value={row?.agency}
-                                            onChange={(e) => {handleChange(index, "agency", e.target.value) }}
+                                            onChange={(e) => { handleChange(index, "agency", e.target.value) }}
                                         ></InputField>
                                     </td>
                                     <td>

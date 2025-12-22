@@ -14,7 +14,7 @@ const BaseUrl = 'http://10.226.25.164:8025'; //pritee
 // const BaseUrl = 'http://10.226.17.20:8025/'; //himanshi
 
 const apiLogin = axios.create({
-    baseURL: BaseUrl
+    baseURL: ''
 });
 
 //axios.defaults.baseURL = BaseUrl;
@@ -82,11 +82,10 @@ export const fetchData = async (url, params) => {
             // return response?.data
         } else {
             const response = await apiLogin.get(url);
-            console.log('response', response)
-            const decryptedData = decryptAesOrRsa(response?.data)
-            // console.log(JSON.parse(decryptedData),url);
-            return JSON.parse(decryptedData);
-            // return response?.data
+            console.log('response', response);
+            return response?.data
+            // const decryptedData = decryptAesOrRsa(response?.data);
+            // return JSON.parse(decryptedData);
         }
     } catch (error) {
         console.error('API Error:', error);
@@ -95,12 +94,12 @@ export const fetchData = async (url, params) => {
 
 export const fetchPostData = async (url, data) => {
     try {
-        // const response = await apiLogin.post(url, data);
-        // console.log('response', response);
-        // return response.data;
-        const response = await apiLogin.post(url, encodeURIComponent(encryptAesData(JSON?.stringify(data))));
-        const decryptedData = decryptAesOrRsa(response?.data);
-        return JSON.parse(decryptedData);
+        const response = await apiLogin.post(url, data);
+        console.log('response', response);
+        return response.data;
+        // const response = await apiLogin.post(url, encodeURIComponent(encryptAesData(JSON?.stringify(data))));
+        // const decryptedData = decryptAesOrRsa(response?.data);
+        // return JSON.parse(decryptedData);
     } catch (error) {
         console.log('API Error:', error);
         // return error?.response?.data;

@@ -62,7 +62,7 @@ const IphsGroupMasterForm = ({ setRecord, record, getListData, setSearchInput })
                 setSelectedOption([]);
                 refresh();             
             }else{
-                ToastAlert("Error", "error");
+                ToastAlert(data?.message, "error");
                   setConfirmSave(false);
             }
         })
