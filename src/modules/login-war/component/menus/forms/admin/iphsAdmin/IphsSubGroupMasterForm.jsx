@@ -50,12 +50,13 @@ const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGro
                 "seatID": getAuthUserData('userSeatId') || 11111,
             }
 
-            fetchPostData(`http://10.226.26.247:8025/api/v1/IphsSubGroupMaster/saveSubgroup`, val).then(data => {
+            fetchPostData(`/api/v1/IphsSubGroupMaster/saveSubgroup`, val).then(data => {
                 if (data?.status === 1) {
                     ToastAlert("Data saved successfully", "success");
                     refresh();
                 } else {
                     ToastAlert(data?.message, "error");
+                    setConfirmSave(false);
                 }
             })
 
@@ -63,16 +64,17 @@ const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGro
 
         if (openPage === "modify") {
             const val = {
-                "subgroupName": subGroupName,
+                "subgroupName": subGroupName
             }
 
-            fetchPatchData(`http://10.226.26.247:8025/api/v1/IphsSubGroupMaster/modifySubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}`, val).then(data => {
+            fetchPostData(`/api/v1/IphsSubGroupMaster/modifySubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}`, val).then(data => {
                 if (data?.status === 1) {
                     ToastAlert("Data updated successfully", "success");
                     setSelectedOption([]);
                     refresh();
                 } else {
                     ToastAlert(data?.message, "error")
+                    setConfirmSave(false);
                 }
             })
         }

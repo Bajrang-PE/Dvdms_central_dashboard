@@ -4,7 +4,7 @@ import InputSelect from '../../InputSelect'
 import InputField from '../../InputField'
 import { LoginContext } from '../../../context/LoginContext'
 import { ToastAlert } from '../../../utils/CommonFunction'
-import { fetchData, fetchUpdateData, fetchUpdatePostData } from '../../../../../utils/ApiHooks'
+import { fetchData, fetchPostData, fetchUpdateData, fetchUpdatePostData } from '../../../../../utils/ApiHooks'
 import { getAuthUserData } from '../../../../../utils/CommonFunction'
 
 const DrugMasterForm = (props) => {
@@ -22,6 +22,8 @@ const DrugMasterForm = (props) => {
     const { setShowConfirmSave, confirmSave, setConfirmSave, openPage, setOpenPage, selectedOption, setSelectedOption, drugTypeDrpData, getDrugTypeDrpData,
         getGenericDrugDrpData, genericDrugDrpData
     } = useContext(LoginContext)
+
+
 
     const [values, setValues] = useState({
         "genericDrugId": "", "drugTypeId": "", "drugName": "", "strength": "", "snomedNameId": "1"
@@ -96,7 +98,7 @@ const DrugMasterForm = (props) => {
 
     const fetchgenericDrugdetails = (drugId, isModify) => {
         if (drugId) {
-            fetchData(`http://10.226.27.173:8025/api/v1/drug-mst/genericDrugCodeDetails?centralDrugId=${drugId}`).then(data => {
+            fetchData(`/api/v1/drug-mst/genericDrugCodeDetails?centralDrugId=${drugId}`).then(data => {
                 if (data?.status == 1) {
                     setCategoryDtl(data?.data?.drugCatName ?? '');
                     setDrugCodeDtl(data?.data?.vedName ?? '');
@@ -118,7 +120,7 @@ const DrugMasterForm = (props) => {
 
     // useEffect(() => {
     //     if (toString(values?.genericDrugId).trim()) {
-    //         fetchData(`http://10.226.27.173:8025/api/v1/drug-mst/genericDrugCodeDetails?centralDrugId=${values?.genericDrugId}`).then(data => {
+    //         fetchData(`/api/v1/drug-mst/genericDrugCodeDetails?centralDrugId=${values?.genericDrugId}`).then(data => {
     //             if (data?.status == 1) {
     //                 setCategoryDtl(data?.data?.drugCatName ?? '');
     //                 setDrugCodeDtl(data?.data?.vedName ?? '');
@@ -152,12 +154,13 @@ const DrugMasterForm = (props) => {
                 cwhnumDrugVedCode: drugCodeId,
             }
 
-            fetchUpdatePostData("http://10.226.27.173:8025/api/v1/drug-mst", val).then(data => {
-                if (data) {
+            fetchPostData("/api/v1/drug-mst/createdrug", val).then(data => {
+                if (data?.status === 1) {
                     ToastAlert("Data saved successfully", "success")
                     refresh();
                 } else {
-                    ToastAlert("Error", "error")
+                    ToastAlert(data?.message, "error")
+                     setConfirmSave(false);
                 }
             })
         }
@@ -172,21 +175,21 @@ const DrugMasterForm = (props) => {
                 cwhstrDrugCategoryCode: categoryId,
                 cwhnumDrugVedCode: drugCodeId,
             }
-
-            fetchUpdateData("http://10.226.27.173:8025/api/v1/drug-mst", val).then(data => {
-                if (data) {
+            fetchPostData("/api/v1/drug-mst/updatedrug", val).then(data => {
+                if (data?.status === 1) {
                     ToastAlert("Data updated successfully", "success")
                     refresh();
                 } else {
-                    ToastAlert("Error", "error")
+                    ToastAlert(data?.message, "error")
+                     setConfirmSave(false);
                 }
             })
         }
-       
+
     }
 
-    const refresh =()=>{
-        getListData(selectedGroupId,selectedSubGroupId,selectedStatus);
+    const refresh = () => {
+        getListData(selectedGroupId, selectedSubGroupId, selectedStatus);
         setConfirmSave(false);
         setSelectedOption([]);
         reset();
@@ -214,7 +217,6 @@ const DrugMasterForm = (props) => {
 
     }, [selectedOption, openPage])
 
-    console.log(values, 'selectedOption')
 
     return (
         <>

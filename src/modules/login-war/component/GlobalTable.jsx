@@ -2,10 +2,11 @@ import React, { useContext } from 'react';
 import DataTable from 'react-data-table-component';
 import InputField from './InputField';
 import { LoginContext } from '../context/LoginContext';
+import { ToastAlert } from '../utils/CommonFunction';
 
 
 const GlobalTable = (props) => {
-    const { selectedOption, setSelectedOption } = useContext(LoginContext);
+    const { selectedOption, setIsShowReport } = useContext(LoginContext);
     const { column, data, onDelete, onReport, setSearchInput, isShowBtn, isAdd, isModify, isDelete, isView, isReport, setOpenPage, isSearch, isRun, onRun, searchInput, onValidate } = props;
 
     const tableCustomStyles = {
@@ -17,6 +18,14 @@ const GlobalTable = (props) => {
                 // outline: '1px solid #FFFFFF',
             },
         },
+    }
+
+    const onClickReport = () => {
+        if (data?.length > 0) {
+            setIsShowReport(true);
+        } else {
+            ToastAlert('Data not found!','warning')
+        }
     }
 
     return (
@@ -64,11 +73,11 @@ const GlobalTable = (props) => {
 
                                     {isRun &&
                                         <button className='btn btn-sm datatable-btns py-0' onClick={onRun}>
-                                            <i class="fa-solid fa-square-check me-1 fs-13 text-success"></i>
+                                            <i className="fa-solid fa-square-check me-1 fs-13 text-success"></i>
                                             Run Job</button>}
                                 </>)}
                                 {isReport &&
-                                    <button className='btn btn-sm datatable-btns py-0' onClick={() => setIsShowReport(true)}>
+                                    <button className='btn btn-sm datatable-btns py-0' onClick={onClickReport}>
                                         <i className="fa fa-file me-1 fs-13 text-warning"></i>Report</button>}
                             </>
                         }

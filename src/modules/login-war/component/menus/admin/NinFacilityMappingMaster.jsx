@@ -26,19 +26,9 @@ const NinFacilityMappingMaster = () => {
     },[stateId])
 
     const getFacilityTypeDrpData=()=>{
-         fetchData('/state/getstate').then((data) => {
-                    if (data) {
-        
-                        const drpData = data?.map((dt) => {
-                            const val = {
-                                value: dt?.cwhnumStateId,
-                                label: dt?.cwhstrStateName
-                            }
-        
-                            return val;
-                        })
-        
-                        setFacilityTypeDrpDt(drpData)
+         fetchData('/api/v1/drpDwnFcltyTypMapMst').then((data) => {
+                    if (data?.status ===1) {
+                        setFacilityTypeDrpDt(data?.data)
         
                     } else {
                         setFacilityTypeDrpDt([])

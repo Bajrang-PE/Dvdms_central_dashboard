@@ -90,12 +90,12 @@ const DashHeader = () => {
                                         Change User Details
                                     </Link>
                                 </li>
-                                <li onClick={() => setShowFeedback(true)}>
+                                {/* <li onClick={() => setShowFeedback(true)}>
                                     <a className="dropdown-item" href="#">
                                         <i className="fa fa-comment me-2"></i>
                                         Feedback
                                     </a>
-                                </li>
+                                </li> */}
                                 <li>
                                     <a className="dropdown-item pointer" onClick={()=>logOut()}>
                                         <i className="fa fa-right-from-bracket me-2"></i>
@@ -125,9 +125,9 @@ const DashHeader = () => {
                 </ul>
                 <MenuList activeDropdown={activeDropdown} />
             </nav>
-            {showFeedback &&
+            {/* {showFeedback &&
                 <FeedbackForm onClose={onClose} />
-            }
+            } */}
         </div>
     );
 }

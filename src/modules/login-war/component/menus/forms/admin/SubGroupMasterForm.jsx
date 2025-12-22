@@ -5,14 +5,15 @@ import { LoginContext } from '../../../../context/LoginContext'
 import axios from 'axios'
 import { ToastAlert } from '../../../../utils/CommonFunction'
 import { getAuthUserData } from '../../../../../../utils/CommonFunction'
+import { fetchPostData } from '../../../../../../utils/ApiHooks'
 
-const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, values, setSearchInput, getAllListData}) => {
-    const { openPage, setOpenPage, selectedOption,setSelectedOption, getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext)
+const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId, setValues, values, setSearchInput, getAllListData }) => {
+    const { openPage, setOpenPage, selectedOption, setSelectedOption, getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext)
     const [subGroupName, setSubGroupName] = useState("")
     const [groupName, setGroupName] = useState("")
     const [groupId, setGroupId] = useState("")
-    const [subGroupNameErr, setSubGroupNameErr] = useState("")   
-    const [recordStatus, setRecordStatus] = useState("")   
+    const [subGroupNameErr, setSubGroupNameErr] = useState("")
+    const [recordStatus, setRecordStatus] = useState("")
 
     useEffect(() => {
         setGroupId(selectedGroupId || "")
@@ -36,65 +37,75 @@ const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, val
             saveDetails();
         }
     }, [confirmSave])
-    
 
 
-     useEffect(() => {
-            if (selectedOption?.length > 0 && openPage === 'modify') {     
-                setRecordStatus((selectedOption[0]?.gnumIsValid).toString());
-                setSubGroupName(selectedOption[0]?.cwhstrSubgroupName);
-                setGroupId(selectedOption[0]?.cwhnumGroupId)
+
+    useEffect(() => {
+        if (selectedOption?.length > 0 && openPage === 'modify') {
+            setRecordStatus((selectedOption[0]?.gnumIsValid).toString());
+            setSubGroupName(selectedOption[0]?.cwhstrSubgroupName);
+            setGroupId(selectedOption[0]?.cwhnumGroupId)
+        }
+
+    }, [selectedOption, openPage])
+
+
+    const saveDetails = async () => {
+
+        if (openPage === "add") {
+            const data = {
+                "cwhnumGroupId": groupId,
+                "cwhstrSubgroupName": subGroupName,
+                "gnumSeatId": getAuthUserData('userSeatId') || "10001"
             }
-    
-        }, [selectedOption, openPage])
 
-
-    const saveDetails =async()=>{
-
-        if(openPage === "add"){
-        const data = {
-            "cwhnumGroupId": groupId,
-            "cwhstrSubgroupName": subGroupName,
-            "gnumSeatId": getAuthUserData('userSeatId') || "10001"
+            fetchPostData("/api/v1/createSubGroup", data).then((data) => {
+                if (data?.status === 1) {
+                    ToastAlert('Subgroup Added Successfully', 'success');
+                } else {
+                    ToastAlert(data?.message, 'error');
+                }
+            })
         }
 
-        const response = await axios.post("http://10.226.27.173:8025/api/v1/subgroup", data)
-        ToastAlert('Subgroup Added Successfully', 'success');
-       }
+        if (openPage === "modify") {
+            const data = {
+                "cwhnumSubgroupId": selectedOption[0].cwhnumSubgroupId,
+                "cwhnumGroupId": groupId,
+                "cwhstrSubgroupName": subGroupName,
+                "gnumIsValid": recordStatus,
+                "gnumSeatId": getAuthUserData('userSeatId')
+            }
 
-       if(openPage === "modify"){
-        const data = {
-            "cwhnumSubgroupId":selectedOption[0].cwhnumSubgroupId,
-            "cwhnumGroupId": groupId,
-            "cwhstrSubgroupName": subGroupName,
-            "gnumIsValid": recordStatus,
-            "gnumSeatId": getAuthUserData('userSeatId') 
+            fetchPostData("/api/v1/updateSubGroup", data).then((data) => {
+                if (data?.status === 1) {
+                    ToastAlert('Subgroup Updated Successfully', 'success');
+                    setSelectedOption([])
+                } else {
+                    ToastAlert(data?.message, 'error');
+                }
+            })
         }
-
-        const response = await axios.put("http://10.226.27.173:8025/api/v1/subgroup", data) 
-        ToastAlert('Subgroup updated Successfully', 'success');
-        setSelectedOption([])
-       }
         reset();
         setConfirmSave(false);
         setOpenPage('home');
-        getAllListData("1","");
-       
+        getAllListData("1", "");
+
     }
 
-    const reset=()=>{
-          setSubGroupName("");
-          setSearchInput('');
-          setValues({ ...values, "recordStatus": "1","groupId":"" });
+    const reset = () => {
+        setSubGroupName("");
+        setSearchInput('');
+        setValues({ ...values, "recordStatus": "1", "groupId": "" });
     }
 
     return (
 
-        
+
         <>
             <GlobalButtons onSave={saveValidate} onClear={reset} />
             <div className="row">
-              
+
                 <div className="form-group col-sm-4 row" style={{ paddingBottom: "1px" }}>
                     <label className="col-sm-4 col-form-label fix-label required-label"> Group Name : </label>
                     <div className="col-sm-8 align-content-center">
@@ -119,47 +130,47 @@ const SubGroupMasterForm = ({ selectedGroupName, selectedGroupId ,setValues, val
                     </div>
                 </div>
 
-                { openPage === "modify" &&
-                <div className="form-group col-sm-4  row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-4 col-form-label fix-label">
-                                Record Status :
-                            </label>
-                            <div className="col-sm-5 ps-0 align-content-center">
-                                <div className="form-check form-check-inline">
-                                    <input
-                                        className="border-dark-subtle form-check-input"
-                                        type="radio"
-                                        name="recordStatus"
-                                        id="recordStatus"
-                                        value={1}
-                                        onChange={(e) => setRecordStatus(e.target.value)}
-                                        checked={recordStatus === "1"}
-                                    />
-                                    <label className="form-check-label" htmlFor="dbYes">
-                                        Active
-                                    </label>
-                                </div>
-                                <div className="form-check form-check-inline">
-                                    <input
-                                        className="border-dark-subtle form-check-input"
-                                        type="radio"
-                                        name="recordStatus"
-                                        id="recordStatus"
-                                        value={0}
-                                        onChange={(e) => setRecordStatus(e.target.value)}
-                                        checked={recordStatus === "0"}
-                                    />
-                                    <label className="form-check-label" htmlFor="dbNo">
-                                        InActive
-                                    </label>
-                                </div>
+                {openPage === "modify" &&
+                    <div className="form-group col-sm-4  row" style={{ paddingBottom: "1px" }}>
+                        <label className="col-sm-4 col-form-label fix-label">
+                            Record Status :
+                        </label>
+                        <div className="col-sm-5 ps-0 align-content-center">
+                            <div className="form-check form-check-inline">
+                                <input
+                                    className="border-dark-subtle form-check-input"
+                                    type="radio"
+                                    name="recordStatus"
+                                    id="recordStatus"
+                                    value={1}
+                                    onChange={(e) => setRecordStatus(e.target.value)}
+                                    checked={recordStatus === "1"}
+                                />
+                                <label className="form-check-label" htmlFor="dbYes">
+                                    Active
+                                </label>
                             </div>
+                            <div className="form-check form-check-inline">
+                                <input
+                                    className="border-dark-subtle form-check-input"
+                                    type="radio"
+                                    name="recordStatus"
+                                    id="recordStatus"
+                                    value={0}
+                                    onChange={(e) => setRecordStatus(e.target.value)}
+                                    checked={recordStatus === "0"}
+                                />
+                                <label className="form-check-label" htmlFor="dbNo">
+                                    InActive
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 }
             </div>
-            </>
+        </>
 
-   
+
     )
 }
 

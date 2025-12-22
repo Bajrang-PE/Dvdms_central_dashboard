@@ -3,12 +3,13 @@ import { LoginContext } from '../../../context/LoginContext'
 import InputSelect from '../../InputSelect'
 import GlobalTable from '../../GlobalTable'
 import SubGroupMasterForm from '../forms/admin/SubGroupMasterForm'
-import { fetchData, fetchDeleteData, fetchUpdateData } from '../../../../../utils/ApiHooks'
+import { fetchData, fetchDeleteData, fetchPostData, fetchUpdateData } from '../../../../../utils/ApiHooks'
 import { Modal } from 'react-bootstrap';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction'
+import MasterReport from '../../MasterReport'
 
 const SubGroupMaster = () => {
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, isShowReport } = useContext(LoginContext);
     const [selectedGroupName, setSelectedGroupName] = useState("");
     const [selectedGroupId, setSelectedGroupId] = useState("");
     const { getSteteNameDrpData, stateNameDrpDt, getGroupDrpData, groupDrpData } = useContext(LoginContext)
@@ -62,9 +63,8 @@ const SubGroupMaster = () => {
 
     const getAllListData = async (recStatus, grpId) => {
 
-
         if (recStatus && grpId === "") {
-            fetchData(`http://10.226.27.173:8025/api/v1/subgroup/all?isActive=${recStatus}`).then((data) => {
+            fetchData(`/api/v1/getAllSubGroupList?isActive=${recStatus}`).then((data) => {
 
                 if (data?.status === 1 && Array.isArray(data.data)) {
                     setListData(data.data);
@@ -76,8 +76,7 @@ const SubGroupMaster = () => {
         }
 
         if (recStatus && grpId) {
-            fetchData(`http://10.226.27.173:8025/api/v1/subgroup?groupId=${grpId}&isActive=${recStatus}`).then((data) => {
-
+            fetchData(`/api/v1/SubGroupByGroupId?groupId=${grpId}&isActive=${recStatus}`).then((data) => {
                 if (data?.status === 1 && Array.isArray(data.data)) {
                     setListData(data.data);
                 } else {
@@ -167,7 +166,7 @@ const SubGroupMaster = () => {
 
     const handleDelete = () => {
         const subGrpId = String(selectedOption[0]?.cwhnumSubgroupId)
-        fetchDeleteData(`http://10.226.17.20:8025/api/v1/subgroup?groupId=${selectedGroupId}&subGroupId=${subGrpId}&isActive=1`).then(data => {
+        fetchPostData(`/api/v1/deleteSubGroup?groupId=${selectedGroupId}&subGroupId=${subGrpId}&isActive=1`).then(data => {
             if (data) {
                 ToastAlert("Record Deleted Successfully", "success")
                 setSelectedOption([]);
@@ -181,88 +180,98 @@ const SubGroupMaster = () => {
         })
     }
 
+    const onClose = () => {
+        setOpenPage('home');
+        setSelectedOption([]);
+    }
+
     return (
         <div className="masters mx-3 my-2">
 
+            {!isShowReport && <>
+                <div className='masters-header row'>
+                    <span className='col-6'><b>{`Sub Group Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
+                </div>
 
-            <div className='masters-header row'>
-                <span className='col-6'><b>{`Sub Group Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
-            </div>
+                {(openPage === "home" || openPage === "view" || openPage === 'delete') &&
+                    <>
+                        <div className="row">
+                            <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
+                                <label className="col-sm-4 col-form-label fix-label required-label"> Group </label>
+                                <div className="col-sm-8 align-content-center">
+                                    <InputSelect
+                                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                        name='groupId'
+                                        id='groupId'
+                                        placeholder={"Select Value"}
+                                        options={groupDrpData}
+                                        value={values?.groupId}
+                                        onChange={handleValueChange}
+                                        errorMessage={errors?.groupIdErr}
 
-            {(openPage === "home" || openPage === "view" || openPage === 'delete') &&
-                <>
-                    <div className="row">
-                        <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-4 col-form-label fix-label required-label"> Group </label>
-                            <div className="col-sm-8 align-content-center">
-                                <InputSelect
-                                    className="aliceblue-bg form-control form-control-sm border-dark-subtle"
-                                    name='groupId'
-                                    id='groupId'
-                                    placeholder={"Select Value"}
-                                    options={groupDrpData}
-                                    value={values?.groupId}
-                                    onChange={handleValueChange}
-                                    errorMessage={errors?.groupIdErr}
+                                    />
+                                </div>
 
-                                />
                             </div>
 
-                        </div>
 
+                            <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
+                                <label className="col-sm-4 col-form-label fix-label required-label"> Record Status : </label>
+                                <div className="col-sm-8 align-content-center">
+                                    <InputSelect
+                                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                        name='recordStatus'
+                                        id='recordStatus'
+                                        options={[{ label: "Active", value: "1" }, { label: "Inactive", value: "0" }]}
+                                        value={values?.recordStatus}
+                                        onChange={handleValueChange}
 
-                        <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
-                            <label className="col-sm-4 col-form-label fix-label required-label"> Record Status : </label>
-                            <div className="col-sm-8 align-content-center">
-                                <InputSelect
-                                    className="aliceblue-bg form-control form-control-sm border-dark-subtle"
-                                    name='recordStatus'
-                                    id='recordStatus'
-                                    options={[{ label: "Active", value: "1" }, { label: "Inactive", value: "0" }]}
-                                    value={values?.recordStatus}
-                                    onChange={handleValueChange}
-
-                                />
+                                    />
+                                </div>
                             </div>
+
+                            <div>
+                                <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
+                                    onReport={null} setSearchInput={setSearchInput} searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                            </div>
+
+
+                            {openPage === 'view' &&
+                                <Modal show={true} onHide={onClose} size='lg' dialogClassName="dialog-min">
+                                    <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
+                                        <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
+                                    </Modal.Header>
+                                    <Modal.Body className='px-2 py-1'>
+
+                                        <div className='text-center'>
+                                            <label><b>Group Name : </b></label>&nbsp;{selectedGroupName}<br />
+                                            <label><b>Sub Group Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrSubgroupName}
+                                        </div>
+
+                                        <div className='text-center mt-1'>
+
+                                            <button className='btn cms-login-btn m-1 btn-sm' onClick={() => onClose()}>
+                                                <i className="fa fa-broom me-1"></i> Close
+                                            </button>
+                                        </div>
+
+                                    </Modal.Body>
+                                </Modal>
+                            }
                         </div>
+                    </>}
 
-                        <div>
-                            <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
-                                onReport={null} setSearchInput={setSearchInput} searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
-                        </div>
+                {(openPage === "add" || openPage === "modify") &&
+                    <>
+                        <SubGroupMasterForm selectedGroupName={selectedGroupName} selectedGroupId={selectedGroupId}
+                            setValues={setValues} values={values} setSearchInput={setSearchInput} getAllListData={getAllListData} />
+                    </>
+                }
+            </>}
 
-
-                        {openPage === 'view' &&
-                            <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
-                                <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
-                                    <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
-                                </Modal.Header>
-                                <Modal.Body className='px-2 py-1'>
-
-                                    <div className='text-center'>
-                                        <label><b>Group Name : </b></label>&nbsp;{selectedGroupName}<br />
-                                        <label><b>Sub Group Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrSubgroupName}
-                                    </div>
-
-                                    <div className='text-center mt-1'>
-
-                                        <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
-                                            <i className="fa fa-broom me-1"></i> Close
-                                        </button>
-                                    </div>
-
-                                </Modal.Body>
-                            </Modal>
-                        }
-                    </div>
-                </>}
-
-            {(openPage === "add" || openPage === "modify") &&
-                <>
-                    <SubGroupMasterForm selectedGroupName={selectedGroupName} selectedGroupId={selectedGroupId}
-                        setValues={setValues} values={values} setSearchInput={setSearchInput} getAllListData={getAllListData} />
-                </>
+            {isShowReport &&
+                <MasterReport title={"Sub Group Master"} column={columns} data={listData} />
             }
         </div>
     )

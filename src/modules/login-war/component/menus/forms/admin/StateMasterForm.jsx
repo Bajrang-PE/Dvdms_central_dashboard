@@ -41,7 +41,7 @@ const StateMasterForm = ({setSearchInput}) => {
             "cwhstrStateShortName": stShortName,
             "cwhnumZoneId": zoneName,
         }
-        fetchPostData(`api/v1/State`, val).then(data => {
+        fetchPostData(`/api/v1/saveState`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
                 getStateListData();
@@ -78,7 +78,7 @@ const StateMasterForm = ({setSearchInput}) => {
             "cwhnumLgdCode": ''
 
         }
-        fetchUpdateData(`api/v1/State/${selectedOption[0]?.cwhnumStateId}`, val).then(data => {
+        fetchPostData(`/api/v1/updateState/${selectedOption[0]?.cwhnumStateId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
                 getStateListData();

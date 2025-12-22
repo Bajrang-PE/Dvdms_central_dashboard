@@ -4,7 +4,7 @@ import { capitalizeFirstLetter, ToastAlert } from '../../../../utils/CommonFunct
 import InputSelect from '../../../InputSelect';
 import GlobalTable from '../../../GlobalTable';
 import IphsSubGroupMasterForm from '../../forms/admin/iphsAdmin/IphsSubGroupMasterForm';
-import { fetchData, fetchDeleteData } from '../../../../../../utils/ApiHooks';
+import { fetchData, fetchDeleteData, fetchPostData } from '../../../../../../utils/ApiHooks';
 import { Modal } from 'react-bootstrap';
 
 const IphsSubGroupMaster = () => {
@@ -33,7 +33,7 @@ const IphsSubGroupMaster = () => {
         }, [groupId, record])
 
     const getListData = () => {
-        fetchData(`http://10.226.26.247:8025/api/v1/IphsSubGroupMaster/getSubgroupsConditionally?groupID=${(groupId || groupId === 0) ? groupId : 0}&isActive=${record}`).then(data => {
+        fetchData(`/api/v1/IphsSubGroupMaster/getSubgroupsConditionally?groupID=${(groupId || groupId === 0) ? groupId : 0}&isActive=${record}`).then(data => {
             if (data?.status === 1) {
                 setListData(data.data);
             } else {
@@ -95,40 +95,40 @@ const IphsSubGroupMaster = () => {
         },
     ];
 
-      const handleDeleteRecord = () => {
-            if (selectedOption?.length > 0) {
-                setOpenPage('delete');
-                setShowConfirmSave(true);
+    const handleDeleteRecord = () => {
+        if (selectedOption?.length > 0) {
+            setOpenPage('delete');
+            setShowConfirmSave(true);
+        } else {
+            ToastAlert("Please select a record", "warning");
+        }
+    }
+
+    useEffect(() => {
+        if (confirmSave && openPage === 'delete') {
+            handleDelete();
+        }
+    }, [confirmSave])
+
+    const handleDelete = () => {
+        alert('bbb')
+        fetchPostData(`/api/v1/IphsSubGroupMaster/deleteSubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}&isActive=0`).then(data => {
+            if (data?.status === 1) {
+                ToastAlert("Data deleted successfully", "success")
+                setConfirmSave(false);
+                setSelectedOption([]);
+                setOpenPage("home");
+                setRecord("1")
+                setGroupId("")
+                getListData();
             } else {
-                ToastAlert("Please select a record", "warning");
+                ToastAlert('Error while deleting record!', 'error')
+                setOpenPage("home")
             }
-        }
-    
-        useEffect(() => {
-            if (confirmSave && openPage === 'delete') {
-                handleDelete();
-            }
-        }, [confirmSave])
-    
-        const handleDelete = () => {
-    
-            fetchDeleteData(`http://10.226.26.247:8025/api/v1/IphsSubGroupMaster/deleteSubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}&isActive=0`).then(data => {
-                if (data?.status === 1) {
-                    ToastAlert("Data deleted successfully", "success")
-                    setConfirmSave(false);
-                    setSelectedOption([]);
-                    setOpenPage("home");
-                    setRecord("1")
-                    setGroupId("")
-                    getListData();
-                } else {
-                    ToastAlert('Error while deleting record!', 'error')
-                    setOpenPage("home")
-                }
-    
-            })
-    
-        }
+
+        })
+
+    }
 
 
     return (

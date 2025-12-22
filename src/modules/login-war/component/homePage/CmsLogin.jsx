@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import { fetchData, fetchPostData } from '../../../../utils/ApiHooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { sanitizeInput } from '../../../../utils/CommonFunction';
 
 
 const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
@@ -26,23 +27,25 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
     const handleChange = (e) => {
         const { value, name } = e.target;
 
+        const nval = sanitizeInput(value, true);
+
         if (name === 'username') {
-            setUsername(value)
+            setUsername(nval)
             setErrors({ ...errors, "usernameErr": "" })
         } else if (name === 'password') {
-            setPassword(value)
+            setPassword(nval)
             setErrors({ ...errors, "passwordErr": "" })
         } else if (name === 'captchaInput') {
-            setCaptchaInput(value)
+            setCaptchaInput(nval)
             setErrors({ ...errors, "captchaInputErr": "" })
         }
     }
 
     const fetchCaptchaData = () => {
         fetchData('/api/v1/captcha').then(data => {
-            if (data) {
-                setCaptchaImage(data?.captchaImage);
-                setCaptchaToken(data?.captchaToken);
+            if (data?.status === 1) {
+                setCaptchaImage(data?.data?.captchaImage);
+                setCaptchaToken(data?.data?.captchaToken);
             } else {
                 console.error('Request failed');
                 setCaptchaImage(null);
@@ -78,28 +81,30 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                 "captchaToken": captchaToken
             }
             fetchPostData("/api/v1/auth/login", val).then(data => {
-                if (data) {
-                    if (!data?.message && data?.accessToken) {
-                        ToastAlert("Login successful", 'success')
-                        const { gnumSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode, } = data;
-                        const auth = {
-                            'isLogin': true,
-                            //   'userType': (gstrUserName)?.toLowerCase(),
-                            'username': gstrUserName,
-                            'userSeatId': gnumSeatId,
-                            //   'hospitalName': gstrHospitalName,
-                            'hospitalCode': gnumHospitalCode
-                        }
-                        localStorage.setItem('data', encryptData(JSON.stringify(auth)));
-                        Cookies.set('csrfToken', csrfToken);
-                        localStorage.setItem('accessToken', accessToken);
-                        localStorage.setItem('refreshToken', refreshToken);
-                        navigate('/dvdms/user-dashboard');
-                    } else {
-                        ToastAlert(data?.message, 'error');
+                console.log('data', data)
+                if (data?.status === 1) {
+                    ToastAlert("Login successful", 'success')
+                    const { gnumUserSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode, gnumUserId } = data?.data;
+                    const auth = {
+                        'isLogin': true,
+                        'username': gstrUserName,
+                        'userSeatId': gnumUserSeatId,
+                        'hospitalCode': gnumHospitalCode,
+                        'userId': gnumUserId,
                     }
+                    localStorage.setItem('data', encryptData(JSON.stringify(auth)));
+                    // Cookies.set('csrfToken', csrfToken);
+                    Cookies.set("csrfToken", csrfToken, {
+                        secure: true,
+                        sameSite: "Strict",
+                        httpOnly: true
+                    });
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    navigate('/dvdms/user-dashboard');
                 } else {
-                    ToastAlert('login failed!', 'error')
+                    ToastAlert(data?.message, 'error');
+                    fetchCaptchaData();
                 }
             })
         }
@@ -110,12 +115,38 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
     }, [])
 
 
+    const [capsLockOn, setCapsLockOn] = useState(false);
+
+    const checkCapsLock = (event) => {
+        if (event && event.getModifierState) {
+            setCapsLockOn(event.getModifierState('CapsLock'));
+        }
+    };
+
+    useEffect(() => {
+        // Global Caps Lock key detection
+        const handleKeyEvent = (e) => {
+            if (e.key === 'CapsLock') {
+                setCapsLockOn(e.getModifierState('CapsLock'));
+            }
+        };
+
+        window.addEventListener('keyup', handleKeyEvent);
+        return () => window.removeEventListener('keyup', handleKeyEvent);
+    }, []);
+
+
     return (
         <>
             <Modal show={isShow} onHide={onClose} size='sm'>
                 <Modal.Header closeButton className='p-2 datatable-header cms-login'>
                     <b><h5 className='mx-2 mt-1 px-1'>DVDMS Dashboard Login</h5></b>
                 </Modal.Header>
+                {capsLockOn && (
+                    <div className="caps-lock-warning" style={{ color: "red", fontSize: "12px", marginTop: "5px", textAlign: "center" }}>
+                        ⚠️ Caps Lock is On
+                    </div>
+                )}
                 <Modal.Body className='px-2 py-0'>
                     <div className="ps-0 align-content-center m-3">
                         <select className="form-control aliceblue-bg" id="DashboardFor" name='DashboardFor' placeholder="Select Program" defaultValue={'1'}>
@@ -131,6 +162,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                             id='username'
                             value={username}
                             onChange={handleChange}
+                            onKeyDown={checkCapsLock}
                         />
                         {errors?.usernameErr &&
                             <div className="required-input">
@@ -147,6 +179,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                             id='password'
                             value={password}
                             onChange={handleChange}
+                            onKeyDown={checkCapsLock}
                         />
                         <span className="input-group-text aliceblue-bg pointer" id="basic-addon1" onClick={() => setIsShowPassword(!isShowPassword)}>
                             <FontAwesomeIcon icon={isShowPassword ? faEye : faEyeSlash} className="dropdown-gear-icon me-1" />
@@ -171,6 +204,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                             id='captchaInput'
                             value={captchaInput}
                             onChange={handleChange}
+                            onKeyDown={checkCapsLock}
                         />
                         {errors?.captchaInputErr &&
                             <div className="required-input">

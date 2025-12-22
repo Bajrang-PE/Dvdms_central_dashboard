@@ -5,7 +5,7 @@ import InputSelect from '../../InputSelect';
 import ZoneMasterForm from '../forms/admin/ZoneMasterForm';
 import ViewPage from '../ViewPage';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
-import { fetchDeleteData } from '../../../../../utils/ApiHooks';
+import { fetchDeleteData, fetchPostData } from '../../../../../utils/ApiHooks';
 import MasterReport from '../../MasterReport';
 
 const ZoneMaster = () => {
@@ -44,7 +44,7 @@ const ZoneMaster = () => {
     }, [searchInput, zoneListData]);
 
     const deleteRecord = () => {
-        fetchDeleteData(`api/v1/zones/${selectedOption[0]?.cwhnumZoneId}`).then(data => {
+        fetchPostData(`/api/v1/deleteZone/${selectedOption[0]?.cwhnumZoneId}`).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getZoneListData();

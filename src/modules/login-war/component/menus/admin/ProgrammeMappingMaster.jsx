@@ -9,10 +9,6 @@ import { getAuthUserData } from '../../../../../utils/CommonFunction';
 const ProgrammeMappingMaster = () => {
     const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
 
-    const confirmSaveLocaL = confirmSave;
-
-    console.log("save", confirmSaveLocaL);
-
     const [programmeId, setProgrammeId] = useState("");
     const [stateId, setStateId] = useState("");
     const [availableOptions, setAvailableOptions] = useState([]);
@@ -26,15 +22,12 @@ const ProgrammeMappingMaster = () => {
     useEffect(() => {
         if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
         if (programmeNameList?.length === 0) getProgrammeNameList();
-
         setOpenPage("add");
-        //getFacilityTypeDrpData();
     }, []);
 
     useEffect(() => {
         if (stateId) {
             setSelectedOptions([]);
-            // getUnmappedList();
         }
         setSelectedAvailable([]);
         setSelectedSelected([]);
@@ -48,9 +41,8 @@ const ProgrammeMappingMaster = () => {
     }, [stateId, programmeId])
 
     const getProgrammeNameList = () => {
-        fetchData(`http://10.226.17.20:8025/api/v1/ProgrammeMap/all?isActive=1`).then(data => {
+        fetchData(`/api/v1/ProgrammeMap/all?isActive=1`).then(data => {
             if (data?.status === 1) {
-                console.log(data?.data, 'listpname')
                 const drpData = data?.data?.map((dt) => ({
                     value: dt?.cwhnumProgrammeId,
                     label: dt?.cwhstrProgrammeName
@@ -64,7 +56,7 @@ const ProgrammeMappingMaster = () => {
     }
 
     const getUnmappedList = () => {
-        fetchData(`http://10.226.17.20:8025/api/v1/ProgrammeMap/unmap?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
+        fetchData(`/api/v1/ProgrammeMap/unmap?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumProgrammeId,
@@ -80,7 +72,7 @@ const ProgrammeMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`http://10.226.17.20:8025/api/v1/ProgrammeMap/map?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
+        fetchData(`/api/v1/ProgrammeMap/map?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumStateProgrammeId,
@@ -100,8 +92,6 @@ const ProgrammeMappingMaster = () => {
 
     const saveProgrammeMappedData = () => {
 
-        console.log("selected value", selectedOptions);
-
         const newMapped = selectedOptions.filter(
             item => !initialMappedOptions.some(i => i.value == item.value)
         );
@@ -110,48 +100,30 @@ const ProgrammeMappingMaster = () => {
             item => !selectedOptions.some(i => i.value == item.value)
         );
 
-        console.log(newMapped,'m')
-        console.log(newUnMapped,'u')
-
         const mappedData = newMapped?.length > 0 && newMapped?.map(dt => ({
-         //   "cwhnumStateId": parseInt(stateId),
             "cwhnumStateProgrammeId": dt?.value,
             "cwhstrStateProgrammeName": dt?.label,
-          //  "gnumSeatId": getAuthUserData('userSeatId') || 10008,
-          //  "gnumIsValid": 1,
-           // "cwhnumProgrammeSlno": 0,
-           // "cwhnumProgrammeId": programmeId,
-          //  "cwhstrProgrammeName": '',
 
         }))
 
         const unMappedData = newUnMapped?.length > 0 && newUnMapped?.map(dt => ({
-          //  "cwhnumStateId": parseInt(stateId),
-          //  "cwhnumProgrammeId":  programmeId,
-           // "cwhstrProgrammeName": '',
            cwhnumProgrammeId: dt?.value,
-         //  gdtEntryDate: 
-           //gdtEntryDate: new Date().toISOString(),
            cwhstrProgrammeName: dt?.label,
         }))
 
         const val = {
             arrProgrammeMappedDtos: mappedData?.length > 0 ? mappedData : [],
             arrProgrammeUnMapDtos: unMappedData?.length > 0 ? unMappedData : [],
-         //   gnumSeatId: getAuthUserData('userSeatId') || 10008,
-
-            //change here
             
-            gnumSeatId:  getAuthUserData('userSeatId') || 10008,
+            gnumSeatId:  getAuthUserData('userSeatId'),
             cwhnumStateId: parseInt(stateId),
             cwhnumProgrammeId: programmeId,
         }
 
 
-       // fetchPostData(`http://10.226.17.20:8025/api/v1/ProgrammeMap`, JSON.stringify(val)).then(data => {
-        fetchPostData(`http://10.226.17.20:8025/api/v1/ProgrammeMap`,val).then(data => {
+        fetchPostData(`/api/v1/ProgrammeMap`,val).then(data => {
             if (data?.status === 1) {
-                console.log(data?.data)
+                ToastAlert('Record Mapped successfully')
                 setConfirmSave(false)
                 reset();
             } else {
@@ -187,7 +159,6 @@ const ProgrammeMappingMaster = () => {
 
 
     const moveToSelected = () => {
-      //  if (programmeId) {
             const itemsToMove = availableOptions.filter(opt =>
                 selectedAvailable.includes(String(opt.value))
             );
@@ -199,13 +170,9 @@ const ProgrammeMappingMaster = () => {
                 !selectedAvailable.includes(String(opt.value))
             ));
             setSelectedAvailable([]);
-    //    } else {
-    //        ToastAlert('Please select programme name!', 'warning')
-    //    }
     };
 
     const moveToAvailable = () => {
-     //   if (programmeId) {
             const itemsToMove = selectedOptions.filter(opt =>
                 selectedSelected.includes(String(opt.value))
             );
@@ -214,12 +181,9 @@ const ProgrammeMappingMaster = () => {
                 !selectedSelected.includes(String(opt.value))
             ));
             setSelectedSelected([]);
-    //    } else {
-   //         ToastAlert('Please select programme name!', 'warning')
-     //   }
+
     };
 
-   
     const reset = () => {
         setProgrammeId('');
         setStateId('');
@@ -229,8 +193,6 @@ const ProgrammeMappingMaster = () => {
         setSelectedOptions([]);
         setAvailableOptions([]);
     }
-    
-
 
     return (
         <>

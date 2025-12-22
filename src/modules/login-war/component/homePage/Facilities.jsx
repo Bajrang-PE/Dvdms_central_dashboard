@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { DataSeries } from '../../localData/HomeData';
 import useScrollVisibility from '../../hooks/useScrollAnimation';
 import { LoginContext } from '../../context/LoginContext';
-import { fetchQueryData } from '../../utils/CommonFunction';
+import { fetchQueryData, ToastAlert } from '../../utils/CommonFunction';
 import GraphModal from './GraphModal';
 import Loader from '../Loader';
 
@@ -15,9 +14,9 @@ const Facilities = () => {
     const [singleWidget, setSingleWidget] = useState();
     const [isLoading, setIsLoading] = useState(false)
 
-    useEffect(() => {
-        if (widgetData?.length === 0) { getWidgetData() }
-    }, [])
+    // useEffect(() => {
+    //     if (widgetData?.length === 0) { getWidgetData() }
+    // }, [])
 
     useEffect(() => {
         if (widgetData?.length > 0) {
@@ -32,33 +31,40 @@ const Facilities = () => {
         if (!fc?.queryVO) return;
         setIsLoading(true);
         try {
-          const data = await fetchQueryData(fc?.queryVO);
-          const rawItem = data?.[0];
-      
-          if (!rawItem) {
-            setGraphData([]);
-            setIsLoading(false);
-            return;
-          }
-      
-          const keys = Object.keys(rawItem);
-      
-         
-          const graphData = data.map(item => ({
-            name: item[keys[0]],  
-            y: parseFloat(item[keys[1]]) || 0  
-          }));
-      
-          setGraphData(graphData);
-          setSingleWidget(fc);
-          setShowGraph(true);
-          setIsLoading(false);
+            const data = await fetchQueryData(fc?.queryVO);
+            if (data?.status === 1) {
+
+                const rawItem = data?.data?.[0];
+
+                if (!rawItem) {
+                    setGraphData([]);
+                    setIsLoading(false);
+                    return;
+                }
+
+                const keys = Object.keys(rawItem);
+
+                const graphData = data?.data.map(item => ({
+                    name: item[keys[0]],
+                    y: parseFloat(item[keys[1]]) || 0
+                }));
+
+                setGraphData(graphData);
+                setSingleWidget(fc);
+                setShowGraph(true);
+                setIsLoading(false);
+
+            } else {
+                ToastAlert(data?.message, 'error')
+                 setIsLoading(false);
+            }
+
         } catch (error) {
-          console.error("Error loading query data:", error);
-          setIsLoading(false);
+            console.error("Error loading query data:", error);
+            setIsLoading(false);
         }
-      };
-      
+    };
+
 
     const onClose = () => {
         setGraphData([]);
@@ -96,7 +102,7 @@ const Facilities = () => {
                 <br />
             </div>
 
-            {graphWidgets?.length > 0 && graphWidgets?.map((fc, index) => (
+            {graphWidgets?.length > 0 ? graphWidgets?.map((fc, index) => (
                 <div className={`col-md-3 col-sm-4 d-flex justify-content-center ${isVisible ? 'fade-in' : 'fade-out'}`} key={index}>
                     <div className="card card-data" style={{ backgroundColor: fc?.widgetBackgroundColour || facilityData[index]?.color }}>
                         <a className="card-header data-text text-center text-decoration-none" id={`graph${index + 1}`}>
@@ -111,10 +117,13 @@ const Facilities = () => {
                         </div>
                     </div>
                 </div>
-            ))}
+            )) :
+                <>
+                    <h6 className='text-danger'>No Facilities Available</h6>
+                </>
+            }
 
-
-            <div id="note" className="col-md-12 pl-2 mt-4" style={{color:"#000e4e"}}>
+            <div id="note" className="col-md-12 pl-2 mt-4" style={{ color: "#000e4e" }}>
                 <h6>* The counts / values may differ with other portals as
                     they are specific to facilities onboarded with DVDMS Central
                     Dashboard</h6>

@@ -1,9 +1,17 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import DashHeader from '../component/dashboard/DashHeader'
 import { fetchPostData } from '../../../utils/ApiHooks'
+import { getAuthUserData, sanitizeInput, validateInput } from '../../../utils/CommonFunction'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import { ToastAlert } from '../utils/CommonFunction'
+import { LoginContext } from '../context/LoginContext'
 
 const ChangeDvdmsPass = () => {
-
+    const { setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const [isShowOldPassword, setIsShowOldPassword] = useState(false);
+    const [isShowNewPassword, setIsShowNewPassword] = useState(false);
+    const [isShowCnfPassword, setIsShowCnfPassword] = useState(false);
     const [values, setValues] = useState({
         "oldPassword": "", "newPassword": "", "confirmPassword": ""
     })
@@ -19,6 +27,27 @@ const ChangeDvdmsPass = () => {
             setValues({ ...values, [name]: value })
             setErrors({ ...errors, [errName]: "" })
         }
+    }
+
+    const callApiForChangePass = () => {
+        const val = {
+            "userId": getAuthUserData('userId'),
+            "currentPassword": values?.oldPassword,
+            "username": getAuthUserData('username'),
+            "newPassword": values?.newPassword,
+        }
+        console.log('val', val)
+        fetchPostData("/api/v1/change-password", val).then(data => {
+            console.log('data', data)
+            if (data?.status === 1) {
+                ToastAlert('Password Changed Successfully', 'success');
+                setConfirmSave(false);
+            } else {
+                ToastAlert(data.message, 'error');
+                setConfirmSave(false);
+            }
+        })
+
     }
 
     const saveChangePassword = (e) => {
@@ -42,22 +71,21 @@ const ChangeDvdmsPass = () => {
             isValid = false;
         }
 
+        if (!validateInput(values?.newPassword) || !validateInput(values?.oldPassword)) {
+            ToastAlert('html like tags and formulas start with =, are not allowed!', 'warning')
+            isValid = false;
+        }
+
         if (isValid) {
-            const val = {
-                "userId": 10006,
-                "currentPassword": values?.oldPassword,
-                "username": 'deo',
-                "newPassword": values?.newPassword,
-            }
-            fetchPostData("/api/v1/change-password", val).then(data => {
-                if (data) {
-                        console.log(data, 'data')
-                } else {
-                    console.log("Request Failed!")
-                }
-            })
+            setShowConfirmSave(true)
         }
     }
+
+    useEffect(() => {
+        if (confirmSave) {
+            callApiForChangePass();
+        }
+    }, [confirmSave])
 
     const reset = () => {
         setValues({ "oldPassword": "", "newPassword": "", "confirmPassword": "" });
@@ -73,15 +101,21 @@ const ChangeDvdmsPass = () => {
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
                         <label className="col-sm-4 col-form-label fix-label required-label">Old Password : </label>
                         <div className="col-sm-8 align-content-center">
-                            <input
-                                type="text"
-                                className="aliceblue-bg form-control form-control-sm border-dark-subtle"
-                                placeholder="Old Password"
-                                name='oldPassword'
-                                id='oldPassword'
-                                onChange={handleValueChange}
-                                value={values?.oldPassword}
-                            />
+                            <div className="input-group input-group-sm">
+                                <input
+                                    type={isShowOldPassword ? 'text' : 'password'}
+                                    className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                    placeholder="Old Password"
+                                    name='oldPassword'
+                                    id='oldPassword'
+                                    onChange={handleValueChange}
+                                    value={values?.oldPassword}
+                                />
+                                <span className="input-group-text aliceblue-bg pointer" id="basic-addon1"
+                                    onClick={() => setIsShowOldPassword(!isShowOldPassword)}>
+                                    <FontAwesomeIcon icon={isShowOldPassword ? faEye : faEyeSlash} className="dropdown-gear-icon me-1" />
+                                </span>
+                            </div>
                             {errors?.oldPasswordErr &&
                                 <div className="required-input">
                                     {errors?.oldPasswordErr}
@@ -92,15 +126,21 @@ const ChangeDvdmsPass = () => {
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
                         <label className="col-sm-4 col-form-label fix-label required-label">New Password : </label>
                         <div className="col-sm-8 align-content-center">
-                            <input
-                                type="text"
-                                className="aliceblue-bg form-control form-control-sm border-dark-subtle"
-                                placeholder="New Password"
-                                name='newPassword'
-                                id='newPassword'
-                                onChange={handleValueChange}
-                                value={values?.newPassword}
-                            />
+                            <div className="input-group input-group-sm">
+                                <input
+                                    type={isShowNewPassword ? 'text' : 'password'}
+                                    className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                    placeholder="New Password"
+                                    name='newPassword'
+                                    id='newPassword'
+                                    onChange={handleValueChange}
+                                    value={values?.newPassword}
+                                />
+                                <span className="input-group-text aliceblue-bg pointer" id="basic-addon1"
+                                    onClick={() => setIsShowNewPassword(!isShowNewPassword)}>
+                                    <FontAwesomeIcon icon={isShowNewPassword ? faEye : faEyeSlash} className="dropdown-gear-icon me-1" />
+                                </span>
+                            </div>
                             {errors?.newPasswordErr &&
                                 <div className="required-input">
                                     {errors?.newPasswordErr}
@@ -111,15 +151,21 @@ const ChangeDvdmsPass = () => {
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
                         <label className="col-sm-4 col-form-label fix-label required-label">Confirm Password : </label>
                         <div className="col-sm-8 align-content-center">
-                            <input
-                                type="text"
-                                className="aliceblue-bg form-control form-control-sm border-dark-subtle"
-                                placeholder="Confirm Password"
-                                name='confirmPassword'
-                                id='confirmPassword'
-                                onChange={handleValueChange}
-                                value={values?.confirmPassword}
-                            />
+                            <div className="input-group input-group-sm">
+                                <input
+                                    type={isShowCnfPassword ? 'text' : 'password'}
+                                    className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                    placeholder="Confirm Password"
+                                    name='confirmPassword'
+                                    id='confirmPassword'
+                                    onChange={handleValueChange}
+                                    value={values?.confirmPassword}
+                                />
+                                <span className="input-group-text aliceblue-bg pointer" id="basic-addon1"
+                                    onClick={() => setIsShowCnfPassword(!isShowCnfPassword)}>
+                                    <FontAwesomeIcon icon={isShowCnfPassword ? faEye : faEyeSlash} className="dropdown-gear-icon me-1" />
+                                </span>
+                            </div>
                             {errors?.confirmPasswordErr &&
                                 <div className="required-input">
                                     {errors?.confirmPasswordErr}

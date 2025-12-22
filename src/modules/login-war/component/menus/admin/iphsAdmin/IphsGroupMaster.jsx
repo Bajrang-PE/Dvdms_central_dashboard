@@ -3,7 +3,7 @@ import { LoginContext } from '../../../../context/LoginContext'
 import { capitalizeFirstLetter, ToastAlert } from '../../../../utils/CommonFunction';
 import InputSelect from '../../../InputSelect';
 import GlobalTable from '../../../GlobalTable';
-import { fetchData, fetchDeleteData } from '../../../../../../utils/ApiHooks';
+import { fetchData, fetchDeleteData, fetchPostData } from '../../../../../../utils/ApiHooks';
 import InputField from '../../../InputField';
 import IphsGroupMasterForm from '../../forms/admin/iphsAdmin/IphsGroupMasterForm';
 import { Modal } from 'react-bootstrap';
@@ -20,9 +20,8 @@ const IphsGroupMaster = () => {
     useEffect(() => {
         getListData(record);
     }, [record])
-
     const getListData = (recordStatus) => {
-        fetchData(`http://10.226.26.247:8025/api/v1/IphsGroupMaster/getAllGroups?isActive=${recordStatus}`).then(data => {
+        fetchData(`/api/v1/IphsGroupMaster/getAllGroups?isActive=${recordStatus}`).then(data => {
             if (data.status == 1) {
                 setListData(data.data)
             } else {
@@ -92,13 +91,14 @@ const IphsGroupMaster = () => {
 
     const handleDelete = () => {
 
-        fetchDeleteData(`http://10.226.26.247:8025/api/v1/IphsGroupMaster/deleteGroups?groupIDs=${[selectedOption[0].cwhnumIphsGroupID]}`).then(data => {
-            if (data) {
+        fetchPostData(`/api/v1/IphsGroupMaster/deleteGroups?groupIDs=${[selectedOption[0].cwhnumIphsGroupID]}`).then(data => {
+            if (data?.status === 1) {
                 ToastAlert("Data deleted successfully", "success")
                 setConfirmSave(false);
                 setSelectedOption([]);
                 setOpenPage("home");
                 getListData(1);
+
             } else {
                 ToastAlert('Error while deleting record!', 'error')
                 setOpenPage("home")
@@ -106,6 +106,10 @@ const IphsGroupMaster = () => {
 
         })
 
+    }
+    const onClose = () => {
+        setOpenPage('home');
+        setSelectedOption([]);
     }
 
 
@@ -144,7 +148,7 @@ const IphsGroupMaster = () => {
                         </div>
 
                         {openPage === 'view' &&
-                            <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
+                            <Modal show={true} onHide={onClose} size='lg' dialogClassName="dialog-min">
                                 <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
                                     <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
                                 </Modal.Header>
@@ -156,7 +160,7 @@ const IphsGroupMaster = () => {
 
                                     <div className='text-center mt-1'>
 
-                                        <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
+                                        <button className='btn cms-login-btn m-1 btn-sm' onClick={() => onClose()}>
                                             <i className="fa fa-broom me-1"></i> Close
                                         </button>
                                     </div>

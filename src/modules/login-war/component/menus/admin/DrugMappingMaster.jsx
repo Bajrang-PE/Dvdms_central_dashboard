@@ -4,19 +4,27 @@ import { ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
 import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
 import Select from 'react-select'
+import { CustomListWindow, getAuthUserData } from '../../../../../utils/CommonFunction';
+// import debounce from 'lodash.debounce';
 
 const DrugMappingMaster = () => {
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext);
+    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
 
     const [itemCategory, setItemCategory] = useState("");
     const [itemName, setItemName] = useState(null);
     const [stateId, setStateId] = useState("");
     const [itemNameList, setItemNameList] = useState([]);
+    const [drugItemObject, setDrugItemObject] = useState(null);
 
     const [availableOptions, setAvailableOptions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [selectedAvailable, setSelectedAvailable] = useState([]);
     const [selectedSelected, setSelectedSelected] = useState([]);
+    const [initialMappedOptions, setInitialMappedOptions] = useState([]);
+
+    const [errors, setErrors] = useState({
+        "itemNameErr": "", "stateIdErr": ""
+    })
 
     useEffect(() => {
         if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
@@ -24,17 +32,17 @@ const DrugMappingMaster = () => {
     }, []);
 
     useEffect(() => {
-        if (stateId) {
-            setSelectedOptions([]);
-            getUnmappedList();
-        }
+        setSelectedOptions([]);
+        setAvailableOptions([]);
         setSelectedAvailable([]);
         setSelectedSelected([]);
     }, [stateId]);
 
     useEffect(() => {
         if (stateId && itemName) {
+
             getMappedList();
+            getUnmappedList();
         }
     }, [stateId, itemName])
 
@@ -44,13 +52,13 @@ const DrugMappingMaster = () => {
 
         switch (selectedValue) {
             case "1":
-                url = `api/v1/fetchDrugs`;
+                url = `api/v1/drug-mst/fetchDrugs`;
                 break;
             case "2":
-                url = `api/v1/fetchReagentDrugs`;
+                url = `api/v1/drug-mst/fetchReagentDrugs`;
                 break;
             case "3":
-                url = `api/v1/fetchDetailedDrugs`;
+                url = `api/v1/drug-mst/fetchDetailedDrugs`;
                 break;
             default:
                 setItemNameList([]);
@@ -65,7 +73,7 @@ const DrugMappingMaster = () => {
                     label: item.cwhstrDrugName,
                 }));
 
-                setItemNameList(options);
+                setItemNameList(data?.data);
             } else {
                 setItemNameList([]);
                 setItemName({});
@@ -75,9 +83,14 @@ const DrugMappingMaster = () => {
 
 
     const getUnmappedList = () => {
-        fetchData(`api/v1/UnmapDrug/${stateId}`).then(data => {
+        fetchData(`/api/v1/mapDrug/UnmapDrug?stateId=${stateId}`).then(data => {
             if (data?.status === 1) {
-                setAvailableOptions(data?.data)
+                const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
+                    value: dt?.cwhnumDrugId,
+                    label: dt?.cwhstrDrugName
+                })
+                )
+                setAvailableOptions(drpData);
             } else {
                 // ToastAlert('Error while fetching record!', 'error')
                 setAvailableOptions([])
@@ -86,80 +99,143 @@ const DrugMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`api/v1/MappedDrug/${itemName?.value}/${stateId}`).then(data => {
+        fetchData(`/api/v1/mapDrug/MappedDrug?drugId=${itemName?.value}&stateId=${stateId}`).then(data => {
             if (data.status === 1) {
-                setSelectedOptions(data?.data)
+                const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
+                    value: dt?.stateDrugId,
+                    label: dt?.stateDrugName
+                })
+                )
+                setSelectedOptions(drpData)
+                setInitialMappedOptions(drpData)
             } else {
                 // ToastAlert('Error while fetching record!', 'error')
                 setSelectedOptions([])
+                setInitialMappedOptions([])
             }
         })
     }
 
-    const saveFacilityMappedData = () => {
+    const saveDrugMappedData = () => {
 
-        const val = {
-            "stateDrugId": 0,
-            "stateId": 0,
-            "entryDate": "2025-05-05T09:17:11.477Z",
-            "seatId": 0,
-            "isValid": 0,
-            "stateDrugIdTxt": "string",
-            "stateDrugName": "string",
-            "drugId": 0,
-            "deletedDate": "2025-05-05T09:17:11.477Z",
+        const newMapped = selectedOptions.filter(
+            item => !initialMappedOptions.some(i => i.value === item.value)
+        );
+
+        const newUnMapped = initialMappedOptions.filter(
+            item => !selectedOptions.some(i => i.value === item.value)
+        );
+
+        const mappedData = newMapped?.length > 0 && newMapped?.map(dt => ({
+            "stateDrugId": parseInt(dt?.value),
+            "stateId": parseInt(stateId),
+            "seatId": getAuthUserData('userSeatId'),
+            "isValid": 1,
+            "stateDrugIdTxt": "",
+            "stateDrugName": dt?.label,
+            "drugId": parseInt(itemName?.value),
             "drugSlno": 0,
             "mappedCorrectly": 0,
             "itemCategoryId": 0,
             "isEdl": 0,
             "reagentId": 0
+        }))
+
+        const unMappedData = newUnMapped?.length > 0 && newUnMapped?.map(dt => ({
+            "cwhnumDrugIdTxt": "",
+            "cwhstrDrugName": dt?.label,
+            "cwhnumClassCode": 0,
+            "cwhnumStateId": parseInt(dt?.value),
+            "cwhnumDrugId": parseInt(itemName?.value),
+            "iphsName": "",
+            "iphsCode": 0,
+            "cwhnumStateItemCategoryId": 0,
+            "cwhnumIsEdl": 0,
+            "idWithFlag": ""
+        }))
+
+        const val = {
+            "arrdrugMappedDtos": mappedData,
+            "arrdrugUnMapDtos": unMappedData,
+            "seatId": getAuthUserData('userSeatId'),
+            "stateId": parseInt(stateId)
         }
 
-        fetchPostData(`api/v1/facility-type`, val).then(data => {
+        fetchPostData(`/api/v1/mapDrug/saveMappedDrugs`, val).then(data => {
             if (data?.status === 1) {
-                console.log(data?.data)
+                ToastAlert('Mapped successfully', 'success')
+                setConfirmSave(false)
             } else {
                 ToastAlert(data?.message, 'error')
+                setConfirmSave(false)
             }
         })
     }
 
+    const handleValidation = () => {
+        let isValid = true;
+
+        if (itemName?.value === "") {
+            setErrors(prev => ({ ...prev, "itemNameErr": "Please select Item name" }))
+            isValid = false;
+        }
+        if (stateId === "") {
+            setErrors(prev => ({ ...prev, "stateIdErr": "Please select state" }))
+            isValid = false;
+        }
+
+        if (isValid) {
+            setShowConfirmSave(true)
+        }
+    }
+
+    useEffect(() => {
+        if (confirmSave) {
+            saveDrugMappedData();
+        }
+    }, [confirmSave])
+
     const moveToSelected = () => {
         if (itemCategory) {
             const itemsToMove = availableOptions.filter(opt =>
-                selectedAvailable.includes(String(opt.cwhnumDrugId))
+                selectedAvailable.includes(String(opt.value))
             );
             const newSelected = itemsToMove.filter(item =>
-                !selectedOptions.some(selected => selected.cwhnumDrugId === item.cwhnumDrugId)
+                !selectedOptions.some(selected => selected.value === item.value)
             );
             setSelectedOptions(prev => [...prev, ...newSelected]);
             setAvailableOptions(prev => prev.filter(opt =>
-                !selectedAvailable.includes(String(opt.cwhnumDrugId))
+                !selectedAvailable.includes(String(opt.value))
             ));
             setSelectedAvailable([]);
         } else {
-            ToastAlert('Please select facility type!', 'warning')
+            ToastAlert('Please select drug!', 'warning')
         }
     };
 
     const moveToAvailable = () => {
         if (itemCategory) {
             const itemsToMove = selectedOptions.filter(opt =>
-                selectedSelected.includes(String(opt.cwhnumDrugId))
+                selectedSelected.includes(String(opt.value))
             );
             setAvailableOptions(prev => [...prev, ...itemsToMove]);
             setSelectedOptions(prev => prev.filter(opt =>
-                !selectedSelected.includes(String(opt.cwhnumDrugId))
+                !selectedSelected.includes(String(opt.value))
             ));
             setSelectedSelected([]);
         } else {
-            ToastAlert('Please select facility type!', 'warning')
+            ToastAlert('Please select drug!', 'warning')
         }
     };
 
     const reset = () => {
-        setFacilityTypeId('')
+        setItemName({});
         setStateId('')
+        setInitialMappedOptions([]);
+        setConfirmSave(false);
+        setInitialMappedOptions([]);
+        setSelectedOptions([]);
+        setAvailableOptions([]);
     }
 
     const mapCategoryOptions = [
@@ -168,7 +244,6 @@ const DrugMappingMaster = () => {
         { value: "3", label: "All" }
     ];
 
- 
 
     return (
         <>
@@ -176,7 +251,6 @@ const DrugMappingMaster = () => {
                 <div className='masters-header row'>
                     <span className='col-12'><b>{`Drug Mapping Master`}</b></span>
                 </div>
-
 
                 <div className='row pt-2'>
                     <div className='col-sm-6'>
@@ -190,7 +264,7 @@ const DrugMappingMaster = () => {
                                     options={mapCategoryOptions}
                                     className="aliceblue-bg border-dark-subtle"
                                     value={itemCategory}
-                                    onChange={(e) => { setItemCategory(e.target.value); getItemNameList(e.target.value) }}
+                                    onChange={(e) => { setItemCategory(e.target.value); getItemNameList(e.target.value); setItemName(''); setDrugItemObject(null) }}
 
                                 />
                             </div>
@@ -201,17 +275,73 @@ const DrugMappingMaster = () => {
                                 <Select
                                     id='itemName'
                                     name='itemName'
-                                    options={itemNameList}
+                                    options={itemNameList?.map(item => ({
+                                        value: item.cwhnumDrugId,
+                                        label: item.cwhstrDrugName,
+                                    }))}
+                                    // options={filteredOptions}
+                                    // onInputChange={debouncedInputChange}
                                     isMulti={false}
                                     className="aliceblue-bg border-dark-subtle react-select-login"
                                     value={itemName}
-                                    onChange={(e) => setItemName(e)}
+                                    onChange={(e) => {
+                                        setItemName(e);
+                                        const itemObj = itemNameList?.find(dt => dt?.cwhnumDrugId == e?.value);
+                                        setDrugItemObject(itemObj)
+                                    }}
                                     isSearchable={true}
                                     isDisabled={itemNameList?.length > 0 ? false : true}
                                     placeholder="select value"
+                                    components={{ MenuList: CustomListWindow }}
                                 />
                             </div>
                         </div>
+                        {(itemCategory != "2" && itemName && drugItemObject) &&
+                            <>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Generic Drug Name : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.centraldrugName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Group : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.groupName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Subgroup : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.subGroupName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Drug Type : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.drugtypeName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Category : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.drugCatName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">VED : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.vedName || "---"}
+                                    </div>
+                                </div>
+                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                    <label className="col-sm-5 col-form-label fix-label">Strength : </label>
+                                    <div className="col-sm-7 align-content-center">
+                                        {drugItemObject?.cwhstrStrengthName || "---"}
+                                    </div>
+                                </div>
+                            </>
+                        }
                     </div>
                     <div className='col-sm-6'>
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>
@@ -252,8 +382,8 @@ const DrugMappingMaster = () => {
                             }}
                         >
                             {availableOptions.map(opt => (
-                                <option key={opt.cwhnumDrugId} value={opt.cwhnumDrugId}>
-                                    {opt.cwhstrDrugName}
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
                                 </option>
                             ))}
                         </select>
@@ -297,8 +427,8 @@ const DrugMappingMaster = () => {
                             }}
                         >
                             {selectedOptions.map(opt => (
-                                <option key={opt.stateDrugId} value={opt.stateDrugId}>
-                                    {opt.stateDrugName}
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
                                 </option>
                             ))}
                         </select>
@@ -311,9 +441,9 @@ const DrugMappingMaster = () => {
                 </div>
 
                 <div className='text-center'>
-                    <button className='btn btn-sm datatable-btns py-0' >
+                    <button className='btn btn-sm datatable-btns py-0' onClick={handleValidation}>
                         <i className="fa fa-save me-1 fs-13 text-success"></i>Save</button>
-                    <button className='btn btn-sm datatable-btns py-0'  >
+                    <button className='btn btn-sm datatable-btns py-0' onClick={reset}>
                         <i className="fa fa-broom me-1 fs-13 text-warning"></i>Clear</button>
                 </div>
             </div>

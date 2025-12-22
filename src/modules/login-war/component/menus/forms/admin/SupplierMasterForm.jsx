@@ -75,6 +75,7 @@ const SupplierMasterForm = (props) => {
 
 
     const handleValidation = () => {
+        setConfirmSave(false);
         let isValid = true;
         if (!values?.suppName.trim()) {
             setErrors(prev => ({ ...prev, suppNameErr: "Please enter supplier name " }));
@@ -154,12 +155,15 @@ const SupplierMasterForm = (props) => {
                 gnumSeatId: getAuthUserData('userSeatId'),
             }
 
-            fetchUpdatePostData("http://10.226.27.173:8025/api/v1/suppliers", data).then(data => {
+            fetchUpdatePostData("/api/v1/suppliers/addSupplier", data).then(data => {
+                console.log('data', data)
                 if (data?.status === 1) {
                     ToastAlert('Supplier Added successfully', 'success');
                     refresh();
+                    
                 } else {
-                    ToastAlert('Error', 'error');
+                    ToastAlert(data?.message, 'error');
+                    setConfirmSave(false);
                 }
             })
 
@@ -183,13 +187,14 @@ const SupplierMasterForm = (props) => {
                 gnumSeatId: getAuthUserData('userSeatId'),
             }
 
-            fetchUpdateData(`http://10.226.27.173:8025/api/v1/suppliers/${values?.suppId}`, data).then(data => {
+            fetchUpdateData(`/api/v1/suppliers/${values?.suppId}`, data).then(data => {
                 if (data?.status === 1) {
                     ToastAlert('Supplier updated successfully', 'success')
                     setSelectedOption([]);
                     refresh();
                 } else {
                     ToastAlert('Error', 'error')
+                    setConfirmSave(false);
                 }
             })
         }

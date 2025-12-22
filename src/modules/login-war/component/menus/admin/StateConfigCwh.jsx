@@ -3,7 +3,7 @@ import DashHeader from '../../dashboard/DashHeader'
 import InputSelect from "../../InputSelect";
 import axios from 'axios';
 import { LoginContext } from '../../../context/LoginContext';
-import { fetchData, fetchUpdateData } from '../../../../../utils/ApiHooks';
+import { fetchData, fetchPostData, fetchUpdateData } from '../../../../../utils/ApiHooks';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import InputField from '../../InputField';
 
@@ -46,7 +46,6 @@ const StateConfigCwh = () => {
     useEffect(() => {
         if (values?.insertMethodOnCentralServer == "3" && values?.strStateId) {
             getJobDrpData(values?.strStateId);
-            console.log('first')
         }
     }, [values?.strStateId, values?.insertMethodOnCentralServer]);
 
@@ -62,8 +61,7 @@ const StateConfigCwh = () => {
     const fetchDataByState = async (stateId) => {
         try {
 
-            fetchData(`http://10.226.27.173:8025/api/v1/state/getStateConfig/${stateId}`).then((data) => {
-
+            fetchData(`/api/v1/state/getStateConfig/${stateId}`).then((data) => {
                 if (data?.status === 1) {
 
                     setValues({
@@ -84,7 +82,6 @@ const StateConfigCwh = () => {
                         insertMethodOnCentralServer: data.data?.numIsDataInsertByEtlWar ?? ""
                     });
 
-
                 }
 
             })
@@ -95,7 +92,7 @@ const StateConfigCwh = () => {
     };
 
     const getJobDrpData = async (stateId) => {
-        fetchData(`http://10.226.27.173:8025/api/v1/state/getjob/${stateId}`).then((data) => {
+        fetchData(`/api/v1/state/getjob/${stateId}`).then((data) => {
 
             if (data?.status === 1) {
 
@@ -205,16 +202,16 @@ const StateConfigCwh = () => {
             cwhstrDatabasepassword: values?.isDbCredAvl == "0" ? '' : values?.dbPass,
         };
 
-        await fetchUpdateData("http://10.226.27.173:8025/api/v1/state", data).then(data => {
+        await fetchPostData("/api/v1/state", data).then(data => {
             if (data?.status === 1) {
                 ToastAlert('State configuration saved successfully', 'success');
                 setConfirmSave(false);
                 reset();
             } else {
                 ToastAlert('Error', 'error');
+                 setConfirmSave(false);
             }
         });
-
 
     }
 
@@ -539,8 +536,8 @@ const StateConfigCwh = () => {
                             <button className='btn btn-sm new-btn-blue py-0' onClick={reset}>
                                 <i className="fa fa-broom me-1"></i>Clear</button>
 
-                            <button className='btn btn-sm new-btn-blue py-0' onClick={reset}>
-                                <i className="fa fa-broom me-1"></i>Test Url</button>
+                            {/* <button className='btn btn-sm new-btn-blue py-0' onClick={reset}>
+                                <i className="fa fa-broom me-1"></i>Test Url</button> */}
                         </>
 
                     </div>
