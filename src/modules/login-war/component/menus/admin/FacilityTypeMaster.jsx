@@ -157,7 +157,9 @@ const FacilityTypeMaster = () => {
                     </>}
 
                 {isShowReport &&
-                    <MasterReport title={"Facility Type Master"} column={column} data={facilityTypeListData} />
+                    <MasterReport title={"Facility Type Master"} column={column} data={facilityTypeListData} filters={[
+                        { value: recordStatus, label: "Record Status" }
+                    ]} />
                 }
             </div>
         </>

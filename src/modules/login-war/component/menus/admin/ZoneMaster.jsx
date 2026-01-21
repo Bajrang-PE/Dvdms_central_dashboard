@@ -154,10 +154,12 @@ const ZoneMaster = () => {
                 </>)}
 
                 {isShowReport &&
-                    <MasterReport title={"Zone Master"} column={column} data={zoneListData} />
-
+                    <MasterReport title={"Zone Master"} column={column} data={zoneListData}
+                        filters={[
+                            { value: recordStatus, label: "Record Status" }
+                        ]}
+                    />
                 }
-
             </div>
         </>
     )

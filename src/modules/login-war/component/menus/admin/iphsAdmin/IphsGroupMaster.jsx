@@ -3,15 +3,15 @@ import { LoginContext } from '../../../../context/LoginContext'
 import { capitalizeFirstLetter, ToastAlert } from '../../../../utils/CommonFunction';
 import InputSelect from '../../../InputSelect';
 import GlobalTable from '../../../GlobalTable';
-import { fetchData, fetchDeleteData, fetchPostData } from '../../../../../../utils/ApiHooks';
-import InputField from '../../../InputField';
+import { fetchData, fetchPostData } from '../../../../../../utils/ApiHooks';
 import IphsGroupMasterForm from '../../forms/admin/iphsAdmin/IphsGroupMasterForm';
 import { Modal } from 'react-bootstrap';
+import MasterReport from '../../../MasterReport';
 
 const IphsGroupMaster = () => {
 
     const { openPage, setOpenPage, selectedOption, setSelectedOption, confirmSave,
-        setShowConfirmSave, setConfirmSave } = useContext(LoginContext);
+        setShowConfirmSave, setConfirmSave, isShowReport } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [listData, setListData] = useState([]);
     const [filterData, setFilterData] = useState(listData);
@@ -73,7 +73,6 @@ const IphsGroupMaster = () => {
         },
     ];
 
-
     const handleDeleteRecord = () => {
         if (selectedOption?.length > 0) {
             setOpenPage('delete');
@@ -116,12 +115,14 @@ const IphsGroupMaster = () => {
     return (
         <>
             <div className='masters mx-3 my-2'>
-                <div className='masters-header row'>
-                    <span className='col-6'><b>{`Iphs Group Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
-                </div>
+                {!isShowReport &&
+                    <div className='masters-header row'>
+                        <span className='col-6'><b>{`Iphs Group Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                        {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
+                    </div>
+                }
 
-                {(openPage === "home" || openPage === "view" || openPage === "delete") &&
+                {(openPage === "home" || openPage === "view" || openPage === "delete") && !isShowReport &&
                     <>
                         <div className='row mt-2'>
                             <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
@@ -171,9 +172,17 @@ const IphsGroupMaster = () => {
                     </>
                 }
 
-                {(openPage === "add" || openPage === "modify") &&
+                {(openPage === "add" || openPage === "modify") && !isShowReport &&
                     <IphsGroupMasterForm setRecord={setRecord} record={record} getListData={getListData} setSearchInput={setSearchInput} />
 
+                }
+
+                {isShowReport &&
+                    <MasterReport title={"IPHS Group Master"} column={columns} data={filterData}
+                        filters={[
+                            { value: record == 1 ? "Active" : "InActive", label: "Record Status" }
+                        ]}
+                    />
                 }
 
             </div>

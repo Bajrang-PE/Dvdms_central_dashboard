@@ -221,8 +221,11 @@ const GenericDrugMaster = () => {
                 </>)}
 
                 {isShowReport &&
-                    <MasterReport title={"Generic Drug Master"} column={column} data={genericDrugListData} />
-
+                    <MasterReport title={"Generic Drug Master"} column={column} data={genericDrugListData} filters={[
+                    { value: groupDrpData?.find(dt=>dt?.value == groupId)?.label, label: "Group" },
+                    { value:  subGroupDrpData?.find(dt=>dt?.value == subGroupId)?.label, label: "SubGroup" },
+                    { value: recordStatus == 1 ? "Active" : "InActive", label: "Record Status" },
+                ]}/>
                 }
             </div>
         </>

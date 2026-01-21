@@ -140,46 +140,49 @@ const ProgrammeMaster = () => {
 
 
                 </div>
-                {(openPage === "home" || openPage === 'view' || openPage === 'delete') && (
-                    <>
-                        <div className='row pt-2'>
-                            <div className='col-sm-6'>
-                                <div className="form-group row" style={{ paddingBottom: "1px" }}>
-                                    <label className="col-sm-5 col-form-label fix-label">Record Status : </label>
-                                    <div className="col-sm-7 align-content-center">
-                                        <InputSelect
-                                            id="hintquestion"
-                                            name="hintquestion"
-                                            placeholder="Select Status"
-                                            options={[{ value: "1", label: 'Active' }, { value: "0", label: 'InActive' }]}
-                                            className="aliceblue-bg border-dark-subtle"
-                                            value={recordStatus}
-                                            onChange={(e) => setRecordStatus(e.target.value)}
-                                        />
+                {(openPage === "home" || openPage === 'view' || openPage === 'delete')
+                    && !isShowReport && (
+                        <>
+                            <div className='row pt-2'>
+                                <div className='col-sm-6'>
+                                    <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                                        <label className="col-sm-5 col-form-label fix-label">Record Status : </label>
+                                        <div className="col-sm-7 align-content-center">
+                                            <InputSelect
+                                                id="hintquestion"
+                                                name="hintquestion"
+                                                placeholder="Select Status"
+                                                options={[{ value: "1", label: 'Active' }, { value: "0", label: 'InActive' }]}
+                                                className="aliceblue-bg border-dark-subtle"
+                                                value={recordStatus}
+                                                onChange={(e) => setRecordStatus(e.target.value)}
+                                            />
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <hr className='my-2' />
+                            <hr className='my-2' />
 
-                        <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                            <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
 
-                        {openPage === 'view' &&
-                            <ViewPage data={[{ value: selectedOption[0]?.cwhstrProgrammeName, label: "Pro Name" }]} onClose={onClose} title={"Programme Master"} />
-                        }
+                            {openPage === 'view' &&
+                                <ViewPage data={[{ value: selectedOption[0]?.cwhstrProgrammeName, label: "Pro Name" }]} onClose={onClose} title={"Programme Master"} />
+                            }
 
-                    </>
-                )}
+                        </>
+                    )}
 
-                {(openPage === "add" || openPage === 'modify') && (<>
+                {(openPage === "add" || openPage === 'modify') && !isShowReport && (<>
                     <ProgrammeMasterForm getProgrammeListData={getProgrammeListData} />
                 </>)}
 
             </>}
 
             {isShowReport &&
-                <MasterReport title={"Programme Master"} column={column} data={programmeListData} />
+                <MasterReport title={"Programme Master"} column={column} data={programmeListData} filters={[
+                    { value: recordStatus == 1 ? "Active" : "InActive", label: "Record Status" }
+                ]} />
             }
         </div>
 

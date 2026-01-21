@@ -29,7 +29,7 @@ const Header = () => {
                     <div className='col-md-3'>
                         <div className='logo d-flex align-items-center'>
                             <a className="pt-1" href="https://www.india.gov.in/" target="_blank" >
-                                <img src="https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/sher.png" className='logo-image' alt="logo" />
+                                <img src="fav.png" className='logo-image' alt="logo" />
                             </a>
                             <div className="dvdms-outer">
                                 <div className="dvdms-title ms-2 mt-1">
@@ -72,7 +72,7 @@ const Header = () => {
                         </div>
                     </div>
                     <div className='col-md-1'>
-                        <img src="https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/nlm5.png" alt="logo" />
+                        <img src="nlm5.png" alt="logo" />
                     </div>
                 </div>
             </div>

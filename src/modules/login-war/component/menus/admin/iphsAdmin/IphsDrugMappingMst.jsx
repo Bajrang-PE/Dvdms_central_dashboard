@@ -36,6 +36,7 @@ const IphsDrugMappingMst = () => {
 
     const getUnmappedList = () => {
         fetchData(`/api/v1/IphsDrugMappingMst/getUnmappedDrugs`).then(data => {
+            console.log('datau', data)
             if (data.data) {
                 const drpData = Array.from(
                     new Map(
@@ -59,6 +60,7 @@ const IphsDrugMappingMst = () => {
 
         fetchData(`/api/v1/IphsDrugMappingMst/getMappedDrugs?drugID=${drugId}`)
             .then((data) => {
+                console.log('data', data)
                 if (data.data) {
                     const drpData = Array.from(
                         new Map(
@@ -153,6 +155,7 @@ const IphsDrugMappingMst = () => {
 
                 if (mappedData.length > 0) {
                     await fetchPostData("/api/v1/IphsDrugMappingMst/mapDrugs", mappedData).then(data => {
+                        console.log('data', data)
                         if (data?.status == 1) {
                             isMapped = true;
                         } else {
@@ -164,7 +167,6 @@ const IphsDrugMappingMst = () => {
                     await fetchPostData("/api/v1/IphsDrugMappingMst/unmapDrugs", unMappedData).then(data => {
                         if (data?.status == 1) {
                             isMapped = true;
-
                         } else {
                             isMapped = false;
 

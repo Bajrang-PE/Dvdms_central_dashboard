@@ -47,6 +47,7 @@ const JobOrderMaster = () => {
             ToastAlert("No job selected", 'warning')
         } else {
             fetchPostData(`/api/v1/${stateId}/resetJobRunId?encryptedCurrentJobRunId=${id}`).then(data => {
+                console.log('data', data)
                 if (data.status === 1) {
                     ToastAlert(data?.message,'success')
                 } else {

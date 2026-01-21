@@ -42,7 +42,8 @@ const FacilityTypeMappingMaster = () => {
     }, [stateId, facilityTypeId])
 
     const getUnmappedList = () => {
-        fetchData(`/api/v1/unmappedFclty?stateId=${stateId}&facilityTypeId=${facilityTypeId}`).then(data => {
+        fetchData(`/api/v1/unmappedFclty/${stateId}/${facilityTypeId}`).then(data => {
+            console.log('datau', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.facilityTypeId,
@@ -57,11 +58,12 @@ const FacilityTypeMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`/api/v1/mapped?facilityTypeId=${facilityTypeId}&stateId=${47}`).then(data => {
+        fetchData(`/api/v1/mapped/${facilityTypeId}/${stateId}`).then(data => {
+            console.log('datam', data)
             if (data.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
-                    value: dt?.stateFacilityTypeId,
-                    label: dt?.stateFacilityTypeName
+                    value: dt?.cwhnumStateFacilityTypeId,
+                    label: dt?.cwhnumStateFacilityTypeName
                 })
                 )
                 setSelectedOptions(drpData)
@@ -111,6 +113,7 @@ const FacilityTypeMappingMaster = () => {
         }
 
         fetchPostData(`/api/v1/facility-type`, val).then(data => {
+            console.log('datas', data)
             if (data?.status === 1) {
                 ToastAlert("Facility type mapped successfully", 'success')
                 setConfirmSave(false)

@@ -6,11 +6,12 @@ import GlobalTable from '../../GlobalTable';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import { Modal } from 'react-bootstrap';
 import DrugMasterForm from '../forms/DrugMasterForm';
+import MasterReport from '../../MasterReport';
 
 const DrugMaster = () => {
 
     const { selectedOption, setSelectedOption, groupDrpData, getGroupDrpData, subGroupDrpData, getSubGroupDrpData, openPage, setOpenPage,
-        setConfirmSave, confirmSave, setShowConfirmSave
+        setConfirmSave, confirmSave, setShowConfirmSave, isShowReport
     } = useContext(LoginContext);
 
     const [values, setValues] = useState({
@@ -229,11 +230,13 @@ const DrugMaster = () => {
     return (
         <>
             <div className="masters mx-3 my-2">
-                <div className='masters-header row'>
-                    <span className='col-6'><b>{`Drug Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
-                </div>
-                {(openPage === "home" || openPage === "view" || openPage === 'delete') &&
+                {!isShowReport &&
+                    <div className='masters-header row'>
+                        <span className='col-6'><b>{`Drug Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                        {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
+                    </div>
+                }
+                {(openPage === "home" || openPage === "view" || openPage === 'delete') && !isShowReport &&
                     <>
                         <div className="row pt-2">
 
@@ -250,12 +253,8 @@ const DrugMaster = () => {
                                         value={values?.groupId}
                                         onChange={handleValueChange}
                                         errorMessage={errors?.groupIdErr}
-
                                     />
-
-
                                 </div>
-
                             </div>
 
                             <div className="form-group col-sm-4 row">
@@ -270,12 +269,8 @@ const DrugMaster = () => {
                                         value={values?.subGroupId}
                                         onChange={handleValueChange}
                                         errorMessage={errors?.subGroupIdErr}
-
                                     />
-
-
                                 </div>
-
 
                             </div>
 
@@ -336,71 +331,26 @@ const DrugMaster = () => {
                         </div>
                     </>}
 
-                {/* <div className="form-group col-sm-4 row">
-                        <label className="col-sm-4 col-form-label fix-label required-label">Record Status</label>
-                        <div className="col-sm-8 align-content-center">
-                            <InputSelect
-                                className="aliceblue-bg form-control form-control-sm border-dark-subtle"
-                                name='recordStatus'
-                                id='recordStatus'
-                                options={[{ label: "Active", value: "1" }, { label: "Inactive", value: "0" }]}
-                                value={values?.recordStatus}
-                                onChange={handleValueChange}
-                            //   errorMessage={errors?.groupIdErr}
 
-                            />
+                {/* <hr className='my-2' /> */}
+
+                {
+                    (openPage === "add" || openPage === "modify") && !isShowReport &&
+                    <DrugMasterForm selectedGroupName={selectedGroupName} selectedSubGroupName={selectedSubGroupName}
+                        selectedGroupId={selectedGroupId} selectedSubGroupId={selectedSubGroupId} setSearchInput={setSearchInput}
+                        getListData={getListData} selectedStatus={values?.recordStatus} />
+
+                }
 
 
-                        </div>
-
-
-                    </div> */}
+                {isShowReport &&
+                    <MasterReport title={"Drug Master"} column={columns} data={listData} filters={[
+                        { value: groupDrpData?.find(dt => dt?.value == values?.groupId)?.label, label: "Group" },
+                        { value: subGroupDrpData?.find(dt => dt?.value == values?.subGroupId)?.label, label: "SubGroup" },
+                        { value: values?.recordStatus == 1 ? "Active" : "InActive", label: "Record Status" },
+                    ]} />
+                }
             </div>
-
-            <hr className='my-2' />
-
-            {/* <div>
-
-                    <GlobalTable column={columns} data={filterData} onDelete={handleDeleteRecord}
-                        onReport={null} setSearchInput={setSearchInput} searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
-                </div> */}
-
-
-            {openPage === 'view' &&
-                <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
-                    <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
-                        <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
-                    </Modal.Header>
-                    <Modal.Body className='px-2 py-1'>
-
-                        <div className='text-left'>
-                            <label><b>Group Name : </b></label>&nbsp;{selectedGroupName}<br />
-                            <label><b>Subgroup Name : </b></label>&nbsp;{selectedSubGroupName}<br />
-                            <label><b>Drug Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrDrugName}<br />
-                            <label><b>Drug Type Name : </b></label>&nbsp;{selectedOption[0]?.drugtypeName}<br />
-                            <label><b>Drug Code : </b></label>&nbsp;{selectedOption[0]?.drugCatName}<br />
-                            <label><b>Unit : </b></label>&nbsp;{selectedOption[0]?.cwhstrStrengthName}
-                            {/* //<label><b>Sub Group Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrSubgroupName}<br/> */}
-                        </div>
-
-                        <div className='text-center mt-1'>
-
-                            <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
-                                <i className="fa fa-broom me-1"></i> Close
-                            </button>
-                        </div>
-
-                    </Modal.Body>
-                </Modal>
-            }
-
-            {
-                (openPage === "add" || openPage === "modify") &&
-                <DrugMasterForm selectedGroupName={selectedGroupName} selectedSubGroupName={selectedSubGroupName}
-                    selectedGroupId={selectedGroupId} selectedSubGroupId={selectedSubGroupId} setSearchInput={setSearchInput}
-                    getListData={getListData} selectedStatus={values?.recordStatus} />
-
-            }
         </>
     )
 }

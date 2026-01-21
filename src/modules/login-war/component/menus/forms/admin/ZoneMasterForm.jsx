@@ -37,7 +37,7 @@ const ZoneMasterForm = ({setSearchInput}) => {
             "cwhstrZoneName": zoneName,
             "status": "Active"
         }
-        fetchPostData(`/api/v1/create`, val).then(data => {
+        fetchPostData(`/api/v1/zones`, val).then(data => {
             if (data?.status ===1) {
                 ToastAlert('Record added successfully', 'success');
                 getZoneListData();

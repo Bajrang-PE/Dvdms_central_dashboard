@@ -127,7 +127,6 @@ const DistrictMaster = () => {
     const handleDelete = () => {
         const distId = selectedOption[0]?.cwhnumDistId;
         fetchPostData(`/api/v1/districts/deleteDistrict?stateId=${values?.stateId}&districtId=${distId}`).then(data => {
-            console.log('data', data)
             if (data?.status === 1) {
                 getListData(values?.recordStatus, values?.stateId);
                 ToastAlert("Record Deleted Successfully", "success")
@@ -183,9 +182,6 @@ const DistrictMaster = () => {
             options.map(item => [item[key], item])
         ).values());
     };
-
-    console.log('values', values)
-    console.log('selectedStateName', selectedStateName)
 
 
     return (
@@ -292,11 +288,16 @@ const DistrictMaster = () => {
                     </>}
 
                 {(openPage === "add" || openPage === 'modify') &&
-                    <DistrictMasterForm setValues={setValues} values={values} getListData={getListData} setSearchInput={setSearchInput}/>
+                    <DistrictMasterForm setValues={setValues} values={values} getListData={getListData} setSearchInput={setSearchInput} />
                 }
             </>}
             {isShowReport &&
-                <MasterReport title={"District Master"} column={columns} data={listData} />
+                <MasterReport title={"District Master"} column={columns} data={listData}
+                    filters={[
+                        { value: "India", label: "Country" },
+                        { value: stateNameDrpDt?.find(dt => dt?.value == values?.stateId)?.label, label: "State" },
+                        { value: values?.recordStatus == 1 ? "Active" : "InActive", label: "Record Status" }
+                    ]} />
 
             }
 

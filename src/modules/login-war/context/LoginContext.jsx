@@ -2,7 +2,7 @@
 
 
 import { createContext, useState } from "react";
-import { fetchData } from "../../../utils/ApiHooks";
+import { fetchData, fetchPostData } from "../../../utils/ApiHooks";
 
 export const LoginContext = createContext();
 
@@ -13,7 +13,7 @@ const LoginContextApi = ({ children }) => {
     const [showForgotPass, setShowForgotPass] = useState(false);
     const [selectedOption, setSelectedOption] = useState([]);
     const [openPage, setOpenPage] = useState('home')
-    const [isShowReport,setIsShowReport] = useState(false)
+    const [isShowReport, setIsShowReport] = useState(false)
 
     //API Data
     const [widgetData, setWidgetData] = useState([]);
@@ -51,8 +51,13 @@ const LoginContextApi = ({ children }) => {
     const [showConfirmSave, setShowConfirmSave] = useState(false);
 
 
-    const getWidgetData = () => {
-        fetchData('/hisutils/allWidgetConfiguration?dashboardFor=CENTRAL+DASHBOARD').then((data) => {
+    const getWidgetData = async(ids) => {
+        const val = {
+            ids: ids || [],
+            dashboardFor: 'CENTRAL DASHBOARD',
+            masterName: "DashboardWidgetMst"
+        };
+        fetchPostData('http://10.226.28.223:8024/hisutils/getWdgtMultipleData?isGlobal=1', val).then((data) => {
             if (data?.status === 1) {
                 setWidgetData(data?.data)
             } else {
@@ -83,7 +88,7 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
-    const getGenericDrugListData = (grpId, sbGrpId, status,categoryOptions) => {
+    const getGenericDrugListData = (grpId, sbGrpId, status, categoryOptions) => {
         const params = {
             groupId: grpId ? grpId : '0',
             subgroupId: sbGrpId ? sbGrpId : "0",
@@ -183,7 +188,7 @@ const LoginContextApi = ({ children }) => {
 
     const getDistrictNameDrpData = (stateid) => {
         fetchData(`/api/v1/districts/getAllDistrictList?stateId=${stateid}&isActive=1`).then((data) => {
-            if (data?.status ===1) {
+            if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
                         value: dt?.cwhnumDistId,
@@ -458,7 +463,7 @@ const LoginContextApi = ({ children }) => {
             testTypeDrpData, getTestTypeDrpData,
             hospNameDrpData, getHospNameDrpData,
             zoneDrpData, getZoneDrpData,
-            isShowReport,setIsShowReport,
+            isShowReport, setIsShowReport,
             iphsGroupDrpData, getIphsGroupDrpData,
             iphsSubGroupDrpData, getIphsSubGroupDrpData,
             iphsMedicineDrpData, getIphsMedicineDrpData,
@@ -476,7 +481,7 @@ const LoginContextApi = ({ children }) => {
             getStateListData, stateListData,
             getGroupListData, groupListData,
             getStateJobDetailsListData, stateJobListData,
-            getProgrammeListData,programmeListData
+            getProgrammeListData, programmeListData
         }}>
             {children}
         </LoginContext.Provider>

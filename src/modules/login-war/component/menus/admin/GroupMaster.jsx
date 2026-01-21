@@ -147,7 +147,9 @@ const GroupMaster = () => {
                 </>)}
                 </>}
                 {isShowReport &&
-                    <MasterReport title={"Group Master"} column={column} data={groupListData} />
+                    <MasterReport title={"Group Master"} column={column} data={groupListData}  filters={[
+                            { value: recordStatus, label: "Record Status" }
+                        ]}/>
                 }
             </div>
         </>

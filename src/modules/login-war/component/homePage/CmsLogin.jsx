@@ -99,7 +99,8 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                         sameSite: "Strict",
                         httpOnly: true
                     });
-                    localStorage.setItem('accessToken', accessToken);
+                    // localStorage.setItem('accessToken', accessToken);
+                    sessionStorage.setItem('accessToken', accessToken);
                     localStorage.setItem('refreshToken', refreshToken);
                     navigate('/dvdms/user-dashboard');
                 } else {

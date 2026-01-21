@@ -176,7 +176,12 @@ const StateMaster = () => {
                     </>}
 
                 {isShowReport &&
-                    <MasterReport title={"State Master"} column={column} data={stateListData} />
+                    <MasterReport title={"State Master"} column={column} data={stateListData}
+                        filters={[
+                            { value: "India", label: "Country" },
+                            { value: recordStatus == 1 ? "Active" : "InActive", label: "Record Status" }
+                        ]}
+                    />
                 }
 
             </div>

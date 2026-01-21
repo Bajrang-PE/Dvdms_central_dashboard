@@ -41,9 +41,9 @@ const ProgrammeMappingMaster = () => {
     }, [stateId, programmeId])
 
     const getProgrammeNameList = () => {
-        fetchData(`/api/v1/ProgrammeMap/all?isActive=1`).then(data => {
+        fetchData(`/api/v1/ProgrammeMap/getAllProgrammeList?isActive=1`).then(data => {
             if (data?.status === 1) {
-                const drpData = data?.data?.map((dt) => ({
+                const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumProgrammeId,
                     label: dt?.cwhstrProgrammeName
                 }))
@@ -56,7 +56,8 @@ const ProgrammeMappingMaster = () => {
     }
 
     const getUnmappedList = () => {
-        fetchData(`/api/v1/ProgrammeMap/unmap?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
+        fetchData(`/api/v1/ProgrammeMap/getUnmappedProgrammeList?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
+            console.log('datau', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumProgrammeId,
@@ -72,7 +73,8 @@ const ProgrammeMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`/api/v1/ProgrammeMap/map?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
+        fetchData(`/api/v1/ProgrammeMap/getMappedProgrammeList?programmeId=${programmeId}&stateId=${stateId}`).then(data => {
+            console.log('datam', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumStateProgrammeId,
@@ -107,21 +109,21 @@ const ProgrammeMappingMaster = () => {
         }))
 
         const unMappedData = newUnMapped?.length > 0 && newUnMapped?.map(dt => ({
-           cwhnumProgrammeId: dt?.value,
-           cwhstrProgrammeName: dt?.label,
+            cwhnumProgrammeId: dt?.value,
+            cwhstrProgrammeName: dt?.label,
         }))
 
         const val = {
             arrProgrammeMappedDtos: mappedData?.length > 0 ? mappedData : [],
             arrProgrammeUnMapDtos: unMappedData?.length > 0 ? unMappedData : [],
-            
-            gnumSeatId:  getAuthUserData('userSeatId'),
+
+            gnumSeatId: getAuthUserData('userSeatId'),
             cwhnumStateId: parseInt(stateId),
             cwhnumProgrammeId: programmeId,
         }
 
-
-        fetchPostData(`/api/v1/ProgrammeMap`,val).then(data => {
+console.log('val', val)
+        fetchPostData(`/api/v1/ProgrammeMap/createProgrammeMapping`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record Mapped successfully')
                 setConfirmSave(false)
@@ -153,34 +155,34 @@ const ProgrammeMappingMaster = () => {
 
     useEffect(() => {
         if (confirmSave) {
-             saveProgrammeMappedData();
+            saveProgrammeMappedData();
         }
     }, [confirmSave])
 
 
     const moveToSelected = () => {
-            const itemsToMove = availableOptions.filter(opt =>
-                selectedAvailable.includes(String(opt.value))
-            );
-            const newSelected = itemsToMove.filter(item =>
-                !selectedOptions.some(selected => selected.value === item.value)
-            );
-            setSelectedOptions(prev => [...prev, ...newSelected]);
-            setAvailableOptions(prev => prev.filter(opt =>
-                !selectedAvailable.includes(String(opt.value))
-            ));
-            setSelectedAvailable([]);
+        const itemsToMove = availableOptions.filter(opt =>
+            selectedAvailable.includes(String(opt.value))
+        );
+        const newSelected = itemsToMove.filter(item =>
+            !selectedOptions.some(selected => selected.value === item.value)
+        );
+        setSelectedOptions(prev => [...prev, ...newSelected]);
+        setAvailableOptions(prev => prev.filter(opt =>
+            !selectedAvailable.includes(String(opt.value))
+        ));
+        setSelectedAvailable([]);
     };
 
     const moveToAvailable = () => {
-            const itemsToMove = selectedOptions.filter(opt =>
-                selectedSelected.includes(String(opt.value))
-            );
-            setAvailableOptions(prev => [...prev, ...itemsToMove]);
-            setSelectedOptions(prev => prev.filter(opt =>
-                !selectedSelected.includes(String(opt.value))
-            ));
-            setSelectedSelected([]);
+        const itemsToMove = selectedOptions.filter(opt =>
+            selectedSelected.includes(String(opt.value))
+        );
+        setAvailableOptions(prev => [...prev, ...itemsToMove]);
+        setSelectedOptions(prev => prev.filter(opt =>
+            !selectedSelected.includes(String(opt.value))
+        ));
+        setSelectedSelected([]);
 
     };
 
@@ -301,7 +303,7 @@ const ProgrammeMappingMaster = () => {
                             value={selectedSelected}
                             onChange={(e) => {
                                 const selected = Array.from(e.target.selectedOptions, option => option.value);
-                    
+
                                 setSelectedSelected(selected);
                             }}
                         >

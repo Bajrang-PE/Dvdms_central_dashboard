@@ -271,7 +271,10 @@ const SubGroupMaster = () => {
             </>}
 
             {isShowReport &&
-                <MasterReport title={"Sub Group Master"} column={columns} data={listData} />
+                <MasterReport title={"Sub Group Master"} column={columns} data={listData}  filters={[
+                            { value: groupDrpData?.find(dt=>dt?.value==values?.groupId)?.label, label: "Group" },
+                            { value: values?.recordStatus == 1 ? "Active" : "InActive", label: "Record Status" }
+                        ]}/>
             }
         </div>
     )

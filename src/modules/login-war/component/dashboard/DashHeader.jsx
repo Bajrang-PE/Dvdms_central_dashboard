@@ -40,7 +40,7 @@ const DashHeader = () => {
     const logOut = () => {
         localStorage.clear();
         Cookies.remove('csrfToken');
-        navigate('/');
+        navigate('/dvdms');
     }
 
     return (

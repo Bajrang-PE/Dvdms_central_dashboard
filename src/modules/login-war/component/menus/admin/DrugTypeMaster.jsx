@@ -182,7 +182,7 @@ export const DrugTypeMaster = () => {
                 {openPage === "home" && <span className='col-6 text-end'>Total Records : {drugs?.length}</span>}
             </div>
 
-            {(openPage === "home" || openPage === "view" || openPage === 'delete') && (<>
+            {(openPage === "home" || openPage === "view" || openPage === 'delete') && !isShowReport && (<>
 
                 <div className="row mt-3">
                     <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
@@ -236,12 +236,14 @@ export const DrugTypeMaster = () => {
             </>)}
 
 
-            {(openPage === "add" || openPage === 'modify') &&
+            {(openPage === "add" || openPage === 'modify') && !isShowReport &&
                 <DrugTypeForm setValues={setValues} values={values} setSearchInput={setSearchInput} />
             }
 
             {isShowReport &&
-                <MasterReport title={"Drug Type Master"} column={columns} data={drugs} />
+                <MasterReport title={"Drug Type Master"} column={columns} data={drugs} filters={[
+                    { value: values?.recordStatus == 1 ? "Active" : "InActive", label: "Record Status" }
+                ]} />
             }
 
         </div>

@@ -14,16 +14,16 @@ const Facilities = () => {
     const [singleWidget, setSingleWidget] = useState();
     const [isLoading, setIsLoading] = useState(false)
 
-    // useEffect(() => {
-    //     if (widgetData?.length === 0) { getWidgetData() }
-    // }, [])
+    useEffect(() => {
+        if (widgetData?.length === 0) { getWidgetData(['813', '814', '815', '804']) }
+    }, [])
 
     useEffect(() => {
         if (widgetData?.length > 0) {
-            const kpiList = ['806', '807', '808', '805']
-            const graphList = ['813', '814', '815', '804']
-            const kpidt = widgetData?.filter((wd) => graphList?.includes(wd?.rptId));
-            setGraphWidgets(kpidt)
+            // const kpiList = ['806', '807', '808', '805']
+            // const graphList = ['813', '814', '815', '804']
+            // const kpidt = widgetData?.filter((wd) => graphList?.includes(wd?.rptId));
+            setGraphWidgets(widgetData)
         }
     }, [widgetData])
 
@@ -56,7 +56,7 @@ const Facilities = () => {
 
             } else {
                 ToastAlert(data?.message, 'error')
-                 setIsLoading(false);
+                setIsLoading(false);
             }
 
         } catch (error) {

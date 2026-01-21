@@ -52,13 +52,13 @@ const DrugMappingMaster = () => {
 
         switch (selectedValue) {
             case "1":
-                url = `api/v1/drug-mst/fetchDrugs`;
+                url = `/api/v1/drug-mst/fetchDrugs`;
                 break;
             case "2":
-                url = `api/v1/drug-mst/fetchReagentDrugs`;
+                url = `/api/v1/drug-mst/fetchReagentDrugs`;
                 break;
             case "3":
-                url = `api/v1/drug-mst/fetchDetailedDrugs`;
+                url = `/api/v1/drug-mst/fetchDetailedDrugs`;
                 break;
             default:
                 setItemNameList([]);
@@ -67,6 +67,7 @@ const DrugMappingMaster = () => {
         }
 
         fetchData(url).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
                 const options = data?.data?.map(item => ({
                     value: item.cwhnumDrugId,
@@ -84,6 +85,7 @@ const DrugMappingMaster = () => {
 
     const getUnmappedList = () => {
         fetchData(`/api/v1/mapDrug/UnmapDrug?stateId=${stateId}`).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumDrugId,
@@ -100,6 +102,7 @@ const DrugMappingMaster = () => {
 
     const getMappedList = () => {
         fetchData(`/api/v1/mapDrug/MappedDrug?drugId=${itemName?.value}&stateId=${stateId}`).then(data => {
+            console.log('data', data)
             if (data.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.stateDrugId,

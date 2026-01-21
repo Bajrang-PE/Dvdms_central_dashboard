@@ -3,24 +3,17 @@ import { decryptAesOrRsa, encryptAesData } from './SecurityConfig';
 import { ToastAlert } from '../modules/login-war/utils/CommonFunction';
 
 // const BaseUrl = import.meta.env.VITE_API_BASE_URL
-
-const BaseUrl = 'http://10.226.25.164:8025'; //pritee
-// const BaseUrl = 'http://10.226.17.6:8025';  //BG     
-// const BaseUrl = 'http://10.226.29.211:8025/';  //Disha
-//  const BaseUrl = 'http://10.226.29.102:8025/';  //shubham
-// const BaseUrl = 'http://10.226.30.45:8025/';  //pradeep
-// const BaseUrl = 'http://10.226.26.247:8025/';  //harsh
-// const BaseUrl = 'http://10.226.80.61:8025/';  //server
-// const BaseUrl = 'http://10.226.17.20:8025/'; //himanshi
+const BaseUrl = 'http://10.226.28.223:8025'
 
 const apiLogin = axios.create({
-    baseURL: ''
+    baseURL: '',
+    // withCredentials: true,
 });
 
 //axios.defaults.baseURL = BaseUrl;
 
 const getAccessToken = () => {
-    return localStorage.getItem('accessToken');
+    return sessionStorage.getItem('accessToken');
 };
 
 const getCsrfToken = () => {
@@ -82,10 +75,10 @@ export const fetchData = async (url, params) => {
             // return response?.data
         } else {
             const response = await apiLogin.get(url);
-            console.log('response', response);
-            return response?.data
-            // const decryptedData = decryptAesOrRsa(response?.data);
-            // return JSON.parse(decryptedData);
+            // console.log('response', response);
+            // return response?.data
+            const decryptedData = decryptAesOrRsa(response?.data);
+            return JSON.parse(decryptedData);
         }
     } catch (error) {
         console.error('API Error:', error);
@@ -94,12 +87,18 @@ export const fetchData = async (url, params) => {
 
 export const fetchPostData = async (url, data) => {
     try {
-        const response = await apiLogin.post(url, data);
-        console.log('response', response);
-        return response.data;
-        // const response = await apiLogin.post(url, encodeURIComponent(encryptAesData(JSON?.stringify(data))));
-        // const decryptedData = decryptAesOrRsa(response?.data);
-        // return JSON.parse(decryptedData);
+        // const response = await apiLogin.post(url, data);
+        // console.log('response', response);
+        // return response.data;
+        const response = await apiLogin.post(url, encodeURIComponent(encryptAesData(JSON?.stringify(data))),
+            // {
+            //     headers: {
+            //         "Content-Type": "text/plain",
+            //     },
+            // }
+        );
+        const decryptedData = decryptAesOrRsa(response?.data);
+        return JSON.parse(decryptedData);
     } catch (error) {
         console.log('API Error:', error);
         // return error?.response?.data;

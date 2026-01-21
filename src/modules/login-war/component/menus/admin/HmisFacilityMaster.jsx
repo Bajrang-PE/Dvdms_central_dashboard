@@ -23,10 +23,6 @@ const HmisFacilityMaster = () => {
     const [listData, setListData] = useState([]);
     const [filterData, setFilterData] = useState(listData);
 
-    //    const [values, setValues] = useState({
-    //        "groupId": "0", "subGroupId": "0", "recordStatus": "1"
-    //    })
-
     useEffect(() => {
         getStateListData(recordStatus ? recordStatus : '1')
     }, [recordStatus])
@@ -47,13 +43,7 @@ const HmisFacilityMaster = () => {
         if (name === "stateId") {
             const selectOptionGrp = stateNameDrpDt.find(opt => String(opt.value) === String(value));
             setSelectedStateName(selectOptionGrp?.label || "");
-            // setSelectedGroupId(selectOptionGrp?.value || "")
         }
-
-        //      if (name) {
-        //         setValues({ ...values, [name]: value });
-        //         setErrors({ ...errors, [errName]: "" });
-        //     }
 
     }
 
@@ -115,6 +105,7 @@ const HmisFacilityMaster = () => {
     const getListData = (stateId, recordStatus) => {
 
         fetchData(`/api/v1/hmisFacility?stateId=${stateId}&isActive=${recordStatus}`).then((data) => {
+            console.log('data', data)
             if (data?.status === 1 && Array.isArray(data.data)) {
                 setListData(data.data)
             } else {
