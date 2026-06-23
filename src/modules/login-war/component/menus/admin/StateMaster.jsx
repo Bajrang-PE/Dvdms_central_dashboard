@@ -113,6 +113,8 @@ const StateMaster = () => {
         setSelectedOption([]);
     }
 
+    console.log('filterData', filterData)
+
 
     return (
         <>

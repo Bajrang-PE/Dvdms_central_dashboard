@@ -122,8 +122,9 @@ const ProgrammeMappingMaster = () => {
             cwhnumProgrammeId: programmeId,
         }
 
-console.log('val', val)
+        console.log('val', val)
         fetchPostData(`/api/v1/ProgrammeMap/createProgrammeMapping`, val).then(data => {
+            console.log('datares', data)
             if (data?.status === 1) {
                 ToastAlert('Record Mapped successfully')
                 setConfirmSave(false)

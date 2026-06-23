@@ -50,7 +50,7 @@ const Auth = ({ comp: Component }) => {
         };
     }, [userData]);
 
-    // ⛔ Don't put navigate() directly in JSX
+    //  Don't put navigate() directly in JSX
     if (!(userData?.isLogin === 'true' || userData?.isLogin === true)) {
         return null;
     }

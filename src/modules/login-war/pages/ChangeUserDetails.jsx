@@ -4,6 +4,7 @@ import InputSelect from '../component/InputSelect';
 import { LoginContext } from '../context/LoginContext';
 import { sanitizeInput } from '../../../utils/CommonFunction';
 import InputField from '../component/InputField';
+import ModernDashHeader from '../component/dashboard/ModernDashHeader';
 
 const ChangeUserDetails = () => {
 
@@ -76,7 +77,8 @@ const ChangeUserDetails = () => {
 
     return (
         <>
-            <DashHeader />
+            {/* <DashHeader /> */}
+            <ModernDashHeader />
             <div className='text-center w-100 fw-bold p-1 heading-text' >Change User Details</div>
             <div className='container change-pass-container'>
                 <div className='form-card m-auto p-2' style={{ borderBottom: "2px solid #000e4e" }}>

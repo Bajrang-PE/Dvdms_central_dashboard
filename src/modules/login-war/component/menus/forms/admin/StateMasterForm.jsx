@@ -7,7 +7,7 @@ import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 
-const StateMasterForm = ({setSearchInput}) => {
+const StateMasterForm = ({ setSearchInput }) => {
 
     const { openPage, selectedOption, setOpenPage, setSelectedOption, getStateListData, setShowConfirmSave, confirmSave, setConfirmSave, zoneDrpData, getZoneDrpData } = useContext(LoginContext);
 
@@ -39,8 +39,9 @@ const StateMasterForm = ({setSearchInput}) => {
             "gnumSeatId": getAuthUserData('userSeatId'),
             "cwhstrStateName": stateName,
             "cwhstrStateShortName": stShortName,
-            "cwhnumZoneId": zoneName,
+            "cwhnumZoneId": parseInt(zoneName),
         }
+        console.log('val', val)
         fetchPostData(`/api/v1/saveState`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
@@ -60,7 +61,7 @@ const StateMasterForm = ({setSearchInput}) => {
             "gnumSeatId": getAuthUserData('userSeatId'),
             "cwhstrStateName": stateName,
             "cwhstrStateShortName": stShortName,
-            "cwhnumZoneId": zoneName,
+            "cwhnumZoneId": parseInt(zoneName),
             "gnumIsValid": recStatus,
             "cwhnumStateId": selectedOption[0]?.cwhnumStateId,
             "backgroundColor": "",
@@ -78,6 +79,7 @@ const StateMasterForm = ({setSearchInput}) => {
             "cwhnumLgdCode": ''
 
         }
+        console.log('val', val)
         fetchPostData(`/api/v1/updateState/${selectedOption[0]?.cwhnumStateId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');

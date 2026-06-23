@@ -32,6 +32,7 @@ export const parseBackendDate = (dateString) => {
   );
 };
 
+
 // Utility function to format date for backend
 export const formatDateForBackend = (date) => {
   if (!date || !(date instanceof Date)) return '';

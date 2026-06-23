@@ -100,6 +100,8 @@ const DistrictMasterForm = ({ setValues, values, getListData,setSearchInput }) =
         setConfirmSave(false);
     }
 
+    console.log('selectedOption', selectedOption)
+
     useEffect(() => {
         if (selectedOption?.length > 0 && openPage === 'modify') {
             setDistId(selectedOption[0]?.cwhnumDistId);
@@ -113,7 +115,7 @@ const DistrictMasterForm = ({ setValues, values, getListData,setSearchInput }) =
 
 
     const reset = () => {
-        setValues({ ...values, "recordStatus": "1" })
+        setValues({ ...values, "recordStatus": "1","stateId":stateId })
     }
 
     return (

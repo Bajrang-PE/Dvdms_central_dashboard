@@ -48,7 +48,16 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
 
     useEffect(() => {
         if (selectedOption?.length > 0 && openPage === "modify") {
-            setValues(prev => ({ ...prev, "molMedicineName": selectedOption[0]?.moleculeName }));
+            setValues(prev => ({
+                ...prev,
+                "molMedicineName": selectedOption[0]?.moleculeName,
+                "isDh": selectedOption[0]?.isDH,
+                "isChc": selectedOption[0]?.isCHC,
+                "isSdh": selectedOption[0]?.isSDH,
+                "isPhc": selectedOption[0]?.isPHC,
+                "isUphc": selectedOption[0]?.isUPHC,
+                "isAamshc": selectedOption[0]?.isAAMSHC
+            }));
         }
 
     }, [selectedOption, openPage])
@@ -65,6 +74,8 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
                 "isUPHC": values?.isUphc,
                 "isAAMSHC": values?.isAamshc
             }
+
+            console.log('val', val)
 
             fetchPostData("/api/v1/IphsMoleculeMedicineMaster/createMoleculeMedicine", val).then(data => {
                 if (data?.status === 1) {
@@ -87,7 +98,7 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
                 "isUPHC": values?.isUphc,
                 "isAAMSHC": values?.isAamshc
             }
-
+            console.log('valu', val)
             fetchPostData(`/api/v1/IphsMoleculeMedicineMaster/modifyMoleculeMedicine?encryptedPackID=${selectedOption[0]?.packID}`, val).then(data => {
                 if (data?.status === 1) {
                     ToastAlert("Data updated successfully", "success")
@@ -117,6 +128,8 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
             "isChc": "", "isSdh": "", "isPhc": "", "isUphc": "", "isAamshc": ""
         }));
     }
+
+    console.log('selectedOption', selectedOption)
 
     return (
         <>
@@ -149,7 +162,7 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
                             id="isDh"
                             name="isDh"
                             onChange={handleValueCange}
-                            checked={values?.isDh === "1"}
+                            checked={values?.isDh == "1"}
                         />
                     </div>
                 </div>
@@ -162,7 +175,7 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
                             id="isChc"
                             name="isChc"
                             onChange={handleValueCange}
-                            checked={values?.isChc === "1"}
+                            checked={values?.isChc == "1"}
                         />
                     </div>
                 </div>
@@ -175,7 +188,7 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
                             id="isSdh"
                             name="isSdh"
                             onChange={handleValueCange}
-                            checked={values?.isSdh === "1"}
+                            checked={values?.isSdh == "1"}
                         />
                     </div>
                 </div>
@@ -188,7 +201,7 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
                             id="isPhc"
                             name="isPhc"
                             onChange={handleValueCange}
-                            checked={values?.isPhc === "1"}
+                            checked={values?.isPhc == "1"}
                         />
                     </div>
                 </div>
@@ -201,7 +214,7 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
                             id="isUphc"
                             name="isUphc"
                             onChange={handleValueCange}
-                            checked={values?.isUphc === "1"}
+                            checked={values?.isUphc == "1"}
                         />
                     </div>
                 </div>
@@ -214,7 +227,7 @@ const IphsMedicineMasterForm = ({ setRecord, getListData, setSearchInput }) => {
                             id="isAamshc"
                             name="isAamshc"
                             onChange={handleValueCange}
-                            checked={values?.isAamshc === "1"}
+                            checked={values?.isAamshc == "1"}
                         />
                     </div>
                 </div>

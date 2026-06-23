@@ -7,6 +7,8 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import { ToastAlert } from '../utils/CommonFunction'
 import { LoginContext } from '../context/LoginContext'
 
+import ModernDashHeader from '../component/dashboard/ModernDashHeader'
+
 const ChangeDvdmsPass = () => {
     const { setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [isShowOldPassword, setIsShowOldPassword] = useState(false);
@@ -94,7 +96,8 @@ const ChangeDvdmsPass = () => {
 
     return (
         <>
-            <DashHeader />
+            {/* <DashHeader /> */}
+            <ModernDashHeader/>
             <div className='text-center w-100 fw-bold p-1 heading-text' >Change Password Details</div>
             <div className='container change-pass-container'>
                 <div className='form-card m-auto p-2' style={{ borderBottom: "2px solid #000e4e" }}>

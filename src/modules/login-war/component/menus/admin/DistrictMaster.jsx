@@ -16,6 +16,8 @@ const DistrictMaster = () => {
         "countryId": "101", "stateId": "", "recordStatus": "1"
     })
 
+    console.log('values', values)
+
     const [listData, setListData] = useState([]);
     const { getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext)
     const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, isShowReport } = useContext(LoginContext);
@@ -126,9 +128,10 @@ const DistrictMaster = () => {
 
     const handleDelete = () => {
         const distId = selectedOption[0]?.cwhnumDistId;
-        fetchPostData(`/api/v1/districts/deleteDistrict?stateId=${values?.stateId}&districtId=${distId}`).then(data => {
+        const stateId = selectedOption[0]?.cwhnumStateId;
+        fetchPostData(`/api/v1/districts/deleteDistrict?stateId=${stateId}&districtId=${distId}`).then(data => {
             if (data?.status === 1) {
-                getListData(values?.recordStatus, values?.stateId);
+                getListData(values?.recordStatus, stateId);
                 ToastAlert("Record Deleted Successfully", "success")
                 setSelectedOption([]);
                 setConfirmSave(false);
@@ -137,6 +140,7 @@ const DistrictMaster = () => {
             } else {
                 ToastAlert(data?.message, 'error')
                 setOpenPage("home")
+                setConfirmSave(false);
             }
         })
 

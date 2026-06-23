@@ -1,34 +1,38 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import LoginWarRoutes from './modules/login-war/LoginWarRoutes';
 import { ToastContainer } from 'react-toastify';
-import ConfirmBoxLogin from './modules/login-war/component/ConfirmBoxLogin';
 import "react-datepicker/dist/react-datepicker.css";
 import Auth from './Auth';
-import NotFoundPage from './modules/login-war/pages/NotFound';
-import SessionExpired from './modules/login-war/pages/SessionExpired';
+import Loader from './modules/login-war/component/Loader';
+import '../src/modules/login-war/LoginWar.css';
+import ConfirmBoxLogin from './modules/login-war/component/ConfirmBoxLogin';
+import LoginWarRoutes from './modules/login-war/LoginWarRoutes';
 
-const HomePage = React.lazy(() => import('./modules/login-war/pages/HomePage'));
+const NotFoundPage = lazy(() => import('./modules/login-war/pages/NotFound'));
+const SessionExpired = lazy(() => import('./modules/login-war/pages/SessionExpired'));
+const HomePage = lazy(() => import('./modules/login-war/pages/HomePage'));
 
 function App() {
 
   return (
     <>
       <Router>
-        <Routes>
-          <Route path="/dvdms/*" element={<Auth comp={LoginWarRoutes} />} />
-          {/* <Route index element={<HomePage />} /> */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/dvdms" element={<HomePage />} />
-          <Route path="*" element={<NotFoundPage />} />
-          <Route path="/dvdms/session-expired" element={<SessionExpired />} />
+        <Suspense fallback={<Loader />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/dvdms" element={<HomePage />} />
+            <Route path="/dvdms/session-expired" element={<SessionExpired />} />
+            <Route path="/dvdms/*" element={<Auth comp={LoginWarRoutes} />} />
+            <Route path="*" element={<NotFoundPage />} />
 
-        </Routes>
-        <ToastContainer />
-        <ConfirmBoxLogin />
+            {/* <Route index element={<HomePage />} /> */}
+          </Routes>
+          <ToastContainer />
+          <ConfirmBoxLogin />
+        </Suspense>
       </Router>
     </>
   )

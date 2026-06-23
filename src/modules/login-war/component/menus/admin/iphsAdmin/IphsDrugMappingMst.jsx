@@ -148,7 +148,8 @@ const IphsDrugMappingMst = () => {
                 // "packId":drugId,
             }))
 
-
+            console.log('mapped', mappedData)
+            console.log('unMappedData', unMappedData)
             let isMapped = false;
 
             if (mappedData.length > 0 || unMappedData.length > 0) {
@@ -165,11 +166,11 @@ const IphsDrugMappingMst = () => {
                 }
                 if (unMappedData.length > 0) {
                     await fetchPostData("/api/v1/IphsDrugMappingMst/unmapDrugs", unMappedData).then(data => {
+                        console.log('data', data)
                         if (data?.status == 1) {
                             isMapped = true;
                         } else {
                             isMapped = false;
-
                         }
                     })
                 }

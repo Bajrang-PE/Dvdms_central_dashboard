@@ -5,27 +5,24 @@ import GlobalTable from '../../GlobalTable';
 import { functionalityData } from '../../../localData/HomeData';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import StateMasterForm from '../forms/admin/StateMasterForm';
-//import { fetchDeleteData } from '../../../../../utils/ApiHooks';
 import { Modal } from 'react-bootstrap';
 import { fetchData, fetchDeleteData } from '../../../../../utils/ApiHooks';
 import ViewPage from '../ViewPage';
 import HmisFacilityMasterForm from '../forms/admin/HmisFacilityMasterForm';
-import { formatDateHmis } from '../../../../../utils/CommonFunction';
+import { formatDateHmis, getAuthUserData, parseBackendDate } from '../../../../../utils/CommonFunction';
 
 const HmisFacilityMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, getStateListData, getSteteNameDrpData, stateNameDrpDt, getFacilityTypeDrpData, stateListData, setConfirmSave, confirmSave, setShowConfirmSave,isShowReport } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, setConfirmSave, confirmSave, setShowConfirmSave, isShowReport } = useContext(LoginContext);
+
     const [searchInput, setSearchInput] = useState('');
     const [selectAll, setSelectAll] = useState(false);
     const [recordStatus, setRecordStatus] = useState('1');
     const [stateId, setStateId] = useState("");
-    const [selectedStateName, setSelectedStateName] = useState("");
+    const [selectedStateName, setSelectedStateName] = useState({});
     const [listData, setListData] = useState([]);
     const [filterData, setFilterData] = useState(listData);
 
-    useEffect(() => {
-        getStateListData(recordStatus ? recordStatus : '1')
-    }, [recordStatus])
 
     useEffect(() => {
         if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
@@ -33,23 +30,24 @@ const HmisFacilityMaster = () => {
     }, []);
 
     useEffect(() => {
-
-        getListData(stateId, recordStatus);
+        if (stateId && recordStatus) {
+            getListData(stateId, recordStatus);
+        }
     }, [stateId, recordStatus])
 
     const handleValueChange = (e) => {
         const { name, value } = e.target;
         const errName = name + "Err";
         if (name === "stateId") {
+            setStateId(value)
             const selectOptionGrp = stateNameDrpDt.find(opt => String(opt.value) === String(value));
-            setSelectedStateName(selectOptionGrp?.label || "");
+            setSelectedStateName(selectOptionGrp || {});
         }
-
     }
 
     const handleRowSelect = (row) => {
         setSelectedOption((prev) => {
-            if (prev.length > 0 && prev[0]?.cwhnumFacilityTypeId === row?.cwhnumFacilityTypeId) {
+            if (prev.length > 0 && prev[0]?.facilityId === row?.facilityId) {
                 return [];
             }
             return [row];
@@ -62,17 +60,18 @@ const HmisFacilityMaster = () => {
         } else {
             const lowercasedText = searchInput.toLowerCase();
             const newFilteredData = listData.filter(row => {
-                const paramName = row?.stateName?.toLowerCase() || "";
-                const shortName = row?.stateShortName?.toLowerCase() || "";
+                const facName = row?.facilityName?.toLowerCase() || "";
+                const qnty = row?.noOfFacilities?.toString()?.toLowerCase() || "";
+                const dt = row?.hmisDate?.toLowerCase() || "";
 
-                return paramName.includes(lowercasedText) || shortName.includes(lowercasedText);
+                return facName.includes(lowercasedText) || qnty.includes(lowercasedText) || dt.includes(lowercasedText);
             });
             setFilterData(newFilteredData);
         }
     }, [searchInput, listData]);
 
     const deleteRecord = () => {
-        fetchDeleteData(`/api/v1/hmisFacility?facilityTypeId=${selectedOption[0]?.cwhnumFacilityTypeId}&isActive=1`).then(data => {
+        fetchDeleteData(`/api/v1/delete/${selectedOption[0]?.facilityId}?seatId=${getAuthUserData('userSeatId')}`).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Data deleted successfully', 'success')
                 setConfirmSave(false);
@@ -103,37 +102,34 @@ const HmisFacilityMaster = () => {
 
 
     const getListData = (stateId, recordStatus) => {
-
-        fetchData(`/api/v1/hmisFacility?stateId=${stateId}&isActive=${recordStatus}`).then((data) => {
+        fetchData(`/api/v1/main-page?stateId=${stateId}&isValid=${recordStatus}`).then((data) => {
             console.log('data', data)
             if (data?.status === 1 && Array.isArray(data.data)) {
                 setListData(data.data)
             } else {
                 setListData([])
             }
-
         })
-
     };
 
-    const handleSelectAll = (isChecked) => {
+    // const handleSelectAll = (isChecked) => {
 
-        setSelectAll(isChecked);
-        if (isChecked) {
-            const allIds = listData.map(drug => drug.cwhnumDrugId);
-            setSelectedOption(allIds);
-        } else {
-            setSelectedOption([]);
-        }
-    };
+    //     setSelectAll(isChecked);
+    //     if (isChecked) {
+    //         const allIds = listData.map(drug => drug.cwhnumDrugId);
+    //         setSelectedOption(allIds);
+    //     } else {
+    //         setSelectedOption([]);
+    //     }
+    // };
 
     const column = [
         {
             name: <input
                 type="checkbox"
-                checked={selectAll}
-                onChange={(e) => handleSelectAll(e.target.checked)}
-                disabled={listData.length === 0}
+                // checked={selectAll}
+                // onChange={(e) => handleSelectAll(e.target.checked)}
+                disabled
                 className="form-check-input log-select"
 
             />,
@@ -142,7 +138,7 @@ const HmisFacilityMaster = () => {
                     <span className="btn btn-sm text-white px-1 py-0 mr-1" >
                         <input
                             type="checkbox"
-                            checked={selectedOption.length > 0 && selectedOption[0]?.cwhnumFacilityTypeId === row?.cwhnumFacilityTypeId}
+                            checked={selectedOption.length > 0 && selectedOption[0]?.facilityId === row?.facilityId}
                             onChange={(e) => { handleRowSelect(row) }}
                         />
                     </span>
@@ -151,17 +147,17 @@ const HmisFacilityMaster = () => {
         },
         {
             name: 'Facility Type',
-            selector: row => row.cwhnumFacilityTypeId,
+            selector: row => row.facilityName || 'null',
             sortable: true,
         },
         {
             name: 'HMIS Date',
-            selector: row => formatDateHmis(row.cwhdtHmisDate),
+            selector: row => row.hmisDate || 'null',
             sortable: true,
         },
         {
             name: 'No Of Facility',
-            selector: row => row.cwhnumNoofHmisFac,
+            selector: row => row.noOfFacilities || "null",
             sortable: true,
         },
     ]
@@ -188,14 +184,14 @@ const HmisFacilityMaster = () => {
                                     <label className="col-sm-5 col-form-label fix-label required-label">State : </label>
                                     <div className="col-sm-7 align-content-center">
                                         <InputSelect
-                                            id="hintquestion"
-                                            name="hintquestion"
+                                            id="stateId"
+                                            name="stateId"
                                             placeholder="Select State"
                                             //options={[{ value: 1, label: 'Assam' }]}
                                             options={stateNameDrpDt}
                                             className="aliceblue-bg border-dark-subtle"
                                             value={stateId}
-                                            onChange={(e) => setStateId(e.target.value)}
+                                            onChange={handleValueChange}
                                         />
 
                                     </div>
@@ -206,8 +202,8 @@ const HmisFacilityMaster = () => {
                                     <label className="col-sm-5 col-form-label fix-label">Record Status : </label>
                                     <div className="col-sm-7 align-content-center">
                                         <InputSelect
-                                            id="hintquestion"
-                                            name="hintquestion"
+                                            id="recordStatus"
+                                            name="recordStatus"
                                             placeholder="Select Status"
                                             options={[{ value: 1, label: 'Active' }, { value: 0, label: 'InActive' }]}
                                             className="aliceblue-bg border-dark-subtle"
@@ -252,7 +248,7 @@ const HmisFacilityMaster = () => {
                     }
 
                     {(openPage === "add" || openPage === 'modify') && (<>
-                        <HmisFacilityMasterForm selectedStateName={selectedStateName} />
+                        <HmisFacilityMasterForm selectedStateName={selectedStateName} getListData={getListData}/>
                     </>)}
                 </>}
 

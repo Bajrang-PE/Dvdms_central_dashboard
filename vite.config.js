@@ -13,6 +13,11 @@ export default defineConfig({
         target: 'http://10.226.28.223:8025',
         changeOrigin: true,
         secure: false,
+      },
+      '/hisutils': {
+        target: 'http://10.226.17.6:8024',
+        changeOrigin: true,
+        secure: false,
       }
     }
   }

@@ -1,0 +1,168 @@
+
+/* --- RIGHT PANEL HEADINGS --- */
+.panel-main-title.dark {
+    color: #00183f;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.scroller-section-subtitle {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #00183f;
+    margin-bottom: 4px;
+    font-weight: 700;
+    opacity: 0.8;
+}
+
+/* --- RELATIVE CONTAINER FOR ARROWS POSITIONING --- */
+.scroller-relative-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    /* Doste box (Online Facilities) se chipke na, isliye clean separation padding touch */
+    padding: 15px 5px 15px 35px; 
+    border-radius: 16px;
+    margin-top: 10px;
+}
+
+/* --- HORIZONTAL SCROLLER TRACK --- */
+.horizontal-scrollable-track {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important; /* Strict background layer scrolling active */
+    overflow-y: hidden !important; 
+    gap: 30px; 
+    padding: 20px 10px;
+    width: 100%;
+    scrollbar-width: none !important; /* Hides native bar on Firefox */
+}
+
+/* Bottom default scroll lines strictly hidden across Chrome/Safari platforms */
+.horizontal-scrollable-track::-webkit-scrollbar {
+    display: none !important;
+    height: 0 !important;
+    width: 0 !important;
+}
+
+/* --- CIRCLE ITEM STRUCTURE (Forces 4 On Screen, Keeping Scroll Active) --- */
+.scrollable-circle-item {
+    /* Fixed base size blocks scaling locks, forcing a clean 4 item display per frame */
+    flex: 0 0 175px !important;
+    max-width: 175px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Circle Avatar Box - Premium Attractive Grid Layout Dimensions */
+.circle-avatar-box {
+    width: 160px !important;  
+    height: 160px !important; 
+    border-radius: 50%;
+    background: #ffffff;
+    /* Clean multi-layered rich high definition shadow look */
+    box-shadow: 0 12px 32px rgba(0, 24, 63, 0.08), 0 4px 12px rgba(0, 0, 0, 0.02);
+    border: 2px solid #eef2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    padding: 2px;
+}
+
+/* Internal Images Constraints */
+.circle-avatar-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Hover Dynamic Smooth Lift Effect */
+.scrollable-circle-item:hover .circle-avatar-box {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 38px rgba(0, 24, 63, 0.15);
+    border-color: #00183f;
+}
+
+/* --- NEAT & CLEAN BELOW HEADINGS --- */
+.circle-card-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #2d3748;
+    margin-top: 14px;
+    line-height: 1.4;
+    text-align: center;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.2s ease;
+    width: 100%;
+}
+
+.scrollable-circle-item:hover .circle-card-title {
+    color: #a92323;
+}
+
+/* --- FLOATING SCROLLER ARROW BUTTONS --- */
+.scroller-arrow-btn {
+    position: absolute;
+    top: 45%; 
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #a92323; /* Crisp red dynamic border */
+    color: #a92323;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 15;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.scroller-arrow-btn:hover {
+    background: #a92323;
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(169, 35, 35, 0.3);
+}
+
+.left-arrow {
+    left: 10px; /* Adjusted to balance the dynamic left separation space */
+}
+
+.right-arrow {
+    right: -15px;
+}
+
+/* --- BOTTOM SLIDER INDICATOR DOTS --- */
+.container-dots-ui {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container-dots-ui .dot-ui {
+    width: 14px;
+    height: 3px;
+    background: #e2e8f0;
+    margin: 0 3px;
+    display: inline-block;
+    border-radius: 2px;
+}
+
+.container-dots-ui .dot-ui.active {
+    background: #00183f;
+    width: 22px;
+}

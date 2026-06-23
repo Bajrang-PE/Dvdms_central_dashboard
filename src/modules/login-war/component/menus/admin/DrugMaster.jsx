@@ -155,7 +155,7 @@ const DrugMaster = () => {
                     type="checkbox"
                     checked={selectAll}
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    disabled={listData.length === 0}
+                    disabled={filterData.length === 0}
                     className="form-check-input log-select"
                 />
             ),
@@ -233,7 +233,7 @@ const DrugMaster = () => {
                 {!isShowReport &&
                     <div className='masters-header row'>
                         <span className='col-6'><b>{`Drug Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                        {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
+                        {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
                     </div>
                 }
                 {(openPage === "home" || openPage === "view" || openPage === 'delete') && !isShowReport &&
@@ -295,8 +295,8 @@ const DrugMaster = () => {
                             </div>
 
                             <div>
-                                <GlobalTable column={columns} data={listData} onDelete={handleDeleteRecord}
-                                    onReport={null} setSearchInput={null} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                                <GlobalTable column={columns} data={filterData} onDelete={handleDeleteRecord}
+                                    onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
                             </div>
 
 
@@ -307,7 +307,7 @@ const DrugMaster = () => {
                                     </Modal.Header>
                                     <Modal.Body className='px-2 py-1'>
 
-                                        <div className='text-left'>
+                                        <div className='text-center'>
                                             <label><b>Group Name : </b></label>&nbsp;{selectedGroupName}<br />
                                             <label><b>Subgroup Name : </b></label>&nbsp;{selectedSubGroupName}<br />
                                             <label><b>Drug Name : </b></label>&nbsp;{selectedOption[0]?.cwhstrDrugName}<br />

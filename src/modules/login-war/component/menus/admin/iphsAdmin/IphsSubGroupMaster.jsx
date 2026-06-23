@@ -111,7 +111,6 @@ const IphsSubGroupMaster = () => {
     }, [confirmSave])
 
     const handleDelete = () => {
-        alert('bbb')
         fetchPostData(`/api/v1/IphsSubGroupMaster/deleteSubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}&isActive=0`).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Data deleted successfully", "success")

@@ -5,48 +5,47 @@ import { fetchData } from '../../../../../utils/ApiHooks';
 
 const NinFacilityMappingMaster = () => {
 
-    const [suppId,setSuppId] = useState("");
-    const [stateId,setStateId] =useState("");
-    const [recStatus,setRecStatus] =useState("0");
-    const [districtId,setDistrictId] =useState("");
-    const [facilityTypeId,setFacilityTypeId] =useState("");
-    const [facilityTypeDrpDt ,setFacilityTypeDrpDt] = useState([]);
+    const [stateId, setStateId] = useState("");
+    const [recStatus, setRecStatus] = useState("2");
+    const [districtId, setDistrictId] = useState("");
+    const [facilityTypeId, setFacilityTypeId] = useState("");
+    const [facilityTypeDrpDt, setFacilityTypeDrpDt] = useState([]);
 
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, getDrpData, supplierNameDrpDt,getDistrictNameDrpData,districtNameDrpDt } = useContext(LoginContext);
+    const { getSteteNameDrpData, stateNameDrpDt, getDistrictNameDrpData, districtNameDrpDt } = useContext(LoginContext);
 
-    useEffect(()=>{
-        if (stateNameDrpDt?.length === 0){getSteteNameDrpData()};
+    useEffect(() => {
+        if (stateNameDrpDt?.length === 0) { getSteteNameDrpData() };
         getFacilityTypeDrpData();
-    },[])
+    }, [])
 
-    useEffect(()=>{
-        if(stateId){
-        getDistrictNameDrpData(stateId);}
+    useEffect(() => {
+        if (stateId) {
+            getDistrictNameDrpData(stateId);
+        }
 
-    },[stateId])
+    }, [stateId])
 
-    const getFacilityTypeDrpData=()=>{
-         fetchData('/api/v1/drpDwnFcltyTypMapMst').then((data) => {
-                    if (data?.status ===1) {
-                        setFacilityTypeDrpDt(data?.data)
-        
-                    } else {
-                        setFacilityTypeDrpDt([])
-                    }
-                })
+    const getFacilityTypeDrpData = () => {
+        fetchData('/api/v1/drpDwnFcltyTypMapMst').then((data) => {
+            if (data?.status === 1) {
+                setFacilityTypeDrpDt(data?.data)
+
+            } else {
+                setFacilityTypeDrpDt([])
+            }
+        })
     }
 
+    const handleSave = () => {
+        alert("Handle save called")
+    }
 
-    const handleSave=()=>{
-       alert("Handle save called")
-   }
+    return (
 
-  return (
-    
-    <div className="masters mx-3 my-2">
-             <div className='text-left w-100 fw-bold p-1 heading-text'>Nin Facility Mapping Master</div>
+        <div className="masters mx-3 my-2">
+            <div className='text-left w-100 fw-bold p-1 heading-text'>Nin Facility Mapping Master</div>
 
-             <div className="row mt-2">
+            <div className="row mt-2">
                 <div className="form-group col-sm-6 row">
                     <label className="col-sm-4 col-form-label fix-label required-label">State Name :</label>
                     <div className="col-sm-8">
@@ -83,13 +82,13 @@ const NinFacilityMappingMaster = () => {
                     <label className="col-sm-4 col-form-label fix-label required-label">Facility Type</label>
                     <div className="col-sm-8">
                         <InputSelect
-                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
-                        id='facilityTypeId'
-                        name='facilityTypeId'
-                        placeholder="All"
-                        options={facilityTypeDrpDt}
-                        onChange={(e)=>setFacilityTypeId(e.target.value)}
-                        value={facilityTypeId}
+                            className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                            id='facilityTypeId'
+                            name='facilityTypeId'
+                            placeholder="All"
+                            options={facilityTypeDrpDt}
+                            onChange={(e) => setFacilityTypeId(e.target.value)}
+                            value={facilityTypeId}
                         />
 
                     </div>
@@ -99,13 +98,13 @@ const NinFacilityMappingMaster = () => {
                 <div className="form-group col-sm-6 row">
                     <label className="col-sm-4 col-form-label fix-label required-label">Status </label>
                     <div className="col-sm-8">
-                    <InputSelect
-                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
-                        id='recStatus'
-                        name='recStatus'
-                        options={[{label:"Mapped",value:"1"},{label:"Unmapped",value:"0"}]}
-                        onChange={(e)=>setRecStatus(e.target.value)}
-                        value={recStatus}
+                        <InputSelect
+                            className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                            id='recStatus'
+                            name='recStatus'
+                            options={[{ label: "Mapped", value: "1" }, { label: "Unmapped", value: "2" }]}
+                            onChange={(e) => setRecStatus(e.target.value)}
+                            value={recStatus}
                         />
                     </div>
                 </div>
@@ -114,8 +113,8 @@ const NinFacilityMappingMaster = () => {
 
             <div className="row mt-2 ">
                 <div className="col-sm-6 d-flex flex-column align-items-center">
-                <label className="col-sm-4 col-form-label fix-label required-label text-center">State Facility Name  </label>
-                   <div className="col-sm-6">
+                    <label className="col-sm-4 col-form-label fix-label required-label text-center">State Facility Name  </label>
+                    <div className="col-sm-6">
                         <InputSelect
                             className="aliceblue-bg form-control form-control-sm border-dark-subtle"
                             name='stateId'
@@ -130,8 +129,8 @@ const NinFacilityMappingMaster = () => {
                 </div>
 
                 <div className="col-sm-6 d-flex flex-column align-items-center">
-                <label className="col-sm-4 col-form-label fix-label required-label text-center">NIN Facility Name </label>
-                <div className="col-sm-6">
+                    <label className="col-sm-4 col-form-label fix-label required-label text-center">NIN Facility Name </label>
+                    <div className="col-sm-6">
                         <InputSelect
                             className="aliceblue-bg form-control form-control-sm border-dark-subtle"
                             name='stateId'
@@ -142,7 +141,7 @@ const NinFacilityMappingMaster = () => {
                             value={stateId}
                         />
                     </div>
-                    
+
                 </div>
 
             </div>
@@ -157,8 +156,8 @@ const NinFacilityMappingMaster = () => {
                 <button className='btn btn-sm new-btn-blue py-0' >  <i className="fa fa-broom me-1"></i>Clear</button>
             </div>
 
-    </div>
-  )
+        </div>
+    )
 }
 
 export default NinFacilityMappingMaster

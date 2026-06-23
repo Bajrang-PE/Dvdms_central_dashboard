@@ -327,11 +327,11 @@ const DrugMasterForm = (props) => {
                         />
 
                     </div>
-                    <div className="col-sm-3 align-content-center ">
+                    {/* <div className="col-sm-3 align-content-center ">
                         <button className='btn cms-login-btn m-1 btn-sm' onClick={() => getCodes()}>
                             Get Codes
                         </button>
-                    </div>
+                    </div> */}
                 </div>
 
             </div>

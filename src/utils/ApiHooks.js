@@ -91,11 +91,11 @@ export const fetchPostData = async (url, data) => {
         // console.log('response', response);
         // return response.data;
         const response = await apiLogin.post(url, encodeURIComponent(encryptAesData(JSON?.stringify(data))),
-            // {
-            //     headers: {
-            //         "Content-Type": "text/plain",
-            //     },
-            // }
+            {
+                headers: {
+                    "Content-Type": "text/plain",
+                },
+            }
         );
         const decryptedData = decryptAesOrRsa(response?.data);
         return JSON.parse(decryptedData);
@@ -122,7 +122,11 @@ export const fetchUpdateData = async (url, data) => {
 
 export const fetchUpdatePostData = async (url, data) => {
     try {
-        const response = await apiLogin.post(url, encodeURIComponent(encryptAesData(JSON?.stringify(data))));
+        const response = await apiLogin.post(url, data && encodeURIComponent(encryptAesData(JSON?.stringify(data))), {
+            headers: {
+                "Content-Type": "text/plain",
+            },
+        });
         const decryptedData = decryptAesOrRsa(response?.data);
         return JSON.parse(decryptedData);
         // return response.data;
@@ -153,5 +157,28 @@ export const fetchPatchData = async (url, payload) => {
     } catch (error) {
         console.log('API Error:', error);
         // return error?.response?.data;
+    }
+};
+
+// API FUNCTION TO FETCH BLOB / IMAGE DATA
+export const fetchBlobData = async (url, params = null) => {
+
+    try {
+        let response;
+        if (params) {
+            response = await apiLogin.get(url, {
+                params,
+                responseType: 'blob'
+            });
+        } else {
+            response = await apiLogin.get(url, {
+                responseType: 'blob'
+            });
+        }
+        return response.data;
+    } catch (error) {
+        console.error('BLOB API Error:', error);
+        throw error;
+
     }
 };

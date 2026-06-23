@@ -62,6 +62,7 @@ const StateConfigCwh = () => {
         try {
 
             fetchData(`/api/v1/state/getStateConfig/${stateId}`).then((data) => {
+                console.log('data', data)
                 if (data?.status === 1) {
 
                     setValues({
@@ -202,14 +203,16 @@ const StateConfigCwh = () => {
             cwhstrDatabasepassword: values?.isDbCredAvl == "0" ? '' : values?.dbPass,
         };
 
+        console.log('val', data)
         await fetchPostData("/api/v1/state", data).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
                 ToastAlert('State configuration saved successfully', 'success');
                 setConfirmSave(false);
                 reset();
             } else {
                 ToastAlert('Error', 'error');
-                 setConfirmSave(false);
+                setConfirmSave(false);
             }
         });
 
@@ -224,6 +227,7 @@ const StateConfigCwh = () => {
             "dbDrivClass": "", "dbUrl": "", "dbUserName": "", "dbPass": "", "isDbCredAvl": "", "stateDatabase": "", "jobForTesting": "",
             "jobId": "", "jobName": "",
         });
+         setConfirmSave(false);
     }
 
     return (

@@ -92,7 +92,7 @@ const FacilityTypeMasterForm = ({setSearchInput}) => {
         setFacilityName('');
         setRecordStatus('Active')
         setConfirmSave(false);
-        setSearchInput(false);
+        setSearchInput('');
     }
 
     return (

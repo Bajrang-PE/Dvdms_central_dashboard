@@ -13,7 +13,6 @@ const MenuList = (props) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-  
     // Function to transform API data into the required menu structure
     const transformMenuData = (apiData) => {
         const menuStructure = {};
@@ -94,7 +93,6 @@ const MenuList = (props) => {
             }
 
             // If we have all three parts (root, category, subCategory)
-            // Find or create the category subMenuType
             let categorySubMenu = menuStructure[root]?.subMenuTypes?.find(
                 sub => sub?.title === category
             );
@@ -203,7 +201,6 @@ const MenuList = (props) => {
         );
     };
 
-
     return (
         <ul className={`dropdown-menu mega-menu ${activeDropdown === 'dropmenulinks' ? 'show' : ''}`} id='dropmenulinks' style={{ border: "1px solid #003366" }}>
             <div className='container p-0'>
@@ -229,19 +226,6 @@ const MenuList = (props) => {
                                                         {subMenuType?.items?.map((item, idx) => (
                                                             <div key={idx} className="col-lg-3 col-md-4 col-sm-4 col-xs-4 menu-item">
                                                                 <MenuLink item={item} onTabChange={onTabChange} />
-                                                                {/* <Link
-                                                                    className="acrmenu"
-                                                                    data-val={item?.dataVal}
-                                                                    data-menuname={item?.menuName}
-                                                                    title={item?.menuName}
-                                                                    to={item?.link || '#'}
-                                                                    onClick={onTabChange}
-                                                                >
-                                                                    <div className="menu-content">
-                                                                        <i className={`fa ${item?.icon}`}></i>
-                                                                        <span>{item?.menuName}</span>
-                                                                    </div>
-                                                                </Link> */}
                                                             </div>
                                                         ))}
                                                     </div>
@@ -254,19 +238,6 @@ const MenuList = (props) => {
                                         {menuType?.items?.map((item, idx) => (
                                             <div key={idx} className="col-lg-3 col-md-4 col-sm-4 col-xs-4 menu-item">
                                                 <MenuLink item={item} onTabChange={onTabChange} />
-                                                {/* <Link
-                                                    className="acrmenu"
-                                                    data-val={item?.dataVal}
-                                                    data-menuname={item?.menuName}
-                                                    title={item?.menuName}
-                                                    to={item?.link || '#'}
-                                                    onClick={onTabChange}
-                                                >
-                                                    <div className="menu-content">
-                                                        <i className={`fa ${item?.icon}`}></i>
-                                                        <span>{item?.menuName}</span>
-                                                    </div>
-                                                </Link> */}
                                             </div>
                                         ))}
                                     </div>

@@ -74,7 +74,7 @@ const GraphModal = ({ data, onClose, widgetData }) => {
 
     return (
         <div>
-            <Modal show={true} onHide={onClose} size='lg'>
+            <Modal show={true} onHide={onClose} size='lg' className='' style={{paddingTop:"4rem"}}>
                 <Modal.Header closeButton className='p-2'></Modal.Header>
                 <b><h4 className='datatable-header mx-3 py-1 mt-1 px-1'>{widgetData?.rptDisplayName}</h4></b>
                 <Modal.Body className='px-3 py-0'>

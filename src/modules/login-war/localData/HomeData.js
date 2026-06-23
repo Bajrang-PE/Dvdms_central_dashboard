@@ -1,7 +1,13 @@
+// export const imageUrls = [
+//     "final-banner.jpg",
+//     "banner2.jpg",
+//     "banner3.jpg",
+// ];
+
 export const imageUrls = [
-    "final-banner.jpg",
-    "banner2.jpg",
-    "banner3.jpg",
+    "banner4.1.png",
+    "banner5.1.png",
+    "banner.png",
 ];
 
 export const DataSeries = [

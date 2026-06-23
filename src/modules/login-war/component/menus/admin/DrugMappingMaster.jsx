@@ -39,7 +39,7 @@ const DrugMappingMaster = () => {
     }, [stateId]);
 
     useEffect(() => {
-        if (stateId && itemName) {
+        if (stateId && itemName?.value) {
 
             getMappedList();
             getUnmappedList();
@@ -67,7 +67,7 @@ const DrugMappingMaster = () => {
         }
 
         fetchData(url).then(data => {
-            console.log('data', data)
+            console.log('items', data)
             if (data?.status === 1) {
                 const options = data?.data?.map(item => ({
                     value: item.cwhnumDrugId,
@@ -85,7 +85,7 @@ const DrugMappingMaster = () => {
 
     const getUnmappedList = () => {
         fetchData(`/api/v1/mapDrug/UnmapDrug?stateId=${stateId}`).then(data => {
-            console.log('data', data)
+            console.log('datau', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumDrugId,
@@ -102,7 +102,7 @@ const DrugMappingMaster = () => {
 
     const getMappedList = () => {
         fetchData(`/api/v1/mapDrug/MappedDrug?drugId=${itemName?.value}&stateId=${stateId}`).then(data => {
-            console.log('data', data)
+            console.log('datam', data)
             if (data.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.stateDrugId,
@@ -129,7 +129,7 @@ const DrugMappingMaster = () => {
             item => !selectedOptions.some(i => i.value === item.value)
         );
 
-        const mappedData = newMapped?.length > 0 && newMapped?.map(dt => ({
+        const mappedData = newMapped?.length > 0 ? newMapped?.map(dt => ({
             "stateDrugId": parseInt(dt?.value),
             "stateId": parseInt(stateId),
             "seatId": getAuthUserData('userSeatId'),
@@ -142,9 +142,9 @@ const DrugMappingMaster = () => {
             "itemCategoryId": 0,
             "isEdl": 0,
             "reagentId": 0
-        }))
+        })) : [];
 
-        const unMappedData = newUnMapped?.length > 0 && newUnMapped?.map(dt => ({
+        const unMappedData = newUnMapped?.length > 0 ? newUnMapped?.map(dt => ({
             "cwhnumDrugIdTxt": "",
             "cwhstrDrugName": dt?.label,
             "cwhnumClassCode": 0,
@@ -155,7 +155,7 @@ const DrugMappingMaster = () => {
             "cwhnumStateItemCategoryId": 0,
             "cwhnumIsEdl": 0,
             "idWithFlag": ""
-        }))
+        })) : [];
 
         const val = {
             "arrdrugMappedDtos": mappedData,
@@ -163,8 +163,9 @@ const DrugMappingMaster = () => {
             "seatId": getAuthUserData('userSeatId'),
             "stateId": parseInt(stateId)
         }
-
+        console.log('val', val)
         fetchPostData(`/api/v1/mapDrug/saveMappedDrugs`, val).then(data => {
+            console.log('datasave', data)
             if (data?.status === 1) {
                 ToastAlert('Mapped successfully', 'success')
                 setConfirmSave(false)

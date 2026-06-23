@@ -20,6 +20,8 @@ const SupplierMasterForm = (props) => {
         "panNo": "", "showPan": "", "suppId": "",
     })
 
+    console.log('values', values)
+
     const [errors, setErrors] = useState({
         "suppNameErr": "", "suppTypeErr": "", "contactNoErr": "", "emailIdErr": "", "addressErr": "",
         "pinCodeErr": "", "countryNameErr": "", "stateIdErr": "", "corporateGstErr": "", "lstNoErr": "", "cstNoErr": "",
@@ -72,6 +74,8 @@ const SupplierMasterForm = (props) => {
             setRecordStatus(selected?.gnumIsvalid);
         }
     }, [selectedOption, openPage]);
+
+    console.log('selectedOption', selectedOption)
 
 
     const handleValidation = () => {
@@ -160,7 +164,7 @@ const SupplierMasterForm = (props) => {
                 if (data?.status === 1) {
                     ToastAlert('Supplier Added successfully', 'success');
                     refresh();
-                    
+
                 } else {
                     ToastAlert(data?.message, 'error');
                     setConfirmSave(false);
@@ -185,15 +189,17 @@ const SupplierMasterForm = (props) => {
                 cwhstrPanNo: values?.panNo,
                 gnumIsvalid: recordStatus,
                 gnumSeatId: getAuthUserData('userSeatId'),
-            }
+                "cwhnumSupplierId": values?.suppId,
 
-            fetchUpdateData(`/api/v1/suppliers/${values?.suppId}`, data).then(data => {
+            }
+            // fetchUpdatePostData(`/api/v1/suppliers/${values?.suppId}`, data).then(data => {
+            fetchUpdatePostData(`/api/v1/suppliers/updateSupplier`, data).then(data => {
                 if (data?.status === 1) {
                     ToastAlert('Supplier updated successfully', 'success')
                     setSelectedOption([]);
                     refresh();
                 } else {
-                    ToastAlert('Error', 'error')
+                    ToastAlert(data?.message, 'error')
                     setConfirmSave(false);
                 }
             })

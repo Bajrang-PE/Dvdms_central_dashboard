@@ -5,7 +5,7 @@ import GlobalTable from '../../GlobalTable';
 import SupplierMasterForm from '../forms/admin/SupplierMasterForm';
 import { Modal } from 'react-bootstrap';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
-import { fetchUpdateData, fetchData } from '../../../../../utils/ApiHooks';
+import { fetchUpdateData, fetchData, fetchUpdatePostData } from '../../../../../utils/ApiHooks';
 import MasterReport from '../../MasterReport';
 
 
@@ -75,7 +75,8 @@ const SupplierMaster = () => {
 
     const handleDelete = () => {
         const suppId = String(selectedOption[0]?.cwhnumSupplierId)
-        fetchUpdateData(`/api/v1/suppliers/del/${suppId}`).then(data => {
+        fetchUpdatePostData(`/api/v1/suppliers/deleteSupplier/${suppId}`).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 setSelectedOption([]);
@@ -84,8 +85,9 @@ const SupplierMaster = () => {
                 setRecordStatus(1)
                 getListData(recordStatus);
             } else {
-                ToastAlert('Error while deleting record!', 'error')
+                ToastAlert(data?.message, 'error')
                 setOpenPage("home")
+                setConfirmSave(false);
             }
         })
     }
@@ -192,7 +194,7 @@ const SupplierMaster = () => {
                         </Modal.Header>
                         <Modal.Body className='px-2 py-1'>
 
-                            <div className='text-left'>
+                            <div className='text-center'>
                                 <label><b>Supplier Type : </b></label>&nbsp;{selectedOption[0]?.cwhnumSupplierType}<br />
                                 <label><b>Address : </b></label>&nbsp;{selectedOption[0]?.cwhstrAddress}<br />
                                 <label><b>Email Id : </b></label>&nbsp;{selectedOption[0]?.cwhstrEmailId}<br />
