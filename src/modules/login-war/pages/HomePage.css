@@ -1,0 +1,499 @@
+.top-counter-ribbon {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px 10px;
+    border: 1px solid #eef2f5;
+    position: relative;
+    margin-top: -45px;
+    z-index: 10;
+}
+
+.counter-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    min-width: 160px;
+}
+
+.counter-icon {
+    font-size: 28px;
+    color: #00015d; 
+    margin-right: 15px;
+}
+
+.counter-info h3 {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+    color: #2d3748;
+}
+
+.counter-info p {
+    font-size: 12px;
+    margin: 0;
+    color: #718096;
+    font-weight: 500;
+}
+
+.unified-dashboard-box {
+    border-radius: 16px; 
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.07);
+    border: 1px solid #e2e8f0;
+    margin-top: 25px;
+    background: #ffffff;
+}
+
+.match-height-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.left-red-panel {
+    background: linear-gradient(135deg, #00183f 0%, #0052cc 55%, #000a1a 100%); 
+    color: #ffffff;
+    padding: 35px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 5;
+    border-top-right-radius: 40px;
+    border-bottom-right-radius: 40px;
+    box-shadow: 12px 0 30px rgba(0, 24, 63, 0.18);
+}
+
+@media (max-width: 991px) {
+    .left-red-panel {
+        border-radius: 0;
+        box-shadow: none;
+        padding: 30px;
+    }
+}
+
+.right-white-panel {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); 
+    padding: 35px 35px 35px 65px; 
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+    margin-left: -25px; 
+}
+
+@media (max-width: 991px) {
+    .right-white-panel {
+        padding: 30px;
+        margin-left: 0;
+    }
+}
+
+.right-white-panel h2, 
+.right-white-panel .heading-text { 
+    font-size: 24px;
+    font-weight: 700;
+    color: #00183f;
+    position: relative;
+    margin-bottom: 25px;
+    letter-spacing: -0.5px;
+}
+
+.right-white-panel h2::after,
+.right-white-panel .heading-text::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 50px;
+    height: 4px;
+    background: linear-gradient(90deg, #0052cc, #00d2ff);
+    border-radius: 2px;
+}
+
+.right-white-panel .carousel-item-wrapper, 
+.right-white-panel .slider-card,
+.right-white-panel .functionality-item {
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 14px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.right-white-panel .carousel-item-wrapper:hover,
+.right-white-panel .slider-card:hover,
+.right-white-panel .functionality-item:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 82, 204, 0.12);
+    border-color: #0052cc;
+}
+
+.right-white-panel .carousel-control-prev,
+.right-white-panel .carousel-control-next,
+.right-white-panel .arrow-btn {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06) !important;
+    color: #0052cc !important;
+    opacity: 1 !important;
+    transition: all 0.2s ease;
+}
+
+.right-white-panel .carousel-control-prev:hover,
+.right-white-panel .carousel-control-next:hover,
+.right-white-panel .arrow-btn:hover {
+    background: #0052cc !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 15px rgba(0, 82, 204, 0.3) !important;
+}
+
+.panel-content-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- NOTIFICATION TICKER CONTAINER RE-FIX --- */
+#latestnews {
+    margin-top: 35px !important;    /* upar waale counter ribbon se gap */
+    margin-bottom: 10px !important; /* neeche waale dashboard box se gap */
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important; /* bada black border hata kar clean border */
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+/* Material Symbol Icon Fix */
+#latestnews .material-symbols-outlined {
+    left: 20px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: #00183f !important;
+    font-size: 24px !important;
+}
+
+/* Text Overlap Fix */
+#latestnews h2 {
+    font-size: 16px !important;
+    color: #00183f !important;
+    margin-bottom: 2px !important;
+}
+
+#latestnews p {
+    font-size: 12px !important;
+    color: #718096 !important;
+}
+
+/* Ticker wrapper padding adjustment */
+.ticker-wrapper {
+    padding: 15px 20px !important;
+    width: 100%;
+}
+
+
+/* ---------------------------------celender----------------------------------------------------------------- */
+.calendar-modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6); display: flex;
+    align-items: center; justify-content: center; z-index: 10000;
+    backdrop-filter: blur(4px);
+}
+.calendar-modal-content {
+    background: #ffffff; border-radius: 16px; width: 95%; max-width: 700px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow: hidden; animation: zoomIn 0.25s ease-out;
+}
+.calendar-modal-header {
+    background: #00183f; padding: 15px 25px; display: flex;
+    justify-content: space-between; align-items: center; color: #ffffff;
+}
+.calendar-modal-header h5 { margin: 0; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.close-modal-btn { background: none; border: none; font-size: 32px; cursor: pointer; color: #ffffff; opacity: 0.8; }
+.close-modal-btn:hover { opacity: 1; }
+
+.calendar-modal-body { padding: 25px; display: flex; gap: 25px; background: #f8fafc; }
+.mock-calendar-view { flex: 1.3; background: #ffffff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+
+/* Navigation Row */
+.calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+.nav-arrow-btn { background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 16px; padding: 5px 15px; border-radius: 6px; cursor: pointer; color: #334155; }
+.nav-arrow-btn:hover { background: #0052cc; color: white; border-color: #0052cc; }
+.month-title { font-weight: 700; font-size: 20px; color: #00183f; }
+
+.calendar-grid-header, .calendar-grid-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+.calendar-grid-header { font-weight: 700; color: #475569; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.day-cell { padding: 10px 0; border-radius: 6px; background: #ffffff; font-size: 14px; font-weight: 500; color: #1e293b; border: 1px solid #edf2f7; }
+.empty-cell { background: transparent; border: none; }
+.govt-holiday { background: #cc0000 !important; color: white !important; font-weight: 700; box-shadow: 0 3px 8px rgba(204, 0, 0, 0.35); border-color: #cc0000; }
+
+/* Right Section */
+.holiday-list-side { flex: 0.9; background: #ffffff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; }
+.holiday-list-side h6 { font-weight: 700; margin: 0 0 15px 0; color: #00183f; font-size: 15px; border-bottom: 2px solid #edf2f7; padding-bottom: 8px; }
+.holiday-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; background: #fff5f5; padding: 8px; border-radius: 6px; border-left: 3px solid #cc0000; }
+.badge-holiday { background: #cc0000; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+.holiday-name { font-size: 13px; color: #334155; font-weight: 500; }
+.no-holiday-text { font-size: 13px; color: #64748b; font-style: italic; }
+
+@keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+@media (max-width: 600px) {
+    .calendar-modal-body { flex-direction: column; }
+    .holiday-list-side { width: 100%; }
+}
+
+
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------------------------- */
+/* ---------------- Floating Calendar Shortcut ---------------- */
+.calendar-shortcut {
+    position: fixed;
+    top: 220px;              /* screenshot jaisa upper-right placement */
+    right: -9px;
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: #8a7d7da8;
+    border: 1px solid #f0f0f091;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    z-index: 9999;
+    transition: all 0.25s ease;
+}
+
+.calendar-shortcut:hover {
+    background: #f8fafc;
+    transform: translateY(-2px);
+}
+
+.calendar-shortcut i {
+    font-size: 22px;
+    color: #00183f !important;
+    line-height: 1;
+}
+
+
+
+
+
+#calendarShortcut,
+#calendarShortcut i,
+.calendar-shortcut,
+.calendar-shortcut i {
+    filter: none !important;
+    -webkit-filter: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+
+/* ---------------------------------------------------------------------------------------------------- */
+/* ---------------- Floating Translate Shortcut ---------------- */
+/* .translate-shortcut {
+    position: fixed;
+    top: 276px;   
+    right: -8px; 
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: #8a7d7da8;
+    border: 1px solid #f0f0f091;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    z-index: 9999;
+    transition: all 0.25s ease;
+} */
+
+/* .translate-shortcut:hover {
+    background: #f8fafc;
+    transform: translateY(-2px);
+}
+
+.translate-shortcut i {
+    font-size: 22px;
+    color: #00183f !important;
+    line-height: 1;
+} */
+
+
+
+
+/* ================= GOOGLE TRANSLATE FULL HIDE FIX ================= */
+
+/* top Google translate bar / iframe / tooltip sab hide */
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+iframe.goog-te-banner-frame,
+body > .skiptranslate,
+.goog-te-gadget-icon,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-tooltip,
+.goog-tooltip:hover,
+.goog-text-highlight {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Google translate ka visible widget, text, branding sab hide */
+.goog-te-gadget,
+.goog-te-gadget-simple,
+.goog-te-gadget span,
+.goog-te-gadget div,
+#google_translate_element,
+#google_translate_element * {
+    border: 0 !important;
+    background: transparent !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    overflow: hidden !important;
+}
+
+/* body/html ko Google jo top push deta hai wo hatao */
+html,
+body {
+    top: 0 !important;
+    margin-top: 0 !important;
+    position: static !important;
+}
+
+/* translated page par bhi force reset */
+body.translated-ltr,
+body.translated-rtl {
+    top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Google text highlight remove */
+font.goog-text-highlight {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* hidden translate container ko screen se bahar rakho */
+#google_translate_element {
+    position: fixed !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+}
+
+
+
+/* Google translate dropdown hidden by default */
+.goog-te-combo {
+    position: fixed !important;
+    top: -9999px !important;
+    right: -9999px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+}
+
+
+
+
+
+
+
+
+
+/* ================= TRANSLATE SHORTCUT + CUSTOM LANGUAGE MENU ================= */
+
+.translate-shortcut-wrapper {
+    position: fixed;
+    top: 276px;
+    right: -8px;
+    z-index: 99999;
+}
+
+.translate-shortcut {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: #8a7d7da8;
+    border: 1px solid #f0f0f091;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.translate-shortcut:hover {
+    background: #f8fafc;
+    transform: translateY(-2px);
+}
+
+.translate-shortcut i {
+    font-size: 22px;
+    color: #00183f !important;
+    line-height: 1;
+}
+
+.translate-language-menu {
+    position: absolute;
+    top: 52px;
+    right: 8px;
+    width: 180px;
+    background: #ffffff;
+    border: 1px solid #dbe4f0;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.translate-language-menu button {
+    width: 100%;
+    border: none;
+    background: #f8fafc;
+    color: #00183f;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.translate-language-menu button:hover {
+    background: #0052cc;
+    color: #ffffff;
+}
+
+/* Google combo hidden rahega, use hum JS se control karenge */
+.goog-te-combo {
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+}

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../../context/LoginContext';
-import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
+import { fetchPostData } from '../../../../../../utils/ApiHooks';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import GlobalButtons from '../../GlobalButtons';
 import InputField from '../../../InputField';
@@ -20,7 +20,7 @@ const GroupMasterForm = ({ setSearchInput }) => {
             "cwhstrGroupName": groupName,
             "status": "Active"
         }
-        fetchPostData(`/api/v1/Group`, val).then(data => {
+        fetchPostData(`/api/v1/saveGroup`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
                 getGroupListData();
@@ -42,8 +42,7 @@ const GroupMasterForm = ({ setSearchInput }) => {
             "cwhnumGroupId": selectedOption[0]?.cwhnumGroupId,
             "gnumIsValid": 1,
         }
-        console.log(val,'bbb')
-        fetchUpdateData(`/api/v1/Group/${selectedOption[0]?.cwhnumGroupId}`, val).then(data => {
+        fetchPostData(`/api/v1/updateGroup/${selectedOption[0]?.cwhnumGroupId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record Updated Successfully', 'success');
                 getGroupListData();
@@ -110,7 +109,7 @@ const GroupMasterForm = ({ setSearchInput }) => {
                                 placeholder="Enter value"
                                 className="aliceblue-bg border-dark-subtle"
                                 value={groupName}
-                                onChange={(e) => { setGroupName(e.target?.value); setErrors({ ...errors, "groupNameErr": "" }) }}
+                                onChange={(e) => {setGroupName(e.target?.value); setErrors({ ...errors, "groupNameErr": "" }) }}
                                 errorMessage={errors?.groupNameErr}
                             />
                         </div>

@@ -1,7 +1,13 @@
+// export const imageUrls = [
+//     "final-banner.jpg",
+//     "banner2.jpg",
+//     "banner3.jpg",
+// ];
+
 export const imageUrls = [
-    "https://dvdms.mohfw.gov.in/HIS/hisglobal/CDBTemplate_V_3/Images/final-banner.jpg",
-    "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/banner2.jpg",
-    "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/banner3.jpg"
+    "banner4.1.png",
+    "banner5.1.png",
+    "banner.png",
 ];
 
 export const DataSeries = [
@@ -136,50 +142,50 @@ export const DataSeries = [
 ]
 
 export const stateData = [
-    { stateName: "Rajasthan", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/raj.jpg", link: "https://eaushadhi.rajasthan.gov.in/" },
+    { stateName: "Rajasthan", imgUrl: "raj.jpg", link: "https://eaushadhi.rajasthan.gov.in/" },
 
-    { stateName: "Andhra Pradesh", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/ap.jpg", link: "https://eaushadhiap.dcservices.in/IMCS/hissso/loginLogin.imcs" },
+    { stateName: "Andhra Pradesh", imgUrl: "ap.jpg", link: "https://eaushadhiap.dcservices.in/IMCS/hissso/loginLogin.imcs" },
 
-    { stateName: "Madhya Pradesh", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/mp.jpg", link: "https://uatmpphscl.dcservices.in/IMCS/hissso/loginLogin.imcs" },
+    { stateName: "Madhya Pradesh", imgUrl: "mp.jpg", link: "https://uatmpphscl.dcservices.in/IMCS/hissso/loginLogin.imcs" },
 
-    { stateName: "Gujarat", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/guj.jpg", link: "https://gmscl.dcservices.in/IMCS/hissso/loginLogin.imcs" },
+    { stateName: "Gujarat", imgUrl: "guj.jpg", link: "https://gmscl.dcservices.in/IMCS/hissso/loginLogin.imcs" },
 
-    { stateName: "Telangana", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/tel.jpg", link: "https://tsscm.dcservices.in/DWH_TELANGANA/startup/loginAction" },
+    { stateName: "Telangana", imgUrl: "tel.jpg", link: "https://tsscm.dcservices.in/DWH_TELANGANA/startup/loginAction" },
 
-    { stateName: "Jammu & Kashmir", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/bootstrap/img/jnk.jpg", link: "https://jkdvdms.in/IMCS/hissso/loginLogin.imcs" },
+    { stateName: "Jammu & Kashmir", imgUrl: "jk3.png", link: "https://jkdvdms.in/IMCS/hissso/loginLogin.imcs" },
 
-    { stateName: "Maharashtra", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/mh.jpg", link: "https://dwhphd.dcservices.in/DWH_PHD_OPEN/startup/loginAction" },
+    { stateName: "Maharashtra", imgUrl: "mh.jpg", link: "https://dwhphd.dcservices.in/DWH_PHD_OPEN/startup/loginAction" },
 
-    { stateName: "Punjab", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/pun.jpg", link: "https://eaushadhipb.in/IMCS/hissso/loginLogin.imcs" },
+    { stateName: "Punjab", imgUrl: "pun.jpg", link: "https://eaushadhipb.in/IMCS/hissso/loginLogin.imcs" },
 
-    { stateName: "Bihar", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/bih.jpg", link: "https://uatbiharsso.dcservices.in/IMCS/hissso/Login.imcs" },
+    { stateName: "Bihar", imgUrl: "bih.jpg", link: "https://uatbiharsso.dcservices.in/IMCS/hissso/Login.imcs" },
 
-    { stateName: "Uttar Pradesh", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/up.jpg", link: "https://updvdms.dcservices.in/IMCS/hissso/loginLogin.imcs" },
+    { stateName: "Uttar Pradesh", imgUrl: "up.jpg", link: "https://updvdms.dcservices.in/IMCS/hissso/loginLogin.imcs" },
 
-    { stateName: "Uttarakhand", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/uk.jpg", link: "https://eaushadhiuk.dcservices.in/IMCS/login" },
+    { stateName: "Uttarakhand", imgUrl: "uk.jpg", link: "https://eaushadhiuk.dcservices.in/IMCS/login" },
 
-    { stateName: "Himachal", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/himachal_cardview.jpg", link: "https://hpdvdms.dcservices.in/" },
+    { stateName: "Himachal", imgUrl: "himachal_cardview.jpg", link: "https://hpdvdms.dcservices.in/" },
 
 ]
 
 export const functionalityData = [
-    { title: "EDL DETAILS", description: "State wise essential drug report.", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/edl.jpg" },
+    { title: "EDL DETAILS", description: "State wise essential drug report.", imgUrl: "fun1.jpg" },
 
-    { title: "Rate Contract", description: "State wise rate comparison of drug given by suppliers.", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/rc.jpg" },
+    { title: "Rate Contract", description: "State wise rate comparison of drug given by suppliers.", imgUrl: "rcfun2.jpg" },
 
-    { title: "Demand & Procurement Status", description: "Yearly demand of drugs by states.", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/d&p.png" },
+    { title: "Demand & Procurement Status", description: "Yearly demand of drugs by states.", imgUrl: "dpfun3.png" },
 
-    { title: "EDL DETAILS", description: "State wise essential drug report.", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/4.png" },
+    { title: "EDL DETAILS", description: "State wise essential drug report.", imgUrl: "fun4.png" },
 
-    { title: "Common EDLs", description: "Used for comparing common essential drugs in multiple states.", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/5.png" },
+    { title: "Common EDLs", description: "Used for comparing common essential drugs in multiple states.", imgUrl: "fun5.png" },
 
-    { title: "Drug Expiry Details", description: "State wise statistical drug Expiry details.", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/de.png" },
+    { title: "Drug Expiry Details", description: "State wise statistical drug Expiry details.", imgUrl: "defun6.png" },
 
-    { title: "Stock Details", description: "State wise active and inactive stock value.", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/7.png" },
+    { title: "Stock Details", description: "State wise active and inactive stock value.", imgUrl: "fun7.png" },
 
-    { title: "Drugs Excess/Shortage", description: "Year wise drug issued , drug consumption, shortage and excess of drug in states.", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/8.jpg" },
+    { title: "Drugs Excess/Shortage", description: "Year wise drug issued , drug consumption, shortage and excess of drug in states.", imgUrl: "fun8.jpg" },
 
-    { title: "RC Expiry Details", description: "State wise RC expired in days.", imgUrl: "https://uatcdash.dcservices.in/HIS/hisglobal/CDBTemplate_V_3/Images/9.png" },
+    { title: "RC Expiry Details", description: "State wise RC expired in days.", imgUrl: "fun9.png" },
 ]
 
 export const categoryOptions = [
@@ -196,69 +202,69 @@ export const vedOptions = [
     { value: "1", label: "Vital" },
     { value: "2", label: "Essential" },
     { value: "3", label: "Desirable" }
-  ];
+];
 
 
-     const menuData = [
-        {
-            title: 'Services',
-            items: [
-                { dataVal: 'state', menuName: 'State Job Details', icon: 'fa-desktop', link: "/dvdms/menus/state-job-details" },
-                { dataVal: 'country', menuName: 'Get Nin Data', icon: 'fa-desktop' },
-                { dataVal: 'district', menuName: 'Covid Drig Availability Status', icon: 'fa-desktop' },
-            ],
-        },
-        {
-            title: 'Admin',
-            subMenuTypes: [
-                {
-                    title: 'Admin Master',
-                    items: [
-                        { dataVal: 'addUser', menuName: 'Dashboard Setup', icon: 'fa-gear', link: "/dvdms/HIS_dashboard" },
-                        { dataVal: 'editUser', menuName: 'Zone Master', icon: 'fa-gear', link: "/dvdms/menus/zone-master" },
-                        { dataVal: 'editUser', menuName: 'State Master', icon: 'fa-gear', link: "/dvdms/menus/state-master" },
-                        { dataVal: 'editUser', menuName: 'District Master', icon: 'fa-gear', link: "/dvdms/menus/district-master" },
-                        { dataVal: 'editUser', menuName: 'State Config Cwh', icon: 'fa-gear', link: "/dvdms/menus/state-config-cwh" },
-                        { dataVal: 'editUser', menuName: 'Facility Type Master', icon: 'fa-gear', link: "/dvdms/menus/facility-type-master" },
-                        { dataVal: 'editUser', menuName: 'Group Master', icon: 'fa-gear', link: "/dvdms/menus/group-master" },
-                        { dataVal: 'editUser', menuName: 'Drug Type Master', icon: 'fa-gear', link: "/dvdms/menus/drug-type-master" },
-                        { dataVal: 'editUser', menuName: 'Supplier Master', icon: 'fa-gear', link: "/dvdms/menus/supplier-master" },
-                        { dataVal: 'editUser', menuName: 'Supplier Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/supplier-mapping-master" },
-                        { dataVal: 'editUser', menuName: 'Nin Facility Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/nin-facility-mapping-master" },
-                        { dataVal: 'editUser', menuName: 'Sub Group Master', icon: 'fa-gear', link: "/dvdms/menus/sub-group-master" },
-                        { dataVal: 'editUser', menuName: 'Drug Master', icon: 'fa-gear', link: "/dvdms/menus/drug-master" },
-                        { dataVal: 'editUser', menuName: 'Outsource Master', icon: 'fa-gear', link: "/dvdms/menus/outsource-master" },
-                        { dataVal: 'editUser', menuName: 'Test Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/test-mapping-master" },
+const menuData = [
+    {
+        title: 'Services',
+        items: [
+            { dataVal: 'state', menuName: 'State Job Details', icon: 'fa-desktop', link: "/dvdms/menus/state-job-details" },
+            { dataVal: 'country', menuName: 'Get Nin Data', icon: 'fa-desktop' },
+            { dataVal: 'district', menuName: 'Covid Drig Availability Status', icon: 'fa-desktop' },
+        ],
+    },
+    {
+        title: 'Admin',
+        subMenuTypes: [
+            {
+                title: 'Admin Master',
+                items: [
+                    { dataVal: 'addUser', menuName: 'Dashboard Setup', icon: 'fa-gear', link: "/dvdms/HIS_dashboard" },
+                    { dataVal: 'editUser', menuName: 'Zone Master', icon: 'fa-gear', link: "/dvdms/menus/zone-master" },
+                    { dataVal: 'editUser', menuName: 'State Master', icon: 'fa-gear', link: "/dvdms/menus/state-master" },
+                    { dataVal: 'editUser', menuName: 'District Master', icon: 'fa-gear', link: "/dvdms/menus/district-master" },
+                    { dataVal: 'editUser', menuName: 'State Config Cwh', icon: 'fa-gear', link: "/dvdms/menus/state-config-cwh" },
+                    { dataVal: 'editUser', menuName: 'Facility Type Master', icon: 'fa-gear', link: "/dvdms/menus/facility-type-master" },
+                    { dataVal: 'editUser', menuName: 'Group Master', icon: 'fa-gear', link: "/dvdms/menus/group-master" },
+                    { dataVal: 'editUser', menuName: 'Drug Type Master', icon: 'fa-gear', link: "/dvdms/menus/drug-type-master" },
+                    { dataVal: 'editUser', menuName: 'Supplier Master', icon: 'fa-gear', link: "/dvdms/menus/supplier-master" },
+                    { dataVal: 'editUser', menuName: 'Supplier Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/supplier-mapping-master" },
+                    { dataVal: 'editUser', menuName: 'Nin Facility Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/nin-facility-mapping-master" },
+                    { dataVal: 'editUser', menuName: 'Sub Group Master', icon: 'fa-gear', link: "/dvdms/menus/sub-group-master" },
+                    { dataVal: 'editUser', menuName: 'Drug Master', icon: 'fa-gear', link: "/dvdms/menus/drug-master" },
+                    { dataVal: 'editUser', menuName: 'Outsource Master', icon: 'fa-gear', link: "/dvdms/menus/outsource-master" },
+                    { dataVal: 'editUser', menuName: 'Test Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/test-mapping-master" },
 
-                        { dataVal: 'editUser', menuName: 'Generic Drug Master', icon: 'fa-gear', link: "/dvdms/menus/generic-drug-master" },
-                        { dataVal: 'editUser', menuName: 'Facility Type Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/facility-type-mapping-master" },
-                        { dataVal: 'editUser', menuName: 'Job Order', icon: 'fa-gear', link: "/dvdms/menus/job-order-status-master" },
-                        { dataVal: 'editUser', menuName: 'State CDB Sync Master', icon: 'fa-gear', link: "/dvdms/menus/state-cdb-sync-master" },
-                        { dataVal: 'editUser', menuName: 'Drug Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/drug-mapping-master" },
-                    ],
-                },
-                {
-                    title: 'IPHS Admin',
-                    items: [
-                        { dataVal: 'addRole', menuName: 'Iphs Group Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-group-master" },
-                        { dataVal: 'editRole', menuName: 'Iphs Sub Group Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-sub-group-master" },
-                        { dataVal: 'editRole', menuName: 'Iphs Medicine Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-medicine-master" },
-                        { dataVal: 'editRole', menuName: 'Iphs Molecule Drug Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-molecule-drug-master" },
-                        { dataVal: 'editRole', menuName: 'Iphs Medicine Molecule Detail Mapping', icon: 'fa-gear', link: "/dvdms/menus/iphs-medicine-molecule-mapping" },
-                        { dataVal: 'editRole', menuName: 'Iphs Drug Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-drug-mapping-mst" },
-                    ],
-                },
-            ],
-        },
-        {
-            title: 'Reports',
-            items: [
-                { dataVal: 'contact', menuName: 'Dashboard', icon: 'fa-bar-chart' },
-                { dataVal: 'help', menuName: 'Report Set', icon: 'fa-bar-chart' },
-                { dataVal: 'help', menuName: 'Admin Dashboard (Uat Dashboard)', icon: 'fa-bar-chart' },
-                { dataVal: 'help', menuName: 'Admin New', icon: 'fa-bar-chart' },
-                { dataVal: 'help', menuName: 'Job Dashboard', icon: 'fa-bar-chart' },
-                { dataVal: 'help', menuName: 'Stockout V 2.0', icon: 'fa-bar-chart' },
-            ],
-        },
-    ];
+                    { dataVal: 'editUser', menuName: 'Generic Drug Master', icon: 'fa-gear', link: "/dvdms/menus/generic-drug-master" },
+                    { dataVal: 'editUser', menuName: 'Facility Type Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/facility-type-mapping-master" },
+                    { dataVal: 'editUser', menuName: 'Job Order', icon: 'fa-gear', link: "/dvdms/menus/job-order-status-master" },
+                    { dataVal: 'editUser', menuName: 'State CDB Sync Master', icon: 'fa-gear', link: "/dvdms/menus/state-cdb-sync-master" },
+                    { dataVal: 'editUser', menuName: 'Drug Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/drug-mapping-master" },
+                ],
+            },
+            {
+                title: 'IPHS Admin',
+                items: [
+                    { dataVal: 'addRole', menuName: 'Iphs Group Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-group-master" },
+                    { dataVal: 'editRole', menuName: 'Iphs Sub Group Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-sub-group-master" },
+                    { dataVal: 'editRole', menuName: 'Iphs Medicine Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-medicine-master" },
+                    { dataVal: 'editRole', menuName: 'Iphs Molecule Drug Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-molecule-drug-master" },
+                    { dataVal: 'editRole', menuName: 'Iphs Medicine Molecule Detail Mapping', icon: 'fa-gear', link: "/dvdms/menus/iphs-medicine-molecule-mapping" },
+                    { dataVal: 'editRole', menuName: 'Iphs Drug Mapping Master', icon: 'fa-gear', link: "/dvdms/menus/iphs-drug-mapping-mst" },
+                ],
+            },
+        ],
+    },
+    {
+        title: 'Reports',
+        items: [
+            { dataVal: 'contact', menuName: 'Dashboard', icon: 'fa-bar-chart' },
+            { dataVal: 'help', menuName: 'Report Set', icon: 'fa-bar-chart' },
+            { dataVal: 'help', menuName: 'Admin Dashboard (Uat Dashboard)', icon: 'fa-bar-chart' },
+            { dataVal: 'help', menuName: 'Admin New', icon: 'fa-bar-chart' },
+            { dataVal: 'help', menuName: 'Job Dashboard', icon: 'fa-bar-chart' },
+            { dataVal: 'help', menuName: 'Stockout V 2.0', icon: 'fa-bar-chart' },
+        ],
+    },
+];

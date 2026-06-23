@@ -65,7 +65,6 @@ const IphsMoleculeDrugMasterForm = ({ selectedGroupName, selectedGroupId, getLis
   const saveData = () => {
     if (openPage === "add") {
       const val = {
-        //"drugID": 0,
         "drugName": values?.molDrugName,
         "groupID": selectedGroupId,
         "subgroupID": values?.subGroupId
@@ -74,9 +73,9 @@ const IphsMoleculeDrugMasterForm = ({ selectedGroupName, selectedGroupId, getLis
         if (data?.status === 1) {
           ToastAlert("Data saved successfully", "success")
           refresh();
-
         } else {
-          ToastAlert("Error", "error")
+          ToastAlert(data?.message, "error")
+          setConfirmSave(false);
         }
       })
     }
@@ -87,13 +86,14 @@ const IphsMoleculeDrugMasterForm = ({ selectedGroupName, selectedGroupId, getLis
         "groupID": selectedGroupId,
         "subgroupID": values?.subGroupId
       }
-      fetchUpdateData(`/api/v1/IphsMoleculeDrugMst/modifyMoleculeDrug?drugID=${selectedOption[0]?.drugID}`, val).then(data => {
+      fetchPostData(`/api/v1/IphsMoleculeDrugMst/modifyMoleculeDrug?encryptedDrugID=${selectedOption[0]?.drugID}`, val).then(data => {
         if (data?.status === 1) {
           ToastAlert("Data updated successfully", "success")
           setSelectedOption([])
           refresh();
         } else {
-          ToastAlert("Error", "error")
+          ToastAlert(data?.message, "error")
+          setConfirmSave(false);
         }
       })
 

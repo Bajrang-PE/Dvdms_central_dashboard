@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import './Menu.css';
 import { LoginContext } from '../../context/LoginContext';
 import { fetchData } from '../../../../utils/ApiHooks';
+import { getAuthUserData } from '../../../../utils/CommonFunction';
 
 const MenuList = (props) => {
     const { activeDropdown } = props;
@@ -92,7 +93,6 @@ const MenuList = (props) => {
             }
 
             // If we have all three parts (root, category, subCategory)
-            // Find or create the category subMenuType
             let categorySubMenu = menuStructure[root]?.subMenuTypes?.find(
                 sub => sub?.title === category
             );
@@ -121,8 +121,8 @@ const MenuList = (props) => {
     const getAllMenusList = async () => {
         try {
             setLoading(true);
-            const data = await fetchData("/api/v1/getMenuBySeatId/10001");
-            console.log(data, 'data')
+            const data = await fetchData(`/api/v1/getMenuBySeatId/${getAuthUserData('userSeatId') || 10001}`);
+            console.log('data', data)
             if (data?.status === 1) {
                 const formattedMenuData = transformMenuData(data?.data);
                 setMenuData(formattedMenuData);
@@ -201,7 +201,6 @@ const MenuList = (props) => {
         );
     };
 
-
     return (
         <ul className={`dropdown-menu mega-menu ${activeDropdown === 'dropmenulinks' ? 'show' : ''}`} id='dropmenulinks' style={{ border: "1px solid #003366" }}>
             <div className='container p-0'>
@@ -227,19 +226,6 @@ const MenuList = (props) => {
                                                         {subMenuType?.items?.map((item, idx) => (
                                                             <div key={idx} className="col-lg-3 col-md-4 col-sm-4 col-xs-4 menu-item">
                                                                 <MenuLink item={item} onTabChange={onTabChange} />
-                                                                {/* <Link
-                                                                    className="acrmenu"
-                                                                    data-val={item?.dataVal}
-                                                                    data-menuname={item?.menuName}
-                                                                    title={item?.menuName}
-                                                                    to={item?.link || '#'}
-                                                                    onClick={onTabChange}
-                                                                >
-                                                                    <div className="menu-content">
-                                                                        <i className={`fa ${item?.icon}`}></i>
-                                                                        <span>{item?.menuName}</span>
-                                                                    </div>
-                                                                </Link> */}
                                                             </div>
                                                         ))}
                                                     </div>
@@ -252,19 +238,6 @@ const MenuList = (props) => {
                                         {menuType?.items?.map((item, idx) => (
                                             <div key={idx} className="col-lg-3 col-md-4 col-sm-4 col-xs-4 menu-item">
                                                 <MenuLink item={item} onTabChange={onTabChange} />
-                                                {/* <Link
-                                                    className="acrmenu"
-                                                    data-val={item?.dataVal}
-                                                    data-menuname={item?.menuName}
-                                                    title={item?.menuName}
-                                                    to={item?.link || '#'}
-                                                    onClick={onTabChange}
-                                                >
-                                                    <div className="menu-content">
-                                                        <i className={`fa ${item?.icon}`}></i>
-                                                        <span>{item?.menuName}</span>
-                                                    </div>
-                                                </Link> */}
                                             </div>
                                         ))}
                                     </div>

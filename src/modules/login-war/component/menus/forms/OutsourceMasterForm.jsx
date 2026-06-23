@@ -23,7 +23,6 @@ const OutsourceMasterForm = (props) => {
     const [errors, setErrors] = useState({
         "hospIdErr": "", "dateErr": ""
     })
-
     const [rows, setRows] = useState(
         [{ test: '', number: '', agency: '' }]
     );
@@ -62,7 +61,6 @@ const OutsourceMasterForm = (props) => {
     };
 
 
-
     const removeRow = (index) => {
         if (rows.length === 1) return; // prevent removing last row
         setRows(rows.filter((_, i) => i !== index));
@@ -77,6 +75,7 @@ const OutsourceMasterForm = (props) => {
 
     const handleValueChange = (e) => {
         const { name, value } = e.target;
+        console.log('e.target', e.target)
         const errName = name + "Err";
         if (name) {
             setValues({ ...values, [name]: value });
@@ -158,63 +157,56 @@ const OutsourceMasterForm = (props) => {
 
 
         if (openPage === "add") {
-            const val = rows?.map(dt => ({
-                "stateID": Number(stateId),
-                "hospitalID": Number(values?.hospId),
-                "facilityTypeID": Number(facilityTypeId),
-                "testID": Number(dt.test),
-                "testsConducted": Number(dt.number),
-                "agencyName": dt.agency,
-                "date": values?.date
-            }))
+            const val = {
+                "list": rows?.map(dt => ({
+                    "stateID": Number(stateId),
+                    "hospitalID": Number(values?.hospId),
+                    "facilityTypeID": Number(facilityTypeId),
+                    "testID": Number(dt.test),
+                    "testsConducted": Number(dt.number),
+                    "agencyName": dt.agency,
+                    "date": values?.date,
+                    "isValid": 1,
+                }))
+            }
 
-            fetch('/api/v1/outsourceMaster/createNewTest', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(val)
-            }).then(response => {
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
+            fetchPostData(`/api/v1/outsourceMaster/createNewTest`, val).then(data => {
+                if (data?.status === 1) {
+                    ToastAlert('Data saved successfully', 'success');
+                    setOpenPage("home")
+                    refresh();
+                } else {
+                    ToastAlert(data?.message, "error")
                 }
-                return response.json();
-            }).then(data => {
-                console.log("Success:", data);
-                ToastAlert('Data saved successfully', 'success');
-                setOpenPage("home")
-                refresh();
-            }).catch(error => {
-                console.error("Error:", error);
-            });
+            })
         }
 
         //modify
         if (openPage === "modify") {
-            const val = rows?.map(dt => ({
-                "stateID": Number(stateId),
-                "hospitalID": Number(singleData[0]?.hstnumStoreId),
-                "facilityTypeID": Number(facilityTypeId),
-                "date": selectedOption[0].date,
-                "testID": Number(dt.test),
-                "agencyName": dt.agency,
-                "testsConducted": Number(dt.number),
-                "isValid": 1
-            }))
-            fetchUpdateData(`/api/v1/outsourceMaster/updateTestData?recordID=${selectedOption[0].recordID}`, val).then(data => {
+            const val = {
+                "list": rows?.map(dt => ({
+                    "stateID": Number(stateId),
+                    "hospitalID": Number(singleData[0]?.hstnumStoreId),
+                    "facilityTypeID": Number(facilityTypeId),
+                    "date": selectedOption[0].date,
+                    "testID": Number(dt.test),
+                    "agencyName": dt.agency,
+                    "testsConducted": Number(dt.number),
+                    "isValid": 1
+                }))
+            }
+            fetchPostData(`/api/v1/outsourceMaster/updateTestData?encryptedRecordID=${selectedOption[0].recordID}`, val).then(data => {
                 if (data?.status === 1) {
                     ToastAlert("Data updated successfully", "success")
                     setOpenPage("home")
                     refresh();
                 } else {
-                    ToastAlert("Error", "error")
+                    ToastAlert(data?.message, "error")
                 }
             })
 
         }
-
         refresh();
-
     }
 
     const refresh = () => {
@@ -242,6 +234,7 @@ const OutsourceMasterForm = (props) => {
             }
         }
     }, [values?.hospId, values?.date])
+
 
     return (
 
@@ -345,12 +338,12 @@ const OutsourceMasterForm = (props) => {
 
                                     </td>
                                     <td>
-                                        <input type='number' className='w-100' value={row?.number} onChange={(e) => handleChange(index, "number", e.target.value)}></input>
+                                        <InputField type='text' acceptType='number' className='w-100' value={row?.number} onChange={(e) => handleChange(index, "number", e.target.value)}></InputField>
                                     </td>
                                     <td>
-                                        <input type='text' className='w-100' value={row?.agency}
-                                            onChange={(e) => handleChange(index, "agency", e.target.value)}
-                                        ></input>
+                                        <InputField type='text' className='w-100' value={row?.agency}
+                                            onChange={(e) => { handleChange(index, "agency", e.target.value) }}
+                                        ></InputField>
                                     </td>
                                     <td>
                                         <button className='btn cms-login-btn m-1 btn-sm' onClick={() => removeRow(index)}>
@@ -373,4 +366,4 @@ const OutsourceMasterForm = (props) => {
     )
 }
 
-export default OutsourceMasterForm
+export default OutsourceMasterForm;

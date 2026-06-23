@@ -4,7 +4,7 @@ import InputSelect from '../../InputSelect'
 import InputField from '../../InputField'
 import { LoginContext } from '../../../context/LoginContext'
 import { ToastAlert } from '../../../utils/CommonFunction'
-import { fetchData, fetchUpdateData, fetchUpdatePostData } from '../../../../../utils/ApiHooks'
+import { fetchData, fetchPostData, fetchUpdateData, fetchUpdatePostData } from '../../../../../utils/ApiHooks'
 import { getAuthUserData } from '../../../../../utils/CommonFunction'
 
 const DrugMasterForm = (props) => {
@@ -22,6 +22,8 @@ const DrugMasterForm = (props) => {
     const { setShowConfirmSave, confirmSave, setConfirmSave, openPage, setOpenPage, selectedOption, setSelectedOption, drugTypeDrpData, getDrugTypeDrpData,
         getGenericDrugDrpData, genericDrugDrpData
     } = useContext(LoginContext)
+
+
 
     const [values, setValues] = useState({
         "genericDrugId": "", "drugTypeId": "", "drugName": "", "strength": "", "snomedNameId": "1"
@@ -152,12 +154,13 @@ const DrugMasterForm = (props) => {
                 cwhnumDrugVedCode: drugCodeId,
             }
 
-            fetchUpdatePostData("/api/v1/drug-mst", val).then(data => {
-                if (data) {
+            fetchPostData("/api/v1/drug-mst/createdrug", val).then(data => {
+                if (data?.status === 1) {
                     ToastAlert("Data saved successfully", "success")
                     refresh();
                 } else {
-                    ToastAlert("Error", "error")
+                    ToastAlert(data?.message, "error")
+                     setConfirmSave(false);
                 }
             })
         }
@@ -172,21 +175,21 @@ const DrugMasterForm = (props) => {
                 cwhstrDrugCategoryCode: categoryId,
                 cwhnumDrugVedCode: drugCodeId,
             }
-
-            fetchUpdateData("/api/v1/drug-mst", val).then(data => {
-                if (data) {
+            fetchPostData("/api/v1/drug-mst/updatedrug", val).then(data => {
+                if (data?.status === 1) {
                     ToastAlert("Data updated successfully", "success")
                     refresh();
                 } else {
-                    ToastAlert("Error", "error")
+                    ToastAlert(data?.message, "error")
+                     setConfirmSave(false);
                 }
             })
         }
-       
+
     }
 
-    const refresh =()=>{
-        getListData(selectedGroupId,selectedSubGroupId,selectedStatus);
+    const refresh = () => {
+        getListData(selectedGroupId, selectedSubGroupId, selectedStatus);
         setConfirmSave(false);
         setSelectedOption([]);
         reset();
@@ -214,7 +217,6 @@ const DrugMasterForm = (props) => {
 
     }, [selectedOption, openPage])
 
-    console.log(values, 'selectedOption')
 
     return (
         <>
@@ -325,11 +327,11 @@ const DrugMasterForm = (props) => {
                         />
 
                     </div>
-                    <div className="col-sm-3 align-content-center ">
+                    {/* <div className="col-sm-3 align-content-center ">
                         <button className='btn cms-login-btn m-1 btn-sm' onClick={() => getCodes()}>
                             Get Codes
                         </button>
-                    </div>
+                    </div> */}
                 </div>
 
             </div>

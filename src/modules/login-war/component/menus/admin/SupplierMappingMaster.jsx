@@ -43,6 +43,7 @@ const SupplierMappingMaster = () => {
     const getStateSuppUnmapList = () => {
 
         fetchData(`/api/v1/supplierMappingMaster/getUnmappedSuppliers?stateID=${stateId || 0}`).then((data) => {
+            console.log('datau', data)
             if (data.data) {
                 const drpData = Array.from(
                     new Map(
@@ -66,6 +67,7 @@ const SupplierMappingMaster = () => {
 
         fetchData(`/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=${suppId || 0}&stateID=${stateId || 0}`)
             .then((data) => {
+                console.log('datam', data)
                 if (data?.data) {
                     const drpData = Array.from(
                         new Map(
@@ -155,8 +157,7 @@ const SupplierMappingMaster = () => {
             );
 
 
-            console.log("Added55555555:", addedToRight);
-            console.log("Removed6666666:", removedFromRight);
+
 
             const mappedData = addedToRight?.map(dt => ({
                 "stateID": stateId,
@@ -180,8 +181,9 @@ const SupplierMappingMaster = () => {
             }
 
             if (selectedOptions.length > 0) {
-
+                console.log('val', val)
                 fetchUpdatePostData("/api/v1/supplierMappingMaster/postSupplierData", val).then(data => {
+                    console.log('datares', data)
                     if (data.status == 1) {
                         ToastAlert('Data mapped successfully', 'success');
                         reset();

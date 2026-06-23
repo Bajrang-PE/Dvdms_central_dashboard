@@ -42,7 +42,8 @@ const FacilityTypeMappingMaster = () => {
     }, [stateId, facilityTypeId])
 
     const getUnmappedList = () => {
-        fetchData(`/api/v1/facilityMap/unmappedFcility?facilityTypeId=${facilityTypeId}&stateId=${stateId}`).then(data => {
+        fetchData(`/api/v1/unmappedFacilities/${stateId}`).then(data => {
+            console.log('datau', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.facilityTypeId,
@@ -57,11 +58,14 @@ const FacilityTypeMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`/api/v1/facilityMap/mapped?facilityTypeId=${facilityTypeId}&stateId=${47}`).then(data => {
+        fetchData(`/api/v1/mapped/${stateId}`).then(data => {
+            console.log('datam', data)
             if (data.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
-                    value: dt?.stateFacilityTypeId,
-                    label: dt?.stateFacilityTypeName
+                    value: dt?.cwhnumStateFacilityTypeId,
+                    label: dt?.cwhnumStateFacilityTypeName,
+                    slno: dt?.cwhnumFacilityTypeSlno,
+                    order: dt?.cwhnumOrder
                 })
                 )
                 setSelectedOptions(drpData)
@@ -86,13 +90,15 @@ const FacilityTypeMappingMaster = () => {
 
         const mappedData = newMapped?.length > 0 && newMapped?.map(dt => ({
             // "stateId": parseInt(stateId),
-            "stateFacilityTypeId": dt?.value,
-            "stateFacilityTypeName": dt?.label,
+            "cwhnumFacilityTypeId": dt?.value,
+            "cwhnumStateFacilityTypeName": dt?.label,
             // "facilityTypeId": parseInt(facilityTypeId),
             // "seatId": getAuthUserData('userSeatId'),
             // "isValid": 1,
-            // "facilityTypeSlno": 0,
-            // "order": 0
+
+            // "cwhnumFacilityTypeSlno": dt?.slno || "",
+            "cwhnumOrder": dt?.order || ""
+
         }))
 
         const unMappedData = newUnMapped?.length > 0 && newUnMapped?.map(dt => ({
@@ -110,7 +116,9 @@ const FacilityTypeMappingMaster = () => {
             "stateFacilityTypeId": parseInt(facilityTypeId)
         }
 
-        fetchPostData(`/api/v1/facilityMap/saveFacilityMap`, val).then(data => {
+        console.log('val', val)
+        fetchPostData(`/api/v1/facility-type`, val).then(data => {
+            console.log('datas', data)
             if (data?.status === 1) {
                 ToastAlert("Facility type mapped successfully", 'success')
                 setConfirmSave(false)
@@ -122,6 +130,8 @@ const FacilityTypeMappingMaster = () => {
         })
 
     }
+
+    console.log('selectedOptions', selectedOptions)
 
     const handleValidation = () => {
         let isValid = true;
@@ -182,7 +192,7 @@ const FacilityTypeMappingMaster = () => {
     const reset = () => {
         setFacilityTypeId('');
         setStateId('');
-        setInitialMappedOptions();
+        setInitialMappedOptions([]);
         setSelectedSelected();
         setSelectedAvailable();
         setSelectedOptions();
@@ -190,7 +200,7 @@ const FacilityTypeMappingMaster = () => {
     }
 
     const refresh = () => {
-        setInitialMappedOptions();
+        setInitialMappedOptions([]);
         setSelectedSelected();
         setSelectedAvailable();
         setSelectedOptions();

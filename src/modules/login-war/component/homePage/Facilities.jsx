@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { DataSeries } from '../../localData/HomeData';
 import useScrollVisibility from '../../hooks/useScrollAnimation';
 import { LoginContext } from '../../context/LoginContext';
 import { fetchQueryData, ToastAlert } from '../../utils/CommonFunction';
 import GraphModal from './GraphModal';
 import Loader from '../Loader';
+import "./Facilities.css";
+import AllGraphsModal from './AllGraphsModal';
 
 const Facilities = () => {
     const { widgetData, getWidgetData } = useContext(LoginContext)
@@ -14,17 +15,24 @@ const Facilities = () => {
     const [showGraph, setShowGraph] = useState(false);
     const [singleWidget, setSingleWidget] = useState();
     const [isLoading, setIsLoading] = useState(false)
+    const [showAllGraphs, setShowAllGraphs] = useState(false);
+    const [allGraphsData, setAllGraphsData] = useState([]);
+
+    // Aapke diye huye shining color gradients ki array
+    const gradientClasses = [
+        'kpi-gradient-orange',
+        'kpi-gradient-purple',
+        'kpi-gradient-lavender',
+        'kpi-gradient-blue'
+    ];
 
     useEffect(() => {
-        if (widgetData?.length === 0) { getWidgetData() }
+        if (widgetData?.length === 0) { getWidgetData(['813', '814', '815', '804']) }
     }, [])
 
     useEffect(() => {
         if (widgetData?.length > 0) {
-            const kpiList = ['806', '807', '808', '805']
-            const graphList = ['813', '814', '815', '804']
-            const kpidt = widgetData?.filter((wd) => graphList?.includes(wd?.rptId));
-            setGraphWidgets(kpidt)
+            setGraphWidgets(widgetData)
         }
     }, [widgetData])
 
@@ -34,109 +42,134 @@ const Facilities = () => {
         try {
             const data = await fetchQueryData(fc?.queryVO);
             if (data?.status === 1) {
-
                 const rawItem = data?.data?.[0];
-
                 if (!rawItem) {
                     setGraphData([]);
                     setIsLoading(false);
                     return;
                 }
-
                 const keys = Object.keys(rawItem);
-
                 const graphData = data?.data.map(item => ({
                     name: item[keys[0]],
                     y: parseFloat(item[keys[1]]) || 0
                 }));
-
                 setGraphData(graphData);
                 setSingleWidget(fc);
                 setShowGraph(true);
                 setIsLoading(false);
-
             } else {
                 ToastAlert(data?.message, 'error')
-                 setIsLoading(false);
+                setIsLoading(false);
             }
-
         } catch (error) {
             console.error("Error loading query data:", error);
             setIsLoading(false);
         }
     };
 
+    const fetchAllGraphs = async () => {
+
+        setIsLoading(true);
+
+        try {
+
+            const graphList = await Promise.all(
+
+                graphWidgets.map(async (fc) => {
+
+                    const data = await fetchQueryData(fc?.jsonData?.queryVO);
+
+                    if (data?.status !== 1 || !data?.data?.length) {
+                        return null;
+                    }
+
+                    const keys = Object.keys(data.data[0]);
+
+                    return {
+                        widgetData: fc.jsonData,
+                        data: data.data.map(item => ({
+                            name: item[keys[0]],
+                            y: parseFloat(item[keys[1]]) || 0
+                        }))
+                    };
+                })
+            );
+
+            setAllGraphsData(graphList.filter(Boolean));
+            setShowAllGraphs(true);
+
+        } catch (e) {
+            console.error(e);
+        }
+
+        setIsLoading(false);
+    };
 
     const onClose = () => {
         setGraphData([]);
         setShowGraph(false);
-
     }
-
-    const facilityData = [
-        { title: "Warehouses", counts: 566, color: "#B71C1C" },
-        { title: "District Hospitals", counts: 1220, color: "#5D7738" },
-        { title: "Medical Colleges", counts: 434, color: "#3D2352" },
-        { title: "Sub Centres", counts: 101419, color: "#FFCC80" },
-        { title: "Urban Community Health Centres", counts: 230, color: "#2F4A7D" },
-        { title: "Primary Health Centres", counts: 22980, color: "#D2B48C" },
-        { title: "Community Health Centres", counts: 5674, color: "#5F9EA0" },
-        { title: "Urban Primary Health Centres", counts: 5405, color: "#FB8C00" },
-        { title: "Sub District Hospitals", counts: 0, color: "#2E7D32" },
-        { title: "Health And Wellness Centres", counts: 14674, color: "#6495ED" },
-        { title: "Ayushman Arogya Mandir Primary Health Centre", counts: 3748, color: "#EF9A9A" },
-        { title: "Ayushman Arogya Mandir Sub Health Centre", counts: 29331, color: "#00897B" }
-    ];
-
-    const getCounts = (data) => {
-        const total = data?.reduce((a, b) => a + b)
-        return total || ''
-    }
-    console.log(graphWidgets)
 
     return (
-        <div className="facility row pl-5 pr-5" style={{ padding: "10px" }} id='facilities'>
-            <div className={`col-12 p-4`} >
-                <div className={`${isVisible ? 'slide-in' : 'slide-out'}`}>
-                    <h2 className='home-headings'>Facilities Onboarded with DVDMS Central Dashboard</h2>
-                    <h5 className="border-btm"></h5>
-                </div>
-                <br />
+        <div className="panel-content-wrapper" id='facilities'>
+            <div className={`panel-header-section ${isVisible ? 'slide-in' : 'slide-out'}`}>
+                <h2 className="panel-mainn-title">Online Facilities</h2>
+                <div className="panel-title-line"></div>
             </div>
 
-            {graphWidgets?.length > 0 ? graphWidgets?.map((fc, index) => (
-                <div className={`col-md-3 col-sm-4 d-flex justify-content-center ${isVisible ? 'fade-in' : 'fade-out'}`} key={index}>
-                    <div className="card card-data" style={{ backgroundColor: fc?.widgetBackgroundColour || facilityData[index]?.color }}>
-                        <a className="card-header data-text text-center text-decoration-none" id={`graph${index + 1}`}>
-                            {/* {fc.yAxisTitle} */}
-                            {fc?.rptDisplayName}
-                        </a>
-                        <div className="card-body p-0" style={{ alignContent: "end" }}>
-                            <h4 className="data-title text-center pointer" id={`graphData${index + 1}`} onClick={() => { fetchGraphDataQry(fc) }}>
-                                {/* {getCounts(fc?.Data[0]?.data)} */}
-                                {fc?.linkWidget}
-                            </h4>
+            <div className="row mt-4 px-2 justify-content-start">
+                {graphWidgets?.length > 0 ? graphWidgets?.map((fc, index) => {
+                    // Index ke base par sequence me class assign hogi (0, 1, 2, 3...)
+                    const assignedGradient = gradientClasses[index % gradientClasses.length];
+
+                    return (
+                        <div className="col-6 mb-3" key={index}>
+                            <div
+                                className={`mini-square-kpi-card ${assignedGradient}`}
+                                onClick={() => { fetchGraphDataQry(fc?.jsonData) }}
+                            >
+                                <div className="mini-card-icon">
+                                    <i className="fas fa-hospital-alt"></i>
+                                </div>
+                                <h3 className="mini-card-count">
+                                    {fc?.jsonData?.linkWidget || "0"}+
+                                </h3>
+                                <p className="mini-card-title">
+                                    {fc?.jsonData?.rptDisplayName}
+                                </p>
+                            </div>
                         </div>
+                    );
+                }) :
+                    <div className="col-12 text-center py-3">
+                        <h6 className='text-white-50'>No Facilities Available</h6>
                     </div>
-                </div>
-            )) :
-                <>
-                    <h6 className='text-danger'>No Facilities Available</h6>
-                </>
-            }
-
-            <div id="note" className="col-md-12 pl-2 mt-4" style={{ color: "#000e4e" }}>
-                <h6>* The counts / values may differ with other portals as
-                    they are specific to facilities onboarded with DVDMS Central
-                    Dashboard</h6>
+                }
             </div>
+
+            <div className="panel-action-footer mt-auto">
+                <span className="info-tag-text">* Values specific to DVDMS Dashboard</span>
+                {/* <button className="btn btn-light btn-sm view-all-btn-custom">View All</button> */}
+                <button
+                    className="btn btn-light btn-sm view-all-btn-custom"
+                    onClick={fetchAllGraphs}
+                >
+                    View All
+                </button>
+            </div>
+
             {showGraph &&
                 <GraphModal data={graphData} onClose={onClose} widgetData={singleWidget} />
             }
-
-            {isLoading &&
-                <Loader />
+            {showAllGraphs &&
+                <AllGraphsModal
+                    show={showAllGraphs}
+                    onClose={() => setShowAllGraphs(false)}
+                    graphs={allGraphsData}
+                />
             }
+
+            {isLoading && <Loader />}
         </div>
     )
 }

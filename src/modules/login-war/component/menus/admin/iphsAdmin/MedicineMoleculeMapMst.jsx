@@ -37,7 +37,6 @@ const MedicineMoleculeMapMst = () => {
 
     const getUnmappedList = () => {
         fetchData(`/api/v1/IphsMoleculeDrugMst/getUnmappedMoleculeDrugs?packID=${medicineId}`).then(data => {
-            console.log("===unmapped===", data)
             if (data?.status === 200) {
                 const drpData = Array.from(
                     new Map(
@@ -61,7 +60,6 @@ const MedicineMoleculeMapMst = () => {
 
         fetchData(`/api/v1/IphsMoleculeDrugMst/getMappedMoleculeDrugs?packID=${medicineId}`)
             .then((data) => {
-                console.log("===mapped==", data)
                 if (data.status === 1) {
                     const drpData = Array.from(
                         new Map(
@@ -154,8 +152,6 @@ const MedicineMoleculeMapMst = () => {
                 "iphsMoleculeMappingMstDTO": mappedData?.length > 0 ? mappedData : [],
                 "iphsMoleculeUmappingMstDTO": unMappedData?.length > 0 ? unMappedData : [],
             }
-            console.log("data");
-            console.log(JSON.stringify(val, null, 2));
 
             if (mappedData.length > 0 || unMappedData.length > 0) {
                     fetchPostData("/api/v1/IphsMoleculeDrugMst/mapMoleculeDrug", val).then(data=>{

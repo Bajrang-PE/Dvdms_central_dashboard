@@ -36,6 +36,7 @@ const IphsDrugMappingMst = () => {
 
     const getUnmappedList = () => {
         fetchData(`/api/v1/IphsDrugMappingMst/getUnmappedDrugs`).then(data => {
+            console.log('datau', data)
             if (data.data) {
                 const drpData = Array.from(
                     new Map(
@@ -59,6 +60,7 @@ const IphsDrugMappingMst = () => {
 
         fetchData(`/api/v1/IphsDrugMappingMst/getMappedDrugs?drugID=${drugId}`)
             .then((data) => {
+                console.log('data', data)
                 if (data.data) {
                     const drpData = Array.from(
                         new Map(
@@ -137,22 +139,24 @@ const IphsDrugMappingMst = () => {
             const mappedData = addedToRight?.map(dt => ({
                 "drugID": Number(dt?.value),
                 "drugName": dt?.label,
-                "packId":drugId,
+                // "packId":drugId,
             }))
 
             const unMappedData = removedFromRight?.map(dt => ({
                 "drugID": Number(dt?.value),
                 "drugName": dt?.label,
-                "packId":drugId,
+                // "packId":drugId,
             }))
 
-
+            console.log('mapped', mappedData)
+            console.log('unMappedData', unMappedData)
             let isMapped = false;
 
             if (mappedData.length > 0 || unMappedData.length > 0) {
 
                 if (mappedData.length > 0) {
-                    await fetchPatchData("/api/v1/IphsDrugMappingMst/mapDrugs", mappedData).then(data => {
+                    await fetchPostData("/api/v1/IphsDrugMappingMst/mapDrugs", mappedData).then(data => {
+                        console.log('data', data)
                         if (data?.status == 1) {
                             isMapped = true;
                         } else {
@@ -161,13 +165,12 @@ const IphsDrugMappingMst = () => {
                     })
                 }
                 if (unMappedData.length > 0) {
-                    await fetchPatchData("/api/v1/IphsDrugMappingMst/unmapDrugs", unMappedData).then(data => {
+                    await fetchPostData("/api/v1/IphsDrugMappingMst/unmapDrugs", unMappedData).then(data => {
+                        console.log('data', data)
                         if (data?.status == 1) {
                             isMapped = true;
-
                         } else {
                             isMapped = false;
-
                         }
                     })
                 }

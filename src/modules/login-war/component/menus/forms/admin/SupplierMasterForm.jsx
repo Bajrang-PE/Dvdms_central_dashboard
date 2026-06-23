@@ -20,6 +20,8 @@ const SupplierMasterForm = (props) => {
         "panNo": "", "showPan": "", "suppId": "",
     })
 
+    console.log('values', values)
+
     const [errors, setErrors] = useState({
         "suppNameErr": "", "suppTypeErr": "", "contactNoErr": "", "emailIdErr": "", "addressErr": "",
         "pinCodeErr": "", "countryNameErr": "", "stateIdErr": "", "corporateGstErr": "", "lstNoErr": "", "cstNoErr": "",
@@ -73,8 +75,11 @@ const SupplierMasterForm = (props) => {
         }
     }, [selectedOption, openPage]);
 
+    console.log('selectedOption', selectedOption)
+
 
     const handleValidation = () => {
+        setConfirmSave(false);
         let isValid = true;
         if (!values?.suppName.trim()) {
             setErrors(prev => ({ ...prev, suppNameErr: "Please enter supplier name " }));
@@ -154,12 +159,15 @@ const SupplierMasterForm = (props) => {
                 gnumSeatId: getAuthUserData('userSeatId'),
             }
 
-            fetchUpdatePostData("/api/v1/suppliers", data).then(data => {
+            fetchUpdatePostData("/api/v1/suppliers/addSupplier", data).then(data => {
+                console.log('data', data)
                 if (data?.status === 1) {
                     ToastAlert('Supplier Added successfully', 'success');
                     refresh();
+
                 } else {
-                    ToastAlert('Error', 'error');
+                    ToastAlert(data?.message, 'error');
+                    setConfirmSave(false);
                 }
             })
 
@@ -181,15 +189,18 @@ const SupplierMasterForm = (props) => {
                 cwhstrPanNo: values?.panNo,
                 gnumIsvalid: recordStatus,
                 gnumSeatId: getAuthUserData('userSeatId'),
-            }
+                "cwhnumSupplierId": values?.suppId,
 
-            fetchUpdateData(`/api/v1/suppliers/${values?.suppId}`, data).then(data => {
+            }
+            // fetchUpdatePostData(`/api/v1/suppliers/${values?.suppId}`, data).then(data => {
+            fetchUpdatePostData(`/api/v1/suppliers/updateSupplier`, data).then(data => {
                 if (data?.status === 1) {
                     ToastAlert('Supplier updated successfully', 'success')
                     setSelectedOption([]);
                     refresh();
                 } else {
-                    ToastAlert('Error', 'error')
+                    ToastAlert(data?.message, 'error')
+                    setConfirmSave(false);
                 }
             })
         }

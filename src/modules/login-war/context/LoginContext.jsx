@@ -2,7 +2,7 @@
 
 
 import { createContext, useState } from "react";
-import { fetchData } from "../../../utils/ApiHooks";
+import { fetchData, fetchPostData } from "../../../utils/ApiHooks";
 
 export const LoginContext = createContext();
 
@@ -13,7 +13,7 @@ const LoginContextApi = ({ children }) => {
     const [showForgotPass, setShowForgotPass] = useState(false);
     const [selectedOption, setSelectedOption] = useState([]);
     const [openPage, setOpenPage] = useState('home')
-    const [isShowReport,setIsShowReport] = useState(false)
+    const [isShowReport, setIsShowReport] = useState(false)
 
     //API Data
     const [widgetData, setWidgetData] = useState([]);
@@ -46,13 +46,23 @@ const LoginContextApi = ({ children }) => {
     const [iphsMedicineDrpData, setIphsMedicineDrpData] = useState([]);
     const [iphsDrugDrpData, setIphsDrugDrpData] = useState([]);
 
+    // for qr code
+    const [stateNameDrpDtQr, setStateNameDrpDtQr] = useState([]);
+    const [facilityTypeDrpDtQr, setFacilityTypeDrpDtQr] = useState([]);
+    const [storeNameDrpDtQr, setStoreNameTypeDrpDtQr] = useState([]);
+
     //confirm alert
     const [confirmSave, setConfirmSave] = useState(false);
     const [showConfirmSave, setShowConfirmSave] = useState(false);
 
 
-    const getWidgetData = () => {
-        fetchData('/hisutils/allWidgetConfiguration?dashboardFor=CENTRAL+DASHBOARD').then((data) => {
+    const getWidgetData = async (ids) => {
+        const val = {
+            ids: ids || [],
+            dashboardFor: 'CENTRAL DASHBOARD',
+            masterName: "DashboardWidgetMst"
+        };
+        fetchPostData('/hisutils/getWdgtMultipleData?isGlobal=1', val).then((data) => {
             if (data?.status === 1) {
                 setWidgetData(data?.data)
             } else {
@@ -83,7 +93,7 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
-    const getGenericDrugListData = (grpId, sbGrpId, status,categoryOptions) => {
+    const getGenericDrugListData = (grpId, sbGrpId, status, categoryOptions) => {
         const params = {
             groupId: grpId ? grpId : '0',
             subgroupId: sbGrpId ? sbGrpId : "0",
@@ -120,7 +130,6 @@ const LoginContextApi = ({ children }) => {
 
     const getStateJobDetailsListData = (stateId, status) => {
         fetchData(`/api/v1/stateJobDetails/getJobDetailsByStateID?stateID=${stateId ? stateId : '0'}&isActive=${status ? status : "1"}`).then((data) => {
-            console.log('data', data)
             if (data?.status === 1) {
                 setStateJobListData(data?.data)
             } else {
@@ -182,14 +191,13 @@ const LoginContextApi = ({ children }) => {
             });
     };
 
-    const getDistrictNameDrpData = (id) => {
-        fetchData('/state/getstate').then((data) => {
-            if (data) {
-
-                const drpData = data?.map((dt) => {
+    const getDistrictNameDrpData = (stateid) => {
+        fetchData(`/api/v1/districts/getAllDistrictList?stateId=${stateid}&isActive=1`).then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
                     const val = {
-                        value: dt?.cwhnumStateId,
-                        label: dt?.cwhstrStateName
+                        value: dt?.cwhnumDistId,
+                        label: dt?.cwhstrDistName
                     }
 
                     return val;
@@ -228,7 +236,7 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getGroupDrpData = () => {
-        fetchData('/api/v1/group-mst/dropdown').then((data) => {
+        fetchData('/api/v1/GrpDrpdwn').then((data) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
@@ -251,8 +259,8 @@ const LoginContextApi = ({ children }) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
-                        value: dt?.centralDrugId,
-                        label: dt?.drugName
+                        value: dt?.cwhnumCentralDrugId,
+                        label: dt?.cwhstrCentraldrugName
                     }
 
                     return val;
@@ -267,7 +275,7 @@ const LoginContextApi = ({ children }) => {
 
 
     const getDrugTypeDrpData = () => {
-        fetchData('/api/v1/drug-types/DrugTypeDropdown').then((data) => {
+        fetchData('/api/v1/DrugTypeDropdown').then((data) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
@@ -284,12 +292,12 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getSubGroupDrpData = (grpId) => {
-        fetchData(`/api/v1/subgroup/subGrpDrpDwn/${grpId}`).then((data) => {
+        fetchData(`/api/v1/SubGrpDrpDwn/${grpId}`).then((data) => {
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
-                        value: dt?.id,
-                        label: dt?.name
+                        value: dt?.cwhnumSubgroupId,
+                        label: dt?.cwhstrSubgroupName
                     }
                     return val;
                 })
@@ -415,7 +423,8 @@ const LoginContextApi = ({ children }) => {
 
     const getIphsDrugDrpData = () => {
         fetchData(`/api/v1/IphsDrugMappingMst/getDrugnames`).then((data) => {
-            if (data?.status === 200) {
+            console.log('data', data)
+            if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
                         value: dt?.packID,
@@ -440,10 +449,60 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+    //for qr code
 
+    const getStateNameDrpDataQr = () => {
+        fetchData(`/api/v1/state-combo-Scanner`).then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.id,
+                        label: dt?.name
+                    }
+                    return val;
+                })
+                setStateNameDrpDtQr(drpData);
+            } else {
+                setStateNameDrpDtQr([]);
+            }
+        })
+    }
 
+    const getStoreNameDrpDataQr = (stateId, facilityId) => {
+        fetchData(`/api/v1/store-combo?stateId=${stateId}&facilityTypeId=${facilityId}`).then((data) => {
+            console.log('data', data)
+            if (data?.status === 1) {
 
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.storeId,
+                        label: dt?.storeName
+                    }
+                    return val;
+                })
+                setStoreNameTypeDrpDtQr(drpData);
+            } else {
+                setStoreNameTypeDrpDtQr([]);
+            }
+        })
+    }
 
+    const getFacilityTypeDrpDataQr = () => {
+        fetchData(`/api/v1/facility-type-combo`).then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.id,
+                        label: dt?.name
+                    }
+                    return val;
+                })
+                setFacilityTypeDrpDtQr(drpData);
+            } else {
+                setFacilityTypeDrpDtQr([]);
+            }
+        })
+    }
 
     return (
         <LoginContext.Provider value={{
@@ -464,11 +523,13 @@ const LoginContextApi = ({ children }) => {
             testTypeDrpData, getTestTypeDrpData,
             hospNameDrpData, getHospNameDrpData,
             zoneDrpData, getZoneDrpData,
-            isShowReport,setIsShowReport,
+            isShowReport, setIsShowReport,
             iphsGroupDrpData, getIphsGroupDrpData,
             iphsSubGroupDrpData, getIphsSubGroupDrpData,
             iphsMedicineDrpData, getIphsMedicineDrpData,
             iphsDrugDrpData, getIphsDrugDrpData,
+            getFacilityTypeDrpDataQr, getStoreNameDrpDataQr, getStateNameDrpDataQr,
+            stateNameDrpDtQr, storeNameDrpDtQr, facilityTypeDrpDtQr,
 
 
             //confirm box
@@ -482,7 +543,7 @@ const LoginContextApi = ({ children }) => {
             getStateListData, stateListData,
             getGroupListData, groupListData,
             getStateJobDetailsListData, stateJobListData,
-            getProgrammeListData,programmeListData
+            getProgrammeListData, programmeListData
         }}>
             {children}
         </LoginContext.Provider>

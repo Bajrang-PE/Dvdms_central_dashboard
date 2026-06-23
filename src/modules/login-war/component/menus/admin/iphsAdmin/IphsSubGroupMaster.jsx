@@ -4,13 +4,13 @@ import { capitalizeFirstLetter, ToastAlert } from '../../../../utils/CommonFunct
 import InputSelect from '../../../InputSelect';
 import GlobalTable from '../../../GlobalTable';
 import IphsSubGroupMasterForm from '../../forms/admin/iphsAdmin/IphsSubGroupMasterForm';
-import { fetchData, fetchDeleteData } from '../../../../../../utils/ApiHooks';
+import { fetchData, fetchDeleteData, fetchPostData } from '../../../../../../utils/ApiHooks';
 import { Modal } from 'react-bootstrap';
+import MasterReport from '../../../MasterReport';
 
 const IphsSubGroupMaster = () => {
 
-    const { openPage, setOpenPage, iphsGroupDrpData, getIphsGroupDrpData, selectedOption, setSelectedOption, confirmSave,
-        setShowConfirmSave, setConfirmSave } = useContext(LoginContext);
+    const { openPage, setOpenPage, iphsGroupDrpData, getIphsGroupDrpData, selectedOption, setSelectedOption, confirmSave, setShowConfirmSave, setConfirmSave, isShowReport } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [listData, setListData] = useState([]);
     const [filterData, setFilterData] = useState(listData);
@@ -95,49 +95,50 @@ const IphsSubGroupMaster = () => {
         },
     ];
 
-      const handleDeleteRecord = () => {
-            if (selectedOption?.length > 0) {
-                setOpenPage('delete');
-                setShowConfirmSave(true);
+    const handleDeleteRecord = () => {
+        if (selectedOption?.length > 0) {
+            setOpenPage('delete');
+            setShowConfirmSave(true);
+        } else {
+            ToastAlert("Please select a record", "warning");
+        }
+    }
+
+    useEffect(() => {
+        if (confirmSave && openPage === 'delete') {
+            handleDelete();
+        }
+    }, [confirmSave])
+
+    const handleDelete = () => {
+        fetchPostData(`/api/v1/IphsSubGroupMaster/deleteSubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}&isActive=0`).then(data => {
+            if (data?.status === 1) {
+                ToastAlert("Data deleted successfully", "success")
+                setConfirmSave(false);
+                setSelectedOption([]);
+                setOpenPage("home");
+                setRecord("1")
+                setGroupId("")
+                getListData();
             } else {
-                ToastAlert("Please select a record", "warning");
+                ToastAlert('Error while deleting record!', 'error')
+                setOpenPage("home")
             }
-        }
-    
-        useEffect(() => {
-            if (confirmSave && openPage === 'delete') {
-                handleDelete();
-            }
-        }, [confirmSave])
-    
-        const handleDelete = () => {
-    
-            fetchDeleteData(`/api/v1/IphsSubGroupMaster/deleteSubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}&isActive=0`).then(data => {
-                if (data?.status === 1) {
-                    ToastAlert("Data deleted successfully", "success")
-                    setConfirmSave(false);
-                    setSelectedOption([]);
-                    setOpenPage("home");
-                    setRecord("1")
-                    setGroupId("")
-                    getListData();
-                } else {
-                    ToastAlert('Error while deleting record!', 'error')
-                    setOpenPage("home")
-                }
-    
-            })
-    
-        }
+
+        })
+
+    }
 
 
     return (
         <div className='masters mx-3 my-2'>
-            <div className='masters-header row'>
-                <span className='col-6'><b>{`Iphs Subgroup Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
-            </div>
-            {(openPage === "home" || openPage === "view" || openPage === "delete") &&
+            {!isShowReport &&
+                <div className='masters-header row'>
+                    <span className='col-6'><b>{`Iphs Subgroup Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
+                </div>
+            }
+            {(openPage === "home" || openPage === "view" || openPage === "delete") && !isShowReport &&
                 <>
                     <div className='row mt-2'>
                         <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
@@ -208,9 +209,18 @@ const IphsSubGroupMaster = () => {
                     }
                 </>
             }
-            {(openPage === "add" || openPage === "modify") &&
+            {(openPage === "add" || openPage === "modify") && !isShowReport &&
                 <IphsSubGroupMasterForm setSearchInput={setSearchInput} selectedGroupName={selectedGroupName} selectedGroupId={groupId}
                     setGroupId={setGroupId} setRecord={setRecord} />
+            }
+
+            {isShowReport &&
+                <MasterReport title={"IPHS Sub Group Master"} column={columns} data={filterData}
+                    filters={[
+                        { value: iphsGroupDrpData?.find(dt => dt?.value == groupId)?.label, label: "IPHS Group" },
+                        { value: record == 1 ? "Active" : "InActive", label: "Record Status" },
+                    ]}
+                />
             }
 
         </div>

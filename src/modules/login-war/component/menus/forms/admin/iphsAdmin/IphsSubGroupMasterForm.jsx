@@ -56,6 +56,7 @@ const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGro
                     refresh();
                 } else {
                     ToastAlert(data?.message, "error");
+                    setConfirmSave(false);
                 }
             })
 
@@ -63,16 +64,17 @@ const IphsSubGroupMasterForm = ({ setSearchInput, selectedGroupName, selectedGro
 
         if (openPage === "modify") {
             const val = {
-                "subgroupName": subGroupName,
+                "subgroupName": subGroupName
             }
 
-            fetchPatchData(`/api/v1/IphsSubGroupMaster/modifySubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}`, val).then(data => {
+            fetchPostData(`/api/v1/IphsSubGroupMaster/modifySubgroup?subGroupID=${selectedOption[0].cwhnumIphsSubgroupID}`, val).then(data => {
                 if (data?.status === 1) {
                     ToastAlert("Data updated successfully", "success");
                     setSelectedOption([]);
                     refresh();
                 } else {
                     ToastAlert(data?.message, "error")
+                    setConfirmSave(false);
                 }
             })
         }

@@ -6,9 +6,9 @@ import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../utils/CommonFunction';
 
 const TestMappingMaster = () => {
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt,getFacilityTypeDrpData,facilityTypeDrpDt,setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, getFacilityTypeDrpData, facilityTypeDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
 
-   
+
     const [stateId, setStateId] = useState("");
     const [facilityId, setFacilityId] = useState("");
     const [inOutFlag, setInoutFlag] = useState("");
@@ -20,17 +20,17 @@ const TestMappingMaster = () => {
 
     useEffect(() => {
         if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
-        
+
         if (facilityTypeDrpDt?.length === 0) getFacilityTypeDrpData();
         setOpenPage("add");
-       // getFacilityTypeDrpData();
+        // getFacilityTypeDrpData();
     }, []);
 
 
     useEffect(() => {
         if (stateId) {
             setSelectedOptions([]);
-           // getUnmappedList();
+            // getUnmappedList();
         }
         setSelectedAvailable([]);
         setSelectedSelected([]);
@@ -44,15 +44,16 @@ const TestMappingMaster = () => {
     }, [stateId, facilityId, inOutFlag])
 
 
-    
+
 
     const getUnmappedList = () => {
-    
-            fetchData(`/api/v1/TestMap/unmap?isActive=1&facilityTypeId=${facilityId}&stateId=${stateId}&inhouseOutsourceFlag=1`).then(data => {
+
+        fetchData(`/api/v1/unmapped-tests?isActive=1&facilityTypeId=${facilityId}&stateId=${stateId}&ioFlag=${inOutFlag}`).then(data => {
+            console.log('datatestu', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
-                    value: dt?.cwhnumTestId,
-                    label: dt?.cwhstrTestDesc
+                    value: dt?.split('^')[0],
+                    label: dt?.split('^')[1]
                 })
                 )
                 setAvailableOptions(drpData)
@@ -64,7 +65,8 @@ const TestMappingMaster = () => {
     }
 
     const getMappedList = () => {
-        fetchData(`/api/v1/TestMap/map?isActive=1&facilityTypeId=${facilityId}&stateId=${stateId}&inhouseOutsourceFlag=1`).then(data => {
+        fetchData(`/api/v1/mapped-tests?isActive=1&facilityTypeId=${facilityId}&stateId=${stateId}&ioFlag=${inOutFlag}`).then(data => {
+            console.log('datatestm', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
                     value: dt?.cwhnumTestId,
@@ -91,57 +93,21 @@ const TestMappingMaster = () => {
             item => !selectedOptions.some(i => i.value == item.value)
         );
 
-        console.log(newMapped,'m')
-        console.log(newUnMapped,'u')
-
-        const mappedData = newMapped?.length > 0 && newMapped?.map(dt => ({
-            "cwhnumStateId": parseInt(stateId),
-         //   "cwhnumStateFacilityTypeId": 0,
-            "cwhnumCentreFacilityTypeId":  parseInt(facilityId),
-            "cwhnumTestId": dt?.value,
-            "cwhnumInhouseOutsourceFlag": parseInt(inOutFlag),
-          //  "cwhstrTestDesc": dt?.label,
-           // "gnumSeatId": getAuthUserData('userSeatId'),
-            "cwhnumIsvalid": 1,
-           // "cwhnumProgrammeSlno": 0,
-           
-          
-
-        }))
-
-        const unMappedData = newUnMapped?.length > 0 && newUnMapped?.map(dt => ({
-          //  "cwhnumStateId": parseInt(stateId),
-            "cwhnumTestId": dt?.value,
-         //   "cwhstrTestDesc": dt?.label,            
-            "cwhnumDh": 0,
-            "cwhnumSdh": 0,
-            "cwhnumChc": 0,
-            "cwhnumAamphc": 0,
-            "cwhnumAamshc": 0,
-            "cwhnumIsvalid": 0,
-         //    "cwhnumEntryUid": 0,
-          //  "cwhdtEntryDate": "2025-06-30T05:34:24.275Z",
-          //  "cwhnumModUid": 0,
-          //  "cwhdtModDate": "2025-06-30T05:34:24.275Z",
-            "cwhnumInhouseOutsourceFlag":  parseInt(inOutFlag),
-            "cwhnumStateId": parseInt(stateId),
-       //     "cwhnumStateFacilityTypeId": 0,
-            "cwhnumCentreFacilityTypeId":parseInt(facilityId)
-        }))
 
         const val = {
-            "arrTestMappedDtos": mappedData?.length > 0 ? mappedData : [],
-            "arrTestUnMapDtos": unMappedData?.length > 0 ? unMappedData : [],
-          //  "gnumSeatId": getAuthUserData('userSeatId'),
-        //    "cwhnumStateProgrammeId": 0,
-        //    "cwhstrStateProgrammeName": "",
-            "cwhnumStateId": parseInt(stateId)
+            "stateId": parseInt(stateId),
+            "centreFacilityTypeId": parseInt(facilityId),
+            "inhouseOutsourceFlag": parseInt(inOutFlag),
+            "entryUid": getAuthUserData('userId'),
+            "mapTestIds": newMapped?.map(dt => parseInt(dt?.value)),
+            "unmapTestIds": newUnMapped?.map(dt => parseInt(dt?.value))
         }
 
-        fetchPostData(`/api/v1/TestMap/create`, val).then(data => {
+        fetchPostData(`/api/v1/save-mapped-tests`, val).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
-                console.log(data?.data)
                 setConfirmSave(false)
+                 ToastAlert(data?.message, 'success')
                 reset();
             } else {
                 ToastAlert(data?.message, 'error')
@@ -162,7 +128,7 @@ const TestMappingMaster = () => {
             setErrors(prev => ({ ...prev, "facilityIdErr": "Please select facility type" }))
             isValid = false;
         }//    "arrTestMappedDtos": [
-   // {
+        // {
         if (inOutFlag === "") {
             setErrors(prev => ({ ...prev, "inOutFlagErr": "Please select inhouse/outsource flag" }))
             isValid = false;
@@ -183,11 +149,11 @@ const TestMappingMaster = () => {
         setInoutFlag('');
         setStateId('');
         setFacilityId('');
-     //   setInitialMappedOptions();
-     //   setSelectedSelected();
-      //  setSelectedAvailable();
-      //  setSelectedOptions();
-      //  setAvailableOptions();
+        //   setInitialMappedOptions();
+        //   setSelectedSelected();
+        //  setSelectedAvailable();
+        //  setSelectedOptions();
+        //  setAvailableOptions();
         setInitialMappedOptions([]);
         setSelectedSelected([]);
         setSelectedAvailable([]);
@@ -196,37 +162,37 @@ const TestMappingMaster = () => {
     }
 
     const moveToSelected = () => {
-     //   if (cwhnumTestId) {
-            const itemsToMove = availableOptions.filter(opt =>
-                selectedAvailable.includes(String(opt.value))
-            );
-            const newSelected = itemsToMove.filter(item =>
-                !selectedOptions.some(selected => selected.value === item.value)
-            );
-            setSelectedOptions(prev => [...prev, ...newSelected]);
-            setAvailableOptions(prev => prev.filter(opt =>
-                !selectedAvailable.includes(String(opt.value))
-            ));
-            setSelectedAvailable([]);
-      //  } else {
-          //  ToastAlert('Please select test name!', 'warning')
-      //  }
+        //   if (cwhnumTestId) {
+        const itemsToMove = availableOptions.filter(opt =>
+            selectedAvailable.includes(String(opt.value))
+        );
+        const newSelected = itemsToMove.filter(item =>
+            !selectedOptions.some(selected => selected.value === item.value)
+        );
+        setSelectedOptions(prev => [...prev, ...newSelected]);
+        setAvailableOptions(prev => prev.filter(opt =>
+            !selectedAvailable.includes(String(opt.value))
+        ));
+        setSelectedAvailable([]);
+        //  } else {
+        //  ToastAlert('Please select test name!', 'warning')
+        //  }
     };
 
 
     const moveToAvailable = () => {
-      //  if (cwhnumTestId) {
-            const itemsToMove = selectedOptions.filter(opt =>
-                selectedSelected.includes(String(opt.value))
-            );
-            setAvailableOptions(prev => [...prev, ...itemsToMove]);
-            setSelectedOptions(prev => prev.filter(opt =>
-                !selectedSelected.includes(String(opt.value))
-            ));
-            setSelectedSelected([]);
-     //   } else {
-          //  ToastAlert('Please select test name!', 'warning')
-    //    }
+        //  if (cwhnumTestId) {
+        const itemsToMove = selectedOptions.filter(opt =>
+            selectedSelected.includes(String(opt.value))
+        );
+        setAvailableOptions(prev => [...prev, ...itemsToMove]);
+        setSelectedOptions(prev => prev.filter(opt =>
+            !selectedSelected.includes(String(opt.value))
+        ));
+        setSelectedSelected([]);
+        //   } else {
+        //  ToastAlert('Please select test name!', 'warning')
+        //    }
     };
 
 
@@ -286,8 +252,8 @@ const TestMappingMaster = () => {
                                     placeholder="Select Value"
                                     options={[
                                         { value: '1', label: 'Inhouse' },
-                                        { value: '2', label: 'Outsource' }
-                                      ]}
+                                        { value: '0', label: 'Outsource' }
+                                    ]}
                                     /*options={stateNameDrpDt}*/
                                     className="aliceblue-bg border-dark-subtle"
                                     value={inOutFlag}
@@ -297,7 +263,7 @@ const TestMappingMaster = () => {
                             </div>
                         </div>
                     </div>
-                    </div>
+                </div>
 
                 <div className="d-flex align-items-center my-3">
                     <div className="flex-grow-1" style={{ border: "1px solid #193fe6" }}></div>
@@ -319,7 +285,7 @@ const TestMappingMaster = () => {
                                 setSelectedAvailable(selected);
                             }}
                         >
-                             {availableOptions?.length > 0 && availableOptions?.map(opt => (
+                            {availableOptions?.length > 0 && availableOptions?.map(opt => (
                                 <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                 </option>
@@ -379,9 +345,9 @@ const TestMappingMaster = () => {
                 </div>
 
                 <div className='text-center'>
-                <button className='btn btn-sm datatable-btns py-0' onClick={handleValidation}>
+                    <button className='btn btn-sm datatable-btns py-0' onClick={handleValidation}>
                         <i className="fa fa-save me-1 fs-13 text-success"></i>Save</button>
-                        <button className='btn btn-sm datatable-btns py-0' onClick={reset} >
+                    <button className='btn btn-sm datatable-btns py-0' onClick={reset} >
                         <i className="fa fa-broom me-1 fs-13 text-warning"></i>Clear</button>
                 </div>
             </div>

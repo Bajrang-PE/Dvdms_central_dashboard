@@ -40,14 +40,14 @@ const DashHeader = () => {
     const logOut = () => {
         localStorage.clear();
         Cookies.remove('csrfToken');
-        navigate('/');
+        navigate('/dvdms/');
     }
 
     return (
         <div className='dashboard-header-nav'>
             <nav className="navbar navbar-expand-lg dash-header p-1">
 
-                <Link className='navbar-brand ps-4 py-0 text-white' to="/">
+                <Link className='navbar-brand ps-4 py-0 text-white' to="/dvdms/">
                     <div style={{ fontSize: "27px" }} className='fs-3 fs-md-2 fs-sm-5'>DVDMS CENTRAL DASHBOARD</div>
                     <div style={{ fontSize: "15px" }} className="fs-6 fs-md-5 fs-sm-6">Ministry of Health and Family Welfare (Govt. of India)</div>
                 </Link>
@@ -58,6 +58,12 @@ const DashHeader = () => {
 
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav ms-auto">
+
+                        <li className="nav-item dropdown" onClick={() =>navigate('/dvdms/user-dashboard') }>
+                            <a className="nav-link text-white fs-15" href="#" id="menuDropdown" role="button" data-bs-toggle="dropdown">
+                                <i className="fa fa-home"></i>
+                            </a>
+                        </li>
 
                         <li className="nav-item dropdown" onClick={() => handleDropdown('dropmenulinks')}>
                             <a className="nav-link text-white fs-15" href="#" id="menuDropdown" role="button" data-bs-toggle="dropdown">
@@ -90,12 +96,12 @@ const DashHeader = () => {
                                         Change User Details
                                     </Link>
                                 </li>
-                                <li onClick={() => setShowFeedback(true)}>
+                                {/* <li onClick={() => setShowFeedback(true)}>
                                     <a className="dropdown-item" href="#">
                                         <i className="fa fa-comment me-2"></i>
                                         Feedback
                                     </a>
-                                </li>
+                                </li> */}
                                 <li>
                                     <a className="dropdown-item pointer" onClick={()=>logOut()}>
                                         <i className="fa fa-right-from-bracket me-2"></i>
@@ -125,9 +131,9 @@ const DashHeader = () => {
                 </ul>
                 <MenuList activeDropdown={activeDropdown} />
             </nav>
-            {showFeedback &&
+            {/* {showFeedback &&
                 <FeedbackForm onClose={onClose} />
-            }
+            } */}
         </div>
     );
 }

@@ -6,11 +6,12 @@ import { LoginContext } from '../../../context/LoginContext';
 import DrugTypeForm from '../forms/admin/DrugTypeForm';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import { Modal } from 'react-bootstrap';
-import { fetchData, fetchDeleteData, fetchUpdateData } from '../../../../../utils/ApiHooks';
+import { fetchData, fetchDeleteData, fetchPostData, fetchUpdateData } from '../../../../../utils/ApiHooks';
+import MasterReport from '../../MasterReport';
 
 export const DrugTypeMaster = () => {
 
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, isShowReport } = useContext(LoginContext);
 
     const [stateNameDrpDt, setStateNameDrpDt] = useState([]);
     const [drugs, setDrugs] = useState([]);
@@ -61,11 +62,10 @@ export const DrugTypeMaster = () => {
 
     const fetchListData = async (isActive) => {
 
-        fetchData(`/api/v1/drug-types?isActive=${isActive}`).then((data) => {
-
+        fetchData(`/api/v1/getdruglist?isActive=${isActive}`).then((data) => {
             if (data && data?.status === 1) {
                 setDrugs(data.data);
-            }else{
+            } else {
                 setDrugs([]);
             }
 
@@ -110,8 +110,8 @@ export const DrugTypeMaster = () => {
 
     const handleDelete = () => {
         const drugTypeId = String(selectedOption[0]?.cwhnumDrugTypeId)
-        fetchDeleteData(`/api/v1/drug-types/${drugTypeId}`).then(data => {
-            if (data) {
+        fetchPostData(`/api/v1/DeleteDrugType/${drugTypeId}`).then(data => {
+            if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 fetchListData(1);
                 setSelectedOption([]);
@@ -168,6 +168,12 @@ export const DrugTypeMaster = () => {
         },
     ];
 
+
+    const onClose = () => {
+        setOpenPage('home');
+        setSelectedOption([]);
+    }
+
     return (
         <div className="masters mx-3 my-2">
 
@@ -176,7 +182,7 @@ export const DrugTypeMaster = () => {
                 {openPage === "home" && <span className='col-6 text-end'>Total Records : {drugs?.length}</span>}
             </div>
 
-            {(openPage === "home" || openPage === "view" || openPage === 'delete') && (<>
+            {(openPage === "home" || openPage === "view" || openPage === 'delete') && !isShowReport && (<>
 
                 <div className="row mt-3">
                     <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
@@ -208,7 +214,7 @@ export const DrugTypeMaster = () => {
                 </div>
 
                 {openPage === 'view' &&
-                    <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
+                    <Modal show={true} onHide={onClose} size='lg' dialogClassName="dialog-min">
                         <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
                             <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
                         </Modal.Header>
@@ -219,8 +225,7 @@ export const DrugTypeMaster = () => {
                             </div>
 
                             <div className='text-center mt-1'>
-
-                                <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
+                                <button className='btn cms-login-btn m-1 btn-sm' onClick={() => onClose()}>
                                     <i className="fa fa-broom me-1"></i> Close
                                 </button>
                             </div>
@@ -228,12 +233,17 @@ export const DrugTypeMaster = () => {
                         </Modal.Body>
                     </Modal>
                 }
-
             </>)}
 
 
-            {(openPage === "add" || openPage === 'modify') &&
+            {(openPage === "add" || openPage === 'modify') && !isShowReport &&
                 <DrugTypeForm setValues={setValues} values={values} setSearchInput={setSearchInput} />
+            }
+
+            {isShowReport &&
+                <MasterReport title={"Drug Type Master"} column={columns} data={drugs} filters={[
+                    { value: values?.recordStatus == 1 ? "Active" : "InActive", label: "Record Status" }
+                ]} />
             }
 
         </div>

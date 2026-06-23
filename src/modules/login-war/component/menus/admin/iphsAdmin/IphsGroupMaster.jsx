@@ -3,15 +3,15 @@ import { LoginContext } from '../../../../context/LoginContext'
 import { capitalizeFirstLetter, ToastAlert } from '../../../../utils/CommonFunction';
 import InputSelect from '../../../InputSelect';
 import GlobalTable from '../../../GlobalTable';
-import { fetchData, fetchDeleteData } from '../../../../../../utils/ApiHooks';
-import InputField from '../../../InputField';
+import { fetchData, fetchPostData } from '../../../../../../utils/ApiHooks';
 import IphsGroupMasterForm from '../../forms/admin/iphsAdmin/IphsGroupMasterForm';
 import { Modal } from 'react-bootstrap';
+import MasterReport from '../../../MasterReport';
 
 const IphsGroupMaster = () => {
 
     const { openPage, setOpenPage, selectedOption, setSelectedOption, confirmSave,
-        setShowConfirmSave, setConfirmSave } = useContext(LoginContext);
+        setShowConfirmSave, setConfirmSave, isShowReport } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [listData, setListData] = useState([]);
     const [filterData, setFilterData] = useState(listData);
@@ -20,7 +20,6 @@ const IphsGroupMaster = () => {
     useEffect(() => {
         getListData(record);
     }, [record])
-
     const getListData = (recordStatus) => {
         fetchData(`/api/v1/IphsGroupMaster/getAllGroups?isActive=${recordStatus}`).then(data => {
             if (data.status == 1) {
@@ -74,7 +73,6 @@ const IphsGroupMaster = () => {
         },
     ];
 
-
     const handleDeleteRecord = () => {
         if (selectedOption?.length > 0) {
             setOpenPage('delete');
@@ -92,13 +90,14 @@ const IphsGroupMaster = () => {
 
     const handleDelete = () => {
 
-        fetchDeleteData(`/api/v1/IphsGroupMaster/deleteGroups?groupIDs=${[selectedOption[0].cwhnumIphsGroupID]}`).then(data => {
-            if (data) {
+        fetchPostData(`/api/v1/IphsGroupMaster/deleteGroups?groupIDs=${[selectedOption[0].cwhnumIphsGroupID]}`).then(data => {
+            if (data?.status === 1) {
                 ToastAlert("Data deleted successfully", "success")
                 setConfirmSave(false);
                 setSelectedOption([]);
                 setOpenPage("home");
                 getListData(1);
+
             } else {
                 ToastAlert('Error while deleting record!', 'error')
                 setOpenPage("home")
@@ -107,17 +106,23 @@ const IphsGroupMaster = () => {
         })
 
     }
+    const onClose = () => {
+        setOpenPage('home');
+        setSelectedOption([]);
+    }
 
 
     return (
         <>
             <div className='masters mx-3 my-2'>
-                <div className='masters-header row'>
-                    <span className='col-6'><b>{`Iphs Group Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
-                </div>
+                {!isShowReport &&
+                    <div className='masters-header row'>
+                        <span className='col-6'><b>{`Iphs Group Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                        {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
+                    </div>
+                }
 
-                {(openPage === "home" || openPage === "view" || openPage === "delete") &&
+                {(openPage === "home" || openPage === "view" || openPage === "delete") && !isShowReport &&
                     <>
                         <div className='row mt-2'>
                             <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
@@ -144,7 +149,7 @@ const IphsGroupMaster = () => {
                         </div>
 
                         {openPage === 'view' &&
-                            <Modal show={true} onHide={null} size='lg' dialogClassName="dialog-min">
+                            <Modal show={true} onHide={onClose} size='lg' dialogClassName="dialog-min">
                                 <Modal.Header closeButton className='py-1 px-2 datatable-header cms-login'>
                                     <b><h5 className='mx-2 mt-1 px-1'>View Page</h5></b>
                                 </Modal.Header>
@@ -156,7 +161,7 @@ const IphsGroupMaster = () => {
 
                                     <div className='text-center mt-1'>
 
-                                        <button className='btn cms-login-btn m-1 btn-sm' onClick={() => setOpenPage('home')}>
+                                        <button className='btn cms-login-btn m-1 btn-sm' onClick={() => onClose()}>
                                             <i className="fa fa-broom me-1"></i> Close
                                         </button>
                                     </div>
@@ -167,9 +172,17 @@ const IphsGroupMaster = () => {
                     </>
                 }
 
-                {(openPage === "add" || openPage === "modify") &&
+                {(openPage === "add" || openPage === "modify") && !isShowReport &&
                     <IphsGroupMasterForm setRecord={setRecord} record={record} getListData={getListData} setSearchInput={setSearchInput} />
 
+                }
+
+                {isShowReport &&
+                    <MasterReport title={"IPHS Group Master"} column={columns} data={filterData}
+                        filters={[
+                            { value: record == 1 ? "Active" : "InActive", label: "Record Status" }
+                        ]}
+                    />
                 }
 
             </div>
