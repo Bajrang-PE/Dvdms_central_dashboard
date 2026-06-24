@@ -31,7 +31,7 @@ const Header = () => {
         e.preventDefault();
         const redirectConfirm = window.confirm('You are redirecting to another website');
         if (redirectConfirm) {
-            window.open(e.target.href, '_blank')
+            window.open(e.currentTarget.href, '_blank')
         }
     }
 

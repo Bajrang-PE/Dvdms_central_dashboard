@@ -5,9 +5,13 @@
 // ];
 
 export const imageUrls = [
+    "AI and Forecasting.png",
     "banner4.1.png",
     "banner5.1.png",
     "banner.png",
+    "AWaRe_Dashboard.png",
+    "Central Dashboard for EMMS.png",
+    
 ];
 
 export const DataSeries = [
