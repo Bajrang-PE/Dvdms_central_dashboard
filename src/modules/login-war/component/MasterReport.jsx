@@ -19,6 +19,7 @@ const MasterReport = (props) => {
     const reportRef = useRef()
 
     const reportColumns = useReportColumns(column);
+    console.log('reportColumns', reportColumns)
 
     const printReport = useReactToPrint({
         contentRef: reportRef,
@@ -173,6 +174,7 @@ const MasterReport = (props) => {
 
 
     const downloadPDF = async () => {
+
         if (!data?.length) {
             ToastAlert('Data not available to download report', 'warning');
             return;
@@ -195,16 +197,14 @@ const MasterReport = (props) => {
                 ? filterStartY + (validFilters.length * filterLineHeight) + 4
                 : filterStartY + 6;
 
-        const columns = reportColumns.map(col => col.name);
-        const rows = data.map((row, index) =>
-            reportColumns.map(col =>
-                col.name === 'S.No' ? index + 1 : col.selector(row)
+        const columns = reportColumns?.map(col => col.name);
+        const rows = data?.map((row, index) =>
+            reportColumns?.map(col =>
+                col?.name === 'S.No' ? index + 1 : col?.selector(row)
             )
         );
 
         const logo = await loadImage('/dvdms/reportheader.png');
-
-        console.log('logo', logo)
 
         doc.autoTable({
             head: [columns],
@@ -292,7 +292,7 @@ const MasterReport = (props) => {
             </div>
 
             <div className='datatable-report' ref={reportRef} >
-                <div className='mt-4'></div>
+                <div className='mt-2'></div>
                 <div className='text-center'>
                     <img className='text-center' src="/dvdms/reportheader.png" alt="img" />
                 </div>

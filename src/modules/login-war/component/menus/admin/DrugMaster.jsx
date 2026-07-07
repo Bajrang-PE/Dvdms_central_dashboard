@@ -7,11 +7,11 @@ import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction
 import { Modal } from 'react-bootstrap';
 import DrugMasterForm from '../forms/DrugMasterForm';
 import MasterReport from '../../MasterReport';
+import InputDrpSelect from '../../InputDrpSelect';
 
 const DrugMaster = () => {
 
-    const { selectedOption, setSelectedOption, groupDrpData, getGroupDrpData, subGroupDrpData, getSubGroupDrpData, openPage, setOpenPage,
-        setConfirmSave, confirmSave, setShowConfirmSave, isShowReport
+    const { selectedOption, setSelectedOption, groupDrpData, getGroupDrpData, subGroupDrpData, getSubGroupDrpData, openPage, setOpenPage, setConfirmSave, confirmSave, setShowConfirmSave, isShowReport
     } = useContext(LoginContext);
 
     const [values, setValues] = useState({
@@ -28,8 +28,6 @@ const DrugMaster = () => {
     const [selectedSubGroupName, setSelectedSubGroupName] = useState("")
     const [selectedGroupId, setSelectedGroupId] = useState("")
     const [selectedSubGroupId, setSelectedSubGroupId] = useState("")
-
-
     const [searchInput, setSearchInput] = useState('');
     const [filterData, setFilterData] = useState(listData);
 
@@ -49,6 +47,7 @@ const DrugMaster = () => {
     const handleValueChange = (e) => {
         const { name, value } = e.target;
         const errName = name + "Err";
+        setSearchInput('');
         if (name === "groupId") {
             const selectOptionGrp = groupDrpData.find(opt => String(opt.value) === String(value));
             setSelectedGroupName(selectOptionGrp?.label || "");
@@ -119,23 +118,22 @@ const DrugMaster = () => {
         })
     }
 
-    useEffect(() => {
-        if (openPage === "add") {
-            validate()
-        }
-    }, [openPage])
-
     const validate = () => {
 
-        if (!values?.groupId.trim()) {
+        let isValid = true;
+        if (!values?.groupId.trim() || values?.groupId === "0") {
             setErrors(prev => ({ ...prev, groupIdErr: "Please select group" }));
             setOpenPage("home")
+            isValid = false
         }
-        if (!values?.subGroupId.trim()) {
+        if (!values?.subGroupId.trim() || values?.subGroupId === "0") {
             setErrors(prev => ({ ...prev, subGroupIdErr: "Please select subgroup" }));
             setOpenPage("home")
+            isValid = false
         }
+        return isValid;
     }
+
 
     const handleSelectAll = (isChecked) => {
 
@@ -153,9 +151,9 @@ const DrugMaster = () => {
             name: (
                 <input
                     type="checkbox"
-                    checked={selectAll}
-                    onChange={(e) => handleSelectAll(e.target.checked)}
-                    disabled={filterData.length === 0}
+                    // checked={selectAll}
+                    // onChange={(e) => handleSelectAll(e.target.checked)}
+                    disabled
                     className="form-check-input log-select"
                 />
             ),
@@ -192,7 +190,6 @@ const DrugMaster = () => {
         },
     ];
 
-
     const handleDeleteRecord = () => {
         if (selectedOption?.length > 0) {
             setOpenPage('delete');
@@ -227,6 +224,7 @@ const DrugMaster = () => {
 
     }
 
+
     return (
         <>
             <div className="masters mx-3 my-2">
@@ -260,7 +258,7 @@ const DrugMaster = () => {
                             <div className="form-group col-sm-4 row">
                                 <label className="col-sm-4 col-form-label fix-label required-label">Subgroup</label>
                                 <div className="col-sm-8 align-content-center">
-                                    <InputSelect
+                                    {/* <InputSelect
                                         className="aliceblue-bg form-control form-control-sm border-dark-subtle"
                                         name='subGroupId'
                                         id='subGroupId'
@@ -268,6 +266,25 @@ const DrugMaster = () => {
                                         options={subGroupDrpData}
                                         value={values?.subGroupId}
                                         onChange={handleValueChange}
+                                        errorMessage={errors?.subGroupIdErr}
+                                    /> */}
+                                    <InputDrpSelect
+                                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                        name='subGroupId'
+                                        id='subGroupId'
+                                        placeholder={"Select Value"}
+                                        options={subGroupDrpData}
+                                        value={values?.subGroupId}
+                                        onChange={(e) => {
+                                            if (e?.length > 0) {
+                                                setValues(prev => ({ ...prev, "subGroupId": e?.[0]?.value?.toString() }));
+                                                const selectOptionSubGrp = subGroupDrpData.find(opt => String(opt.value) === String(e?.[0]?.value));
+                                                setSelectedSubGroupName(selectOptionSubGrp?.label || "");
+                                                setSelectedSubGroupId(selectOptionSubGrp?.value || "")
+                                                setErrors(prev => ({ ...prev, subGroupIdErr: "" }));
+                                                setSearchInput('');
+                                            }
+                                        }}
                                         errorMessage={errors?.subGroupIdErr}
                                     />
                                 </div>
@@ -285,18 +302,13 @@ const DrugMaster = () => {
                                         value={values?.recordStatus}
                                         onChange={handleValueChange}
                                     //   errorMessage={errors?.groupIdErr}
-
                                     />
-
-
                                 </div>
-
-
                             </div>
 
                             <div>
                                 <GlobalTable column={columns} data={filterData} onDelete={handleDeleteRecord}
-                                    onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                                    onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} onValidate={validate} searchInput={searchInput} />
                             </div>
 
 
@@ -331,17 +343,12 @@ const DrugMaster = () => {
                         </div>
                     </>}
 
-
-                {/* <hr className='my-2' /> */}
-
                 {
                     (openPage === "add" || openPage === "modify") && !isShowReport &&
                     <DrugMasterForm selectedGroupName={selectedGroupName} selectedSubGroupName={selectedSubGroupName}
                         selectedGroupId={selectedGroupId} selectedSubGroupId={selectedSubGroupId} setSearchInput={setSearchInput}
                         getListData={getListData} selectedStatus={values?.recordStatus} />
-
                 }
-
 
                 {isShowReport &&
                     <MasterReport title={"Drug Master"} column={columns} data={listData} filters={[

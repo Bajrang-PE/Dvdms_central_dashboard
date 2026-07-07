@@ -39,6 +39,7 @@ const DashHeader = () => {
 
     const logOut = () => {
         localStorage.clear();
+        sessionStorage.clear();
         Cookies.remove('csrfToken');
         navigate('/dvdms/');
     }

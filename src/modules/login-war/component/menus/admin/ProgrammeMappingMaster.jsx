@@ -5,6 +5,7 @@ import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction
 import InputSelect from '../../InputSelect';
 import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../utils/CommonFunction';
+import InputField from '../../InputField';
 
 const ProgrammeMappingMaster = () => {
     const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
@@ -17,6 +18,10 @@ const ProgrammeMappingMaster = () => {
     const [selectedSelected, setSelectedSelected] = useState([]);
     const [programmeNameList, setProgrammeNameList] = useState([]);
     const [initialMappedOptions, setInitialMappedOptions] = useState([]);
+
+    // Search filter
+    const [leftSearch, setLeftSearch] = useState("");
+    const [rightSearch, setRightSearch] = useState("");
 
 
     useEffect(() => {
@@ -195,6 +200,8 @@ const ProgrammeMappingMaster = () => {
         setSelectedAvailable([]);
         setSelectedOptions([]);
         setAvailableOptions([]);
+        setRightSearch('');
+        setLeftSearch('');
     }
 
     return (
@@ -218,7 +225,11 @@ const ProgrammeMappingMaster = () => {
                                     options={programmeNameList}
                                     className="aliceblue-bg border-dark-subtle"
                                     value={programmeId}
-                                    onChange={(e) => setProgrammeId(e.target.value)}
+                                    onChange={(e) => {
+                                        setProgrammeId(e.target.value);
+                                        setRightSearch('');
+                                        setLeftSearch('');
+                                    }}
                                 />
 
                             </div>
@@ -235,7 +246,11 @@ const ProgrammeMappingMaster = () => {
                                     options={stateNameDrpDt}
                                     className="aliceblue-bg border-dark-subtle"
                                     value={stateId}
-                                    onChange={(e) => setStateId(e.target.value)}
+                                    onChange={(e) => {
+                                        setStateId(e.target.value);
+                                        setRightSearch('');
+                                        setLeftSearch('');
+                                    }}
                                 />
                             </div>
                         </div>
@@ -251,7 +266,16 @@ const ProgrammeMappingMaster = () => {
                 </div>
 
                 <div className='d-flex justify-content-center mt-1 mb-2'>
-                    <div className='' style={{ width: "30%" }}>
+                    <div className='' style={{ width: "40%" }}>
+                        <div className="mb-1 position-relative">
+                            <InputField
+                                type="search"
+                                className="form-control form-control-sm aliceblue-bg border-dark-subtle"
+                                placeholder="🔍 Search..."
+                                value={leftSearch}
+                                onChange={(e) => setLeftSearch(e.target.value)}
+                            />
+                        </div>
                         <select
                             className="form-select form-select-sm aliceblue-bg border-dark-subtle"
                             size="8"
@@ -262,11 +286,20 @@ const ProgrammeMappingMaster = () => {
                                 setSelectedAvailable(selected);
                             }}
                         >
-                            {availableOptions?.length > 0 && availableOptions?.map(opt => (
+                            {/* {availableOptions?.length > 0 && availableOptions?.map(opt => (
                                 <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                 </option>
-                            ))}
+                            ))} */}
+
+                            {availableOptions
+                                ?.filter(opt => opt.label?.toLowerCase()?.includes(leftSearch?.toLowerCase()))
+                                ?.map((opt,index) => (
+                                    <option key={index+"bg"+opt?.value?.toString()} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))
+                            }
                         </select>
 
                     </div>
@@ -296,7 +329,16 @@ const ProgrammeMappingMaster = () => {
                         </div>
                     </div>
 
-                    <div className='' style={{ width: "30%" }}>
+                    <div className='' style={{ width: "40%" }}>
+                        <div className="mb-1 position-relative">
+                            <InputField
+                                type="search"
+                                className="form-control form-control-sm aliceblue-bg border-dark-subtle"
+                                placeholder="🔍 Search ..."
+                                value={rightSearch}
+                                onChange={(e) => setRightSearch(e.target.value)}
+                            />
+                        </div>
                         <select
                             className="form-select form-select-sm aliceblue-bg border-dark-subtle"
                             size="8"
@@ -308,11 +350,20 @@ const ProgrammeMappingMaster = () => {
                                 setSelectedSelected(selected);
                             }}
                         >
-                            {selectedOptions?.length > 0 && selectedOptions?.map(opt => (
+                            {/* {selectedOptions?.length > 0 && selectedOptions?.map(opt => (
                                 <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                 </option>
-                            ))}
+                            ))} */}
+
+                            {selectedOptions
+                                ?.filter(opt => opt?.label?.toLowerCase()?.includes(rightSearch?.toLowerCase()))
+                                ?.map((opt,index) => (
+                                    <option key={index+"bg"+opt?.value?.toString()} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))
+                            }
                         </select>
 
                     </div>

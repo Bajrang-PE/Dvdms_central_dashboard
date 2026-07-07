@@ -134,7 +134,7 @@ const TreeNode = ({
             return (
                 <a
                     href={node?.link}
-                    target={isExternal ? "_blank" : "_self"}
+                    target={isExternal ? "_self" : "_self"}
                     rel="noopener noreferrer"
                     className="tree-link"
                 >

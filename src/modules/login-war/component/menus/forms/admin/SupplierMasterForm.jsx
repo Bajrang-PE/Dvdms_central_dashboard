@@ -5,7 +5,7 @@ import { LoginContext } from '../../../../context/LoginContext';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchUpdateData, fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
 import InputField from '../../../InputField';
-import { getAuthUserData } from '../../../../../../utils/CommonFunction';
+import { getAuthUserData, isValidEmail } from '../../../../../../utils/CommonFunction';
 
 const SupplierMasterForm = (props) => {
     const { getListData, setSearchInput } = props;
@@ -92,9 +92,19 @@ const SupplierMasterForm = (props) => {
         if (!values?.contactNo || !values?.contactNo.trim()) {
             setErrors(prev => ({ ...prev, contactNoErr: "Please enter contact no " }));
             isValid = false;
+        } else if (String(values?.contactNo).trim()?.length < 10) {
+            setErrors(prev => ({ ...prev, contactNoErr: "Please enter 10 digit contact number" }));
+            isValid = false;
         }
+
         if (!values?.emailId.trim()) {
             setErrors(prev => ({ ...prev, emailIdErr: "Please enter email id " }));
+            isValid = false;
+        } else if (!isValidEmail(values.emailId)) {
+            setErrors(prev => ({
+                ...prev,
+                emailIdErr: "Please enter a valid email id"
+            }));
             isValid = false;
         }
         if (!values?.address.trim()) {
@@ -103,6 +113,9 @@ const SupplierMasterForm = (props) => {
         }
         if (!String(values?.pinCode).trim()) {
             setErrors(prev => ({ ...prev, pinCodeErr: "Please enter pincode " }));
+            isValid = false;
+        } else if (String(values?.pinCode).trim()?.length < 6) {
+            setErrors(prev => ({ ...prev, pinCodeErr: "Please enter a 6-digit PIN Code." }));
             isValid = false;
         }
         if (!String(values?.stateId).trim()) {
@@ -125,7 +138,6 @@ const SupplierMasterForm = (props) => {
             setErrors(prev => ({ ...prev, panNoErr: "Please enter pan no. " }));
             isValid = false;
         }
-
 
         if (isValid) {
             setShowConfirmSave(true)
@@ -276,6 +288,8 @@ const SupplierMasterForm = (props) => {
                             onChange={handleValueChange}
                             value={values?.contactNo}
                             errorMessage={errors?.contactNoErr}
+                            acceptType="number"
+                            maxLength={12}
                         />
                     </div>
                 </div>
@@ -292,6 +306,7 @@ const SupplierMasterForm = (props) => {
                             onChange={handleValueChange}
                             value={values?.emailId}
                             errorMessage={errors?.emailIdErr}
+                            isSpecialChrs
                         />
                     </div>
                 </div>
@@ -326,6 +341,7 @@ const SupplierMasterForm = (props) => {
                             onChange={handleValueChange}
                             value={values?.pinCode}
                             errorMessage={errors?.pinCodeErr}
+                            acceptType="number"
                         />
                     </div>
                 </div>

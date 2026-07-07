@@ -1,5 +1,5 @@
-import React from 'react'
-import { Modal } from 'react-bootstrap'
+import React, { useState } from 'react'
+import { Button, Modal } from 'react-bootstrap'
 import GlobalGraph from '../GlobalGraph'
 import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts';
@@ -14,58 +14,125 @@ const GraphModal = ({ data, onClose, widgetData }) => {
         '#FBC02D', '#8BC34A', '#FF5722', '#795548', '#607D8B'
     ];
 
+    const [chartType, setChartType] = useState('column');
+    const chartTypes = ['bar', 'line', 'pie', 'area', 'column', 'donut'];
+
+
     const options = {
+
         chart: {
-            type: 'column'
+            type: chartType === 'donut' ? "pie" : chartType,
+            animation: true,
+            height: 500
         },
         title: {
-            text: widgetData?.rptName
+            text: widgetData?.rptName || ''
         },
+        colors: colorList,
         xAxis: {
-            categories: categories,
+            categories,
             title: {
                 text: widgetData?.xAxisLabel
             },
             labels: {
-                rotation: -45,
-                step: 1
+                rotation: categories?.length > 7 ? -45 : 0,
+                style: {
+                    fontSize: '11px'
+                }
             }
         },
+
         yAxis: {
             min: 0,
             title: {
                 text: widgetData?.yAxisLabel
             }
         },
+
         legend: {
-            legend: {
-                enabled: true,
-                align: 'center',
-                verticalAlign: 'bottom',
-            },
+            enabled: false,
+            align: 'center',
+            verticalAlign: 'bottom'
         },
+
+        tooltip: {
+            shared: chartType !== 'pie',
+            pointFormat:
+                chartType === 'pie'
+                    ? '<b>{point.y}</b> ({point.percentage:.1f}%)'
+                    : '<b>{point.y}</b>'
+
+        },
+
         plotOptions: {
-            column: {
-                colorByPoint: true,
+            series: {
+                animation: true,
                 dataLabels: {
                     enabled: true,
-                    rotation: 90, 
-                    align: 'center',
-                    format: '{y}', 
+                    formatter() {
+                        if (chartType === 'pie') {
+                            return `${this.point.name}<br/>${this.y}`;
+                        }
+                        return this.y;
+                    },
                     style: {
                         fontSize: '10px',
                         fontWeight: 'bold',
-                        color: '#000'
+                        textOutline: 'none'
                     }
+                }
+            },
+            column: {
+                colorByPoint: true,
+                borderRadius: 5
+            },
+            bar: {
+                colorByPoint: true,
+                borderRadius: 5
+            },
+            line: {
+                marker: {
+                    enabled: true,
+                    radius: 4
+                }
+            },
+            area: {
+                fillOpacity: 0.35,
+                marker: {
+                    enabled: true,
+                    radius: 3
+                }
+            },
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                colorByPoint: true,
+                showInLegend: true,
+                innerSize: chartType === "donut" ? "65%" : 0,
+                dataLabels: {
+                    enabled: true,
+                    format:
+                        '<b>{point.name}</b><br>{point.percentage:.1f}%'
                 }
             }
         },
+
         series: [
-            {
-                name: widgetData?.yAxisLabel,
-                data: seriesData,
-                colors: colorList
-            }
+            chartType === 'pie'
+                ?
+                {
+                    name: widgetData?.yAxisLabel,
+                    data: data.map((item, index) => ({
+                        name: item.name,
+                        y: item.y,
+                        color: colorList[index % colorList.length]
+                    }))
+                }
+                :
+                {
+                    name: widgetData?.yAxisLabel,
+                    data: seriesData
+                }
         ],
         credits: {
             enabled: false
@@ -74,10 +141,32 @@ const GraphModal = ({ data, onClose, widgetData }) => {
 
     return (
         <div>
-            <Modal show={true} onHide={onClose} size='lg' className='' style={{paddingTop:"4rem"}}>
-                <Modal.Header closeButton className='p-2'></Modal.Header>
-                <b><h4 className='datatable-header mx-3 py-1 mt-1 px-1'>{widgetData?.rptDisplayName}</h4></b>
+            <Modal show={true} onHide={onClose} size='lg' className='' style={{ paddingTop: "4rem" }}>
+                <Modal.Header
+                    closeButton
+                    closeVariant="white"
+                    className='datatable-header'
+                >
+                    <Modal.Title>
+                        <b>{widgetData?.rptDisplayName}</b>
+                    </Modal.Title>
+                </Modal.Header>
+
+
                 <Modal.Body className='px-3 py-0'>
+                    <div className='btn-group btn-group-sm m-1'>
+                        {chartTypes.map(type => (
+
+                            <button
+                                key={type}
+                                className={`btn ${chartType === type ? 'btn-primary' : 'btn-outline-primary'}`}
+                                onClick={() => setChartType(type)}
+                            >
+                                {type.charAt(0).toUpperCase() + type.slice(1)}
+                            </button>
+
+                        ))}
+                    </div>
                     <HighchartsReact highcharts={Highcharts} options={options} />
                 </Modal.Body>
             </Modal>

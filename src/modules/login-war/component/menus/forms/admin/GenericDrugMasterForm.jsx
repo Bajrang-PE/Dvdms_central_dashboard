@@ -10,7 +10,7 @@ import { categoryOptions, vedOptions } from '../../../../localData/HomeData';
 
 const GenericDrugMasterForm = (props) => {
 
-    const { subGrpData, groupData, groupId, setSearchInput } = props;
+    const { subGrpData, groupData, groupId, setSearchInput, subGroupId } = props;
     const { openPage, selectedOption, setOpenPage, setSelectedOption, setShowConfirmSave, confirmSave, setConfirmSave, getGenericDrugListData, drugTypeDrpData, getDrugTypeDrpData } = useContext(LoginContext);
     const [recordStatus, setRecordStatus] = useState('1');
 
@@ -25,6 +25,12 @@ const GenericDrugMasterForm = (props) => {
         getDrugTypeDrpData()
     }, [])
 
+    useEffect(() => {
+        setValues({ ...values, "groupName": groupId, "subGroupName": subGroupId });
+    }, [groupId, subGroupId])
+
+    console.log('groupId', groupId)
+
     const handleInputChange = (e) => {
         const { name, value } = e?.target;
         const errName = name + "Err";
@@ -38,7 +44,7 @@ const GenericDrugMasterForm = (props) => {
         const val = {
             "gnumSeatId": getAuthUserData('userSeatId'),
             "cwhstrCentraldrugName": values?.drugname,
-            "cwhnumGroupId": groupId,
+            "cwhnumGroupId":values?.groupName ||  groupId,
             "cwhnumSubgroupId": values?.subGroupName,
             "cwhnumDrugTypeId": values?.drugtype,
             "cwhstrDrugCatCode": values?.categoryName,
@@ -49,7 +55,7 @@ const GenericDrugMasterForm = (props) => {
         fetchPostData(`/api/v1/saveDrug`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
-                getGenericDrugListData(groupId, values?.subGroupName, recordStatus);
+                getGenericDrugListData(values?.groupName, values?.subGroupName, recordStatus);
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
@@ -67,7 +73,7 @@ const GenericDrugMasterForm = (props) => {
             "cwhnumCentralDrugId": selectedOption[0]?.cwhnumCentralDrugId,
             "gnumSeatId": getAuthUserData('userSeatId'),
             "cwhstrCentraldrugName": values?.drugname,
-            "cwhnumGroupId": groupId,
+            "cwhnumGroupId":values?.groupName|| groupId,
             "cwhnumSubgroupId": values?.subGroupName,
             "cwhnumDrugTypeId": values?.drugtype,
             "cwhstrDrugCatCode": values?.categoryName,
@@ -78,7 +84,7 @@ const GenericDrugMasterForm = (props) => {
         fetchPostData(`/api/v1/updateDrug/${selectedOption[0]?.cwhnumCentralDrugId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
-                getGenericDrugListData(groupId, values?.subGroupName, recordStatus);
+                getGenericDrugListData(values?.groupName, values?.subGroupName, recordStatus);
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
@@ -92,7 +98,7 @@ const GenericDrugMasterForm = (props) => {
 
     const handleValidation = () => {
         let isValid = true;
-        if (!groupId?.trim()) {
+        if (!values?.groupName?.trim()) {
             setErrors(prev => ({ ...prev, "groupNameErr": "Group name is required" }));
             isValid = false;
         }
@@ -155,7 +161,8 @@ const GenericDrugMasterForm = (props) => {
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
                         <label className="col-sm-5 col-form-label fix-label required-label">Group Name : </label>
                         <div className="col-sm-7 align-content-center">
-                            <span style={{ color: "#013157" }}>{groupData?.filter(dt => dt?.value == groupId)[0]?.label || '---'}</span>
+                            <span style={{ color: "#013157" }}>
+                                {groupData?.filter(dt => dt?.value == values?.groupName)[0]?.label || '---'}</span>
                             {errors?.groupNameErr && (
                                 <div className="required-input">
                                     {errors?.groupNameErr}
@@ -223,6 +230,7 @@ const GenericDrugMasterForm = (props) => {
                                 value={values?.drugname}
                                 onChange={handleInputChange}
                                 errorMessage={errors?.drugnameErr}
+                                isSpecialChrs
                             />
                         </div>
                     </div>

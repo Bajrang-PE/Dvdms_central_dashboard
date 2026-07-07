@@ -22,6 +22,7 @@ const getCsrfToken = () => {
 
 const logout = () => {
     localStorage.clear();
+       sessionStorage.clear();
     Cookies.remove('csrfToken');
 };
 
@@ -75,9 +76,9 @@ export const fetchData = async (url, params) => {
             // return response?.data
         } else {
             const response = await apiLogin.get(url);
-            // console.log('response', response);
             // return response?.data
             const decryptedData = decryptAesOrRsa(response?.data);
+            console.log('response', decryptedData);
             return JSON.parse(decryptedData);
         }
     } catch (error) {

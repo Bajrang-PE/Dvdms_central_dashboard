@@ -56,11 +56,11 @@ const Functionalities = () => {
             </div>
 
             {/* Slider Indicators Bottom Center */}
-            <div className="d-flex justify-content-center align-items-center mt-4 container-dots-ui">
+            {/* <div className="d-flex justify-content-center align-items-center mt-4 container-dots-ui">
                 <span className="dot-ui active"></span>
                 <span className="dot-ui"></span>
                 <span className="dot-ui"></span>
-            </div>
+            </div> */}
         </div>
     )
 }

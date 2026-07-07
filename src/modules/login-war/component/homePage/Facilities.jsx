@@ -26,9 +26,9 @@ const Facilities = () => {
         'kpi-gradient-blue'
     ];
 
-    useEffect(() => {
-        if (widgetData?.length === 0) { getWidgetData(['813', '814', '815', '804']) }
-    }, [])
+    // useEffect(() => {
+    //     if (widgetData?.length === 0) { getWidgetData(['813', '814', '815', '804']) }
+    // }, [])
 
     useEffect(() => {
         if (widgetData?.length > 0) {

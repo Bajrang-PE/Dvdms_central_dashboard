@@ -16,13 +16,13 @@ const HmisFacilityMasterForm = (props) => {
     })
 
     const [values, setValues] = useState({
-        "stateId": "", "facilityType": "", "noOfFacility": "", "hmisDate": "", "facilityName": ""
+        "stateId": "", "facilityType": "", "noOfFacility": "", "hmisDate": new Date().toISOString().split('T')[0], "facilityName": ""
     })
 
     const [stateName, setStateName] = useState('');
 
     const {
-        selectedStateName, getListData
+        selectedStateName, getListData,convertToDateInputFormat
     } = props;
 
 
@@ -40,7 +40,6 @@ const HmisFacilityMasterForm = (props) => {
         }
     }, [selectedStateName])
 
-    console.log('selectedStateName', selectedStateName)
 
     const handleValueChange = (e) => {
         const { value, name } = e.target;
@@ -73,7 +72,9 @@ const HmisFacilityMasterForm = (props) => {
             console.log('data', data)
             if (data?.status === 1) {
                 ToastAlert("Data saved successfully", "success")
+                getListData(values.stateId,1)
                 refresh();
+
             } else {
                 ToastAlert(data?.message, "error")
                 setConfirmSave(false);
@@ -81,7 +82,6 @@ const HmisFacilityMasterForm = (props) => {
         })
     }
 
-    console.log('selectedOption', selectedOption)
     const updateHmisFacilityData = () => {
         const val = {
 
@@ -93,7 +93,8 @@ const HmisFacilityMasterForm = (props) => {
             "stateId": values?.stateId,
             "facilityTypeId": values?.facilityType,
             "noOfFacilities": parseInt(values?.noOfFacility),
-            "hmisDateRaw": values?.hmisDate
+            "hmisDateRaw": values?.hmisDate,
+            // "seatId": getAuthUserData('userSeatId')
 
         }
         console.log('val', val)
@@ -101,6 +102,7 @@ const HmisFacilityMasterForm = (props) => {
             console.log('data', data)
             if (data?.status === 1) {
                 ToastAlert("Data updated successfully", "success")
+                  getListData(values.stateId,1)
                 refresh();
             } else {
                 ToastAlert(data?.message, "error")
@@ -155,7 +157,7 @@ const HmisFacilityMasterForm = (props) => {
     }
 
     const reset = () => {
-        setValues({ "stateId": "", "facilityType": "", "noOfFacility": "", "hmisDate": "" });
+        setValues({ "stateId": "", "facilityType": "", "noOfFacility": "", "hmisDate": new Date().toISOString().split('T')[0] });
     }
 
     useEffect(() => {
@@ -166,7 +168,7 @@ const HmisFacilityMasterForm = (props) => {
                 "stateId": selectedOption[0]?.stateId,
                 "facilityType": selectedOption[0]?.facilityId,
                 "noOfFacility": selectedOption[0]?.noOfFacilities,
-                "hmisDate": selectedOption[0]?.hmisDate,
+                "hmisDate": convertToDateInputFormat(selectedOption[0]?.hmisDate),
                 "facilityName": selectedOption[0]?.facilityName
             });
 
@@ -176,6 +178,8 @@ const HmisFacilityMasterForm = (props) => {
         }
 
     }, [selectedOption, openPage])
+
+    console.log('selectedOption', selectedOption)
 
 
     return (

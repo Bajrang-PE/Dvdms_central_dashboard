@@ -127,4 +127,8 @@ export const validateInput = (input) => {
   return true; // valid
 };
 
+export const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email?.trim());
+};
+
 
