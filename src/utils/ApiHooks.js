@@ -22,7 +22,7 @@ const getCsrfToken = () => {
 
 const logout = () => {
     localStorage.clear();
-       sessionStorage.clear();
+    sessionStorage.clear();
     Cookies.remove('csrfToken');
 };
 
@@ -45,19 +45,77 @@ apiLogin.interceptors.request.use(
 apiLogin.interceptors.response.use(
     async (response) => {
         if (response?.data?.status && response?.data?.status === 401) {
-            ToastAlert('Session expired. Please log in again.', 'error');
+            ToastAlert(
+                "Your session has expired. Please sign in again to continue.",
+                "error"
+            );
             logout();
             window.location.href = "/dvdms/session-expired";
+            return Promise.reject(response);
         } else {
             return response;
         }
     },
     async (error) => {
+        // Request was cancelled
+        if (error.code === "ERR_CANCELED") {
+            return Promise.reject(error);
+        }
+
+        // No response from server (Network issue)
+        if (!error.response) {
+            ToastAlert(
+                "Unable to connect to the server. Please check your internet connection or try again later.",
+                "error"
+            );
+            return Promise.reject(error);
+        }
+
         if (error.response) {
             const { status, data } = error.response;
-            if (status === 401 || status === 403) {
-                // Token is expired or unauthorized
-                ToastAlert(data?.error ? data?.error : "Origin not allowed!", 'error');
+            // if (status === 401) {
+            //     // Token is expired or unauthorized
+            //     ToastAlert(data?.error ? data?.error : "Your session has expired or you are not authenticated. Please sign in again.", 'error');
+            // } else if (status === 403) {
+            //     ToastAlert(data?.error ? data?.error : "You do not have permission to perform this action.", 'error');
+            // }
+            switch (status) {
+                case 401:
+                    ToastAlert(
+                        "Your session has expired or you are not authenticated. Please sign in again.",
+                        "error"
+                    );
+                    break;
+
+                case 403:
+                    ToastAlert(
+                        data?.message ||
+                        data?.error ||
+                        "You do not have permission to perform this action.",
+                        "error"
+                    );
+                    break;
+
+                case 502:
+                    ToastAlert(
+                        "The server is temporarily unavailable. Please try again shortly.",
+                        "error"
+                    );
+                    break;
+
+                case 503:
+                    ToastAlert(
+                        "The service is currently under maintenance. Please try again later.",
+                        "error"
+                    );
+                    break;
+
+                case 504:
+                    ToastAlert(
+                        "The server took too long to respond. Please try again.",
+                        "error"
+                    );
+                    break;
             }
         }
         // Return the error to allow further handling
@@ -78,7 +136,7 @@ export const fetchData = async (url, params) => {
             const response = await apiLogin.get(url);
             // return response?.data
             const decryptedData = decryptAesOrRsa(response?.data);
-            console.log('response', decryptedData);
+            // console.log('response', decryptedData);
             return JSON.parse(decryptedData);
         }
     } catch (error) {
@@ -183,3 +241,14 @@ export const fetchBlobData = async (url, params = null) => {
 
     }
 };
+
+//API FUNCTION TO FETCH DATA
+export const fetchDataUnEnc = async (url, params) => {
+    try {
+        const response = await apiLogin.get(url);
+        return response?.data
+    } catch (error) {
+        console.error('API Error:', error);
+    }
+};
+

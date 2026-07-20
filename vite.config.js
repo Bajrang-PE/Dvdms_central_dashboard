@@ -15,10 +15,18 @@ export default defineConfig({
         secure: false,
       },
       '/hisutils': {
-        target: 'http://10.226.17.6:8024',
+        target: 'http://10.226.28.223:8024',
         changeOrigin: true,
         secure: false,
-      }
+      },
+      // '/db/': {
+      //   target: 'http://cms.cdac.in/',
+      //   changeOrigin: true,
+      //   secure: false,
+      // }
     }
-  }
+  },
+  worker: {
+    format: "es",
+  },
 })

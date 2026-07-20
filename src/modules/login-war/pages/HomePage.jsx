@@ -155,49 +155,135 @@ const HomePage = () => {
 
                 {/* --- PART 1: TOP WHITE COUNTER STRIP --- */}
                 <div className="top-counter-ribbon mb-4">
+
                     <div className="counter-item">
+
                         <div className="counter-icon"><i className="fas fa-laptop-code"></i></div>
+
                         <div className="counter-info">
-                            <h3>13750</h3>
-                            <p>Online Services</p>
+
+                            <h3>612</h3>
+
+                            <p>Warehouses</p>
+
                         </div>
+
                     </div>
+
                     <div className="counter-item">
+
                         <div className="counter-icon"><i className="fas fa-university"></i></div>
+
                         <div className="counter-info">
-                            <h3>5399</h3>
-                            <p>Govt. Schemes</p>
+
+                            <h3>680</h3>
+
+                            <p>District Hospitals</p>
+
                         </div>
+
                     </div>
+
                     <div className="counter-item">
+
                         <div className="counter-icon"><i className="fas fa-users"></i></div>
+
                         <div className="counter-info">
-                            <h3>5497</h3>
-                            <p>Citizen Engagements</p>
+
+                            <h3>434</h3>
+
+                            <p>Medical Colleges</p>
+
                         </div>
+
                     </div>
+
                     <div className="counter-item">
+
                         <div className="counter-icon"><i className="fas fa-map-marked-alt"></i></div>
+
                         <div className="counter-info">
-                            <h3>3988</h3>
-                            <p>Tourist Places</p>
+
+                            <h3>213</h3>
+
+                            <p>Urban Community Health Centres</p>
+
                         </div>
+
                     </div>
+
                     <div className="counter-item">
+
                         <div className="counter-icon"><i className="fas fa-box-open"></i></div>
+
                         <div className="counter-info">
-                            <h3>1207</h3>
-                            <p>ODOP Products</p>
+
+                            <h3>6098</h3>
+
+                            <p>Community Health Centres</p>
+
                         </div>
+
                     </div>
+
                     <div className="counter-item">
+
                         <div className="counter-icon"><i className="fas fa-th-list"></i></div>
+
                         <div className="counter-info">
-                            <h3>18</h3>
-                            <p>Information Categories</p>
+
+                            <h3>4447</h3>
+
+                            <p>Urban Primary Health Centres</p>
+
                         </div>
+
                     </div>
+
+                    <div className="counter-item">
+
+                        <div className="counter-icon"><i className="fas fa-laptop-code"></i></div>
+
+                        <div className="counter-info">
+
+                            <h3>1161</h3>
+
+                            <p>Sub District Hospitals</p>
+
+                        </div>
+
+                    </div>
+
+                    <div className="counter-item">
+
+                        <div className="counter-icon"><i className="fas fa-university"></i></div>
+
+                        <div className="counter-info">
+
+                            <h3>26162</h3>
+
+                            <p>AAM PHC</p>
+
+                        </div>
+
+                    </div>
+
+                    <div className="counter-item">
+
+                        <div className="counter-icon"><i className="fas fa-users"></i></div>
+
+                        <div className="counter-info">
+
+                            <h3>132959</h3>
+
+                            <p>AAM SHC</p>
+
+                        </div>
+
+                    </div>
+
                 </div>
+
 
                 {/* --- SPLIT SCREEN SECTION (ADVANCED SLANTED LAYOUT) --- */}
                 <div className="row no-gutters unified-dashboard-box match-height-row">
@@ -277,12 +363,12 @@ const HomePage = () => {
                 </div>
             }
 
-            <div className="bottom-ticker-container">
+            {/* <div className="bottom-ticker-container">
                 <div className="bottom-ticker-text">
                     dvdms.in has been migrated to MoHFW subdomain. Kindly use dvdms.mohfw.gov.in for accessing Central Dashboard. Stockout details for IPHS Drugs are in progress. Meeting link for Diagnostics & Reagents daily @3:00 P.M. onwards:
                     <a href="https://meet.google.com/ckr-jjdk-qev" target="_blank" rel="noreferrer" className="highlight-link">https://meet.google.com/ckr-jjdk-qev</a>
                 </div>
-            </div>
+            </div> */}
 
             {showCmsLogin &&
                 <CmsLogin isShow={showCmsLogin} onClose={onCloseModal} setShowForgotPass={setShowForgotPass} />

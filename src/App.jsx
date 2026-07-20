@@ -19,7 +19,7 @@ function App() {
 
   return (
     <>
-      <Router>
+      {/* <Router> */}
         <Suspense fallback={<Loader />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -33,7 +33,7 @@ function App() {
           <ToastContainer />
           <ConfirmBoxLogin />
         </Suspense>
-      </Router>
+      {/* </Router> */}
     </>
   )
 }

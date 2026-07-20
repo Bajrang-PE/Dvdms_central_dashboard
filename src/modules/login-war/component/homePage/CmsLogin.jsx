@@ -81,7 +81,6 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                 "captchaToken": captchaToken
             }
             fetchPostData("/api/v1/auth/login", val).then(data => {
-                console.log('data', data)
                 if (data?.status === 1) {
                     ToastAlert("Login successful", 'success')
                     const { gnumUserSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode, gnumUserId } = data?.data;
@@ -195,7 +194,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
 
                         <div className="ps-0 align-content-center mx-3 my-1">
                             <img className='border-warning border rounded m-1 w-75' src={captchaImage} alt="captcha" />
-                            <button className='btn btn-primary btn-sm' onClick={() => { fetchCaptchaData() }}> <i className="fa fa-refresh" style={{ color: "#FBC02D" }}></i></button>
+                            <button type='button' className='btn btn-primary btn-sm' onClick={() => { fetchCaptchaData() }}> <i className="fa fa-refresh" style={{ color: "#FBC02D" }}></i></button>
                         </div>
                         <div className="ps-0 align-content-center mx-3 my-1">
                             <input

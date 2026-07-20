@@ -66,7 +66,6 @@ export const DrugMappingAssistantMaster = () => {
             setSelectAll(false);
         });
     };
-    console.log('mappingData', mappingData)
 
     const handleRowSelection = (row) => {
 
@@ -122,11 +121,9 @@ export const DrugMappingAssistantMaster = () => {
             cwhnumIsEdl: row.cwhnumIsEdl
         }));
 
-        console.log("Mapping Payload", payload);
 
         fetchPostData("/api/v1/drug-mapping-assistant/map", payload)
             .then(data => {
-                console.log('data', data)
                 if (data) {
 
                     ToastAlert(
@@ -159,7 +156,6 @@ export const DrugMappingAssistantMaster = () => {
         }
     }
 
-    console.log('selectedRows', selectedRows)
     const columns = [
         {
             name: (

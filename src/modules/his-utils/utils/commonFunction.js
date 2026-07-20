@@ -1,0 +1,715 @@
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { fetchPostData, fetchPostDataBlob } from '../../../utils/HisApiHooks';
+import { useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+
+//FUNCTION TO MANAGE GLOBAL ALERTS
+export const ToastAlert = (message, type) => {
+  toast(message, {
+    position: "top-center",
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    type: type
+  });
+}
+
+//FUNCTION TO TRANSFORM DATA ACCORDING TO DROPDOWN - TWO COLUMNS
+export const DrpDataValLab = (data, col1, col2, isJson) => {
+  if (isJson) {
+    const result = data?.map((item) => ({
+      value: item?.jsonData?.[col1] || "",
+      label: item?.jsonData?.[col2] || "",
+    }));
+    return result;
+  } else {
+    const result = data?.map((item) =>
+      ({ value: item[col1], label: item[col2] })
+    )
+    return result
+  }
+}
+
+//FUNCTION TO TRANSFORM DATA ACCORDING TO DROPDOWN - THREE COLUMNS
+export const ThreeColDrpData = (data, col1, col2, col3) => {
+  const result = data?.map((item) =>
+    ({ value: item[col1], label: item[col2], filterID: item[col3] })
+  )
+  return result
+}
+
+export const convertToISODate = (dateStr) => {
+
+  if (!dateStr) return "";
+  const months = {
+    JAN: "01", FEB: "02", MAR: "03", APR: "04", MAY: "05", JUN: "06",
+    JUL: "07", AUG: "08", SEP: "09", OCT: "10", NOV: "11", DEC: "12"
+  };
+
+  const [day, month, year] = dateStr.split("-");
+  const formattedYear = year?.length === 2 ? `20${year}` : year;
+  const formattedMonth = months[month?.toUpperCase()];
+
+  return `${formattedYear}-${formattedMonth}-${day}`;
+};
+
+export const fetchQueryData = async (queryVO = [], jndiServer, params, pkColumn, isGlobal, setJndiName, pageNo, datasize, download, fileType) => {
+
+  if (!Array.isArray(queryVO) || queryVO.length === 0) {
+    console.error("Invalid or empty queryVO array provided.");
+    return [];
+  }
+
+  try {
+    const query = queryVO[0]?.mainQuery;
+    if (!query) {
+      console.error("No valid query found in queryVO.");
+      return [];
+    }
+
+    // const popupIds = [...query?.matchAll(/#(PK\d+)#/gi)]?.map(match => match[1]);
+    const popupIds = [
+      ...new Set([...query.matchAll(/#(PK\d+)#/gi)].map(match => match[1]))
+    ];
+    // const uniqueIds = 
+    const popupIdStr = popupIds?.join(",");
+
+
+    const requestBody = {
+      query,
+      params: {},
+      jndi: jndiServer,
+      strGroupParaId: params?.strGroupParaId,
+      strGroupParaValue: params?.strGroupParaValue,
+      popupId: popupIdStr ? popupIdStr : "",
+      popupValue: pkColumn ? pkColumn?.toString() : "",
+      // page: parseInt(pageNo),
+      // size: parseInt(datasize),
+      download: true,
+      // fileType: fileType ? fileType : ""
+
+      // popupValue: "99929068@99929068"
+    };
+    const response = await fetchPostData(`/hisutils/GenericApiQry?isGlobal=${isGlobal || 0}`, requestBody);
+    console.log(requestBody, response);
+
+    if (response?.status === 1) {
+      if (setJndiName) {
+        setJndiName(response?.jndi);
+      }
+      return response?.data || [];
+    } else {
+      return [];
+    }
+
+  } catch (error) {
+    console.error("Error fetching query data:", error);
+    return [];
+  }
+};
+export const fetchQueryDataDownload = async (queryVO = [], jndiServer, params, pkColumn, isGlobal, setJndiName, pageNo, datasize, download, fileType) => {
+
+  if (!Array.isArray(queryVO) || queryVO.length === 0) {
+    console.error("Invalid or empty queryVO array provided.");
+    return [];
+  }
+
+  try {
+    const query = queryVO[0]?.mainQuery;
+    if (!query) {
+      console.error("No valid query found in queryVO.");
+      return [];
+    }
+
+    // const popupIds = [...query?.matchAll(/#(PK\d+)#/gi)]?.map(match => match[1]);
+    const popupIds = [
+      ...new Set([...query.matchAll(/#(PK\d+)#/gi)].map(match => match[1]))
+    ];
+    // const uniqueIds = 
+    const popupIdStr = popupIds?.join(",");
+
+
+    const requestBody = {
+      query,
+      params: {},
+      jndi: jndiServer || "1",
+      strGroupParaId: params?.strGroupParaId,
+      strGroupParaValue: params?.strGroupParaValue,
+      popupId: popupIdStr ? popupIdStr : "",
+      popupValue: pkColumn ? pkColumn?.toString() : "",
+      page: parseInt(pageNo),
+      ...(datasize ? {
+        size: parseInt(datasize),
+      } : {}),
+      download: download ? download : false,
+      fileType: fileType ? fileType : ""
+
+      // popupValue: "99929068@99929068"
+    };
+    const response = await fetchPostDataBlob(`/hisutils/GenericApiQryDownload?isGlobal=${isGlobal || 0}`, requestBody, { responseType: 'blob' });
+    console.log(requestBody, response);
+
+    if (response?.data) {
+      return response?.data || [];
+    } else {
+      return null;
+    }
+
+  } catch (error) {
+    console.error("Error fetching query data:", error);
+    return [];
+  }
+};
+
+export const fetchProcedureData = async (procedure, params, jndiServer, signal = null, isGlobal, setJndiName) => {
+  if (!procedure) {
+    return [];
+  }
+
+  try {
+    const requestBody = {
+      "procedureName": procedure,
+      "parameters": params,
+      "jndi": jndiServer
+    };
+    const response = await fetchPostData(`/hisutils/procedures/execute?isGlobal=${isGlobal || 0}`, requestBody, null, signal);
+    console.log(requestBody, response)
+    if (setJndiName) {
+      setJndiName(response?.jndi);
+    }
+    return response?.data || [];
+  } catch (error) {
+    console.error("Error fetching query data:", error);
+    return [];
+  }
+};
+
+export const fetchLogoAsBase64 = async (url) => {
+  const response = await fetch(url);
+  const blob = await response.blob();
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
+
+
+export const fetchLocalLogoAsBase64 = (filePath) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = filePath;
+    img.crossOrigin = 'anonymous';
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      const base64String = canvas.toDataURL('image/jpeg').split(',')[1];
+      resolve(base64String);
+    };
+
+    img.onerror = (err) => reject(`Failed to load image: ${err.message}`);
+  });
+};
+
+
+// export const formatParams = (allParams, widgetId) => {
+//   const tabParams = allParams?.tabParams || {};
+//   const widgetSpecificParams = allParams?.widgetParams?.[widgetId] || {};
+
+//   const combinedParams = {
+//     ...tabParams,
+//     ...widgetSpecificParams
+//   };
+
+//   if (typeof combinedParams !== 'object' || combinedParams === null || Array.isArray(combinedParams)) {
+//     return {
+//       paramsId: "",
+//       paramsValue: ""
+//     };
+//   }
+//   return {
+//     paramsId: Object.keys(combinedParams).join(','),
+//     paramsValue: Object.values(combinedParams).join(',')
+//   };
+// };
+
+export const formatParams = (allParams, widgetId, tabPrms) => {
+
+  const tabParams = allParams?.tabParams || {};
+  const widgetSpecificParams = allParams?.widgetParams?.[widgetId] || {};
+
+  const combinedParams = {
+    ...tabParams,
+    ...widgetSpecificParams
+  };
+
+  if (!combinedParams || typeof combinedParams !== 'object') {
+    return { paramsId: "", paramsValue: "" };
+  }
+
+  const ids = [];
+  const values = [];
+
+  // Track keys we have already processed to prevent duplicates and find leftovers
+  const seenKeys = new Set();
+
+  // 1. First, add params in the strict order of tabPrms
+  if (Array.isArray(tabPrms)) {
+    tabPrms.forEach(prm => {
+      const idStr = String(prm.id);
+      if (idStr in combinedParams) {
+        ids.push(idStr);
+        values.push(combinedParams[idStr]);
+        seenKeys.add(idStr);
+      }
+    });
+  }
+
+  // 2. Next, append any extra IDs found in combinedParams (like unique widgetParams)
+  Object.keys(combinedParams).forEach(key => {
+    if (!seenKeys.has(key)) {
+      ids.push(key);
+      values.push(combinedParams[key]);
+    }
+  });
+
+  return {
+    paramsId: ids.join(','),
+    paramsValue: values.join(',')
+  };
+};
+
+export const getOrderedParamValues = (query, paramsValues, widgetId) => {
+  const paramVal = formatParams(paramsValues ? paramsValues : null, widgetId || '');
+  const paramOrder = [];
+  const regex = /#PARA#(\d+)#PARA#/g;
+  let match;
+  while ((match = regex.exec(query)) !== null) {
+    // paramOrder.push(match[1]);
+    const id = match[1];
+    if (!paramOrder.includes(id)) {
+      paramOrder.push(id); // Add only if not already included
+    }
+  }
+
+  const idToValue = {};
+  const ids = paramVal?.paramsId.split(',');
+  const values = paramVal?.paramsValue.split(',');
+
+  ids.forEach((id, index) => {
+    idToValue[id] = values[index];
+  });
+
+  const filteredIds = [];
+  const filteredValues = [];
+
+  paramOrder.forEach((id) => {
+    if (idToValue.hasOwnProperty(id)) {
+      filteredIds.push(id);
+      filteredValues.push(idToValue[id]);
+    }
+  });
+
+
+  return {
+    strGroupParaId: filteredIds.join(','),
+    strGroupParaValue: filteredValues.join(',')
+  };
+};
+
+
+export const formatDate1 = (isoDate) => {
+  const dateObject = new Date(isoDate);
+  // dateObject.setUTCHours(dateObject.getUTCHours() + dateObject.getTimezoneOffset() / 60);
+
+  const day = dateObject.getUTCDate().toString().padStart(2, '0');
+  const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dateObject.getUTCMonth()];
+  const year = dateObject.getUTCFullYear();
+  return `${day}-${month}-${year?.toString()?.slice(-2)}`;
+}
+
+export const formatDateFullYear = (isoDate) => {
+  const dateObject = new Date(isoDate);
+  // dateObject.setUTCHours(dateObject.getUTCHours() + dateObject.getTimezoneOffset() / 60);
+
+  const day = dateObject.getUTCDate().toString().padStart(2, '0');
+  const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dateObject.getUTCMonth()];
+  const year = dateObject.getUTCFullYear();
+  return `${day}-${month}-${year}`;
+}
+
+export const extractAllPageText = (config = {}) => {
+  const {
+    includeTags: userIncludeTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'label', 'span', 'button', 'a', 'li', 'th'],
+    excludeTags: userExcludeTags = [],
+    excludeClasses: userExcludeClasses = [],
+    includeClasses: userIncludeClasses = ['card-header-count', 'apexcharts-title-text', 'apexcharts-text', 'rdt_TableCol']
+  } = config;
+
+  const texts = new Set();
+
+  const strictExcludeTags = new Set([
+    'script', 'style', 'noscript', 'input', 'textarea', 'select', 'option', 'td',
+    'canvas', 'svg',
+  ]);
+  userExcludeTags.forEach(tag => strictExcludeTags.add(tag.toLowerCase()));
+
+
+  const includeTagsSet = new Set(userIncludeTags.map(tag => tag.toLowerCase()));
+  const excludeClassesSet = new Set(userExcludeClasses);
+  const includeClassesSet = new Set(userIncludeClasses);
+
+  const walker = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_TEXT,
+    null,
+    false
+  );
+
+  let node;
+  while ((node = walker.nextNode())) {
+    // Ensure the text node has a parent element
+    const parentElement = node.parentElement;
+    if (!parentElement) {
+      continue;
+    }
+
+    const tagName = parentElement.tagName.toLowerCase();
+    const parentClassList = Array.from(parentElement.classList);
+
+    if (strictExcludeTags.has(tagName)) {
+      continue;
+    }
+
+    let isExcludedByClass = false;
+    let currentAncestor = parentElement;
+    while (currentAncestor && currentAncestor !== document.body) {
+      if (excludeClassesSet.size > 0 && Array.from(currentAncestor.classList).some(cls => excludeClassesSet.has(cls))) {
+        isExcludedByClass = true;
+        break;
+      }
+      currentAncestor = currentAncestor.parentElement;
+    }
+    if (isExcludedByClass) {
+      continue;
+    }
+
+    let shouldInclude = false;
+    if (includeTagsSet.has(tagName) || includeClassesSet.size > 0 && parentClassList.some(cls => includeClassesSet.has(cls))) {
+      shouldInclude = true;
+    }
+
+    if (shouldInclude) {
+      const text = node.textContent.trim();
+      if (text && text.length > 1) {
+        texts.add(text);
+      }
+    }
+  }
+
+  return Array.from(texts);
+};
+
+// Sanitizer with whitelist + escape rules
+export const sanitizeInput = (val, isSpecialChrs = false) => {
+  if (val == null) return val;
+  let clean = String(val);
+
+  // If special characters are allowed → skip sanitization
+  if (isSpecialChrs) {
+    return clean;
+  }
+
+  // Remove HTML tags completely
+  clean = clean.replace(/<[^>]*>/g, "");
+
+  //remove from starting
+  // clean = clean.replace(/^[=+\-@]+/, "");
+
+  //remove from everywhere
+  clean = clean.replace(/[=+\-@]/g, "");
+
+  return clean;
+};
+
+
+// Validator to enforce whitelist rules
+export const validateInput = (input) => {
+  if (input == null) return true;
+
+  const htmlPattern = /<[^>]*>/g;       // HTML not allowed
+  const dangerousPattern = /^[=+\-@]+/;  // invalid if starts with =,+,-,@
+
+  if (htmlPattern.test(input) || dangerousPattern.test(input)) {
+    return false; // invalid
+  }
+
+  return true; // valid
+};
+
+export const useImageWithFallback = (imageName) => {
+  const [src, setSrc] = useState('');
+
+  useEffect(() => {
+    const imageUrl = new URL(`../../../assets/icon_images/${imageName}`, import.meta.url).href;
+    const defaultUrl = new URL(`../../../assets/default-icon.png`, import.meta.url).href;
+
+    const img = new Image();
+    img.src = imageUrl;
+    img.onload = () => setSrc(imageUrl);
+    img.onerror = () => setSrc(defaultUrl);
+  }, [imageName]);
+
+  return src;
+};
+
+export const getWidgetParametersOnly = (widgetParams, paramsValues, widgetId, allDrpDtParams, levelData = []) => {
+  let widgetOnlyParams = [...widgetParams];
+
+  // Get all relevant widget IDs (current + parents from levelData)
+  const relevantWidgetIds = [widgetId];
+  levelData.forEach(level => {
+    if (level.rptId && level.rptId !== widgetId) {
+      relevantWidgetIds.push(level.rptId);
+    }
+  });
+
+  return widgetOnlyParams?.map(param => {
+    let widgetValue = null;
+    let sourceWidgetId = null;
+
+    // Look for parameter value in current widget and parent widgets
+    for (const id of relevantWidgetIds) {
+      widgetValue = paramsValues?.widgetParams?.[id]?.[param?.id] || null;
+      if (widgetValue !== null) {
+        sourceWidgetId = id;
+        break;
+      }
+    }
+
+    const valOptions = allDrpDtParams?.[param?.paraName] || [];
+    const matchedOption = valOptions.find(dt => dt?.optionValue == widgetValue);
+
+    return {
+      ...param,
+      value: widgetValue,
+      val: matchedOption
+        ? matchedOption.optionText
+        : widgetValue == "%" ? "All" : widgetValue,
+      rptid: sourceWidgetId || widgetId
+    };
+  }).filter(param => param.value !== null);
+};
+
+export const backToParentWidget = (id, levelData, currentLevel, presentWidgets, setCurrentLevel, setPkColumn, setLevelData, setWidgetData, widgetId) => {
+  if (levelData?.length > 1 && currentLevel !== 0) {
+    let targetLevel = null;
+    let widgetDetail = null;
+    let pkClm = '';
+    const currentWidId = levelData.find(dt => dt.rptLevel === currentLevel);
+
+    if (id) {
+      const targetItem = levelData.find(dt => dt.rptId === id);
+      pkClm = targetItem?.pkclm
+      if (targetItem) {
+        targetLevel = targetItem.rptLevel;
+        widgetDetail = presentWidgets?.find(dt => dt?.rptId == id);
+      }
+    } else {
+      targetLevel = currentLevel - 1;
+      const parentItem = levelData.find(dt => dt.rptLevel === targetLevel);
+      pkClm = parentItem?.pkclm
+      widgetDetail = presentWidgets?.find(dt => dt?.rptId == parentItem?.rptId);
+    }
+
+    if (widgetDetail && targetLevel !== null && widgetId == currentWidId?.rptId) {
+      setCurrentLevel(targetLevel);
+      setPkColumn(pkClm)
+      const restLevels = levelData.filter(dt => dt.rptLevel <= targetLevel);
+      setLevelData(restLevels);
+      setWidgetData(widgetDetail);
+    }
+  }
+}
+
+export const getDisplayQuery = (
+  query = "",
+  pkColumn = "",
+  paramsValues = {},
+  widgetId
+) => {
+
+  let updatedQuery = query;
+
+  // Replace PK values
+  const pkValues = String(pkColumn || "").split("@");
+
+  updatedQuery = updatedQuery.replace(
+    /#PK(\d+)#/g,
+    (_, index) => {
+      return pkValues[Number(index)] ?? `${pkValues[Number(index)]}`;
+    }
+  );
+
+  // Merge all params
+  const allParams = {
+    ...(paramsValues?.tabParams || {}),
+    ...(paramsValues?.widgetParams?.[widgetId] || {})
+  };
+
+  updatedQuery = updatedQuery.replace(
+    /#PARA#(\d+)#PARA#/g,
+    (_, paramId) => {
+      return allParams[paramId] ?? `${allParams[paramId]}`;
+    }
+  );
+
+  return updatedQuery;
+};
+
+// utils/colorGenerator.js
+
+export const generatePalette = (hex, total) => {
+
+  hex = hex.replace("#", "");
+
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+
+  let h, s;
+  let l = (max + min) / 510;
+
+  if (max === min) {
+    h = s = 0;
+  } else {
+
+    const d = max - min;
+
+    s = l > 0.5
+      ? d / (510 - max - min)
+      : d / (max + min);
+
+    switch (max) {
+
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+
+      case g:
+        h = (b - r) / d + 2;
+        break;
+
+      default:
+        h = (r - g) / d + 4;
+    }
+
+    h /= 6;
+  }
+
+  const colors = [];
+
+  for (let i = 0; i < total; i++) {
+
+    const lightness = 0.22 + ((i / (total - 1)) * 0.58);
+
+    colors.push(
+      hslToHex(
+        h * 360,
+        Math.max(0.55, s),
+        lightness
+      )
+    );
+  }
+
+  return colors;
+};
+
+function hslToHex(h, s, l) {
+
+  s = Math.max(0, Math.min(1, s));
+
+  l = Math.max(0, Math.min(1, l));
+
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+
+  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+
+  const m = l - c / 2;
+
+  let r = 0, g = 0, b = 0;
+
+  if (h < 60) [r, g, b] = [c, x, 0];
+  else if (h < 120) [r, g, b] = [x, c, 0];
+  else if (h < 180) [r, g, b] = [0, c, x];
+  else if (h < 240) [r, g, b] = [0, x, c];
+  else if (h < 300) [r, g, b] = [x, 0, c];
+  else[r, g, b] = [c, 0, x];
+
+  return "#" + [r, g, b]
+    .map(v =>
+      Math.round((v + m) * 255)
+        .toString(16)
+        .padStart(2, "0")
+    )
+    .join("");
+}
+
+
+const replaceQueryParams = (query, params = {}) => {
+  if (!query) return query;
+
+  return query.replace(/#PARA#(\d+)#PARA#/g, (match, paraId) => {
+    return params.hasOwnProperty(paraId)
+      ? params[paraId]
+      : -1;
+  });
+};
+
+
+
+export const fetchQueryDataPreview = async (queryVO, params) => {
+  try {
+    if (!queryVO) {
+      console.error("No valid query found in queryVO.");
+      return [];
+    }
+
+    // 🔹 Replace PARA values in query
+    const updatedQuery = replaceQueryParams(queryVO, params);
+
+    const requestBody = {
+      query: updatedQuery,
+      params: {},
+      jndi: '',
+      strGroupParaId: params?.strGroupParaId,
+      strGroupParaValue: params?.strGroupParaValue,
+      popupId: "",
+      popupValue: "",
+          download: true,
+    };
+
+    const response = await fetchPostData(`/hisutils/GenericApiQry`, requestBody);
+    return response
+
+  } catch (error) {
+    console.error("Error fetching query data:", error);
+    return [];
+  }
+};

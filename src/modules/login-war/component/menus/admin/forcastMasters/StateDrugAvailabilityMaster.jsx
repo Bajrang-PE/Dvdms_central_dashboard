@@ -5,24 +5,43 @@ import { capitalizeFirstLetter, ToastAlert } from "../../../../utils/CommonFunct
 import "./StateDrugAvailabilityMaster.css";
 import GlobalTableModal from "../../TableModal";
 import { LoginContext } from "../../../../context/LoginContext";
-import { fetchData } from "../../../../../../utils/ApiHooks";
+import { fetchData, fetchDataUnEnc } from "../../../../../../utils/ApiHooks";
 import MasterReport from "../../../MasterReport";
+import SpinLoader from "../../../Spinner";
+import DatePicker from "react-datepicker";
+import InputDrpSelect from "../../../InputDrpSelect";
 
 const StateDrugAvailabilityMaster = () => {
 
-    const { getSteteNameDrpData, stateNameDrpDt, openPage, setOpenPage, isShowReport } = useContext(LoginContext)
+    const { getSteteNameDrpData, stateNameDrpDt, openPage, setOpenPage, isShowReport } = useContext(LoginContext);
 
     const [searchInput, setSearchInput] = useState("");
-    const [selectedState, setSelectedState] = useState("12");
+    const [selectedState, setSelectedState] = useState("");
     const [selectedYear, setSelectedYear] = useState("");
+    const [startYear, setStartYear] = useState(new Date(2020, 0, 1));
+    const [endYear, setEndYear] = useState(new Date());
+    const [yearCount, setYearCount] = useState("");
     const [selectedDrug, setSelectedDrug] = useState("");
     const [yearSummary, setYearSummary] = useState([]);
     const [drugList, setDrugList] = useState([]);
     const [facilityList, setFacilityList] = useState([]);
     const [filterData, setFilterData] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [facilityLoading, setFacilityLoading] = useState(false);
 
     const [viewDrugList, setViewDrugList] = useState(false);
     const [drugCountData, setDrugCountData] = useState([]);
+    const currentYear = new Date().getFullYear();
+
+    const yearCountList = [
+        { value: 1, label: "For One Year" },
+        { value: 2, label: "For Two Year" },
+        { value: 3, label: "For Three Year" },
+        { value: 4, label: "For Four Year" },
+        { value: 5, label: "For Five Year" },
+        { value: 6, label: "For Six Year" },
+        { value: 7, label: "For Seven Year" }
+    ]
 
     useEffect(() => {
         if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
@@ -30,48 +49,78 @@ const StateDrugAvailabilityMaster = () => {
 
     useEffect(() => {
         if (selectedState) {
-            getYearSummary(selectedState)
+            const stY = startYear?.getFullYear();
+            const enY = endYear?.getFullYear();
+            getYearSummary(selectedState, stY, enY)
+            setDrugList([]);
+            setFacilityList([]);
+            setFilterData([]);
+            setSelectedDrug("");
+            // setYearCount("");
         } else {
-            setYearSummary([])
+            setYearSummary([]);
+            setDrugList([]);
+            setFacilityList([]);
+            setFilterData([]);
+            setSelectedDrug("");
+            // setYearCount("");
         }
 
-    }, [selectedState])
+    }, [selectedState, startYear, endYear])
+
+
+    useEffect(() => {
+        if (yearCount && yearSummary && yearSummary?.buckets?.length > 0) {
+            const item = yearSummary?.buckets?.find(dt => dt?.complete_years == yearCount);
+            const itemList = item?.itembrands ? item?.itembrands?.map((data) => ({
+                value: data?.itembrand_id,
+                label: data?.cwhstr_drugname
+            })) : [];
+            setDrugList(itemList);
+            setFacilityList([]);
+            setFilterData([]);
+            setSelectedDrug("");
+        } else {
+            setDrugList([]);
+            setFacilityList([]);
+            setFilterData([]);
+            setSelectedDrug("");
+        }
+    }, [yearCount, yearSummary])
 
     useEffect(() => {
         if (selectedState && selectedDrug) {
+            const stY = startYear?.getFullYear();
+            const enY = endYear?.getFullYear();
             getFacilityAvailability(
                 selectedState,
-                selectedYear,
-                selectedDrug
+                selectedDrug,
+                stY, enY
             );
         } else {
             setFacilityList([]);
             setFilterData([]);
         }
 
-    }, [selectedState, selectedDrug, selectedYear])
+    }, [selectedDrug])
 
-    // const handleStateChange = (e) => {
-    //     const stateId = e.target.value;
-    //     setSelectedState(stateId);
-
-    //     setSelectedYear("");
-    //     setSelectedDrug("");
-    //     setDrugList([]);
-    //     setFacilityList([]);
-    //     setFilterData([]);
-    //     getYearSummary(stateId);
-    // };
-
-    const getYearSummary = (stateId) => {
-        fetchData("http://10.226.28.223:8000/analytics/itembrand-complete-year-counts?state_id=12&start_year=2020&end_year=2026&include_itembrand_ids=true")?.then((res) => {
+    const getYearSummary = (stateId, startY = "2020", endY = "2026") => {
+        setLoading(true);
+        fetchData(`http://10.226.28.223:8025/py/analytics/itembrand-complete-year-counts?state_id=${parseInt(stateId)}&start_year=${startY}&end_year=${endY}&include_itembrand_ids=true`)?.then((res) => {
             console.log('res', res)
-            setYearSummary(res);
+            if (res?.status === 1) {
+                setYearSummary(res?.data);
+                setSelectedDrug('');
+                setLoading(false);
+            } else {
+                setYearSummary([]);
+                setLoading(false);
+                setSelectedDrug('');
+            }
         })
     };
 
     const handleDrugCountClick = (item) => {
-        console.log('item', item)
         if (!item?.itembrand_count || item?.itembrand_count === 0) {
             ToastAlert("Drugs not available!", 'warning');
         } else {
@@ -87,44 +136,20 @@ const StateDrugAvailabilityMaster = () => {
         setDrugCountData([]);
     }
 
-    const handleYearChange = (e) => {
-        const year = e.target.value;
-        setSelectedYear(year);
-        setSelectedDrug("");
-        getDrugList(selectedState, year);
-    };
-
-    const getDrugList = (stateId, year) => {
-        setDrugList([
-            {
-                value: 1,
-                label: "Paracetamol 500 mg"
-            },
-            {
-                value: 2,
-                label: "Amoxicillin"
-            },
-            {
-                value: 3,
-                label: "Pantoprazole"
-            },
-            {
-                value: 4,
-                label: "Ibuprofen"
-            },
-            {
-                value: 5,
-                label: "ORS Packet"
-            }
-        ]);
-    };
-
-
-    const getFacilityAvailability = (stateId, year, drugId) => {
-        fetchData("http://10.226.28.223:8000/analytics/facility-complete-years-by-itembrand?state_id=12&itembrand_id=100712&start_year=2020&end_year=2026")?.then((res) => {
+    const getFacilityAvailability = (stateId, drugId, startY = "2020", endY = "2026") => {
+        setFacilityLoading(true);
+        fetchData(`http://10.226.28.223:8025/py/analytics/facility-complete-years-by-itembrand?state_id=${stateId}&itembrand_id=${drugId}&start_year=${startY}&end_year=${endY}`)?.then((res) => {
             console.log('resfac', res)
-            setFacilityList(res?.facilities);
-            setFilterData(res?.facilities);
+            if (res?.status === 1) {
+                setFacilityList(res?.data?.facilities);
+                setFilterData(res?.data?.facilities);
+                setFacilityLoading(false);
+            } else {
+                setFacilityList([]);
+                setFilterData([]);
+                setFacilityLoading(false);
+            }
+
         })
     };
 
@@ -136,7 +161,6 @@ const StateDrugAvailabilityMaster = () => {
             const lowercasedText = searchInput.toLowerCase();
             const newFilteredData = facilityList.filter(row => {
                 const paramName = row?.cwhstr_facility_name?.toLowerCase() || "";
-
                 return paramName.includes(lowercasedText);
             });
             setFilterData(newFilteredData);
@@ -230,7 +254,6 @@ const StateDrugAvailabilityMaster = () => {
         },
     ];
 
-
     return (
         <>
             {!isShowReport &&
@@ -246,7 +269,7 @@ const StateDrugAvailabilityMaster = () => {
                     </div>
 
                     <div className='row pt-2'>
-                        <div className='col-md-6'>
+                        <div className='col-md-4'>
                             <div className='form-group row'>
                                 <label className='col-sm-4 col-form-label fix-label required-label fw-bold'>
                                     <i className="fa-solid fa-location-dot me-1 ms-0 text-info"></i>
@@ -260,7 +283,54 @@ const StateDrugAvailabilityMaster = () => {
                                         options={stateNameDrpDt}
                                         value={selectedState}
                                         className="aliceblue-bg border-dark-subtle"
-                                        onChange={(e) => setSelectedState(e?.target?.value)}
+                                        onChange={(e) => setSelectedState(parseInt(e?.target?.value))}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div className='col-md-4'>
+                            <div className='form-group row'>
+                                <label className="col-sm-4 col-form-label fix-label fw-bold">
+                                    Start Year :
+                                </label>
+
+                                <div className="col-sm-8">
+                                    <DatePicker
+                                        selected={startYear}
+                                        onChange={(date) => {
+                                            console.log('date', date)
+                                            setStartYear(date);
+
+                                            if (endYear && date > endYear) {
+                                                setEndYear(null);
+                                            }
+                                        }}
+                                        showYearPicker
+                                        dateFormat="yyyy"
+                                        placeholderText="Start Year"
+                                        minDate={new Date(2020, 0, 1)}
+                                        maxDate={new Date(currentYear, 11, 31)}
+                                        className="form-control aliceblue-bg border-dark-subtle"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-md-4">
+                            <div className="form-group row">
+                                <label className="col-sm-4 col-form-label fix-label fw-bold">
+                                    End Year :
+                                </label>
+
+                                <div className="col-sm-8">
+                                    <DatePicker
+                                        selected={endYear}
+                                        onChange={setEndYear}
+                                        showYearPicker
+                                        dateFormat="yyyy"
+                                        placeholderText="End Year"
+                                        minDate={startYear || new Date(2020, 0, 1)}
+                                        maxDate={new Date(currentYear, 11, 31)}
+                                        className="form-control aliceblue-bg border-dark-subtle"
                                     />
                                 </div>
                             </div>
@@ -269,7 +339,7 @@ const StateDrugAvailabilityMaster = () => {
 
                     <hr className='my-3' />
 
-                    {selectedState && yearSummary?.buckets?.length > 0 && (
+                    {selectedState && (
                         <>
                             <div className="year-summary-card mt-3">
 
@@ -283,91 +353,105 @@ const StateDrugAvailabilityMaster = () => {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="summary-info">
-                                        <span className="badge bg-primary-subtle text-primary border me-2 mb-1">
-                                            <i className="fa-solid fa-location-dot me-1"></i>
-                                            {yearSummary?.cwhstr_state_name || "NA"}
-                                        </span>
-                                        <span className="badge bg-success-subtle text-success border me-2 mb-1">
-                                            <i className="fa-solid fa-calendar-plus me-1"></i>
-                                            Start: {yearSummary?.start_year || "NA"}
-                                        </span>
+                                    {!loading && yearSummary?.buckets?.length > 0 &&
+                                        <div className="summary-info">
+                                            <span className="badge bg-primary-subtle text-primary border me-2 mb-1">
+                                                <i className="fa-solid fa-location-dot me-1"></i>
+                                                {yearSummary?.cwhstr_state_name || "NA"}
+                                            </span>
+                                            <span className="badge bg-success-subtle text-success border me-2 mb-1">
+                                                <i className="fa-solid fa-calendar-plus me-1"></i>
+                                                Start: {yearSummary?.start_year || "NA"}
+                                            </span>
 
-                                        <span className="badge bg-warning-subtle text-dark border me-2 mb-1">
-                                            <i className="fa-solid fa-calendar-check me-1"></i>
-                                            End: {yearSummary?.end_year || "NA"}
-                                        </span>
-                                        <span className="badge bg-info-subtle text-dark border mb-1">
-                                            <i className="fa-solid fa-pills me-1"></i>
-                                            Total Drugs: {yearSummary?.total_unique_itembrands_in_1_to_7_buckets || "NA"}
-                                        </span>
+                                            <span className="badge bg-warning-subtle text-dark border me-2 mb-1">
+                                                <i className="fa-solid fa-calendar-check me-1"></i>
+                                                End: {yearSummary?.end_year || "NA"}
+                                            </span>
+                                            <span className="badge bg-info-subtle text-dark border mb-1">
+                                                <i className="fa-solid fa-pills me-1"></i>
+                                                Total Drugs: {yearSummary?.total_unique_itembrands_in_1_to_7_buckets}
+                                            </span>
+                                        </div>
+                                    }
 
-                                    </div>
                                 </div>
 
 
+                                {!loading && yearSummary?.buckets?.length > 0 ?
+                                    <>
+                                        <table className="year-summary-table">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Years</th>
+                                                    {yearSummary?.buckets?.length > 0 && yearSummary?.buckets?.map(item => (
+                                                        <td key={item?.complete_years}>{item?.complete_years}</td>
+                                                    ))}
+                                                </tr>
 
-                                <table className="year-summary-table">
-                                    <tbody>
-                                        <tr>
-                                            <th>Years</th>
-                                            {yearSummary?.buckets?.length > 0 && yearSummary?.buckets?.map(item => (
-                                                <td key={item?.complete_years}>{item?.complete_years}</td>
-                                            ))}
-                                        </tr>
+                                                <tr>
+                                                    <th>Drug Counts</th>
 
-                                        <tr>
-                                            <th>Drug Counts</th>
+                                                    {yearSummary?.buckets?.length > 0 && yearSummary?.buckets?.map(item => (
+                                                        <td key={item.complete_years + "count"}>
+                                                            <span
+                                                                className="drug-count-link"
+                                                                onClick={() => handleDrugCountClick(item)}
+                                                            >
+                                                                {item?.itembrand_count}
+                                                            </span>
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            </tbody>
+                                        </table>
 
-                                            {yearSummary?.buckets?.length > 0 && yearSummary?.buckets?.map(item => (
-                                                <td key={item.complete_years + "count"}>
-                                                    <span
-                                                        className="drug-count-link"
-                                                        onClick={() => handleDrugCountClick(item)}
-                                                    >
-                                                        {item?.itembrand_count}
-                                                    </span>
-                                                </td>
-                                            ))}
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                        <span className="badge bg-success-subtle text-success border mt-2 required-label">
+                                            <i> {yearSummary?.no_repeat_rule || "NA"}</i>
+                                        </span>
+                                    </>
+                                    :
+                                    <>
+                                        {!loading &&
+                                            <span className="badge text-danger border mt-2 required-label">
+                                                <i> No data Available!</i>
+                                            </span>
+                                        }
+                                    </>
+                                }
 
-                                <span className="badge bg-success-subtle text-success border mt-2 required-label">
-                                    <i> {yearSummary?.no_repeat_rule || "NA"}</i>
-                                </span>
+                                {loading &&
+                                    <SpinLoader />
+                                }
                             </div>
 
                             <hr className='my-3' />
-
                             <div className='row mt-4'>
                                 <div className='col-md-6'>
                                     <div className='form-group row'>
-                                        <label className='col-sm-4 col-form-label fix-label fw-bold'>
-                                            <i className="fa-solid fa-calendar-days me-1 text-danger-emphasis"></i>
-                                            Year :
+                                        <label className='col-sm-4 col-form-label fix-label required-label fw-bold'>
+                                            Select Year Count :
                                         </label>
                                         <div className='col-sm-8'>
                                             <InputSelect
-                                                id="year"
-                                                name="year"
-                                                placeholder="Select Year"
-                                                value={selectedYear}
-                                                options={[{ value: 2025, label: "2025" }]}
+                                                id="yearCount"
+                                                name="yearCount"
+                                                placeholder="Select year range..."
+                                                value={yearCount}
+                                                options={yearCountList}
                                                 className="aliceblue-bg border-dark-subtle"
-                                                onChange={handleYearChange}
+                                                onChange={(e) => setYearCount(e?.target?.value)}
                                             />
                                         </div>
                                     </div>
                                 </div>
-
                                 <div className='col-md-6'>
                                     <div className='form-group row'>
                                         <label className='col-sm-4 col-form-label fix-label required-label fw-bold'>
                                             Drug :
                                         </label>
                                         <div className='col-sm-8'>
-                                            <InputSelect
+                                            {/* <InputSelect
                                                 id="drug"
                                                 name="drug"
                                                 placeholder="Select Drug"
@@ -375,15 +459,54 @@ const StateDrugAvailabilityMaster = () => {
                                                 options={drugList}
                                                 className="aliceblue-bg border-dark-subtle"
                                                 onChange={(e) => setSelectedDrug(e?.target?.value)}
+                                            /> */}
+                                            <InputDrpSelect
+                                                className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                                id="drug"
+                                                name="drug"
+                                                placeholder="Select Drug"
+                                                value={selectedDrug}
+                                                options={drugList}
+                                                onChange={(e) => {
+                                                    if (e?.length > 0) {
+                                                        setSelectedDrug(e?.[0]?.value?.toString());
+                                                    } else {
+                                                        setSelectedDrug('');
+                                                    }
+                                                }}
                                             />
                                         </div>
+
+
                                     </div>
                                 </div>
                             </div>
 
-                            {selectedDrug && (
+                            {facilityLoading &&
+                                <SpinLoader />
+                            }
+
+
+                            {(selectedDrug || yearCount) && (
                                 <>
                                     <hr className='my-3' />
+                                    <div className="d-flex justify-content-between align-items-center flex-wrap">
+                                        <div className="year-summary-title">
+                                            <i className="fa-solid fa-chart-column me-2"></i>
+                                            Facility Complete Years By Item
+                                            <div>
+                                                <span className="badge bg-info-subtle text-dark border required-label fs-13 fw-medium">
+                                                    <i> For each facility, it reports whether that facility has exactly 7, 6, 5, 4, 3, 2, 1, or 0 complete years. Complete year means data exists for all 12 months of that year.</i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {/* <div className="summary-info">
+                                            <span className="badge bg-success-subtle text-success border me-2 mb-1">
+                                                <i className="fa-solid fa-calendar-plus me-1"></i>
+                                                Drug name: {drugList?.find(dt => dt?.value == selectedDrug)?.label || "NA"}
+                                            </span>
+                                        </div> */}
+                                    </div>
 
                                     <GlobalTable
                                         column={columns}

@@ -61,7 +61,6 @@ const ForgotPassForm = ({ isShow, onClose }) => {
             "captcha": captchaInput
         }
         fetchPostData('/api/v1/forgot/fetchMail', val).then(data => {
-            console.log('data', data)
             if (data?.status === 1) {
                 setIsUserDetailFetched(true);
                 setEmail('bajranglalgoswami@cdac.in');
@@ -92,7 +91,6 @@ const ForgotPassForm = ({ isShow, onClose }) => {
 
         if (isValid) {
             fetchPostData('/api/v1/forgot/send-otp', val).then(data => {
-                console.log('data', data)
                 if (data?.status === 1) {
                     setIsMailSent(true);
                     ToastAlert("An OTP has been sent to your email.", 'success');

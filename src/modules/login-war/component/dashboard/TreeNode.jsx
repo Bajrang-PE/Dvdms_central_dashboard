@@ -122,7 +122,6 @@ const TreeNode = ({
         node.children.length > 0;
 
     const location = useLocation();
-
     const renderLeaf = () => {
         const isExternal =
             node?.link?.startsWith("http");
@@ -137,6 +136,12 @@ const TreeNode = ({
                     target={isExternal ? "_self" : "_self"}
                     rel="noopener noreferrer"
                     className="tree-link"
+                    
+                    onClick={(e) => {
+                        if (onTabChange) {
+                            onTabChange();
+                        }
+                    }}
                 >
                     <div className="tree-link-content">
                         <i
@@ -152,6 +157,38 @@ const TreeNode = ({
                 </a>
             );
         }
+
+       
+
+    // const renderLeaf = () => {
+    //     const isExternal =
+    //         node?.link?.startsWith("http");
+    //     const isHIS =
+    //         node?.link?.startsWith("/HIS_dashboard") ||
+    //         node?.link?.includes("/HIS_dashboard/");
+
+    //     if (isExternal || isHIS) {
+    //         return (
+    //             <a
+    //                 href={node?.link}
+    //                 target={isExternal ? "_self" : "_self"}
+    //                 rel="noopener noreferrer"
+    //                 className="tree-link"
+    //             >
+    //                 <div className="tree-link-content">
+    //                     <i
+    //                         className={
+    //                             node?.icon ||
+    //                             "fa fa-file"
+    //                         }
+    //                     />
+    //                     <span>
+    //                         {node?.title}
+    //                     </span>
+    //                 </div>
+    //             </a>
+    //         );
+    //     }
 
         return (
             <Link

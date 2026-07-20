@@ -1,11 +1,26 @@
 import React, { useEffect, useState } from 'react';
 
 const NotificationTicker = () => {
+    // Apne notifications list ko update kiya h link support ke saath
     const [notifications, setNotifications] = useState([
-        "⚠️ Important Notification regarding Supplier Registration process for year 2026.",
-        "📢 dvdms.in has been successfully migrated to MoHFW subdomain (dvdms.mohfw.gov.in).",
-        "🕒 Daily meeting link for Diagnostics & Reagents starts at 3:00 P.M. onwards.",
-        "📦 New inventory stock updates and report generation tool is now live for testing."
+        {
+            type: "text",
+            content: "⚠️ Important Notification regarding Supplier Registration process for year 2026."
+        },
+        {
+            type: "migrated_and_meet", // Isme aapka bataya hua migration message aur meeting link dono hain
+            textBeforeLink: "📢 dvdms.in has been migrated to MoHFW subdomain. Kindly use dvdms.mohfw.gov.in for accessing Central Dashboard. Stockout details for IPHS Drugs are in progress. Meeting link for Diagnostics & Reagents daily @3:00 P.M. onwards: ",
+            linkText: "https://meet.google.com/ckr-jjdk-qev",
+            linkUrl: "https://meet.google.com/ckr-jjdk-qev"
+        },
+        {
+            type: "text",
+            content: "🕒 Daily meeting link for Diagnostics & Reagents starts at 3:00 P.M. onwards."
+        },
+        {
+            type: "text",
+            content: "📦 New inventory stock updates and report generation tool is now live for testing."
+        }
     ]);
 
     return (
@@ -95,7 +110,7 @@ const NotificationTicker = () => {
                     display: flex;
                     white-space: nowrap;
                     padding-right: 50px;
-                    animation: smoothTickerScroll 28s linear infinite;
+                    animation: smoothTickerScroll 35s linear infinite; /* Speed thodi kam ki h taaki lamba text aram se padha ja sake */
                     align-items: center;
                     height: 64px;
                 }
@@ -128,6 +143,18 @@ const NotificationTicker = () => {
                     box-shadow: 0 4px 12px rgba(3, 105, 161, 0.1);
                 }
 
+                /* Highlighted Link Style */
+                .highlight-link {
+                    color: #2563eb !important;
+                    text-decoration: underline !important;
+                    margin-left: 5px;
+                    font-weight: 700;
+                }
+                
+                .highlight-link:hover {
+                    color: #1d4ed8 !important;
+                }
+
                 @keyframes smoothTickerScroll {
                     0% { transform: translate3d(100%, 0, 0); }
                     100% { transform: translate3d(-100%, 0, 0); }
@@ -152,7 +179,7 @@ const NotificationTicker = () => {
                         border-bottom: 2px solid #94a3b8;
                     }
                     .ticker-scroll-track {
-                        animation-duration: 18s;
+                        animation-duration: 25s;
                     }
                 }
             `}} />
@@ -180,11 +207,34 @@ const NotificationTicker = () => {
                         <div className="ticker-content-wrapper">
                             <div className="ticker-scroll-track">
                                 {notifications.length > 0 ? (
-                                    notifications.map((note, index) => (
-                                        <span key={index} className="ticker-item-text">
-                                            {note}
-                                        </span>
-                                    ))
+                                    notifications.map((note, index) => {
+                                        // Agar simple text notification h
+                                        if (note.type === "text") {
+                                            return (
+                                                <span key={index} className="ticker-item-text">
+                                                    {note.content}
+                                                </span>
+                                            );
+                                        }
+                                        
+                                        // Agar migration aur meeting link wala specific notification h
+                                        if (note.type === "migrated_and_meet") {
+                                            return (
+                                                <span key={index} className="ticker-item-text">
+                                                    {note.textBeforeLink}
+                                                    <a 
+                                                        href={note.linkUrl} 
+                                                        target="_blank" 
+                                                        rel="noreferrer" 
+                                                        className="highlight-link"
+                                                    >
+                                                        {note.linkText}
+                                                    </a>
+                                                </span>
+                                            );
+                                        }
+                                        return null;
+                                    })
                                 ) : (
                                     <span className="ticker-item-text text-muted">
                                         No new notifications available.

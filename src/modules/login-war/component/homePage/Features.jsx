@@ -316,79 +316,102 @@ const Features = () => {
                 }
             `}} />
 
-            <div className={`features-split-wrapper ${isVisible ? 'slide-in' : ''}`}>
+                    <div className={`features-split-wrapper ${isVisible ? 'slide-in' : ''}`}>
 
                 {/* --- LEFT PANEL: NEWS / PRESS RELEASE --- */}
                 <div className="news-left-panel">
-                    <h2 className="panel-main-title">News / Press Release</h2>
-                    <p className="panel-sub-tagline">Your Gateway to Authentic News</p>
+    <h2 className="panel-main-title">Notice</h2>
+    <p className="panel-sub-tagline">Your Gateway to Authentic Notice</p>
 
-                    <div className="news-items-stack">
+    <div className="news-items-stack">
 
-                        <div className="news-card">
-                            <div className="news-source-badge badge-air">
-                                <span className="badge-icon-text">AIR</span>
-                                <span className="badge-sub-text">News</span>
-                            </div>
-                            <div className="news-content-area">
-                                <div className="news-meta-header">News on AIR</div>
-                                <h4 className="news-headline-text">Health Minister Jagat Prakash Nadda reaffirms commitment to eliminate Sickle Cell disease by 2047</h4>
-                            </div>
-                            <span className="news-time-stamp">8 m ago</span>
-                        </div>
+        <div className="news-card">
+            <div className="news-source-badge badge-air">
+                <span className="badge-icon-text">NLEM</span>
+                <span className="badge-sub-text"></span>
+            </div>
+            <div className="news-content-area">
+                <div className="news-meta-header">Notice</div>
+                <h4 className="news-headline-text">Essential Medicines to be made available at SHC and PHC level</h4>
+            </div>
+            <span className="news-time-stamp"></span>
+        </div>
 
-                        <div className="news-card">
-                            <div className="news-source-badge badge-air">
-                                <span className="badge-icon-text">AIR</span>
-                                <span className="badge-sub-text">News</span>
-                            </div>
-                            <div className="news-content-area">
-                                <div className="news-meta-header">News on AIR</div>
-                                <h4 className="news-headline-text">Government highlights 12-year transformation of North-East under PM Modi</h4>
-                            </div>
-                            <span className="news-time-stamp">11 m ago</span>
-                        </div>
+        <div className="news-card">
+            <div className="news-source-badge badge-air">
+                <span className="badge-icon-text">NLEM</span>
+                <span className="badge-sub-text"></span>
+            </div>
+            <div className="news-content-area">
+                <div className="news-meta-header">Notice</div>
+                <h4 className="news-headline-text">Annexure : Essential Medicine List for SHC and PHC level</h4>
+            </div>
+            <span className="news-time-stamp"></span>
+        </div>
 
-                        <div className="news-card">
-                            <div className="news-source-badge badge-air">
-                                <span className="badge-icon-text">AIR</span>
-                                <span className="badge-sub-text">News</span>
-                            </div>
-                            <div className="news-content-area">
-                                <div className="news-meta-header">News on AIR</div>
-                                <h4 className="news-headline-text">Union Minister Ashwini Vaishnaw praises Bihar's efforts in promoting IT sector development</h4>
-                            </div>
-                            <span className="news-time-stamp">16 m ago</span>
-                        </div>
+        <div className="news-card">
+            <div className="news-source-badge badge-air">
+                <span className="badge-icon-text">IPHS</span>
+                <span className="badge-sub-text"></span>
+            </div>
+            <div className="news-content-area">
+                <div className="news-meta-header">Notice</div>
+                <h4 className="news-headline-text">D.O letter : Prioritise implementation of DVDMS up to Drug Distribution Center level</h4>
+            </div>
+            <span className="news-time-stamp"></span>
+        </div>
 
-                        <div className="news-card">
-                            <div className="news-source-badge badge-dd">
-                                <span className="badge-icon-text">DD</span>
-                                <span className="badge-sub-text">News</span>
-                            </div>
-                            <div className="news-content-area">
-                                <div className="news-meta-header">DD News</div>
-                                <h4 className="news-headline-text">President Murmu highlights India's sickle cell elimination mission at Omkareshwar event</h4>
-                            </div>
-                            <span className="news-time-stamp">58 m ago</span>
-                        </div>
+        <div className="news-card">
+            <div className="news-source-badge badge-dd">
+                <span className="badge-icon-text">Diagnos</span>
+                <span className="badge-sub-text"></span>
+            </div>
+            <div className="news-content-area">
+                <div className="news-meta-header">Notice</div>
+                <h4 className="news-headline-text">D.O letter Attached format of Drug Procurement and Logistics Systems-FDSI</h4>
+            </div>
+            <span className="news-time-stamp"></span>
+        </div>
 
-                        <div className="news-card">
-                            <div className="news-source-badge badge-dd">
-                                <span className="badge-icon-text">DD</span>
-                                <span className="badge-sub-text">News</span>
-                            </div>
-                            <div className="news-content-area">
-                                <div className="news-meta-header">DD News</div>
-                                <h4 className="news-headline-text">Chhapra-Delhi Express launch, Patna station expansion, locomotive exports to Guinea: Ashwini Vaishnaw outlines Bihar's Rs 10,000 crore rail push</h4>
-                            </div>
-                            <span className="news-time-stamp">1 h ago</span>
-                        </div>
+        <div className="news-card">
+            <div className="news-source-badge badge-dd">
+                <span className="badge-icon-text">Diagnos</span>
+                <span className="badge-sub-text"></span>
+            </div>
+            <div className="news-content-area">
+                <div className="news-meta-header">Notice</div>
+                <h4 className="news-headline-text">D.O letter : Implementation of Free Drug Initiative in all States/UTs & Facility wise EDL</h4>
+            </div>
+            <span className="news-time-stamp"></span>
+        </div>
 
-                    </div>
+        <div className="news-card">
+            <div className="news-source-badge badge-dd">
+                <span className="badge-icon-text">Diagnos</span>
+                <span className="badge-sub-text"></span>
+            </div>
+            <div className="news-content-area">
+                <div className="news-meta-header">Notice</div>
+                <h4 className="news-headline-text">D.O letter : Funding under NHM for Free Drugs Service</h4>
+            </div>
+            <span className="news-time-stamp"></span>
+        </div>
 
+        <div className="news-card">
+            <div className="news-source-badge badge-dd">
+                <span className="badge-icon-text">Diagnos</span>
+                <span className="badge-sub-text"></span>
+            </div>
+            <div className="news-content-area">
+                <div className="news-meta-header">Notice</div>
+                <h4 className="news-headline-text">Operational Guidelines-Free Drugs Service Initiative</h4>
+            </div>
+            <span className="news-time-stamp"></span>
+        </div>
 
-                </div>
+    </div>
+
+</div>
 
                 {/* --- RIGHT PANEL: HIGH-FINISH SPOTLIGHT CONTAINER --- */}
                 <div className="spotlight-right-panel">

@@ -242,7 +242,7 @@ const DrugMaster = () => {
                                 <label className="col-sm-4 col-form-label fix-label required-label">Group</label>
 
                                 <div className="col-sm-8 align-content-center">
-                                    <InputSelect
+                                    {/* <InputSelect
                                         className="aliceblue-bg form-control form-control-sm border-dark-subtle"
                                         name='groupId'
                                         id='groupId'
@@ -250,6 +250,27 @@ const DrugMaster = () => {
                                         options={groupDrpData}
                                         value={values?.groupId}
                                         onChange={handleValueChange}
+                                        errorMessage={errors?.groupIdErr}
+                                    /> */}
+
+                                    <InputDrpSelect
+                                        className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                                        name='groupId'
+                                        id='groupId'
+                                        placeholder={"Select Value"}
+                                        options={groupDrpData}
+                                        value={values?.groupId}
+                                        onChange={(e) => {
+                                            if (e?.length > 0) {
+                                                setValues(prev => ({ ...prev, "groupId": e?.[0]?.value?.toString() }));
+                                                const selectOptionGrp = groupDrpData.find(opt => String(opt.value) === String(e?.[0]?.value));
+                                                setSelectedGroupName(selectOptionGrp?.label || "");
+                                                setSelectedGroupId(selectOptionGrp?.value || "");
+                                                setErrors(prev => ({ ...prev, groupIdErr: "" }));
+                                                setSearchInput('');
+
+                                            }
+                                        }}
                                         errorMessage={errors?.groupIdErr}
                                     />
                                 </div>

@@ -111,6 +111,7 @@ const DrugMasterForm = (props) => {
                 }
             })
         } else {
+            alert('cc')
             setCategoryDtl('');
             setDrugCodeDtl('');
             setCategoryId('');
@@ -191,7 +192,6 @@ const DrugMasterForm = (props) => {
                 "drugName": selectedOption[0]?.cwhstrDrugName,
                 "strength": selectedOption[0]?.cwhstrStrengthName,
             });
-            // fetchgenericDrugdetails(selectedOption[0]?.cwhnumCentralDrugId?.toString(), true)
         }
 
     }, [selectedOption, openPage])
@@ -199,7 +199,7 @@ const DrugMasterForm = (props) => {
 
     useEffect(() => {
         if (values?.genericDrugId) {
-            fetchgenericDrugdetails(selectedOption[0]?.cwhnumCentralDrugId?.toString(), openPage === "modify");
+            fetchgenericDrugdetails(values?.genericDrugId?.toString(), openPage === "modify");
         }
 
     }, [values?.genericDrugId])
@@ -253,9 +253,9 @@ const DrugMasterForm = (props) => {
                             onChange={(e) => {
                                 if (e?.length > 0) {
                                     setValues(prev => ({ ...prev, "genericDrugId": e?.[0]?.value?.toString() }));
-                                    fetchgenericDrugdetails(e?.[0]?.value?.toString(), false);
+                                    // fetchgenericDrugdetails(e?.[0]?.value?.toString(), false);
                                     setErrors(prev => ({ ...prev, genericDrugIdErr: "" }));
-                                    
+
                                 }
                             }}
                             errorMessage={errors?.genericDrugIdErr}

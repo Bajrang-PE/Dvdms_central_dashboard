@@ -39,7 +39,6 @@ const OtpForm = (props) => {
 
         if (isValid) {
             fetchPostData('/api/v1/forgot/send-mail', val).then(data => {
-                console.log('data', data)
                 if (data?.status === 1) {
                     ToastAlert('New password has been sent to your email, you can login now.', 'success')
                     reset();

@@ -50,7 +50,7 @@ const FacilityTypeMappingMaster = () => {
 
     const getUnmappedList = () => {
         setLoading(true);
-        fetchData(`/api/v1/unmappedFclty/${stateId}/${facilityTypeId}`).then(data => {
+        fetchData(`/api/v1/unmapped/${stateId}/${facilityTypeId}`).then(data => {
             console.log('datau', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.length > 0 ? data?.data?.map((dt) => ({
@@ -74,8 +74,6 @@ const FacilityTypeMappingMaster = () => {
                 const drpData = data?.data?.length > 0 ? data?.data?.map((dt) => ({
                     value: dt?.cwhnumStateFacilityTypeId,
                     label: dt?.cwhnumStateFacilityTypeName,
-                    slno: dt?.cwhnumFacilityTypeSlno,
-                    order: dt?.cwhnumOrder
                 })
                 ) : [];
                 setSelectedOptions(drpData)
@@ -97,15 +95,15 @@ const FacilityTypeMappingMaster = () => {
             item => !selectedOptions.some(i => i.value === item.value)
         );
 
-        const mappedData = newMapped?.length > 0 && newMapped?.map(dt => ({
+        const mappedData = newMapped?.length > 0 && newMapped?.map((dt,index) => ({
             "cwhnumFacilityTypeId": dt?.value,
             "cwhnumStateFacilityTypeName": dt?.label,
-            "cwhnumOrder": dt?.order || ""
+            "cwhnumOrder": dt?.order || index
         }))
 
         const unMappedData = newUnMapped?.length > 0 && newUnMapped?.map(dt => ({
             "cwhnumStateFacilityTypeId": dt?.value,
-            "facilityTypeName": dt?.label,
+            // "facilityTypeName": dt?.label,
         }))
 
         const val = {
@@ -113,7 +111,7 @@ const FacilityTypeMappingMaster = () => {
             "unmapFacilityTypeDTO": unMappedData?.length > 0 ? unMappedData : [],
             "stateId": parseInt(stateId),
             "seatId": getAuthUserData('userSeatId'),
-            "stateFacilityTypeId": parseInt(facilityTypeId)
+            "facilityTypeId": parseInt(facilityTypeId)
         }
 
         console.log('val', val)

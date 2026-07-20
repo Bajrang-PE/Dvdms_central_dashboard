@@ -19,7 +19,6 @@ const MasterReport = (props) => {
     const reportRef = useRef()
 
     const reportColumns = useReportColumns(column);
-    console.log('reportColumns', reportColumns)
 
     const printReport = useReactToPrint({
         contentRef: reportRef,
