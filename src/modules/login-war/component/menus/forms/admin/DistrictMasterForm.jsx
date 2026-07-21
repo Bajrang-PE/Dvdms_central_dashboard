@@ -7,7 +7,7 @@ import { ToastAlert } from '../../../../utils/CommonFunction';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 import { fetchPostData } from '../../../../../../utils/ApiHooks';
 
-const DistrictMasterForm = ({ setValues, values, getListData,setSearchInput }) => {
+const DistrictMasterForm = ({ setValues, values, getListData, setSearchInput }) => {
 
     const { openPage, setOpenPage, selectedOption, setSelectedOption, getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext)
     const [stateId, setStateId] = useState("");
@@ -24,9 +24,15 @@ const DistrictMasterForm = ({ setValues, values, getListData,setSearchInput }) =
         }
     }, [])
 
-    const validate = () => {
+    useEffect(() => {
+        if (openPage === "add" && values?.stateId) {
+            setStateId(values?.stateId || "");
+        }
+    }, [values])
 
-        //alert("cliclkinng on save in")
+    console.log('values', values)
+
+    const validate = () => {
         let isValid = true;
         if (!stateId?.toString()?.trim()) {
             setStateIdErr("Plese select state name")
@@ -70,8 +76,8 @@ const DistrictMasterForm = ({ setValues, values, getListData,setSearchInput }) =
                 }
             })
         }
-        else if (openPage === "modify") {
 
+        else if (openPage === "modify") {
             const data = {
                 "gnumIsvalid": recordStatus,
                 "gnumSeatid": getAuthUserData('userSeatId'),
@@ -100,28 +106,26 @@ const DistrictMasterForm = ({ setValues, values, getListData,setSearchInput }) =
         setConfirmSave(false);
     }
 
-    console.log('selectedOption', selectedOption)
 
     useEffect(() => {
         if (selectedOption?.length > 0 && openPage === 'modify') {
             setDistId(selectedOption[0]?.cwhnumDistId);
             setRecordStatus(String(selectedOption[0]?.gnumIsvalid));
             setDistName(selectedOption[0]?.cwhstrDistName);
-            setStateId(selectedOption[0]?.cwhnumStateId)
-
+            setStateId(selectedOption[0]?.cwhnumStateId);
         }
 
     }, [selectedOption, openPage])
 
 
     const reset = () => {
-        setValues({ ...values, "recordStatus": "1","stateId":stateId })
+        setValues({ ...values, "recordStatus": "1", "stateId": stateId })
     }
 
     return (
         <>
 
-            <GlobalButtons onSave={validate} onClear={reset} setSearchInput={setSearchInput}/>
+            <GlobalButtons onSave={validate} onClear={reset} setSearchInput={setSearchInput} />
             <hr className='my-2' />
             <div className="row mt-2">
                 {openPage === "add" &&
@@ -167,8 +171,6 @@ const DistrictMasterForm = ({ setValues, values, getListData,setSearchInput }) =
                         </div>
                     </>
                 }
-
-
 
                 {openPage === 'modify' &&
                     <>

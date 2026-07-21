@@ -109,10 +109,10 @@ const Footer = () => {
                             <p className='fs-13 mb-4'>Ministry of Health &amp; Family Welfare (Govt. of India)</p>
                             
                             {/* QR Scanner Container */}
-                            <div className="scanner-container text-center">
+                            {/* <div className="scanner-container text-center">
                                 <img src="scanner-placeholder.png" alt="QR Code Scanner" className="scanner-img mb-2" />
                                 <div className="fs-13 text-white" style={{ fontSize: '11px' }}>Scan to Verify</div>
-                            </div>
+                            </div> */}
                         </div>
 
                         {/* Right Column: Logos aur Important Links Dono Yahi Hain */}

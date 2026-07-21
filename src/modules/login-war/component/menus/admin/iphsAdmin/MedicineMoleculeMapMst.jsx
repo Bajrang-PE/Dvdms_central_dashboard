@@ -3,10 +3,10 @@ import InputSelect from '../../../InputSelect'
 import { capitalizeFirstLetter, ToastAlert } from '../../../../utils/CommonFunction';
 import { LoginContext } from '../../../../context/LoginContext';
 import { fetchData, fetchDeleteData, fetchPatchData, fetchPostData } from '../../../../../../utils/ApiHooks';
+import InputField from '../../../InputField';
 
 const MedicineMoleculeMapMst = () => {
 
-    //Note:- medicineId == packId   
 
     const { openPage, iphsMedicineDrpData, getIphsMedicineDrpData } = useContext(LoginContext)
 
@@ -20,6 +20,10 @@ const MedicineMoleculeMapMst = () => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [selectedAvailable, setSelectedAvailable] = useState([]);
     const [selectedSelected, setSelectedSelected] = useState([]);
+
+    // Search filter
+    const [leftSearch, setLeftSearch] = useState("");
+    const [rightSearch, setRightSearch] = useState("");
 
     useEffect(() => {
         getIphsMedicineDrpData();
@@ -65,8 +69,10 @@ const MedicineMoleculeMapMst = () => {
                         new Map(
                             data.data.map(dt => [
                                 dt.drugID.toString(),
-                                { value: dt.drugID.toString(),
-                                  label: dt.moleculeName }
+                                {
+                                    value: dt.drugID.toString(),
+                                    label: dt.moleculeName
+                                }
                             ])
                         ).values()
                     );
@@ -134,7 +140,7 @@ const MedicineMoleculeMapMst = () => {
             const removedFromRight = initialMappedOptions.filter(
                 item => !selectedOptions.some(i => i.value === item.value)
             );
-        
+
             const mappedData = addedToRight?.map(dt => ({
                 "drugID": Number(dt?.value),
                 "moleculeName": dt?.label,
@@ -154,17 +160,17 @@ const MedicineMoleculeMapMst = () => {
             }
 
             if (mappedData.length > 0 || unMappedData.length > 0) {
-                    fetchPostData("/api/v1/IphsMoleculeDrugMst/mapMoleculeDrug", val).then(data=>{
-                        if(data?.status === 1){
-                            ToastAlert("Data mapped successfully","success")
-                            reset();     
-                        }else{ 
-                            ToastAlert(data.message	,"error")
-                        }
-                    })
+                fetchPostData("/api/v1/IphsMoleculeDrugMst/mapMoleculeDrug", val).then(data => {
+                    if (data?.status === 1) {
+                        ToastAlert("Data mapped successfully", "success")
+                        reset();
+                    } else {
+                        ToastAlert(data.message, "error")
+                    }
+                })
             }
             else {
-                ToastAlert("Please map at least one molecule drug name.","warning");
+                ToastAlert("Please map at least one molecule drug name.", "warning");
             }
         }
     };
@@ -177,6 +183,8 @@ const MedicineMoleculeMapMst = () => {
         setSelectedSelected([]);
         setAddedToRight([]);
         setRemovedFromRight([]);
+        setRightSearch('');
+        setLeftSearch('');
     };
 
 
@@ -199,6 +207,8 @@ const MedicineMoleculeMapMst = () => {
                             onChange={(e) => {
                                 setMedicineId(e.target.value);
                                 setMedicineIdErr("");
+                                setRightSearch('');
+                                setLeftSearch('');
                             }}
                             value={medicineId}
                             errorMessage={medicineIdErr}
@@ -218,7 +228,16 @@ const MedicineMoleculeMapMst = () => {
                 {/* Dual List Box */}
                 <div className='d-flex justify-content-center mt-1 mb-2'>
                     {/* Available List */}
-                    <div style={{ width: "30%" }}>
+                    <div style={{ width: "40%" }}>
+                        <div className="mb-1 position-relative">
+                            <InputField
+                                type="search"
+                                className="form-control form-control-sm aliceblue-bg border-dark-subtle"
+                                placeholder="🔍 Search..."
+                                value={leftSearch}
+                                onChange={(e) => setLeftSearch(e.target.value)}
+                            />
+                        </div>
                         <select
                             className="form-select form-select-sm aliceblue-bg border-dark-subtle"
                             size="8"
@@ -229,9 +248,18 @@ const MedicineMoleculeMapMst = () => {
                                 setSelectedAvailable(selected);
                             }}
                         >
-                            {availableOptions.map(opt => (
+                            {/* {availableOptions.map(opt => (
                                 <option key={`${opt.value}-${opt.label}`} value={opt.value}>{opt.label}</option>
-                            ))}
+                            ))} */}
+
+                            {availableOptions
+                                ?.filter(opt => opt.label?.toLowerCase()?.includes(leftSearch?.toLowerCase()))
+                                ?.map((opt,index) => (
+                                    <option key={index+"bg"+opt?.value?.toString()} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))
+                            }
                         </select>
                     </div>
 
@@ -260,7 +288,16 @@ const MedicineMoleculeMapMst = () => {
                     </div>
 
                     {/* Selected List */}
-                    <div style={{ width: "30%" }}>
+                    <div style={{ width: "40%" }}>
+                        <div className="mb-1 position-relative">
+                            <InputField
+                                type="search"
+                                className="form-control form-control-sm aliceblue-bg border-dark-subtle"
+                                placeholder="🔍 Search ..."
+                                value={rightSearch}
+                                onChange={(e) => setRightSearch(e.target.value)}
+                            />
+                        </div>
                         <select
                             className="form-select form-select-sm aliceblue-bg border-dark-subtle"
                             size="8"
@@ -271,9 +308,18 @@ const MedicineMoleculeMapMst = () => {
                                 setSelectedSelected(selected);
                             }}
                         >
-                            {selectedOptions.map(opt => (
+                            {/* {selectedOptions.map(opt => (
                                 <option key={`${opt.value}-${opt.label}`} value={opt.value}>{opt.label}</option>
-                            ))}
+                            ))} */}
+
+                            {selectedOptions
+                                ?.filter(opt => opt?.label?.toLowerCase()?.includes(rightSearch?.toLowerCase()))
+                                ?.map((opt,index) => (
+                                    <option key={index+"bg"+opt?.value?.toString()} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))
+                            }
                         </select>
                     </div>
                 </div>

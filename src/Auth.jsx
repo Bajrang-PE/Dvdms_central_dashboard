@@ -13,6 +13,7 @@ const Auth = ({ comp: Component }) => {
 
     const logout = () => {
         localStorage.clear();
+        sessionStorage.clear();
         Cookies.remove('csrfToken');
         navigate('/dvdms/session-expired', { replace: true });
     };

@@ -29,8 +29,13 @@ const ModernDashHeader = () => {
 
     const logout = () => {
         localStorage.clear();
+        sessionStorage.clear();
         Cookies.remove("csrfToken");
         navigate("/dvdms/");
+    };
+
+    const handleRefresh = () => {
+        window.location.reload(false);
     };
 
 
@@ -41,6 +46,7 @@ const ModernDashHeader = () => {
                     <button
                         className={`hamburger ${menuOpen ? "active" : ""}`}
                         onClick={() => setMenuOpen(true)}
+                        title="View menus"
                     >
                         <span></span>
                         <span></span>
@@ -58,13 +64,23 @@ const ModernDashHeader = () => {
                 <div className="header-right">
                     <button
                         className="header-btn"
+                        onClick={() => handleRefresh()}
+                        title="Refresh Page"
+                    >
+                        <i className="fa fa-refresh"></i>
+                    </button>
+
+                    <button
+                        className="header-btn"
                         onClick={() => navigate("/dvdms/user-dashboard")}
+                        title="Go to home page"
                     >
                         <i className="fa fa-home"></i>
                     </button>
                     <button
                         className="header-btn"
                         onClick={() => setStateDrawerOpen(true)}
+                        title="View state dvdms links"
                     >
                         <i className="fa fa-link"></i>
                         <span>
@@ -75,6 +91,7 @@ const ModernDashHeader = () => {
                         <button
                             className="profile-btn"
                             onClick={() => setProfileOpen(!profileOpen)}
+                            title="User menu options"
                         >
                             <div className="avatar">
                                 {userData?.username?.charAt(0)?.toUpperCase()}

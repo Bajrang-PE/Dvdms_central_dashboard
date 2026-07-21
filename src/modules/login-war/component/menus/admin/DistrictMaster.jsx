@@ -16,8 +16,6 @@ const DistrictMaster = () => {
         "countryId": "101", "stateId": "", "recordStatus": "1"
     })
 
-    console.log('values', values)
-
     const [listData, setListData] = useState([]);
     const { getSteteNameDrpData, stateNameDrpDt } = useContext(LoginContext)
     const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, isShowReport } = useContext(LoginContext);
@@ -47,11 +45,11 @@ const DistrictMaster = () => {
         }
     }
 
-    useEffect(() => {
-        if (openPage === "add") {
-            reset()
-        }
-    }, [openPage])
+    // useEffect(() => {
+    //     if (openPage === "add") {
+    //         reset()
+    //     }
+    // }, [openPage])
 
     useEffect(() => {
         if (!searchInput) {
@@ -90,8 +88,10 @@ const DistrictMaster = () => {
     }, [])
 
     useEffect(() => {
-        if (values?.recordStatus) {
+        if (values?.recordStatus && values?.stateId) {
             getListData(values?.recordStatus, values?.stateId);
+        }else{
+            setListData([]);
         }
 
     }, [values?.stateId, values?.recordStatus])

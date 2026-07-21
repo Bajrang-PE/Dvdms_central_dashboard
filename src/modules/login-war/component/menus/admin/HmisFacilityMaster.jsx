@@ -123,6 +123,20 @@ const HmisFacilityMaster = () => {
     //     }
     // };
 
+    const convertToDateInputFormat = (dateStr) => {
+        try {
+            if (!dateStr || typeof dateStr !== 'string') return '';
+
+            const [dd, mm, yy] = dateStr.split('-');
+
+            if (!dd || !mm || !yy) return '';
+
+            return `20${yy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
+        } catch {
+            return '';
+        }
+    };
+
     const column = [
         {
             name: <input
@@ -152,7 +166,7 @@ const HmisFacilityMaster = () => {
         },
         {
             name: 'HMIS Date',
-            selector: row => row.hmisDate || 'null',
+            selector: row => convertToDateInputFormat(row.hmisDate) || 'null',
             sortable: true,
         },
         {
@@ -248,7 +262,7 @@ const HmisFacilityMaster = () => {
                     }
 
                     {(openPage === "add" || openPage === 'modify') && (<>
-                        <HmisFacilityMasterForm selectedStateName={selectedStateName} getListData={getListData}/>
+                        <HmisFacilityMasterForm selectedStateName={selectedStateName} getListData={getListData} convertToDateInputFormat={convertToDateInputFormat}/>
                     </>)}
                 </>}
 

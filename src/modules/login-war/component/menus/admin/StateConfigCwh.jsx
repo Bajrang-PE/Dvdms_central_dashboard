@@ -24,7 +24,7 @@ const StateConfigCwh = () => {
     const [values, setValues] = useState({
         "strStateId": "", "insertMethodOnCentralServer": "", "stateServiceUrl": "", "centServiceUrl": "",
         "stateServiceUserName": "", "stateServicePass": "", "serviceConnTimeout": "", "dataFetchSize": "",
-        "dbDrivClass": "", "dbUrl": "", "dbUserName": "", "dbPass": "", "isDbCredAvl": "", "stateDatabase": "", "jobForTesting": "",
+        "dbDrivClass": "", "dbUrl": "", "dbUserName": "", "dbPass": "", "isDbCredAvl": "0", "stateDatabase": "", "jobForTesting": "",
         "jobId": "", "jobName": "",
     });
 
@@ -58,13 +58,12 @@ const StateConfigCwh = () => {
         }
     }
 
+
     const fetchDataByState = async (stateId) => {
         try {
-
             fetchData(`/api/v1/state/getStateConfig/${stateId}`).then((data) => {
                 console.log('data', data)
                 if (data?.status === 1) {
-
                     setValues({
                         ...values,
                         strStateId: data.data?.cwhnumStateId ?? "",
@@ -79,14 +78,13 @@ const StateConfigCwh = () => {
                         dbUserName: data.data?.cwhstrDatabaseusername ?? "",
                         dbPass: data.data?.cwhstrDatabasepassword ?? "",
                         stateDatabase: data.data?.cwhstrDatabaseName ?? "",
-                        isDbCredAvl: data.data?.cwhnumIsdbcedentialavailable ?? "",
+                        isDbCredAvl: data.data?.cwhnumIsdbcedentialavailable ?? "0",
                         insertMethodOnCentralServer: data.data?.numIsDataInsertByEtlWar ?? ""
                     });
-
+                } else {
+                    reset();
                 }
-
             })
-
         } catch (error) {
             console.error('Failed to fetch data:', error);
         }
@@ -203,9 +201,7 @@ const StateConfigCwh = () => {
             cwhstrDatabasepassword: values?.isDbCredAvl == "0" ? '' : values?.dbPass,
         };
 
-        console.log('val', data)
         await fetchPostData("/api/v1/state", data).then(data => {
-            console.log('data', data)
             if (data?.status === 1) {
                 ToastAlert('State configuration saved successfully', 'success');
                 setConfirmSave(false);
@@ -220,14 +216,13 @@ const StateConfigCwh = () => {
 
 
     const reset = () => {
-
         setValues({
-            "strStateId": "", "insertMethodOnCentralServer": "", "stateServiceUrl": "", "centServiceUrl": "",
+            "insertMethodOnCentralServer": "", "stateServiceUrl": "", "centServiceUrl": "",
             "stateServiceUserName": "", "stateServicePass": "", "serviceConnTimeout": "", "dataFetchSize": "",
-            "dbDrivClass": "", "dbUrl": "", "dbUserName": "", "dbPass": "", "isDbCredAvl": "", "stateDatabase": "", "jobForTesting": "",
+            "dbDrivClass": "", "dbUrl": "", "dbUserName": "", "dbPass": "", "isDbCredAvl": "0", "stateDatabase": "", "jobForTesting": "",
             "jobId": "", "jobName": "",
         });
-         setConfirmSave(false);
+        setConfirmSave(false);
     }
 
     return (

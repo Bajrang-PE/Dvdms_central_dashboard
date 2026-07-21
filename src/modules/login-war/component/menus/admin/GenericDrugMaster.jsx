@@ -217,7 +217,7 @@ const GenericDrugMaster = () => {
                 </>)}
 
                 {(openPage === "add" || openPage === 'modify') && !isShowReport && (<>
-                    <GenericDrugMasterForm subGrpData={subGroupDrpData} groupData={groupDrpData} groupId={groupId} setSearchInput={setSearchInput} />
+                    <GenericDrugMasterForm subGrpData={subGroupDrpData} groupData={groupDrpData} groupId={groupId} setSearchInput={setSearchInput} subGroupId={subGroupId}/>
                 </>)}
 
                 {isShowReport &&

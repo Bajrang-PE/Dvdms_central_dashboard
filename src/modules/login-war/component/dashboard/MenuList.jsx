@@ -122,7 +122,6 @@ const MenuList = (props) => {
         try {
             setLoading(true);
             const data = await fetchData(`/api/v1/getMenuBySeatId/${getAuthUserData('userSeatId') || 10001}`);
-            console.log('data', data)
             if (data?.status === 1) {
                 const formattedMenuData = transformMenuData(data?.data);
                 setMenuData(formattedMenuData);

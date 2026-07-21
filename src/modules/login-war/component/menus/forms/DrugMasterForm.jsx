@@ -6,6 +6,7 @@ import { LoginContext } from '../../../context/LoginContext'
 import { ToastAlert } from '../../../utils/CommonFunction'
 import { fetchData, fetchPostData, fetchUpdateData, fetchUpdatePostData } from '../../../../../utils/ApiHooks'
 import { getAuthUserData } from '../../../../../utils/CommonFunction'
+import InputDrpSelect from '../../InputDrpSelect'
 
 const DrugMasterForm = (props) => {
 
@@ -19,11 +20,8 @@ const DrugMasterForm = (props) => {
         selectedStatus,
     } = props;
 
-    const { setShowConfirmSave, confirmSave, setConfirmSave, openPage, setOpenPage, selectedOption, setSelectedOption, drugTypeDrpData, getDrugTypeDrpData,
-        getGenericDrugDrpData, genericDrugDrpData
+    const { setShowConfirmSave, confirmSave, setConfirmSave, openPage, setOpenPage, selectedOption, setSelectedOption, drugTypeDrpData, getDrugTypeDrpData, getGenericDrugDrpData, genericDrugDrpData
     } = useContext(LoginContext)
-
-
 
     const [values, setValues] = useState({
         "genericDrugId": "", "drugTypeId": "", "drugName": "", "strength": "", "snomedNameId": "1"
@@ -39,13 +37,17 @@ const DrugMasterForm = (props) => {
     const [drugCodeId, setDrugCodeId] = useState("");
 
     useEffect(() => {
-        getDrugTypeDrpData();
-        getGenericDrugDrpData();
+        if (drugTypeDrpData?.length === 0) {
+            getDrugTypeDrpData();
+        }
+        if (genericDrugDrpData?.length === 0) {
+            getGenericDrugDrpData();
+        }
     }, [])
 
-    const getCodes = () => {
-        alert("Getting Code")
-    }
+    // const getCodes = () => {
+    //     alert("Getting Code")
+    // }
 
     const handleValueChange = (e) => {
         const { name, value } = e.target;
@@ -59,7 +61,7 @@ const DrugMasterForm = (props) => {
     const validateSave = () => {
         let isValid = true;
 
-        if (!values?.genericDrugId.trim()) {
+        if (!values?.genericDrugId?.toString()?.trim()) {
             setErrors(prev => ({ ...prev, genericDrugIdErr: "Generic drug name is required" }));
             isValid = false;
         }
@@ -89,7 +91,6 @@ const DrugMasterForm = (props) => {
 
     }
 
-
     useEffect(() => {
         if (confirmSave) {
             saveDetail();
@@ -104,12 +105,13 @@ const DrugMasterForm = (props) => {
                     setDrugCodeDtl(data?.data?.vedName ?? '');
                     setCategoryId(data?.data?.cwhstrDrugCategoryCode ?? '');
                     setDrugCodeId(data?.data?.cwhnumDrugVedCode ?? '');
-                    if (!isModify) {
-                        setValues(prev => ({ ...prev, "drugName": data?.data?.centraldrugName, "drugTypeId": data?.data?.cwhnumDrugTypeId }));
-                    }
+                    // if (!isModify || changedDrug) {
+                    //     setValues(prev => ({ ...prev, "drugName": data?.data?.centraldrugName, "drugTypeId": data?.data?.cwhnumDrugTypeId }));
+                    // }
                 }
             })
         } else {
+            alert('cc')
             setCategoryDtl('');
             setDrugCodeDtl('');
             setCategoryId('');
@@ -117,27 +119,6 @@ const DrugMasterForm = (props) => {
             setValues(prev => ({ ...prev, "drugName": "", "drugTypeId": "" }));
         }
     }
-
-    // useEffect(() => {
-    //     if (toString(values?.genericDrugId).trim()) {
-    //         fetchData(`/api/v1/drug-mst/genericDrugCodeDetails?centralDrugId=${values?.genericDrugId}`).then(data => {
-    //             if (data?.status == 1) {
-    //                 setCategoryDtl(data?.data?.drugCatName ?? '');
-    //                 setDrugCodeDtl(data?.data?.vedName ?? '');
-    //                 setCategoryId(data?.data?.cwhstrDrugCategoryCode ?? '');
-    //                 setDrugCodeId(data?.data?.cwhnumDrugVedCode ?? '');
-    //                 setValues({ ...values, "drugName": data?.data?.centraldrugName, "drugTypeId": data?.data?.cwhnumDrugTypeId });
-    //             }
-    //         })
-    //     } else {
-    //         setCategoryDtl('');
-    //         setDrugCodeDtl('');
-    //         setCategoryId('');
-    //         setDrugCodeId('');
-    //         setValues({ ...values, "drugName": "", "drugTypeId": "" });
-    //     }
-    // }, [values?.genericDrugId])
-
 
     const saveDetail = () => {
 
@@ -160,7 +141,7 @@ const DrugMasterForm = (props) => {
                     refresh();
                 } else {
                     ToastAlert(data?.message, "error")
-                     setConfirmSave(false);
+                    setConfirmSave(false);
                 }
             })
         }
@@ -181,7 +162,7 @@ const DrugMasterForm = (props) => {
                     refresh();
                 } else {
                     ToastAlert(data?.message, "error")
-                     setConfirmSave(false);
+                    setConfirmSave(false);
                 }
             })
         }
@@ -203,19 +184,26 @@ const DrugMasterForm = (props) => {
 
     useEffect(() => {
         if (selectedOption?.length > 0 && openPage === 'modify') {
-
             setValues({
                 ...values,
-                "genericDrugId": selectedOption[0]?.cwhnumCentralDrugId?.toString() ?? '',
+                "genericDrugId": selectedOption[0]?.cwhnumCentralDrugId ?? '',
                 "drugTypeId": selectedOption[0]?.cwhnumDrugTypeId,
                 "snomedNameId": 2,
                 "drugName": selectedOption[0]?.cwhstrDrugName,
                 "strength": selectedOption[0]?.cwhstrStrengthName,
             });
-            fetchgenericDrugdetails(selectedOption[0]?.cwhnumCentralDrugId?.toString(), true)
         }
 
     }, [selectedOption, openPage])
+
+
+    useEffect(() => {
+        if (values?.genericDrugId) {
+            fetchgenericDrugdetails(values?.genericDrugId?.toString(), openPage === "modify");
+        }
+
+    }, [values?.genericDrugId])
+
 
 
     return (
@@ -241,7 +229,7 @@ const DrugMasterForm = (props) => {
                 <div className="row form-group col-sm-4">
                     <label className="col-sm-4 col-form-label fix-label required-label">Generic Drug Name</label>
                     <div className="col-sm-8 align-content-center">
-                        <InputSelect
+                        {/* <InputSelect
                             id="genericDrugId"
                             name="genericDrugId"
                             placeholder={"Select Value"}
@@ -253,6 +241,24 @@ const DrugMasterForm = (props) => {
                             }
                             value={values?.genericDrugId}
                             errorMessage={errors?.genericDrugIdErr}
+                        /> */}
+
+                        <InputDrpSelect
+                            // className="aliceblue-bg form-control form-control-sm border-dark-subtle"
+                            id="genericDrugId"
+                            name="genericDrugId"
+                            placeholder={"Select Value"}
+                            options={genericDrugDrpData}
+                            value={values?.genericDrugId}
+                            onChange={(e) => {
+                                if (e?.length > 0) {
+                                    setValues(prev => ({ ...prev, "genericDrugId": e?.[0]?.value?.toString() }));
+                                    // fetchgenericDrugdetails(e?.[0]?.value?.toString(), false);
+                                    setErrors(prev => ({ ...prev, genericDrugIdErr: "" }));
+
+                                }
+                            }}
+                            errorMessage={errors?.genericDrugIdErr}
                         />
 
                     </div>
@@ -260,7 +266,7 @@ const DrugMasterForm = (props) => {
 
             </div>
 
-            {(values?.genericDrugId.trim()) &&
+            {(values?.genericDrugId?.toString()?.trim()) &&
                 <div className="row pt-1">
                     <div className="row form-group col-sm-4">
                         <label className="col-sm-4 col-form-label fix-label">Category</label>
@@ -305,6 +311,7 @@ const DrugMasterForm = (props) => {
                             onChange={handleValueChange}
                             value={values?.drugName}
                             errorMessage={errors?.drugNameErr}
+                            isSpecialChrs
                         />
 
                     </div>
@@ -349,6 +356,7 @@ const DrugMasterForm = (props) => {
                             onChange={handleValueChange}
                             value={values?.strength}
                             errorMessage={errors?.strengthErr}
+                            isSpecialChrs
                         />
 
                     </div>

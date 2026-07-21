@@ -31,7 +31,8 @@ const Header = () => {
         e.preventDefault();
         const redirectConfirm = window.confirm('You are redirecting to another website');
         if (redirectConfirm) {
-            window.open(e.target.href, '_blank')
+            // window.open(e.target.href, '_blank')
+            window.open(e.currentTarget.href, '_blank')
         }
     }
 
@@ -185,7 +186,7 @@ const Header = () => {
                                     Access through Parichay
                                 </a>
 
-                                <a className="btn custom-header-btn d-inline-flex align-items-center gap-1" href='https://dvdmsgen.prd.dcservices.in/IMCS/login' target='_blank' onClick={(e) => { redirectUrl(e) }}
+                                <a className="btn custom-header-btn d-inline-flex align-items-center gap-1" href='https://dvdmsgen.prd.dcservices.in/IMCS/login'  target='_blank' onClick={(e) => { redirectUrl(e) }}
                                     style={{
                                         ...customStyles.secondaryBtn,
                                         backgroundColor: '#ffffff',

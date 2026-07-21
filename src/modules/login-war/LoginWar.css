@@ -330,8 +330,8 @@
 
 .datatable-header {
   /* background: #005b88; */
-  background-color: #00203f !important;
-  /* background: linear-gradient(135deg, #05213c, #05396c); */
+  /* background-color: #00203f !important; */
+  background: linear-gradient(135deg, #00183f 0%, #0052cc 55%, #000a1a 100%);
   color: #FBC02D !important;
   border-radius: 5px;
 }

@@ -3,6 +3,7 @@ import { LoginContext } from '../../../../context/LoginContext';
 import InputSelect from '../../../InputSelect';
 import { fetchData, fetchPatchData, fetchPostData } from '../../../../../../utils/ApiHooks';
 import { ToastAlert } from '../../../../utils/CommonFunction';
+import InputField from '../../../InputField';
 
 const IphsDrugMappingMst = () => {
 
@@ -18,6 +19,10 @@ const IphsDrugMappingMst = () => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [selectedAvailable, setSelectedAvailable] = useState([]);
     const [selectedSelected, setSelectedSelected] = useState([]);
+
+    // Search filter
+    const [leftSearch, setLeftSearch] = useState("");
+    const [rightSearch, setRightSearch] = useState("");
 
 
     useEffect(() => {
@@ -198,6 +203,8 @@ const IphsDrugMappingMst = () => {
         setSelectedSelected([]);
         setAddedToRight([]);
         setRemovedFromRight([]);
+        setRightSearch('');
+        setLeftSearch('');
     };
 
 
@@ -219,6 +226,8 @@ const IphsDrugMappingMst = () => {
                         onChange={(e) => {
                             setDrugId(e.target.value);
                             setDrugIdErr("");
+                            setRightSearch('');
+                            setLeftSearch('');
                         }}
                         value={drugId}
                         errorMessage={drugIdErr}
@@ -238,7 +247,16 @@ const IphsDrugMappingMst = () => {
             {/* Dual List Box */}
             <div className='d-flex justify-content-center mt-1 mb-2'>
                 {/* Available List */}
-                <div style={{ width: "30%" }}>
+                <div style={{ width: "40%" }}>
+                    <div className="mb-1 position-relative">
+                        <InputField
+                            type="search"
+                            className="form-control form-control-sm aliceblue-bg border-dark-subtle"
+                            placeholder="🔍 Search..."
+                            value={leftSearch}
+                            onChange={(e) => setLeftSearch(e.target.value)}
+                        />
+                    </div>
                     <select
                         className="form-select form-select-sm aliceblue-bg border-dark-subtle"
                         size="8"
@@ -249,9 +267,18 @@ const IphsDrugMappingMst = () => {
                             setSelectedAvailable(selected);
                         }}
                     >
-                        {availableOptions.map(opt => (
+                        {/* {availableOptions.map(opt => (
                             <option key={`${opt.value}-${opt.label}`} value={opt.value}>{opt.label}</option>
-                        ))}
+                        ))} */}
+
+                        {availableOptions
+                            ?.filter(opt => opt.label?.toLowerCase()?.includes(leftSearch?.toLowerCase()))
+                            ?.map((opt,index) => (
+                                <option key={index+"bg"+opt?.value?.toString()} value={opt.value}>
+                                    {opt.label}
+                                </option>
+                            ))
+                        }
                     </select>
                 </div>
 
@@ -280,7 +307,16 @@ const IphsDrugMappingMst = () => {
                 </div>
 
                 {/* Selected List */}
-                <div style={{ width: "30%" }}>
+                <div style={{ width: "40%" }}>
+                    <div className="mb-1 position-relative">
+                        <InputField
+                            type="search"
+                            className="form-control form-control-sm aliceblue-bg border-dark-subtle"
+                            placeholder="🔍 Search ..."
+                            value={rightSearch}
+                            onChange={(e) => setRightSearch(e.target.value)}
+                        />
+                    </div>
                     <select
                         className="form-select form-select-sm aliceblue-bg border-dark-subtle"
                         size="8"
@@ -291,9 +327,18 @@ const IphsDrugMappingMst = () => {
                             setSelectedSelected(selected);
                         }}
                     >
-                        {selectedOptions.map(opt => (
+                        {/* {selectedOptions.map(opt => (
                             <option key={`${opt.value}-${opt.label}`} value={opt.value}>{opt.label}</option>
-                        ))}
+                        ))} */}
+
+                        {selectedOptions
+                            ?.filter(opt => opt?.label?.toLowerCase()?.includes(rightSearch?.toLowerCase()))
+                            ?.map((opt,index) => (
+                                <option key={index+"bg"+opt?.value?.toString()} value={opt.value}>
+                                    {opt.label}
+                                </option>
+                            ))
+                        }
                     </select>
                 </div>
             </div>

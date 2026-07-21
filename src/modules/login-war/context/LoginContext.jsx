@@ -141,7 +141,7 @@ const LoginContextApi = ({ children }) => {
 
     //----------------------------------Dropdowns----------------------------------------------------------
     const getHintQuestionDrpData = () => {
-        fetchData('/login/hntQueDropDown').then((data) => {
+        fetchData('/api/v1/login/hntQueDropDown').then((data) => {
             if (data?.status === 1) {
                 setHintQuestionDrpDt(data?.data)
             } else {
@@ -159,12 +159,9 @@ const LoginContextApi = ({ children }) => {
                         value: dt?.cwhnumStateId,
                         label: dt?.cwhstrStateName
                     }
-
                     return val;
                 })
-
                 setStateNameDrpDt(drpData)
-
             } else {
                 setStateNameDrpDt([])
             }
@@ -212,9 +209,6 @@ const LoginContextApi = ({ children }) => {
     }
 
     const getSupplierNameDrpData = () => {
-
-        // localhost:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=27&stateID=58
-
         fetchData('/api/v1/supplierMappingMaster/getAllSuppliers').then((data) => {
             if (data) {
 
@@ -254,25 +248,49 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
+    // const getGenericDrugDrpData = () => {
+    //     fetchData('/api/v1/gnricDrugNameCombo').then((data) => {
+    //         if (data?.status === 1) {
+    //             const drpData = data?.data?.map((dt) => {
+    //                 const val = {
+    //                     value: dt?.cwhnumCentralDrugId,
+    //                     label: dt?.cwhstrCentraldrugName
+    //                 }
+
+    //                 return val;
+    //             })
+    //             setGenericDrugDrpData(drpData)
+
+    //         } else {
+    //             setGenericDrugDrpData([])
+    //         }
+    //     })
+    // }
+
     const getGenericDrugDrpData = () => {
         fetchData('/api/v1/gnricDrugNameCombo').then((data) => {
             if (data?.status === 1) {
-                const drpData = data?.data?.map((dt) => {
-                    const val = {
-                        value: dt?.cwhnumCentralDrugId,
-                        label: dt?.cwhstrCentraldrugName
-                    }
-
-                    return val;
-                })
-                setGenericDrugDrpData(drpData)
-
+                const drpData = [
+                    ...new Map(
+                        (Array.isArray(data?.data) ? data.data : [])
+                            .filter(dt => dt?.cwhnumCentralDrugId != null)
+                            .map(dt => [
+                                dt.cwhnumCentralDrugId,
+                                {
+                                    value: dt.cwhnumCentralDrugId,
+                                    label: dt?.cwhstrCentraldrugName || ''
+                                }
+                            ])
+                    ).values()
+                ];
+                setGenericDrugDrpData(drpData);
             } else {
-                setGenericDrugDrpData([])
+                setGenericDrugDrpData([]);
             }
-        })
-    }
-
+        }).catch(() => {
+            setGenericDrugDrpData([]);
+        });
+    };
 
     const getDrugTypeDrpData = () => {
         fetchData('/api/v1/DrugTypeDropdown').then((data) => {

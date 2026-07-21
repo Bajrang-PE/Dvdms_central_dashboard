@@ -4,6 +4,7 @@ import { ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
 import { fetchData, fetchPostData } from '../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../utils/CommonFunction';
+import InputField from '../../InputField';
 
 const FacilityTypeMappingMaster = () => {
     const { setOpenPage, getSteteNameDrpData, stateNameDrpDt, getFacilityTypeDrpData, facilityTypeDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
@@ -15,6 +16,12 @@ const FacilityTypeMappingMaster = () => {
     const [selectedAvailable, setSelectedAvailable] = useState([]);
     const [selectedSelected, setSelectedSelected] = useState([]);
     const [initialMappedOptions, setInitialMappedOptions] = useState([]);
+
+    const [loading, setLoading] = useState(false);
+
+    // Search filter
+    const [leftSearch, setLeftSearch] = useState("");
+    const [rightSearch, setRightSearch] = useState("");
 
     const [errors, setErrors] = useState({
         "facilityTypeIdErr": "", "stateIdErr": ""
@@ -42,32 +49,33 @@ const FacilityTypeMappingMaster = () => {
     }, [stateId, facilityTypeId])
 
     const getUnmappedList = () => {
-        fetchData(`/api/v1/unmappedFacilities/${stateId}`).then(data => {
+        setLoading(true);
+        fetchData(`/api/v1/unmapped/${stateId}/${facilityTypeId}`).then(data => {
             console.log('datau', data)
             if (data?.status === 1) {
-                const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
+                const drpData = data?.data?.length > 0 ? data?.data?.map((dt) => ({
                     value: dt?.facilityTypeId,
                     label: dt?.facilityTypeName
                 })
-                )
+                ) : [];
                 setAvailableOptions(drpData);
+                setLoading(false);
             } else {
                 setAvailableOptions([]);
+                setLoading(false);
             }
         })
     }
 
     const getMappedList = () => {
-        fetchData(`/api/v1/mapped/${stateId}`).then(data => {
+        fetchData(`/api/v1/mapped/${stateId}/${facilityTypeId}`).then(data => {
             console.log('datam', data)
             if (data.status === 1) {
-                const drpData = data?.data?.length > 0 && data?.data?.map((dt) => ({
+                const drpData = data?.data?.length > 0 ? data?.data?.map((dt) => ({
                     value: dt?.cwhnumStateFacilityTypeId,
                     label: dt?.cwhnumStateFacilityTypeName,
-                    slno: dt?.cwhnumFacilityTypeSlno,
-                    order: dt?.cwhnumOrder
                 })
-                )
+                ) : [];
                 setSelectedOptions(drpData)
                 setInitialMappedOptions(drpData);
             } else {
@@ -87,25 +95,15 @@ const FacilityTypeMappingMaster = () => {
             item => !selectedOptions.some(i => i.value === item.value)
         );
 
-
-        const mappedData = newMapped?.length > 0 && newMapped?.map(dt => ({
-            // "stateId": parseInt(stateId),
+        const mappedData = newMapped?.length > 0 && newMapped?.map((dt,index) => ({
             "cwhnumFacilityTypeId": dt?.value,
             "cwhnumStateFacilityTypeName": dt?.label,
-            // "facilityTypeId": parseInt(facilityTypeId),
-            // "seatId": getAuthUserData('userSeatId'),
-            // "isValid": 1,
-
-            // "cwhnumFacilityTypeSlno": dt?.slno || "",
-            "cwhnumOrder": dt?.order || ""
-
+            "cwhnumOrder": dt?.order || index
         }))
 
         const unMappedData = newUnMapped?.length > 0 && newUnMapped?.map(dt => ({
-            // "stateId": parseInt(stateId),
-            "facilityTypeId": dt?.value,
-            "facilityTypeName": dt?.label,
-            // "combinedIdName": `${dt?.value}^1^${dt?.label}`
+            "cwhnumStateFacilityTypeId": dt?.value,
+            // "facilityTypeName": dt?.label,
         }))
 
         const val = {
@@ -113,7 +111,7 @@ const FacilityTypeMappingMaster = () => {
             "unmapFacilityTypeDTO": unMappedData?.length > 0 ? unMappedData : [],
             "stateId": parseInt(stateId),
             "seatId": getAuthUserData('userSeatId'),
-            "stateFacilityTypeId": parseInt(facilityTypeId)
+            "facilityTypeId": parseInt(facilityTypeId)
         }
 
         console.log('val', val)
@@ -131,7 +129,6 @@ const FacilityTypeMappingMaster = () => {
 
     }
 
-    console.log('selectedOptions', selectedOptions)
 
     const handleValidation = () => {
         let isValid = true;
@@ -195,16 +192,20 @@ const FacilityTypeMappingMaster = () => {
         setInitialMappedOptions([]);
         setSelectedSelected();
         setSelectedAvailable();
-        setSelectedOptions();
-        setAvailableOptions();
+        setSelectedOptions([]);
+        setAvailableOptions([]);
+        setRightSearch('');
+        setLeftSearch('');
     }
 
     const refresh = () => {
         setInitialMappedOptions([]);
         setSelectedSelected();
         setSelectedAvailable();
-        setSelectedOptions();
-        setAvailableOptions();
+        setSelectedOptions([]);
+        setAvailableOptions([]);
+        setRightSearch('');
+        setLeftSearch('');
     }
 
 
@@ -213,7 +214,6 @@ const FacilityTypeMappingMaster = () => {
             <div className='masters mx-3 my-2'>
                 <div className='masters-header row'>
                     <span className='col-12'><b>{`Facility Type Mapping Master`}</b></span>
-                    {/* {openPage === "home" && <span className='col-6 text-end'>Total Records : {functionalityData?.length || 0}</span>} */}
                 </div>
 
 
@@ -262,7 +262,16 @@ const FacilityTypeMappingMaster = () => {
                 </div>
 
                 <div className='d-flex justify-content-center mt-1 mb-2'>
-                    <div className='' style={{ width: "30%" }}>
+                    <div className='' style={{ width: "40%" }}>
+                        <div className="mb-1 position-relative">
+                            <InputField
+                                type="search"
+                                className="form-control form-control-sm aliceblue-bg border-dark-subtle"
+                                placeholder="🔍 Search..."
+                                value={leftSearch}
+                                onChange={(e) => setLeftSearch(e.target.value)}
+                            />
+                        </div>
                         <select
                             className="form-select form-select-sm aliceblue-bg border-dark-subtle"
                             size="8"
@@ -273,11 +282,14 @@ const FacilityTypeMappingMaster = () => {
                                 setSelectedAvailable(selected);
                             }}
                         >
-                            {availableOptions?.length > 0 && availableOptions.map(opt => (
-                                <option key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                </option>
-                            ))}
+                            {availableOptions?.length > 0 && availableOptions
+                                ?.filter(opt => opt.label?.toLowerCase()?.includes(leftSearch?.toLowerCase()))
+                                ?.map((opt, index) => (
+                                    <option key={index + "bg" + opt?.value?.toString()} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))
+                            }
                         </select>
 
                     </div>
@@ -307,7 +319,16 @@ const FacilityTypeMappingMaster = () => {
                         </div>
                     </div>
 
-                    <div className='' style={{ width: "30%" }}>
+                    <div className='' style={{ width: "40%" }}>
+                        <div className="mb-1 position-relative">
+                            <InputField
+                                type="search"
+                                className="form-control form-control-sm aliceblue-bg border-dark-subtle"
+                                placeholder="🔍 Search ..."
+                                value={rightSearch}
+                                onChange={(e) => setRightSearch(e.target.value)}
+                            />
+                        </div>
                         <select
                             className="form-select form-select-sm aliceblue-bg border-dark-subtle"
                             size="8"
@@ -318,11 +339,14 @@ const FacilityTypeMappingMaster = () => {
                                 setSelectedSelected(selected);
                             }}
                         >
-                            {selectedOptions?.length > 0 && selectedOptions.map(opt => (
-                                <option key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                </option>
-                            ))}
+                            {selectedOptions?.length > 0 && selectedOptions
+                                ?.filter(opt => opt?.label?.toLowerCase()?.includes(rightSearch?.toLowerCase()))
+                                ?.map((opt, index) => (
+                                    <option key={index + "bg" + opt?.value?.toString()} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))
+                            }
                         </select>
 
                     </div>
