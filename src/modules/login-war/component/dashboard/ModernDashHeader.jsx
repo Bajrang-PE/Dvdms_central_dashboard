@@ -29,15 +29,21 @@ const ModernDashHeader = () => {
 
     const logout = () => {
         localStorage.clear();
+<<<<<<< HEAD
         sessionStorage.clear();
+=======
+>>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
         Cookies.remove("csrfToken");
         navigate("/dvdms/");
     };
 
+<<<<<<< HEAD
     const handleRefresh = () => {
         window.location.reload(false);
     };
 
+=======
+>>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
 
     return (
         <>
@@ -46,7 +52,10 @@ const ModernDashHeader = () => {
                     <button
                         className={`hamburger ${menuOpen ? "active" : ""}`}
                         onClick={() => setMenuOpen(true)}
+<<<<<<< HEAD
                         title="View menus"
+=======
+>>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
                     >
                         <span></span>
                         <span></span>
@@ -64,6 +73,7 @@ const ModernDashHeader = () => {
                 <div className="header-right">
                     <button
                         className="header-btn"
+<<<<<<< HEAD
                         onClick={() => handleRefresh()}
                         title="Refresh Page"
                     >
@@ -74,13 +84,19 @@ const ModernDashHeader = () => {
                         className="header-btn"
                         onClick={() => navigate("/dvdms/user-dashboard")}
                         title="Go to home page"
+=======
+                        onClick={() => navigate("/dvdms/user-dashboard")}
+>>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
                     >
                         <i className="fa fa-home"></i>
                     </button>
                     <button
                         className="header-btn"
                         onClick={() => setStateDrawerOpen(true)}
+<<<<<<< HEAD
                         title="View state dvdms links"
+=======
+>>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
                     >
                         <i className="fa fa-link"></i>
                         <span>
@@ -91,7 +107,10 @@ const ModernDashHeader = () => {
                         <button
                             className="profile-btn"
                             onClick={() => setProfileOpen(!profileOpen)}
+<<<<<<< HEAD
                             title="User menu options"
+=======
+>>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
                         >
                             <div className="avatar">
                                 {userData?.username?.charAt(0)?.toUpperCase()}

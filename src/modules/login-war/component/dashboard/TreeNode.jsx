@@ -122,6 +122,10 @@ const TreeNode = ({
         node.children.length > 0;
 
     const location = useLocation();
+<<<<<<< HEAD
+=======
+
+>>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
     const renderLeaf = () => {
         const isExternal =
             node?.link?.startsWith("http");
@@ -133,6 +137,7 @@ const TreeNode = ({
             return (
                 <a
                     href={node?.link}
+<<<<<<< HEAD
                     target={isExternal ? "_self" : "_self"}
                     rel="noopener noreferrer"
                     className="tree-link"
@@ -142,6 +147,11 @@ const TreeNode = ({
                             onTabChange();
                         }
                     }}
+=======
+                    target={isExternal ? "_blank" : "_self"}
+                    rel="noopener noreferrer"
+                    className="tree-link"
+>>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
                 >
                     <div className="tree-link-content">
                         <i
@@ -158,6 +168,7 @@ const TreeNode = ({
             );
         }
 
+<<<<<<< HEAD
        
 
     // const renderLeaf = () => {
@@ -190,6 +201,8 @@ const TreeNode = ({
     //         );
     //     }
 
+=======
+>>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
         return (
             <Link
                 to={node?.link || "#"}

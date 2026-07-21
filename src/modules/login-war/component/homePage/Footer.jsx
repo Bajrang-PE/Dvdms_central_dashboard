@@ -528,11 +528,12 @@ const Footer = () => {
                             <h3>DVDMS Central Dashboard</h3>
                             <div className="sub-heading">Ministry of Health &amp; Family Welfare (Govt. of India)</div>
                             
-                            {/* QR Scanner Container */}
-                            {/* <div className="scanner-container text-center">
-                                <img src="scanner-placeholder.png" alt="QR Code Scanner" className="scanner-img mb-2" />
-                                <div className="fs-13 text-white" style={{ fontSize: '11px' }}>Scan to Verify</div>
-                            </div> */}
+                            <div className="visitor-badge">
+                                <span>Total Visits:</span>
+                                <span className="visitor-number">
+                                    {visitCount > 0 ? visitCount.toLocaleString() : '...'}
+                                </span>
+                            </div>
                         </div>
 
                         {/* Middle Column: Important Links + Center Aligned Date & Time */}

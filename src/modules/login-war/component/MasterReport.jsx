@@ -173,7 +173,6 @@ const MasterReport = (props) => {
 
 
     const downloadPDF = async () => {
-
         if (!data?.length) {
             ToastAlert('Data not available to download report', 'warning');
             return;

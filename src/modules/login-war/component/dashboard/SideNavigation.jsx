@@ -273,6 +273,10 @@ const SideNavigation = ({ isOpen, onClose }) => {
             const data = await fetchData(
                 `/api/v1/getMenuBySeatId/${getAuthUserData("userSeatId") || 10001}`
             );
+<<<<<<< HEAD
+=======
+            console.log('menudata', data)
+>>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
             if (data?.status === 1) {
 
                 const formatted =
