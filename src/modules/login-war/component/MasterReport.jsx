@@ -275,7 +275,7 @@ const MasterReport = (props) => {
                 <button className='btn btn-primary me-2' onClick={() => { setIsShowReport(false); setSelectedOption([]); }}><i className="fa fa-close me-1" style={{ color: "red", fontSize: "large" }}></i> Cancel</button>
                 <Dropdown>
                     <Dropdown.Toggle className='ps-2' variant="primary" id="dropdown-basic">
-                        Action
+                        Download Report
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                         <Dropdown.Item className='fix-label' href="#" onClick={() => downloadPDF()}>

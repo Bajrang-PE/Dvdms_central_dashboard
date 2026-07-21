@@ -396,7 +396,7 @@ const DrugMappingMaster = () => {
 
 
                     <div className='col-sm-6'>
-                        <div className="form-group row" style={{ paddingBottom: "1px" }}>
+                        {/* <div className="form-group row" style={{ paddingBottom: "1px" }}>
                             <label className="col-sm-5 col-form-label fix-label required-label">Item Type : </label>
                             <div className="col-sm-7 align-content-center">
                                 <InputSelect
@@ -414,7 +414,7 @@ const DrugMappingMaster = () => {
                                     }
                                 />
                             </div>
-                        </div>
+                        </div> */}
                         <div className="form-group row" style={{ paddingBottom: "1px" }}>
                             <label className="col-sm-5 col-form-label fix-label required-label">State : </label>
                             <div className="col-sm-7 align-content-center">
