@@ -142,6 +142,15 @@ const TreeNode = ({
                             onTabChange();
                         }
                     }}
+                    target={isExternal ? "_self" : "_self"}
+                    rel="noopener noreferrer"
+                    className="tree-link"
+                    
+                    onClick={(e) => {
+                        if (onTabChange) {
+                            onTabChange();
+                        }
+                    }}
                 >
                     <div className="tree-link-content">
                         <i
@@ -158,7 +167,6 @@ const TreeNode = ({
             );
         }
 
-       
 
     // const renderLeaf = () => {
     //     const isExternal =
@@ -189,6 +197,7 @@ const TreeNode = ({
     //             </a>
     //         );
     //     }
+
 
         return (
             <Link

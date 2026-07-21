@@ -29,7 +29,6 @@ const ModernDashHeader = () => {
 
     const logout = () => {
         localStorage.clear();
-        sessionStorage.clear();
         Cookies.remove("csrfToken");
         navigate("/dvdms/");
     };
@@ -37,7 +36,6 @@ const ModernDashHeader = () => {
     const handleRefresh = () => {
         window.location.reload(false);
     };
-
 
     return (
         <>

@@ -49,37 +49,37 @@ const Facilities = () => {
 
         setIsLoading(true);
 
-        try {
+        // try {
 
-            const response = await Promise.all(
+        //     const response = await Promise.all(
 
-                facilities.map(async (item) => {
-                    const kpiRes = await fetchData(`/hisutils/DataService/${item.kpiId}/execute?isGlobal=1`);
-                    let graphRes = null;
-                    if (item.graphId) {
-                        graphRes = await fetchData(`/hisutils/DataService/${item.graphId}/execute?isGlobal=1`);
-                    }
+        //         facilities.map(async (item) => {
+        //             const kpiRes = await fetchData(`/hisutils/DataService/${item.kpiId}/execute?isGlobal=1`);
+        //             let graphRes = null;
+        //             if (item.graphId) {
+        //                 graphRes = await fetchData(`/hisutils/DataService/${item.graphId}/execute?isGlobal=1`);
+        //             }
 
-                    return {
-                        ...item,
-                        kpiResponse: kpiRes,
-                        graphResponse: graphRes
-                    };
-                })
+        //             return {
+        //                 ...item,
+        //                 kpiResponse: kpiRes,
+        //                 graphResponse: graphRes
+        //             };
+        //         })
 
-            );
+        //     );
 
-            setKpiWidgets(response);
-            const graphMap = {};
-            response.forEach(item => {
-                if (item.graphId) {
-                    graphMap[item.graphId] = item.graphResponse;
-                }
-            });
-            setGraphWidgets(graphMap);
-        } catch (e) {
-            console.error(e);
-        }
+        //     setKpiWidgets(response);
+        //     const graphMap = {};
+        //     response.forEach(item => {
+        //         if (item.graphId) {
+        //             graphMap[item.graphId] = item.graphResponse;
+        //         }
+        //     });
+        //     setGraphWidgets(graphMap);
+        // } catch (e) {
+        //     console.error(e);
+        // }
         setIsLoading(false);
 
     };
@@ -191,7 +191,6 @@ const Facilities = () => {
             }
 
             {isLoading && <Loader />}
-
         </div>
 
     );

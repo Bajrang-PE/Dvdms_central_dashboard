@@ -66,6 +66,21 @@ const DistrictMaster = () => {
         }
     }, [searchInput, listData]);
 
+    useEffect(() => {
+        if (!searchInput) {
+            setFilterData(listData);
+        } else {
+            const lowercasedText = searchInput.toLowerCase();
+            const newFilteredData = listData.filter(row => {
+
+                const distName = row?.cwhstrDistName?.toLowerCase() || "";
+
+                return distName?.includes(lowercasedText);
+            });
+            setFilterData(newFilteredData);
+        }
+    }, [searchInput, listData]);
+
     const reset = () => {
         setValues({
             "countryId": "101", "stateId": "", "recordStatus": "1"

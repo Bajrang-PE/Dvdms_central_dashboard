@@ -348,3 +348,199 @@
 .tip-alert {
     display: none !important;
 }
+
+
+
+/* ----------------------------------------------------------- */
+/* =========================================================
+   HEADER RESPONSIVE FIX - NO SIZE SHRINK
+   Sirf line-break issue solve karega
+   ========================================================= */
+
+/* header ki original full width ko touch mat karo */
+.dynamic-reveal-header .row {
+    flex-wrap: nowrap !important;
+}
+
+/* center area (nav + buttons) ko ek line me rakho */
+.dynamic-reveal-header .col-md-7.d-flex {
+    flex-wrap: nowrap !important;
+    gap: 8px;
+    min-width: 0;
+}
+
+/* nav aur buttons dono same line me रहें */
+.dynamic-reveal-header .navbar-header,
+.dynamic-reveal-header .buttons {
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.dynamic-reveal-header .navbar-nav {
+    flex-wrap: nowrap !important;
+}
+
+.dynamic-reveal-header .nav-link,
+.dynamic-reveal-header .custom-header-btn {
+    white-space: nowrap !important;
+}
+
+/* thoda compact sirf jab width tight ho */
+@media (max-width: 1700px) {
+    .dynamic-reveal-header .nav-link {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .dynamic-reveal-header .custom-header-btn {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+}
+
+@media (max-width: 1550px) {
+    .dynamic-reveal-header .nav-link {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        font-size: 10.5px !important;
+    }
+
+    .dynamic-reveal-header .custom-header-btn {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        font-size: 11px !important;
+    }
+
+    .dynamic-reveal-header .buttons {
+        gap: 6px;
+    }
+}
+
+
+
+
+/* -------------------------------------------------------------------------- */
+
+/* =========================================================
+   1200 se niche:
+   nav links hide, BUT navbar toggler/menu visible
+   ========================================================= */
+   /* -------------------------------------------------------------------------- */
+/* =========================================================
+   FINAL HEADER RESPONSIVE FIX
+   1200 se niche kuch hide nahi hoga
+   nav + buttons + title sab one line me rahenge
+   sirf compact honge
+   ========================================================= */
+
+/* =========================================================
+   FINAL HEADER RESPONSIVE FIX (FORCE SINGLE LINE & COMPACT BUTTONS)
+   1200px se niche buttons aur links ka size compress hokar absolute single line banayega
+   ========================================================= */
+
+/* =========================================================
+   ULTIMATE HARD-LOCKED ONE-LINE HEADER (750PX COVERS EVERYTHING)
+   ========================================================= */
+
+@media (max-width: 1250px) and (min-width: 750px) {
+    /* 1. Main header row को एक कड़क फ्लेक्स कंटेनर बनाएं */
+    .dynamic-reveal-header .row {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+    }
+
+    /* 2. Left side branding (Logo + Name) को सुकड़ें */
+    .dynamic-reveal-header .col-md-4 {
+        display: flex !important;
+        align-items: center !important;
+        flex: 0 0 20% !important; /* इसको सिर्फ 20% स्पेस देंगे */
+        max-width: 20% !important;
+        min-width: 0 !important;
+    }
+
+    /* 3. CENTER AREA (Nav Links + Buttons COMBINED) को पूरा स्पेस दें */
+    .dynamic-reveal-header .col-md-7.d-flex {
+        display: flex !important;
+        flex-direction: row !important; /* ज़बरदस्ती एक हॉरिजॉन्टल लाइन */
+        flex-wrap: nowrap !important;   /* टूटना मना है */
+        align-items: center !important;
+        justify-content: flex-end !important; /* राइट साइड में सटा कर रखेगा */
+        flex: 0 0 75% !important; /* इसको बड़ा करके 75% स्पेस दिया */
+        max-width: 75% !important;
+        min-width: 0 !important;
+        gap: calc(2px + 0.3vw) !important;
+    }
+
+    /* Right side corner logo */
+    .dynamic-reveal-header .col-md-1 {
+        flex: 0 0 5% !important;
+        max-width: 5% !important;
+    }
+
+    /* 4. Bootstrap Nav की डिफ़ॉल्ट सेटिंग को ओवरराइड करें (सबसे ज़रूरी) */
+    .dynamic-reveal-header .navbar-header {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+    }
+
+    .dynamic-reveal-header .navbar-header .navbar-collapse {
+        display: flex !important; /* block की जगह flex ताकि एक लाइन में रहे */
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .dynamic-reveal-header .navbar-header .navbar-nav {
+        display: flex !important;
+        flex-direction: row !important; /* Links को एक लाइन में लाएगा */
+        flex-wrap: nowrap !important;
+        gap: calc(2px + 0.1vw) !important;
+        margin: 0 !important;
+    }
+
+    /* 5. Fluid Fonts & Padding (स्क्रीन छोटी होते ही अपने आप छोटे होंगे) */
+    .dynamic-reveal-header .navbar-header .nav-link {
+        font-size: calc(6px + 0.15vw) !important; 
+        padding: 3px calc(3px + 0.15vw) !important;
+        white-space: nowrap !important;
+    }
+
+    /* Buttons Container (CMS Login, Parichay...) */
+    .dynamic-reveal-header .buttons {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: calc(2px + 0.15vw) !important;
+        margin-left: 4px !important;
+    }
+
+    /* Buttons (CMS Login etc.) */
+    .dynamic-reveal-header .buttons .btn,
+    .dynamic-reveal-header .custom-header-btn {
+        font-size: calc(6px + 0.15vw) !important;
+        padding: 4px calc(3px + 0.15vw) !important;
+        white-space: nowrap !important;
+        min-height: auto !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+
+    /* Hide the hamburger button entirely */
+    .dynamic-reveal-header .navbar-toggler {
+        display: none !important;
+    }
+
+    /* Left Side Logos & text shrinking */
+    .dynamic-reveal-header .logo-image,
+    .dynamic-reveal-header .col-md-1 img {
+        height: calc(22px + 0.5vw) !important;
+    }
+    .dynamic-reveal-header .top-header-link { font-size: calc(5px + 0.15vw) !important; }
+    .dynamic-reveal-header .stylish-gradient-title { font-size: calc(7px + 0.2vw) !important; }
+}

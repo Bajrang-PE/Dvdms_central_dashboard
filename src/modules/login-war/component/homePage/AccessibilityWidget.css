@@ -1,33 +1,44 @@
 /* =========================================================
    FLOATING BUTTON
 ========================================================= */
+/* =========================================================
+   FLOATING BUTTON (COMPACT & MODERN STYLE)
+========================================================= */
+/* =========================================================
+   FLOATING BUTTON (FIXED POSITION & SMALL SIZE)
+========================================================= */
 .accessibility-floating-btn {
   position: fixed;
-  right: 22px;
-  bottom: 22px;
+  right: 25px;            /* Right side se thoda left shift kiya */
+  bottom: 80px;           /* Bottom arrow ke upar shift kiya taaki overlap na ho */
   z-index: 9999;
   border: none;
   cursor: pointer;
   border-radius: 999px;
-  padding: 14px 22px;
-  display: flex;
+  padding: 6px 12px;      /* Size compact kar diya */
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;               /* Gap Kam kiya */
   background: linear-gradient(135deg, #1238c4 0%, #1f57ff 100%);
   color: #fff;
-  font-size: 15px;
-  font-weight: 700;
-  box-shadow: 0 12px 28px rgba(18, 56, 196, 0.32);
-  transition: all 0.25s ease;
+  font-size: 12px;        /* Font size chota kar diya */
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(18, 56, 196, 0.28);
+  transition: all 0.22s ease-in-out;
 }
 
 .accessibility-floating-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 34px rgba(18, 56, 196, 0.38);
+  box-shadow: 0 6px 16px rgba(18, 56, 196, 0.38);
+}
+
+.accessibility-floating-btn:active {
+  transform: translateY(0);
 }
 
 .acc-float-icon {
-  font-size: 24px;
+  font-size: 15px;        /* Icon size bhi chota kar diya */
+  flex-shrink: 0;
 }
 
 /* =========================================================

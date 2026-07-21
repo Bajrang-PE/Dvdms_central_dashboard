@@ -11,7 +11,7 @@ export const imageUrls = [
     "banner.png",
     "AWaRe_Dashboard.png",
     "Central Dashboard for EMMS.png",
-
+    
 ];
 
 export const DataSeries = [
