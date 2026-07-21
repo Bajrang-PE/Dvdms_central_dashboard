@@ -1,25 +1,50 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { HISContext } from "../../contextApi/HISContext";
 import InputField from "../commons/InputField";
 import Select from "react-select";
-import { convertToISODate, formatDate1, formatParams } from "../../utils/commonFunction";
+import { convertToISODate, formatDate1 } from "../../utils/commonFunction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEyeSlash, faReply, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useSearchParams } from "react-router-dom";
 import { fetchPostData } from "../../../../utils/HisApiHooks";
+import { HidebtnSvg, ReplybtnSvg, SearchbtnSvg, ShowbtnSvg } from "../../utils/commonSVG";
 
-const Parameters = ({ params, scope, widgetId = null }) => {
-    const { theme, setParamsValues, paramsValuesPro, setParamsValuesPro, setIsSearchQuery, activeTab, isSearchQuery, searchScope, setSearchScope, dt } = useContext(HISContext);
+const usePrevious = (value) => {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    }, [value]);
+    return ref.current;
+};
+
+const Parameters = ({ params, scope, widgetId = null, isLayoutWithPreview, setWidgetParams, setTabParams, tabParams, hideOptions }) => {
+    const { theme, setParamsValues, paramsValuesPro, setParamsValuesPro, setIsSearchQuery, activeTab, isSearchQuery, searchScope, setSearchScope, dt, setAllDrpDtParams, setIsViewLoadedData } = useContext(HISContext);
     const [presentParams, setPresentParams] = useState([]);
     const [selectedValues, setSelectedValues] = useState({});
     const [dropdownData, setDropdownData] = useState({});
-    const [hideParams, setHideParams] = useState(false)
+    const [hideParams, setHideParams] = useState(false);
     const [defaultValueIfEmpty, setDefaultValueIfEmpty] = useState('');
     const [queryParams] = useSearchParams();
+    const [parameterOption, setParameterOption] = useState('2');
 
-    const dashFor =  atob(queryParams.get('dashboardFor'));
+    const groupId = atob(queryParams.get("groupId"));
+    const dashFor = atob(queryParams.get("dashboardFor"));
+    const isGlobal = queryParams.get("isGlobal") || 0;
+
+    const [parentId, setParentId] = useState([]);
+    const prevParams = usePrevious(paramsValuesPro);
+
     const [errors, setErrors] = useState({
     })
+
+
+    useEffect(() => {
+        if (hideOptions) {
+            setParameterOption(hideOptions);
+        } else {
+            setParameterOption('');
+        }
+    }, [hideOptions])
 
     const handleSetParamsValues = useCallback((values, type, widgetId = null) => {
         if (type === 'tabParams') {
@@ -71,12 +96,19 @@ const Parameters = ({ params, scope, widgetId = null }) => {
         try {
             const val = {
                 ids: idArr || [],
-                dashboardFor: dashFor || 'CENTRAL DASHBOARD',
+                dashboardFor: 'CENTRAL DASHBOARD',
                 masterName: "ParameterMst"
             };
-            const data = await fetchPostData("/hisutils/getparametertMultipleData", val);
+            const data = await fetchPostData(`/hisutils/getparametertMultipleData?isGlobal=${isGlobal || 0}`, val);
+
             if (data?.status === 1) {
                 setPresentParams(data?.data);
+                if (scope === 'widgetParams') {
+                    setWidgetParams(data?.data?.map((dt) => ({ id: dt?.id, disName: dt?.jsonData?.parameterDisplayName, paraName: dt?.jsonData?.parameterName })))
+                }
+                if (scope === 'tabParams') {
+                    setTabParams(data?.data?.map((dt) => ({ id: dt?.id, disName: dt?.jsonData?.parameterDisplayName, paraName: dt?.jsonData?.parameterName })))
+                }
             } else {
                 setPresentParams([]);
             }
@@ -115,7 +147,32 @@ const Parameters = ({ params, scope, widgetId = null }) => {
             .join('~');
 
         handleSetProParamsValues({ [id]: sortedString || '' }, scope, widgetId);
+        handleSetParamsValues({ [id]: sortedString || '' }, scope, widgetId);
+        setSearchScope({
+            scope: scope === "widgetParams" ? `all_w_${widgetId}` : "all", id: ""
+        })
         setErrors(prev => ({ ...prev, [id]: "" }));
+    };
+    const handleSingleSelectChange = (parameterName, selectedOption, parameterId) => {
+        const value = selectedOption ? selectedOption.optionValue : '';
+
+        setSelectedValues(prev => ({
+            ...prev,
+            [parameterName]: value
+        }));
+
+        handleSetProParamsValues({ [parameterId]: value || '' }, scope, widgetId);
+        handleSetParamsValues({ [parameterId]: value || '' }, scope, widgetId);
+        setSearchScope({
+            scope: scope === "widgetParams" ? `all_w_${widgetId}` : "all", id: ""
+        })
+
+        if (errors[parameterId]) {
+            setErrors(prev => ({
+                ...prev,
+                [parameterId]: ''
+            }));
+        }
     };
 
     const handleInputChange = (parameterName, e, id) => {
@@ -132,8 +189,14 @@ const Parameters = ({ params, scope, widgetId = null }) => {
             }));
         }
         handleSetProParamsValues({ [id]: type == 'date' ? formatDate1(value) : type == 'checkbox' ? e.target.checked : value || defaultValueIfEmpty }, scope, widgetId);
+        handleSetParamsValues({ [id]: type == 'date' ? formatDate1(value) : type == 'checkbox' ? e.target.checked : value || defaultValueIfEmpty }, scope, widgetId);
+        setSearchScope({
+            scope: scope === "widgetParams" ? `all_w_${widgetId}` : "all", id: ""
+        })
         setErrors(prev => ({ ...prev, [id]: "" }))
     };
+
+
 
     const getDateConstraint = (fieldId) => {
         if (!fieldId) return "";
@@ -144,12 +207,36 @@ const Parameters = ({ params, scope, widgetId = null }) => {
         return "";
     };
 
-
-    const fetchDropdownData = async (query, parameterName, jndiS) => {
+    const fetchDropdownData = async (query, parameterName, jndiS, paraValue) => {
         if (!query) return;
         try {
-            const val = { query, params: {}, jndi: jndiS };
-            const response = await fetchPostData('/hisutils/GenericApiQry', val);
+            const regex = /#PARA#(\d+)#PARA#/g;
+            const matches = [...query.matchAll(regex)];
+            const paraIds = matches.map(m => m[1]);
+            const paraId = paraIds.join(",");
+
+            if (paraId) {
+                setParentId((prev) => {
+                    if (prev.includes(paraId)) {
+                        return prev;
+                    }
+                    return [...prev, paraId];
+                });
+            }
+
+            const val = {
+                query,
+                params: {},
+                jndi: jndiS,
+                strGroupParaId: paraId || null,
+                strGroupParaValue: Array.isArray(paraValue)
+                    ? paraValue.join(",")
+                    : paraValue ?? null,
+                download: true,
+            };
+            const response = await fetchPostData(`/hisutils/GenericApiQry?isGlobal=${isGlobal || 0}`, val);
+            console.log(val, response)
+
             const rawData = response?.data || [];
 
             const formattedData = rawData.map(item => {
@@ -157,35 +244,124 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                 const valueKey = keys[0];
                 const labelKey = keys[1] || keys[0];
                 return {
-                    optionValue: item[valueKey],
+                    // optionValue: item[valueKey]?.toString()?.includes("##DEFAULT") ? item[valueKey]?.replace("##DEFAULT", "") : item[valueKey],
+                    optionValue:
+                        item[valueKey]
+                            ?.toString()
+                            ?.replace(/#+DEFAULT/g, "")
+                            ?.trim(),
+                    val: item[valueKey],
                     optionText: item[labelKey],
                 };
             });
-
-
             setDropdownData(prev => ({
                 ...prev,
                 [parameterName]: formattedData,
             }));
+            if (setAllDrpDtParams) {
+                setAllDrpDtParams(prev => ({
+                    ...prev,
+                    [parameterName]: formattedData,
+                }));
+            }
         } catch (error) {
             console.error("Error fetching query data:", error);
         }
     };
 
+
     // Fetch dropdown data for parameters that have queries
     useEffect(() => {
         presentParams.forEach((param) => {
             const query = param?.jsonData?.parameterQuery;
-            if (query) {
-                fetchDropdownData(query, param.jsonData.parameterName, param?.jndiIdForGettingData);
+            const mode = param?.jsonData?.modeForQuery;
+            const name = param?.jsonData?.parameterName;
+            const parameterType = param?.jsonData?.parameterType;
+            if (query && mode === "query") {
+                fetchDropdownData(query, name, param?.jndiIdForGettingData);
+            } else if (mode === "multiRowOption") {
+                setDropdownData(prev => ({
+                    ...prev,
+                    [name]: param?.jsonData?.lstOption || [],
+                }));
+                if (setAllDrpDtParams) {
+                    setAllDrpDtParams(prev => ({
+                        ...prev,
+                        [name]: param?.jsonData?.lstOption || [],
+                    }));
+                }
             }
         });
     }, [presentParams]);
+
+    useEffect(() => {
+        if (!presentParams?.length || !prevParams) return;
+
+        const changedKeys = [];
+
+        // check tabParams
+        for (const key in paramsValuesPro?.tabParams) {
+            if (paramsValuesPro.tabParams[key] !== prevParams.tabParams?.[key]) {
+                changedKeys.push({ scope: "tabParams", key, value: paramsValuesPro.tabParams[key] });
+            }
+        }
+
+        // check widgetParams (nested)
+        for (const widgetId in paramsValuesPro?.widgetParams) {
+            const currentWidget = paramsValuesPro.widgetParams[widgetId] || {};
+            const prevWidget = prevParams.widgetParams?.[widgetId] || {};
+
+            for (const key in currentWidget) {
+                if (currentWidget[key] !== prevWidget[key]) {
+                    changedKeys.push({
+                        scope: "widgetParams",
+                        key,
+                        value: currentWidget[key],
+                        widgetId, // optional, if you need to know which widget it belongs to
+                    });
+                }
+            }
+        }
+
+        if (!changedKeys.length) return;
+
+        // Run dropdown fetch only for changed params
+        presentParams.forEach((param) => {
+            const query = param?.jsonData?.parameterQuery;
+            if (!query) return;
+
+            const regex = /#PARA#(\d+)#PARA#/g;
+            const matches = [...query.matchAll(regex)];
+            const paraIds = matches.map(m => m[1]);
+
+            const allValues = paraIds
+                .map(id => {
+                    return (
+                        paramsValuesPro?.tabParams?.[id] ??
+                        paramsValuesPro?.widgetParams?.[param?.widgetId]?.[id]
+                    );
+                })
+                .filter(v => v !== undefined && v !== null && v !== "");
+
+            if (allValues.length) {
+                fetchDropdownData(
+                    query,
+                    param.jsonData.parameterName,
+                    param?.jndiIdForGettingData,
+                    // changed.value
+                    allValues
+                );
+                // }
+            }
+        });
+    }, [paramsValuesPro, presentParams]);
 
 
     const resetParams = () => {
         setSelectedValues({});
     }
+
+
 
     const searchParams = () => {
         let isValid = true;
@@ -221,11 +397,20 @@ const Parameters = ({ params, scope, widgetId = null }) => {
         });
 
         if (isValid) {
-            setParamsValues(paramsValuesPro, scope, widgetId);
-            setIsSearchQuery(true)
+            setParamsValues(paramsValuesPro);
+            setIsSearchQuery(true);
+
             setSearchScope({
                 scope: scope, id: widgetId
             })
+            if (hideOptions && hideOptions === "3") {
+                setParameterOption('1');
+                setHideParams(true)
+            }
+
+            if (setIsViewLoadedData) {
+                setIsViewLoadedData(true);
+            }
         }
     };
 
@@ -242,7 +427,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                         isMultipleSelectionRequired,
                         parameterType,
                         parameterQueryForDate,
-                        jndiIdForGettingData
+                        jndiIdForGettingData, showAsLableIfOneData
                     } = param?.jsonData || {};
 
                     const defaultValStr = defaultOption?.optionValue || "";
@@ -254,11 +439,15 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                     const texts = defaultTextStr?.includes("##") ? defaultTextStr.split("##") : [defaultTextStr];
 
                     if (parameterType === '4' && parameterQueryForDate) {
-                        const val = { query: parameterQueryForDate, params: {}, jndi: jndiIdForGettingData };
+                        const val = {
+                            query: parameterQueryForDate,
+                            params: {},
+                            jndi: jndiIdForGettingData,
+                            download: true
+                        };
                         try {
-                            const response = await fetchPostData('/hisutils/GenericApiQry', val);
+                            const response = await fetchPostData(`/hisutils/GenericApiQry?isGlobal=${isGlobal || 0}`, val);
                             const rawData = response?.data || [];
-
                             const formattedData = rawData.map(item => {
                                 const keys = Object.keys(item);
                                 const valueKey = keys[0];
@@ -277,6 +466,8 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                         }
                     }
 
+                    const options = dropdownData[parameterName] || [];
+
                     if (isMulti) {
                         const matchedOptions = values.map((val, idx) => ({
                             optionValue: val,
@@ -285,19 +476,47 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                         initialSelectedValues[parameterName] = matchedOptions;
                         defOpt[param?.id] = values.join("~");
                     } else {
-                        initialSelectedValues[parameterName] = values[0] || '';
-                        defOpt[param?.id] = values[0] || defaultValueIfEmpty;
+
+                        let selectedValue = '';
+
+                        // const isDefExist = options?.length > 0 && options?.find((opt) => opt?.val?.toString()?.includes("##DEFAULT"));
+
+                        const isDefExist = options?.length > 0 && options?.find(
+                            opt => /#+DEFAULT/.test(opt?.val?.toString()));
+
+
+                        if (isDefExist && isDefExist?.optionValue) {
+                            //if default exist in options
+                            selectedValue = isDefExist?.optionValue || '';
+                        } else if (values) {
+                            //set default from parameter form
+                            selectedValue = values[0] || '';
+                        }
+                        // If no default value and we have options, use the first option
+                        if (!selectedValue && options.length > 0) {
+                            selectedValue = options[0].optionValue;
+                        }
+
+                        initialSelectedValues[parameterName] = selectedValue;
+                        defOpt[param?.id] = selectedValue || defaultValueIfEmpty;
+
+                        // initialSelectedValues[parameterName] = values[0] || '';
+                        // defOpt[param?.id] = values[0] || defaultValueIfEmpty;
                     }
                 }
 
                 handleSetProParamsValues(defOpt, scope, widgetId);
                 handleSetParamsValues(defOpt, scope, widgetId);
                 setSelectedValues(initialSelectedValues);
+                setSearchScope({
+                    scope: 'all', id: ''
+                })
             }
         };
 
         initializeParams();
-    }, [presentParams, widgetId]);
+    }, [presentParams, widgetId, dropdownData[presentParams?.find(prm => prm?.jsonData?.parameterName)?.jsonData?.parameterName]]);
+
 
 
     const renderInputField = (param) => {
@@ -305,15 +524,20 @@ const Parameters = ({ params, scope, widgetId = null }) => {
             parameterType, parameterDisplayName, parameterName, lstOption, isMandatory, defaultOption,
             parameterParentWidth, parentAlignment,
             parameterLabelWidth, labelAlignment,
-            parameterControlWidth, controlAlignment, isMultipleSelectionRequired, defaultValueIfEmpty, parameterId, shouldBeLessThanField, shouldBeGreaterThanField, placeHolder, textBoxValidation
+            parameterControlWidth, controlAlignment, isMultipleSelectionRequired, defaultValueIfEmpty, parameterId, shouldBeLessThanField, shouldBeGreaterThanField, placeHolder, textBoxValidation, showAsLableIfOneData
         } = param?.jsonData || {};
         const options = dropdownData[parameterName] || [];
+        const shouldShowAsLabel = showAsLableIfOneData === "Yes" &&
+            options.length === 1 &&
+            (!defaultOption?.optionValue ||
+                (defaultOption && options.some(opt => opt.optionValue == defaultOption.optionValue)));
 
         return (
             <div
-                className={`col-md-${parameterParentWidth || 6} d-flex mb-1 align-items-center justify-content-${parentAlignment?.toLowerCase() || 'start'}`}
+                className={`${isLayoutWithPreview ? '' : `col-md-${parameterParentWidth || 6}`} d-flex mb-1 align-items-center justify-content-${parentAlignment?.toLowerCase() || 'start'}`}
                 key={parameterName}
             >
+
                 <label
                     className={`col-${parameterLabelWidth || 6} col-form-label text-${labelAlignment?.toLowerCase() || 'left'} ${isMandatory === "Yes" ? 'required-label' : ''}`}
                 >
@@ -340,6 +564,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                                 value={selectedValues[parameterName] || []}
                                 onChange={(selectedOptions) => handleMultiSelectChange(parameterName, selectedOptions, parameterId)}
                                 isDisabled={hideParams}
+                                menuPlacement="auto"
                             />
                             {errors[parameterId] &&
                                 <div className="required-input">
@@ -351,34 +576,46 @@ const Parameters = ({ params, scope, widgetId = null }) => {
 
                     {(parameterType === "1" && isMultipleSelectionRequired !== 'Yes') &&
                         <>
-                            {!hideParams ?
-                                <select
+                            {!hideParams && !shouldShowAsLabel ?
+                                <Select
                                     id={parameterId}
                                     name={parameterName}
-                                    className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} form-select form-select-sm`}
-                                    value={selectedValues[parameterName] || defaultValueIfEmpty}
-                                    onChange={(e) => handleInputChange(parameterName, e, parameterId)}
-                                >
-                                    {placeHolder ?
-                                        <option value=''>{placeHolder}</option> :
-                                        <option value=''>{'select'}</option>
-
+                                    menuPortalTarget={document.body}
+                                    options={
+                                        (() => {
+                                            const allOptions = options?.length > 0 ? options : [];
+                                            const defaultOpt = defaultOption?.optionText ? defaultOption : null;
+                                            if (defaultOpt && !allOptions.some(opt => opt.optionValue == defaultOpt.optionValue)) {
+                                                return [defaultOpt, ...allOptions];
+                                            }
+                                            return allOptions;
+                                        })()
                                     }
-                                    {defaultOption?.optionText !== '' &&
-                                        <option value={defaultOption?.optionValue ? defaultOption?.optionValue : ''}>{defaultOption?.optionText ? defaultOption?.optionText : 'Select Value'}</option>
+                                    placeholder={placeHolder || 'Select Value'}
+                                    className={`${theme === 'Dark' ? 'backcolorinput-dark' : 'backcolorinput'} react-select-multi`}
+                                    classNamePrefix="react-select"
+                                    getOptionLabel={(e) => e.optionText}
+                                    getOptionValue={(e) => e.optionValue}
+                                    value={
+                                        [...(defaultOption ? [defaultOption] : []), ...(options || [])]
+                                            .find(opt => opt.optionValue === selectedValues[parameterName]) ||
+                                        null
                                     }
-                                    {options?.length > 0 && options.map((option, index) => (
-                                        <option key={index} value={option.optionValue}>
-                                            {option.optionText}
-                                        </option>
-                                    ))}
-                                </select>
+                                    onChange={(selectedOption) => handleSingleSelectChange(parameterName, selectedOption, parameterId)}
+                                    isDisabled={hideParams}
+                                    isSearchable={true}
+                                    isClearable={true}
+                                    styles={{
+                                        menuPortal: base => ({ ...base, zIndex: 9999 }),
+                                    }}
+                                // menuPlacement="auto"
+                                />
                                 :
-
-                                <span>
+                                <span className="fw-medium">
                                     {
-                                        defaultOption?.optionValue == selectedValues[parameterName] || defaultValueIfEmpty ? defaultOption?.optionText :
-                                            options?.filter((dt => dt?.optionValue == selectedValues[parameterName] || defaultValueIfEmpty))[0]?.optionText
+                                        options?.find(opt => opt.optionValue === selectedValues[parameterName])?.optionText ||
+                                        defaultOption?.optionText ||
+                                        ''
                                     }
                                 </span>
                             }
@@ -399,7 +636,7 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                                     placeholder={placeHolder}
                                     name={parameterName}
                                     id={parameterId}
-                                    value={selectedValues[parameterName] || defaultValueIfEmpty}
+                                    value={selectedValues[parameterName]}
                                     onChange={(e) => handleInputChange(parameterName, e, parameterId)}
                                     acceptType={textBoxValidation === '2' ? 'number' : textBoxValidation === '4' ? 'letters' : ''}
                                 />
@@ -491,31 +728,42 @@ const Parameters = ({ params, scope, widgetId = null }) => {
                         </div>
                     )}
                 </div>
-            </div >
+
+            </div>
         );
     };
 
-
     return (
         <>
-            <div className='help-docs'>
-                <button type="button" className="small-box-btn-dwn m-1" onClick={() => searchParams()}>
-                    <FontAwesomeIcon icon={faSearch} size="xs" className="dropdown-gear-icon" />
-                </button>
-                <button type="button" className="small-box-btn-dwn m-1" onClick={() => resetParams()}>
-                    <FontAwesomeIcon icon={faReply} size="xs" className="dropdown-gear-icon" />
-                </button>
-                <button type="button" className="small-box-btn-dwn m-1" onClick={() => setHideParams(!hideParams)}>
-                    <FontAwesomeIcon icon={faEyeSlash} size="xs" className="dropdown-gear-icon" />
-                </button>
+            <div className={`${(hideParams && parameterOption === "1") ? 'd-flex justify-content-end' : 'help-docs'} ${isLayoutWithPreview ? 'layout-help-docs' : ''}`}>
+
+                <span type="button" className="small-box-btn-dwn m-1" onClick={() => resetParams()}>
+                    {/* <FontAwesomeIcon icon={faReply} size="xs" className="dropdown-gear-icon" /> */}
+                    <ReplybtnSvg />
+                </span>
+                <span type="button" className="small-box-btn-dwn m-1"
+                    onClick={() => {
+                        setHideParams(!hideParams);
+                        if (hideOptions) {
+                            setParameterOption(hideOptions);
+                        }
+                    }}>
+                    {/* <FontAwesomeIcon icon={faEyeSlash} size="xs" className="dropdown-gear-icon" /> */}
+                    {hideParams ? <ShowbtnSvg /> : <HidebtnSvg />}
+                </span>
+                <span type="button" className="small-box-btn-dwn m-1" onClick={() => searchParams()}>
+                    {/* <FontAwesomeIcon icon={faSearch} size="xs" className="dropdown-gear-icon" /> */}
+                    <SearchbtnSvg />
+                </span>
             </div>
-            {/* {!hideParams && */}
-            <div className="row">
-                {presentParams?.length > 0 && presentParams?.map((param, index) =>
-                    renderInputField(param))
-                }
-            </div>
-            {/* } */}
+            {(!hideParams || parameterOption !== "1") &&
+                <>
+                    <div className={`${isLayoutWithPreview ? 'layouthw' : 'row'}`}>
+                        {presentParams?.length > 0 && presentParams?.map((param, index) =>
+                            renderInputField(param))
+                        }
+                    </div>
+                </>}
         </>
     );
 };

@@ -25,7 +25,7 @@ const StateJobdetailsForm = (props) => {
     const handleInputChange = (e) => {
         const { name, value } = e?.target;
         const errName = name + "Err";
-        if (name && value) {
+        if (name) {
             setValues({ ...values, [name]: value });
             setErrors({ ...errors, [errName]: "" });
         }
@@ -38,17 +38,17 @@ const StateJobdetailsForm = (props) => {
             "insertQuery": values?.insertQuery,
             "jobName": values?.jobName,
             "jobStart": formatDateForBackend(values?.jobStartTime),
-            "nextRunTime": "",
-            "lastRunTime": "",
+            "nextRunTime": formatDateForBackend(values?.jobStartTime),
+            "lastRunTime": formatDateForBackend(values?.jobStartTime),
             "lastStateTime": formatDateForBackend(values?.lastStateTime),
             // "jobID": 0,
-            "jobDuration": parseInt(values?.duration),
+            "jobDuration": values?.duration?.toString(),
             "stateID": stateData[0]?.value,
             "preProcedureName": values?.preProcedureName,
             "preProcedureMode": parseInt(values?.preProcedureMode),
             "postProcedureName": values?.postProcedureName,
             "postProcedureMode": parseInt(values?.procedureMode),
-            // "isActive": recordStatus
+            "isActive": 1
         }
         fetchPostData(`/api/v1/stateJobDetails/createNewJob`, val).then(data => {
             if (data?.status === 1) {
@@ -86,7 +86,7 @@ const StateJobdetailsForm = (props) => {
             "postProcedureMode": parseInt(values?.procedureMode),
             "isActive": parseInt(recordStatus) || 0
         }
-        fetchUpdateData(`api/v1/stateJobDetails/updateJob?jobID=${selectedOption[0]?.jobID}&jobName=${selectedOption[0]?.jobName}`, val).then(data => {
+        fetchUpdateData(`/api/v1/stateJobDetails/updateJob?jobID=${selectedOption[0]?.jobID}&jobName=${selectedOption[0]?.jobName}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
                 getStateJobDetailsListData(stateData[0]?.value, recordStatus);
@@ -160,7 +160,6 @@ const StateJobdetailsForm = (props) => {
         setValues({ "stateName": "", "stateDatabase": "", "jobName": "", "stateFetchQuery": "", "insertQuery": "", "preProcedureName": "", "preProcedureMode": "", "postProcedureName": "", "procedureMode": "", "jobStartTime": new Date(), "duration": "", "lastStateTime": new Date() });
         setErrors({ "jobNameErr": "", "stateFetchQueryErr": "", "preProcedureModeErr": "" });
     }
-    console.log(selectedOption, 'values')
 
     return (
         <div>

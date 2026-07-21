@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import { fetchData, fetchPostData } from '../../../../utils/ApiHooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { sanitizeInput } from '../../../../utils/CommonFunction';
 
 
 const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
@@ -26,14 +27,16 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
     const handleChange = (e) => {
         const { value, name } = e.target;
 
+        const nval = sanitizeInput(value, true);
+
         if (name === 'username') {
-            setUsername(value)
+            setUsername(nval)
             setErrors({ ...errors, "usernameErr": "" })
         } else if (name === 'password') {
-            setPassword(value)
+            setPassword(nval)
             setErrors({ ...errors, "passwordErr": "" })
         } else if (name === 'captchaInput') {
-            setCaptchaInput(value)
+            setCaptchaInput(nval)
             setErrors({ ...errors, "captchaInputErr": "" })
         }
     }
@@ -78,25 +81,30 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                 "captchaToken": captchaToken
             }
             fetchPostData("/api/v1/auth/login", val).then(data => {
-                console.log(data, 'data')
                 if (data?.status === 1) {
                     ToastAlert("Login successful", 'success')
-                    const { gnumSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode, } = data?.data;
+                    const { gnumUserSeatId, gstrUserName, accessToken, refreshToken, csrfToken, gnumHospitalCode, gnumUserId } = data?.data;
                     const auth = {
                         'isLogin': true,
-                        //   'userType': (gstrUserName)?.toLowerCase(),
                         'username': gstrUserName,
-                        'userSeatId': gnumSeatId,
-                        //   'hospitalName': gstrHospitalName,
-                        'hospitalCode': gnumHospitalCode
+                        'userSeatId': gnumUserSeatId,
+                        'hospitalCode': gnumHospitalCode,
+                        'userId': gnumUserId,
                     }
                     localStorage.setItem('data', encryptData(JSON.stringify(auth)));
-                    Cookies.set('csrfToken', csrfToken);
-                    localStorage.setItem('accessToken', accessToken);
+                    // Cookies.set('csrfToken', csrfToken);
+                    Cookies.set("csrfToken", csrfToken, {
+                        secure: true,
+                        sameSite: "Strict",
+                        httpOnly: true
+                    });
+                    // localStorage.setItem('accessToken', accessToken);
+                    sessionStorage.setItem('accessToken', accessToken);
                     localStorage.setItem('refreshToken', refreshToken);
                     navigate('/dvdms/user-dashboard');
                 } else {
                     ToastAlert(data?.message, 'error');
+                    fetchCaptchaData();
                 }
             })
         }
@@ -130,7 +138,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
 
     return (
         <>
-            <Modal show={isShow} onHide={onClose} size='sm'>
+            <Modal show={isShow} onHide={onClose} size='sm' style={{ paddingTop: "12rem" }}>
                 <Modal.Header closeButton className='p-2 datatable-header cms-login'>
                     <b><h5 className='mx-2 mt-1 px-1'>DVDMS Dashboard Login</h5></b>
                 </Modal.Header>
@@ -145,72 +153,74 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
                             <option value="1">Central Dashboard</option>
                         </select>
                     </div>
-                    <div className="ps-0 align-content-center m-3">
-                        <input
-                            type="text"
-                            className="aliceblue-bg form-control"
-                            placeholder="Username"
-                            name='username'
-                            id='username'
-                            value={username}
-                            onChange={handleChange}
-                            onKeyDown={checkCapsLock}
-                        />
-                        {errors?.usernameErr &&
-                            <div className="required-input">
-                                {errors?.usernameErr}
-                            </div>
-                        }
-                    </div>
-                    <div className="align-content-center input-group m-3" style={{ paddingRight: "12%" }}>
-                        <input
-                            type={isShowPassword ? 'text' : 'password'}
-                            className="aliceblue-bg form-control w-75"
-                            placeholder="Password"
-                            name='password'
-                            id='password'
-                            value={password}
-                            onChange={handleChange}
-                            onKeyDown={checkCapsLock}
-                        />
-                        <span className="input-group-text aliceblue-bg pointer" id="basic-addon1" onClick={() => setIsShowPassword(!isShowPassword)}>
-                            <FontAwesomeIcon icon={isShowPassword ? faEye : faEyeSlash} className="dropdown-gear-icon me-1" />
-                        </span>
-                        {errors?.passwordErr &&
-                            <div className="required-input">
-                                {errors?.passwordErr}
-                            </div>
-                        }
-                    </div>
+                    <form action="" onSubmit={executeLogin}>
+                        <div className="ps-0 align-content-center m-3">
+                            <input
+                                type="text"
+                                className="aliceblue-bg form-control"
+                                placeholder="Username"
+                                name='username'
+                                id='username'
+                                value={username}
+                                onChange={handleChange}
+                                onKeyDown={checkCapsLock}
+                            />
+                            {errors?.usernameErr &&
+                                <div className="required-input">
+                                    {errors?.usernameErr}
+                                </div>
+                            }
+                        </div>
+                        <div className="align-content-center input-group m-3" style={{ paddingRight: "12%" }}>
+                            <input
+                                type={isShowPassword ? 'text' : 'password'}
+                                className="aliceblue-bg form-control w-75"
+                                placeholder="Password"
+                                name='password'
+                                id='password'
+                                value={password}
+                                onChange={handleChange}
+                                onKeyDown={checkCapsLock}
+                            />
+                            <span className="input-group-text aliceblue-bg pointer" id="basic-addon1" onClick={() => setIsShowPassword(!isShowPassword)}>
+                                <FontAwesomeIcon icon={isShowPassword ? faEye : faEyeSlash} className="dropdown-gear-icon me-1" />
+                            </span>
+                            {errors?.passwordErr &&
+                                <div className="required-input">
+                                    {errors?.passwordErr}
+                                </div>
+                            }
+                        </div>
 
-                    <div className="ps-0 align-content-center mx-3 my-1">
-                        <img className='border-warning border rounded m-1 w-75' src={captchaImage} alt="captcha" />
-                        <button className='btn btn-primary btn-sm' onClick={() => { fetchCaptchaData() }}> <i className="fa fa-refresh" style={{ color: "#FBC02D" }}></i></button>
-                    </div>
-                    <div className="ps-0 align-content-center mx-3 my-1">
-                        <input
-                            type="text"
-                            className="aliceblue-bg form-control"
-                            placeholder="Enter Captcha"
-                            name='captchaInput'
-                            id='captchaInput'
-                            value={captchaInput}
-                            onChange={handleChange}
-                            onKeyDown={checkCapsLock}
-                        />
-                        {errors?.captchaInputErr &&
-                            <div className="required-input">
-                                {errors?.captchaInputErr}
-                            </div>
-                        }
-                    </div>
-                    <div className="ps-0 align-content-center mt-4 mb-3 mx-4">
-                        <Link to={'/'} onClick={() => setShowForgotPass(true)}>Forgot Password ?</Link>
-                    </div>
+                        <div className="ps-0 align-content-center mx-3 my-1">
+                            <img className='border-warning border rounded m-1 w-75' src={captchaImage} alt="captcha" />
+                            <button type='button' className='btn btn-primary btn-sm' onClick={() => { fetchCaptchaData() }}> <i className="fa fa-refresh" style={{ color: "#FBC02D" }}></i></button>
+                        </div>
+                        <div className="ps-0 align-content-center mx-3 my-1">
+                            <input
+                                type="text"
+                                className="aliceblue-bg form-control"
+                                placeholder="Enter Captcha"
+                                name='captchaInput'
+                                id='captchaInput'
+                                value={captchaInput}
+                                onChange={handleChange}
+                                onKeyDown={checkCapsLock}
+                            />
+                            {errors?.captchaInputErr &&
+                                <div className="required-input">
+                                    {errors?.captchaInputErr}
+                                </div>
+                            }
+                        </div>
+                        <div className="ps-0 align-content-center mt-4 mb-3 mx-4">
+                            <Link to={'/'} onClick={() => setShowForgotPass(true)}>Forgot Password ?</Link>
+                        </div>
 
-                    <button className='btn cms-login-btn w-100 mb-1' onClick={executeLogin}>
-                        <b> <span>Login</span></b>
-                    </button>
+                        <button type='submit' className='btn cms-login-btn w-100 mb-1'>
+                            <b> <span>Login</span></b>
+                        </button>
+                    </form>
                 </Modal.Body>
             </Modal>
         </>

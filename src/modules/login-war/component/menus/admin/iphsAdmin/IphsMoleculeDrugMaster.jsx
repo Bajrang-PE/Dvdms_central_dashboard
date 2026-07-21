@@ -3,18 +3,18 @@ import { capitalizeFirstLetter, ToastAlert } from '../../../../utils/CommonFunct
 import { LoginContext } from '../../../../context/LoginContext';
 import InputSelect from '../../../InputSelect';
 import GlobalTable from '../../../GlobalTable';
-import { fetchData, fetchDeleteData } from '../../../../../../utils/ApiHooks';
+import { fetchData, fetchDeleteData, fetchPostData } from '../../../../../../utils/ApiHooks';
 import IphsMoleculeDrugMasterForm from '../../forms/admin/iphsAdmin/IphsMoleculeDrugMasterForm';
+import MasterReport from '../../../MasterReport';
 
 const IphsMoleculeDrugMaster = () => {
 
-  const { openPage, setOpenPage, selectedOption, setSelectedOption, confirmSave,
-    setShowConfirmSave, setConfirmSave, iphsGroupDrpData, getIphsGroupDrpData, iphsSubGroupDrpData, getIphsSubGroupDrpData } = useContext(LoginContext);
+  const { openPage, setOpenPage, selectedOption, setSelectedOption, confirmSave, setShowConfirmSave, setConfirmSave, iphsGroupDrpData, getIphsGroupDrpData, iphsSubGroupDrpData, getIphsSubGroupDrpData, isShowReport } = useContext(LoginContext);
   const [searchInput, setSearchInput] = useState('');
   const [listData, setListData] = useState([]);
   const [selectedGroupName, setSelectedGroupName] = useState("");
   const [selectedGroupId, setSelectedGroupId] = useState("");
-   const [filterData, setFilterData] = useState(listData);
+  const [filterData, setFilterData] = useState(listData);
 
   const [values, setValues] = useState({
     "groupId": "", "subGroupId": "", "record": "1"
@@ -76,7 +76,7 @@ const IphsMoleculeDrugMaster = () => {
       "isActive ": values?.record || 0
     }
 
-    fetchData(`http://10.226.26.247:8025/api/v1/IphsMoleculeDrugMst/getMoleculeDrugs`, val).then(data => {
+    fetchData(`/api/v1/IphsMoleculeDrugMst/getMoleculeDrugs`, val).then(data => {
       if (data?.status === 1) {
         setListData(data.data)
       } else {
@@ -142,7 +142,7 @@ const IphsMoleculeDrugMaster = () => {
 
   const handleDelete = () => {
 
-    fetchDeleteData(`http://10.226.26.247:8025/api/v1/IphsMoleculeDrugMst/deleteMoleculeDrug?drugID=${selectedOption[0].drugID}&isActive=0`).then(data => {
+    fetchPostData(`/api/v1/IphsMoleculeDrugMst/deleteMoleculeDrug?drugID=${selectedOption[0].drugID}&isActive=0`).then(data => {
       if (data?.status === 1) {
         ToastAlert("Data deleted successfully", "success")
         setSelectedOption([]);
@@ -167,12 +167,13 @@ const IphsMoleculeDrugMaster = () => {
   return (
     <>
       <div className='masters mx-3 my-2'>
-        <div className='masters-header row'>
-          <span className='col-6'><b>{`Iphs Molecule Drug Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-          {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
-        </div>
-
-        {(openPage === "home" || openPage === "delete") &&
+        {!isShowReport &&
+          <div className='masters-header row'>
+            <span className='col-6'><b>{`Iphs Molecule Drug Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+            {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
+          </div>
+        }
+        {(openPage === "home" || openPage === "delete") && !isShowReport &&
           <>
             <div className='row mt-2'>
               <div className="form-group col-sm-4 row" style={{ paddingBottom: "1px" }}>
@@ -225,14 +226,24 @@ const IphsMoleculeDrugMaster = () => {
 
             <div>
               <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null} onValidate={validate}
-                onReport={null} setSearchInput={setSearchInput}  searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={false} isReport={true} setOpenPage={setOpenPage} />
+                onReport={null} setSearchInput={setSearchInput} searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={false} isReport={true} setOpenPage={setOpenPage} />
             </div>
           </>
         }
 
-        {(openPage === "add" || openPage === "modify") &&
+        {(openPage === "add" || openPage === "modify") && !isShowReport &&
           <IphsMoleculeDrugMasterForm selectedGroupName={selectedGroupName} selectedGroupId={selectedGroupId}
-            valuesMain={values} setValuesMain={setValues} getListData={getListData} setSearchInput={setSearchInput}/>
+            valuesMain={values} setValuesMain={setValues} getListData={getListData} setSearchInput={setSearchInput} />
+        }
+
+        {isShowReport &&
+          <MasterReport title={"IPHS Molecule Drug Master"} column={columns} data={filterData}
+            filters={[
+              { value: iphsGroupDrpData?.find(dt => dt?.value == values?.groupId)?.label, label: "IPHS Group" },
+              { value: iphsSubGroupDrpData?.find(dt => dt?.value == values?.subGroupId)?.label, label: "IPHS SubGroup" },
+              { value: values?.record == 1 ? "Active" : "InActive", label: "Record Status" },
+            ]}
+          />
         }
 
       </div>

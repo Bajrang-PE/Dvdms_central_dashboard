@@ -2,15 +2,20 @@ import React, { useContext, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 import './NavbarHeader.css';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { HISContext } from '../../contextApi/HISContext';
-import { fetchPostData } from '../../../../utils/HisApiHooks';
 import TranslateModal from './TranslateModal';
 import axios from 'axios';
 import { extractAllPageText, ToastAlert } from '../../utils/commonFunction';
+import SessionClock from '../commons/SessionClock';
+import UserProfileMenu from './UserProfileMenu';
 
 const NavbarHeader = () => {
     const { setActionMode, setSelectedOption, language, changeLanguage, showTranslateModal, setShowTranslateModal, fetchTranslations, setLanguage, extractedTexts, setExtractedTexts, setLoading, dt } = useContext(HISContext)
+
+
+    const [searchParams] = useSearchParams();
+    const isHome = searchParams.get("isHome") || 0;
 
     useEffect(() => {
         const savedLanguage = localStorage.getItem('language') || 'english';
@@ -77,16 +82,16 @@ const NavbarHeader = () => {
 
 
     const dashboardMasterDt = [
-        { label: 'Widget Master', link: "/dvdms/HIS_dashboard/widget-master" },
-        { label: 'Tab Master', link: "/dvdms/HIS_dashboard/tab-master" },
-        { label: 'Dashboard Master', link: "/dvdms/HIS_dashboard/dashboard-master" },
-        { label: 'Parameter Master', link: "/dvdms/HIS_dashboard/parameter-master" },
-        { label: 'Dashboard Configuration Master', link: "/dvdms/HIS_dashboard/dashboard-configuration-master" }
+        { label: 'Widget Master', link: "/HIS_dashboard/widget-master" },
+        { label: 'Tab Master', link: "/HIS_dashboard/tab-master" },
+        { label: 'Dashboard Master', link: "/HIS_dashboard/dashboard-master" },
+        { label: 'Parameter Master', link: "/HIS_dashboard/parameter-master" },
+        { label: 'Dashboard Configuration Master', link: "/HIS_dashboard/dashboard-configuration-master" }
     ]
     const webServiceMaster = [
-        { label: 'Data Service Master', link: "/dvdms/HIS_dashboard/data-service-master" },
-        { label: 'Service User Master', link: "/dvdms/HIS_dashboard/service-user-master" },
-        { label: 'Dashboard SubMenu Master', link: "/dvdms/HIS_dashboard/dashboard-submenu-master" }
+        { label: 'Data Service Master', link: "/HIS_dashboard/data-service-master" },
+        { label: 'Service User Master', link: "/HIS_dashboard/service-user-master" },
+        { label: 'Dashboard SubMenu Master', link: "/HIS_dashboard/dashboard-submenu-master" }
     ]
 
     const languageOptions = [
@@ -109,12 +114,22 @@ const NavbarHeader = () => {
         setExtractedTexts([]);
     }
 
+    const allowedHosts = [
+        "10.226.17.6",
+        "k8-uat.dcservices.in",
+        "cms.cdac.in"
+    ];
+
+    const showProfileMenu = allowedHosts.includes(window?.location?.hostname) && (isHome == 0 || isHome === 0);
+
     return (
         <>
             {/* <DashHeader/> */}
             <nav className="navbar navbar-expand-lg navbar-dark navbar-header-his">
                 <div className="container-fluid his-brand">
-                    <a className="navbar-brand logo" href="/dvdms/user-dashboard">{dt("HIS Utility")}</a>
+                    {/* <div className="navbar-brand logo">{dt("HIS Utility")}</div> */}
+                    {/* <SessionClock /> */}
+
                     <button
                         className="navbar-toggler"
                         type="button"
@@ -128,6 +143,18 @@ const NavbarHeader = () => {
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNavDropdown">
                         <ul className="navbar-nav ms-auto">
+                            {/* <button
+                                className='btn btn-sm me-1 py-0 header-image-his'
+                                onClick={handleExtractClick}
+                                // disabled={language !== 'english'}
+                            // data-tooltip="Select english then translate data from here"
+                            // data-trigger="hover"
+                            >
+                                <i className="fa fa-language me-1 translate"></i> {dt("Translate")}</button> */}
+
+                            {/* <li className="nav-item">
+                                <div className="vr h-100 mx-2 text-white text-opacity-100" />
+                            </li> */}
 
                             <li className="nav-item dropdown">
                                 <a
@@ -151,7 +178,8 @@ const NavbarHeader = () => {
                                     ))}
                                 </ul>
                             </li>
-                            <li className="nav-item d-none d-lg-block">
+
+                            <li className="nav-item">
                                 <div className="vr h-100 mx-2 text-white text-opacity-100" />
                             </li>
 
@@ -179,33 +207,38 @@ const NavbarHeader = () => {
                                 </ul>
                             </li>
 
-                        </ul>
-                        <div className="d-flex align-items-lg-center">
-                            {/* Language Selector */}
-                            <li className="nav-item d-none d-lg-block">
+
+                            {showProfileMenu &&
+                                <>
+                                    <li className="nav-item">
+                                        <div className="vr h-100 mx-2 text-white text-opacity-100" />
+                                    </li>
+                                    <div className=''>
+                                        <UserProfileMenu />
+                                    </div>
+                                </>
+                            }
+
+                            {/* Language Selector
+                            <li className="nav-item">
                                 <div className="vr h-100 mx-2 text-white text-opacity-100" />
                             </li>
-                            <button
-                                className='btn btn-sm me-1 py-0 header-image-his'
-                                onClick={handleExtractClick}
-                            >
-                                <i className="fa fa-language me-1 translate"></i> {dt("Translate")}</button>
-
-                            <div className="vr h-100 mx-2 text-white text-opacity-100 align-self-center" />
 
                             <select
                                 className="form-select form-select-sm py-0 "
                                 style={{ width: 'auto', cursor: 'pointer' }}
                                 value={language}
                                 onChange={(e) => changeLanguage(e.target.value)}
+                            // data-tooltip-tour={isDashboard ? "Select your preferred language" : null}
+                            // data-tooltip-step={isDashboard ? "3" : null}
                             >
                                 {languageOptions.map((lang) => (
                                     <option key={lang.code} value={lang.code}>
                                         {lang.label}
                                     </option>
                                 ))}
-                            </select>
-                        </div>
+                            </select> */}
+                        </ul>
                     </div>
                 </div>
             </nav>

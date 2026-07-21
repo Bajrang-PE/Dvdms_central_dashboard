@@ -3,7 +3,7 @@ import DashHeader from '../../dashboard/DashHeader'
 import InputSelect from "../../InputSelect";
 import axios from 'axios';
 import { LoginContext } from '../../../context/LoginContext';
-import { fetchData, fetchUpdateData } from '../../../../../utils/ApiHooks';
+import { fetchData, fetchPostData, fetchUpdateData } from '../../../../../utils/ApiHooks';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import InputField from '../../InputField';
 
@@ -24,7 +24,7 @@ const StateConfigCwh = () => {
     const [values, setValues] = useState({
         "strStateId": "", "insertMethodOnCentralServer": "", "stateServiceUrl": "", "centServiceUrl": "",
         "stateServiceUserName": "", "stateServicePass": "", "serviceConnTimeout": "", "dataFetchSize": "",
-        "dbDrivClass": "", "dbUrl": "", "dbUserName": "", "dbPass": "", "isDbCredAvl": "", "stateDatabase": "", "jobForTesting": "",
+        "dbDrivClass": "", "dbUrl": "", "dbUserName": "", "dbPass": "", "isDbCredAvl": "0", "stateDatabase": "", "jobForTesting": "",
         "jobId": "", "jobName": "",
     });
 
@@ -46,7 +46,6 @@ const StateConfigCwh = () => {
     useEffect(() => {
         if (values?.insertMethodOnCentralServer == "3" && values?.strStateId) {
             getJobDrpData(values?.strStateId);
-            console.log('first')
         }
     }, [values?.strStateId, values?.insertMethodOnCentralServer]);
 
@@ -59,13 +58,12 @@ const StateConfigCwh = () => {
         }
     }
 
+
     const fetchDataByState = async (stateId) => {
         try {
-
-            fetchData(`http://10.226.27.173:8025/api/v1/state/getStateConfig/${stateId}`).then((data) => {
-
+            fetchData(`/api/v1/state/getStateConfig/${stateId}`).then((data) => {
+                console.log('data', data)
                 if (data?.status === 1) {
-
                     setValues({
                         ...values,
                         strStateId: data.data?.cwhnumStateId ?? "",
@@ -80,22 +78,20 @@ const StateConfigCwh = () => {
                         dbUserName: data.data?.cwhstrDatabaseusername ?? "",
                         dbPass: data.data?.cwhstrDatabasepassword ?? "",
                         stateDatabase: data.data?.cwhstrDatabaseName ?? "",
-                        isDbCredAvl: data.data?.cwhnumIsdbcedentialavailable ?? "",
+                        isDbCredAvl: data.data?.cwhnumIsdbcedentialavailable ?? "0",
                         insertMethodOnCentralServer: data.data?.numIsDataInsertByEtlWar ?? ""
                     });
-
-
+                } else {
+                    reset();
                 }
-
             })
-
         } catch (error) {
             console.error('Failed to fetch data:', error);
         }
     };
 
     const getJobDrpData = async (stateId) => {
-        fetchData(`http://10.226.27.173:8025/api/v1/state/getjob/${stateId}`).then((data) => {
+        fetchData(`/api/v1/state/getjob/${stateId}`).then((data) => {
 
             if (data?.status === 1) {
 
@@ -205,28 +201,28 @@ const StateConfigCwh = () => {
             cwhstrDatabasepassword: values?.isDbCredAvl == "0" ? '' : values?.dbPass,
         };
 
-        await fetchUpdateData("http://10.226.27.173:8025/api/v1/state", data).then(data => {
+        await fetchPostData("/api/v1/state", data).then(data => {
             if (data?.status === 1) {
                 ToastAlert('State configuration saved successfully', 'success');
                 setConfirmSave(false);
                 reset();
             } else {
                 ToastAlert('Error', 'error');
+                setConfirmSave(false);
             }
         });
-
 
     }
 
 
     const reset = () => {
-
         setValues({
-            "strStateId": "", "insertMethodOnCentralServer": "", "stateServiceUrl": "", "centServiceUrl": "",
+            "insertMethodOnCentralServer": "", "stateServiceUrl": "", "centServiceUrl": "",
             "stateServiceUserName": "", "stateServicePass": "", "serviceConnTimeout": "", "dataFetchSize": "",
-            "dbDrivClass": "", "dbUrl": "", "dbUserName": "", "dbPass": "", "isDbCredAvl": "", "stateDatabase": "", "jobForTesting": "",
+            "dbDrivClass": "", "dbUrl": "", "dbUserName": "", "dbPass": "", "isDbCredAvl": "0", "stateDatabase": "", "jobForTesting": "",
             "jobId": "", "jobName": "",
         });
+        setConfirmSave(false);
     }
 
     return (
@@ -539,8 +535,8 @@ const StateConfigCwh = () => {
                             <button className='btn btn-sm new-btn-blue py-0' onClick={reset}>
                                 <i className="fa fa-broom me-1"></i>Clear</button>
 
-                            <button className='btn btn-sm new-btn-blue py-0' onClick={reset}>
-                                <i className="fa fa-broom me-1"></i>Test Url</button>
+                            {/* <button className='btn btn-sm new-btn-blue py-0' onClick={reset}>
+                                <i className="fa fa-broom me-1"></i>Test Url</button> */}
                         </>
 
                     </div>

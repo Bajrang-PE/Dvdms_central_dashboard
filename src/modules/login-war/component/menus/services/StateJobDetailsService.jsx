@@ -86,6 +86,8 @@ const StateJobDetailsService = () => {
         }
     }, [confirmSave])
 
+console.log('filterData', filterData)
+
     const column = [
         {
             name: <input

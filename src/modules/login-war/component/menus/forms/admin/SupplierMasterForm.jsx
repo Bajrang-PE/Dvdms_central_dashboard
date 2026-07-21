@@ -5,7 +5,7 @@ import { LoginContext } from '../../../../context/LoginContext';
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchUpdateData, fetchUpdatePostData } from '../../../../../../utils/ApiHooks';
 import InputField from '../../../InputField';
-import { getAuthUserData } from '../../../../../../utils/CommonFunction';
+import { getAuthUserData, isValidEmail } from '../../../../../../utils/CommonFunction';
 
 const SupplierMasterForm = (props) => {
     const { getListData, setSearchInput } = props;
@@ -19,6 +19,8 @@ const SupplierMasterForm = (props) => {
         "pinCode": "", "countryName": "101", "stateId": "", "corporateGst": "", "lstNo": "", "cstNo": "",
         "panNo": "", "showPan": "", "suppId": "",
     })
+
+    console.log('values', values)
 
     const [errors, setErrors] = useState({
         "suppNameErr": "", "suppTypeErr": "", "contactNoErr": "", "emailIdErr": "", "addressErr": "",
@@ -73,8 +75,11 @@ const SupplierMasterForm = (props) => {
         }
     }, [selectedOption, openPage]);
 
+    console.log('selectedOption', selectedOption)
+
 
     const handleValidation = () => {
+        setConfirmSave(false);
         let isValid = true;
         if (!values?.suppName.trim()) {
             setErrors(prev => ({ ...prev, suppNameErr: "Please enter supplier name " }));
@@ -87,9 +92,19 @@ const SupplierMasterForm = (props) => {
         if (!values?.contactNo || !values?.contactNo.trim()) {
             setErrors(prev => ({ ...prev, contactNoErr: "Please enter contact no " }));
             isValid = false;
+        } else if (String(values?.contactNo).trim()?.length < 10) {
+            setErrors(prev => ({ ...prev, contactNoErr: "Please enter 10 digit contact number" }));
+            isValid = false;
         }
+
         if (!values?.emailId.trim()) {
             setErrors(prev => ({ ...prev, emailIdErr: "Please enter email id " }));
+            isValid = false;
+        } else if (!isValidEmail(values.emailId)) {
+            setErrors(prev => ({
+                ...prev,
+                emailIdErr: "Please enter a valid email id"
+            }));
             isValid = false;
         }
         if (!values?.address.trim()) {
@@ -98,6 +113,9 @@ const SupplierMasterForm = (props) => {
         }
         if (!String(values?.pinCode).trim()) {
             setErrors(prev => ({ ...prev, pinCodeErr: "Please enter pincode " }));
+            isValid = false;
+        } else if (String(values?.pinCode).trim()?.length < 6) {
+            setErrors(prev => ({ ...prev, pinCodeErr: "Please enter a 6-digit PIN Code." }));
             isValid = false;
         }
         if (!String(values?.stateId).trim()) {
@@ -120,7 +138,6 @@ const SupplierMasterForm = (props) => {
             setErrors(prev => ({ ...prev, panNoErr: "Please enter pan no. " }));
             isValid = false;
         }
-
 
         if (isValid) {
             setShowConfirmSave(true)
@@ -154,12 +171,15 @@ const SupplierMasterForm = (props) => {
                 gnumSeatId: getAuthUserData('userSeatId'),
             }
 
-            fetchUpdatePostData("http://10.226.27.173:8025/api/v1/suppliers", data).then(data => {
+            fetchUpdatePostData("/api/v1/suppliers/addSupplier", data).then(data => {
+                console.log('data', data)
                 if (data?.status === 1) {
                     ToastAlert('Supplier Added successfully', 'success');
                     refresh();
+
                 } else {
-                    ToastAlert('Error', 'error');
+                    ToastAlert(data?.message, 'error');
+                    setConfirmSave(false);
                 }
             })
 
@@ -181,15 +201,18 @@ const SupplierMasterForm = (props) => {
                 cwhstrPanNo: values?.panNo,
                 gnumIsvalid: recordStatus,
                 gnumSeatId: getAuthUserData('userSeatId'),
-            }
+                "cwhnumSupplierId": values?.suppId,
 
-            fetchUpdateData(`http://10.226.27.173:8025/api/v1/suppliers/${values?.suppId}`, data).then(data => {
+            }
+            // fetchUpdatePostData(`/api/v1/suppliers/${values?.suppId}`, data).then(data => {
+            fetchUpdatePostData(`/api/v1/suppliers/updateSupplier`, data).then(data => {
                 if (data?.status === 1) {
                     ToastAlert('Supplier updated successfully', 'success')
                     setSelectedOption([]);
                     refresh();
                 } else {
-                    ToastAlert('Error', 'error')
+                    ToastAlert(data?.message, 'error')
+                    setConfirmSave(false);
                 }
             })
         }
@@ -265,6 +288,8 @@ const SupplierMasterForm = (props) => {
                             onChange={handleValueChange}
                             value={values?.contactNo}
                             errorMessage={errors?.contactNoErr}
+                            acceptType="number"
+                            maxLength={12}
                         />
                     </div>
                 </div>
@@ -281,6 +306,7 @@ const SupplierMasterForm = (props) => {
                             onChange={handleValueChange}
                             value={values?.emailId}
                             errorMessage={errors?.emailIdErr}
+                            isSpecialChrs
                         />
                     </div>
                 </div>
@@ -315,6 +341,7 @@ const SupplierMasterForm = (props) => {
                             onChange={handleValueChange}
                             value={values?.pinCode}
                             errorMessage={errors?.pinCodeErr}
+                            acceptType="number"
                         />
                     </div>
                 </div>

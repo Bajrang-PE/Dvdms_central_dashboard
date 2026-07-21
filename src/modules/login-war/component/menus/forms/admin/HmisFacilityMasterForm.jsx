@@ -16,19 +16,30 @@ const HmisFacilityMasterForm = (props) => {
     })
 
     const [values, setValues] = useState({
-        "stateId": "", "facilityType": "", "noOfFacility": "", "hmisDate": ""
+        "stateId": "", "facilityType": "", "noOfFacility": "", "hmisDate": new Date().toISOString().split('T')[0], "facilityName": ""
     })
 
     const [stateName, setStateName] = useState('');
 
-    // const {
-    //     selectedStateName
-    // } = props;
+    const {
+        selectedStateName, getListData,convertToDateInputFormat
+    } = props;
 
 
     useEffect(() => {
         getFacilityTypeDrpData()
     }, [])
+
+    useEffect(() => {
+        if (selectedStateName) {
+            setValues({
+                ...values,
+                "stateId": selectedStateName?.value || ""
+            });
+            setStateName(selectedStateName?.label || "")
+        }
+    }, [selectedStateName])
+
 
     const handleValueChange = (e) => {
         const { value, name } = e.target;
@@ -43,16 +54,27 @@ const HmisFacilityMasterForm = (props) => {
     const saveHmisFacilityData = () => {
 
         const val = {
-            "cwhnumFacilityTypeId": values.facilityType,
-            "cwhdtHmisDate": values.hmisDate,
-            "cwhnumStateId": values.stateId,
-            "cwhnumNoofHmisFac": values.noOfFacility,
-            "seatId": getAuthUserData('userSeatId')            
+            // "cwhnumFacilityTypeId": values.facilityType,
+            // "cwhdtHmisDate": values.hmisDate,
+            // "cwhnumStateId": values.stateId,
+            // "cwhnumNoofHmisFac": values.noOfFacility,
+            // "seatId": getAuthUserData('userSeatId'),
+
+            "stateId": values.stateId,
+            "facilityTypeId": values.facilityType,
+            "noOfFacilities": values.noOfFacility,
+            "hmisDateRaw": values.hmisDate,
+            "seatId": getAuthUserData('userSeatId')
+
         }
-        fetchUpdatePostData("http://10.226.17.20:8025/api/v1/hmisFacility", val).then(data => {
+        console.log('val', val)
+        fetchUpdatePostData("/api/v1/create", val).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
                 ToastAlert("Data saved successfully", "success")
+                getListData(values.stateId,1)
                 refresh();
+
             } else {
                 ToastAlert(data?.message, "error")
                 setConfirmSave(false);
@@ -61,17 +83,26 @@ const HmisFacilityMasterForm = (props) => {
     }
 
     const updateHmisFacilityData = () => {
-        // alert("111111");
         const val = {
 
-            "cwhnumFacilityTypeId": selectedOption[0]?.cwhnumFacilityTypeId,
-            "cwhdtHmisDate": selectedOption[0]?.cwhdtHmisDate,
-            "cwhnumStateId": selectedOption[0]?.cwhnumStateId,
-            "cwhnumNoofHmisFac": selectedOption[0]?.cwhnumNoofHmisFac,
+            // "cwhnumFacilityTypeId": selectedOption[0]?.cwhnumFacilityTypeId,
+            // "cwhdtHmisDate": selectedOption[0]?.cwhdtHmisDate,
+            // "cwhnumStateId": selectedOption[0]?.cwhnumStateId,
+            // "cwhnumNoofHmisFac": selectedOption[0]?.cwhnumNoofHmisFac,
+
+            "stateId": values?.stateId,
+            "facilityTypeId": values?.facilityType,
+            "noOfFacilities": parseInt(values?.noOfFacility),
+            "hmisDateRaw": values?.hmisDate,
+            // "seatId": getAuthUserData('userSeatId')
+
         }
-        fetchUpdateData("http://10.226.17.20:8025/api/v1/hmisFacility", val).then(data => {
-            if (data?.status ===1) {
+        console.log('val', val)
+        fetchUpdateData("/api/v1/update", val).then(data => {
+            console.log('data', data)
+            if (data?.status === 1) {
                 ToastAlert("Data updated successfully", "success")
+                  getListData(values.stateId,1)
                 refresh();
             } else {
                 ToastAlert(data?.message, "error")
@@ -118,24 +149,15 @@ const HmisFacilityMasterForm = (props) => {
     }, [confirmSave])
 
 
-    useEffect(() => {
-        if (selectedOption?.length > 0) {
-            //setProgrammeName(selectedOption[0]?.cwhstrProgrammeName)
-            setRecordStatus(selectedOption[0]?.gnumIsValid?.toString())
-        }
-    }, [selectedOption])
-
     const refresh = () => {
-        //  getListData(selectedGroupId,selectedSubGroupId,selectedStatus);
         setConfirmSave(false);
         setSelectedOption([]);
         reset();
-        //   setSearchInput('');
         setOpenPage("home");
     }
 
     const reset = () => {
-        setValues({ "stateId": "", "facilityType": "", "noOfFacility": "", "hmisDate": "" });
+        setValues({ "stateId": "", "facilityType": "", "noOfFacility": "", "hmisDate": new Date().toISOString().split('T')[0] });
     }
 
     useEffect(() => {
@@ -143,23 +165,23 @@ const HmisFacilityMasterForm = (props) => {
 
             setValues({
                 ...values,
-                "stateId": selectedOption[0]?.cwhnumStateId,
-                "facilityType": selectedOption[0]?.cwhnumFacilityTypeId,
-                "noOfFacility": selectedOption[0]?.cwhnumNoofHmisFac,
-                "hmisDate": formatDateHmis(selectedOption[0]?.cwhdtHmisDate),
-
+                "stateId": selectedOption[0]?.stateId,
+                "facilityType": selectedOption[0]?.facilityId,
+                "noOfFacility": selectedOption[0]?.noOfFacilities,
+                "hmisDate": convertToDateInputFormat(selectedOption[0]?.hmisDate),
+                "facilityName": selectedOption[0]?.facilityName
             });
 
-            const stnm = stateNameDrpDt?.find(st => st?.value == selectedOption[0]?.cwhnumStateId)
-            setStateName(stnm?.label || "")
-
+            const stnm = stateNameDrpDt?.find(st => st?.value == selectedOption[0]?.stateId);
+            setStateName(stnm?.label || "");
+            setRecordStatus(selectedOption[0]?.gnumIsValid?.toString() || 1);
         }
 
     }, [selectedOption, openPage])
 
-    console.log(values, 'selectedOption')
+    console.log('selectedOption', selectedOption)
 
-    console.log(values)
+
     return (
         <div>
             <GlobalButtons onSave={handleValidation} onClear={reset} />
@@ -168,7 +190,7 @@ const HmisFacilityMasterForm = (props) => {
                 <div className='col-sm-6'>
                     <div className="form-group row" style={{ paddingBottom: "1px" }}>
                         <label className="col-sm-5 col-form-label fix-label required-label">State : </label>
-                        {openPage === "add" &&
+                        {!stateName &&
                             <div className="col-sm-7 align-content-center">
                                 <InputSelect
                                     // type={'text'}
@@ -184,7 +206,7 @@ const HmisFacilityMasterForm = (props) => {
 
                             </div>
                         }
-                        {openPage === "modify" &&
+                        {stateName &&
                             <div className="col-sm-7 align-content-center">
                                 {stateName}
                             </div>
@@ -212,7 +234,7 @@ const HmisFacilityMasterForm = (props) => {
                         }
                         {openPage === "modify" &&
                             <div className="col-sm-7 align-content-center">
-                                {values?.facilityType}
+                                {values?.facilityName}
                             </div>
                         }
 

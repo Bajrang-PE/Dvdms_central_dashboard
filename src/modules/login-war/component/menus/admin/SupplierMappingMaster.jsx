@@ -5,9 +5,10 @@ import { LoginContext } from '../../../context/LoginContext';
 import { fetchData, fetchUpdateData, fetchUpdatePostData } from '../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../utils/CommonFunction';
 import { ToastAlert } from '../../../utils/CommonFunction';
+import InputField from '../../InputField';
 
 const SupplierMappingMaster = () => {
-    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, getSupplierNameDrpData, supplierNameDrpDt } = useContext(LoginContext);
+    const { openPage, setOpenPage, getSteteNameDrpData, stateNameDrpDt, getSupplierNameDrpData, supplierNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [addedToRight, setAddedToRight] = useState([]);
     const [removedFromRight, setRemovedFromRight] = useState([]);
     const [initialMappedOptions, setInitialMappedOptions] = useState([]);
@@ -20,6 +21,10 @@ const SupplierMappingMaster = () => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [selectedAvailable, setSelectedAvailable] = useState([]);
     const [selectedSelected, setSelectedSelected] = useState([]);
+
+    // Search filter
+    const [leftSearch, setLeftSearch] = useState("");
+    const [rightSearch, setRightSearch] = useState("");
 
     useEffect(() => {
         if (supplierNameDrpDt?.length === 0) getSupplierNameDrpData();
@@ -42,7 +47,8 @@ const SupplierMappingMaster = () => {
 
     const getStateSuppUnmapList = () => {
 
-        fetchData(`http://10.226.26.247:8025/api/v1/supplierMappingMaster/getUnmappedSuppliers?stateID=${stateId || 0}`).then((data) => {
+        fetchData(`/api/v1/supplierMappingMaster/getUnmappedSuppliers?stateID=${stateId || 0}`).then((data) => {
+            console.log('datau', data)
             if (data.data) {
                 const drpData = Array.from(
                     new Map(
@@ -64,8 +70,9 @@ const SupplierMappingMaster = () => {
 
     const getStateSuppMappedList = () => {
 
-        fetchData(`http://10.226.26.247:8025/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=${suppId || 0}&stateID=${stateId || 0}`)
+        fetchData(`/api/v1/supplierMappingMaster/getMappedSuppliers?supplierID=${suppId || 0}&stateID=${stateId || 0}`)
             .then((data) => {
+                console.log('datam', data)
                 if (data?.data) {
                     const drpData = Array.from(
                         new Map(
@@ -129,10 +136,11 @@ const SupplierMappingMaster = () => {
         setSelectedSelected([]);
         setAddedToRight([]);
         setRemovedFromRight([]);
+        setRightSearch('');
+        setLeftSearch('');
     };
 
-    const handleSave = () => {
-
+    const handleValidation = () => {
         let isValid = true;
 
         if (suppId === "") {
@@ -145,56 +153,64 @@ const SupplierMappingMaster = () => {
         }
 
         if (isValid) {
+            setShowConfirmSave(true)
+        }
+    }
 
-            const addedToRight = selectedOptions.filter(
-                item => !initialMappedOptions.some(i => i.value === item.value)
-            );
+    const handleSave = () => {
 
-            const removedFromRight = initialMappedOptions.filter(
-                item => !selectedOptions.some(i => i.value === item.value)
-            );
+        const addedToRight = selectedOptions.filter(
+            item => !initialMappedOptions.some(i => i.value === item.value)
+        );
 
+        const removedFromRight = initialMappedOptions.filter(
+            item => !selectedOptions.some(i => i.value === item.value)
+        );
 
-            console.log("Added55555555:", addedToRight);
-            console.log("Removed6666666:", removedFromRight);
+        const mappedData = addedToRight?.map(dt => ({
+            "stateID": stateId,
+            "stateSupplierID": dt?.value,
+            "seatID": getAuthUserData('userSeatId'),
+            "supplierID": suppId,
+            "supplierName": dt?.label,
 
-            const mappedData = addedToRight?.map(dt => ({
-                "stateID": stateId,
-                "stateSupplierID": dt?.value,
-                "seatID": getAuthUserData('userSeatId'),
-                "supplierID": suppId,
-                "supplierName": dt?.label,
+        }))
 
-            }))
+        const unMappedData = removedFromRight?.map(dt => ({
+            "stateID": stateId,
+            "supplierID": dt?.value,
+            "supplierName": dt?.label,
+        }))
 
-            const unMappedData = removedFromRight?.map(dt => ({
-                "stateID": stateId,
-                "supplierID": dt?.value,
-                "supplierName": dt?.label,
-            }))
+        const val = {
+            "supplierMappingMasterDTO": mappedData?.length > 0 ? mappedData : [],
+            "supplierUnmappingMasterDTO": unMappedData?.length > 0 ? unMappedData : [],
 
-            const val = {
-                "supplierMappingMasterDTO": mappedData?.length > 0 ? mappedData : [],
-                "supplierUnmappingMasterDTO": unMappedData?.length > 0 ? unMappedData : [],
+        }
 
-            }
-
-            if (selectedOptions.length > 0) {
-
-                fetchUpdatePostData("http://10.226.26.247:8025/api/v1/supplierMappingMaster/postSupplierData", val).then(data => {
-                    if (data.status == 1) {
-                        ToastAlert('Data mapped successfully', 'success');
-                        reset();
-                    } else {
-                        ToastAlert('Error', 'error')
-                    }
-                });
-            } else {
-                alert("Please map at least one supplier.");
-            }
+        if (selectedOptions.length > 0) {
+            console.log('val', val)
+            fetchUpdatePostData("/api/v1/supplierMappingMaster/postSupplierData", val).then(data => {
+                console.log('datares', data)
+                if (data.status == 1) {
+                    ToastAlert('Data mapped successfully', 'success');
+                    reset();
+                    setConfirmSave(false)
+                } else {
+                    ToastAlert('Error', 'error')
+                    setConfirmSave(false)
+                }
+            });
+        } else {
+            alert("Please map at least one supplier.");
         }
     };
 
+    useEffect(() => {
+        if (confirmSave) {
+            handleSave();
+        }
+    }, [confirmSave])
 
     return (
 
@@ -204,7 +220,7 @@ const SupplierMappingMaster = () => {
                 <span className='col-6'><b>{`Supplier Mapping Master`}</b></span>
                 {/* {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>} */}
             </div>
-      
+
             <div className="row pt-2">
                 <div className="form-group col-sm-6 row">
                     <label className="col-sm-4 col-form-label fix-label required-label">Supplier Name :</label>
@@ -218,6 +234,8 @@ const SupplierMappingMaster = () => {
                             onChange={(e) => {
                                 setSuppId(e.target.value);
                                 setSuppIdErr("");
+                                setRightSearch('');
+                                setLeftSearch('');
                             }
                             }
                             value={suppId}
@@ -238,6 +256,8 @@ const SupplierMappingMaster = () => {
                             onChange={(e) => {
                                 setStateId(e.target.value);
                                 setStateIdErr("");
+                                setRightSearch('');
+                                setLeftSearch('');
                             }}
                             value={stateId}
                             errorMessage={stateIdErr}
@@ -257,7 +277,16 @@ const SupplierMappingMaster = () => {
             {/* Dual List Box */}
             <div className='d-flex justify-content-center mt-1 mb-2'>
                 {/* Available List */}
-                <div style={{ width: "30%" }}>
+                <div style={{ width: "40%" }}>
+                    <div className="mb-1 position-relative">
+                        <InputField
+                            type="search"
+                            className="form-control form-control-sm aliceblue-bg border-dark-subtle"
+                            placeholder="🔍 Search..."
+                            value={leftSearch}
+                            onChange={(e) => setLeftSearch(e.target.value)}
+                        />
+                    </div>
                     <select
                         className="form-select form-select-sm aliceblue-bg border-dark-subtle"
                         size="8"
@@ -268,9 +297,18 @@ const SupplierMappingMaster = () => {
                             setSelectedAvailable(selected);
                         }}
                     >
-                        {availableOptions.map(opt => (
+                        {/* {availableOptions.map(opt => (
                             <option key={`${opt.value}-${opt.label}`} value={opt.value}>{opt.label}</option>
-                        ))}
+                        ))} */}
+
+                        {availableOptions
+                            ?.filter(opt => opt.label?.toLowerCase()?.includes(leftSearch?.toLowerCase()))
+                            ?.map((opt,index) => (
+                                <option key={index+"bg"+opt?.value?.toString()} value={opt.value}>
+                                    {opt.label}
+                                </option>
+                            ))
+                        }
                     </select>
                 </div>
 
@@ -299,7 +337,16 @@ const SupplierMappingMaster = () => {
                 </div>
 
                 {/* Selected List */}
-                <div style={{ width: "30%" }}>
+                <div style={{ width: "40%" }}>
+                    <div className="mb-1 position-relative">
+                        <InputField
+                            type="search"
+                            className="form-control form-control-sm aliceblue-bg border-dark-subtle"
+                            placeholder="🔍 Search ..."
+                            value={rightSearch}
+                            onChange={(e) => setRightSearch(e.target.value)}
+                        />
+                    </div>
                     <select
                         className="form-select form-select-sm aliceblue-bg border-dark-subtle"
                         size="8"
@@ -310,16 +357,24 @@ const SupplierMappingMaster = () => {
                             setSelectedSelected(selected);
                         }}
                     >
-                        {selectedOptions.map(opt => (
+                        {/* {selectedOptions.map(opt => (
                             <option key={`${opt.value}-${opt.label}`} value={opt.value}>{opt.label}</option>
-                        ))}
+                        ))} */}
+                        {selectedOptions
+                            ?.filter(opt => opt?.label?.toLowerCase()?.includes(rightSearch?.toLowerCase()))
+                            ?.map((opt,index) => (
+                                <option key={index+"bg"+opt?.value?.toString()} value={opt.value}>
+                                    {opt.label}
+                                </option>
+                            ))
+                        }
                     </select>
                 </div>
             </div>
             <div className='w-100 py-1 my-2 opacity-75 rounded-3' style={{ backgroundColor: "#000e4e" }}></div>
 
             <div className='text-center'>
-                <button className='btn btn-sm new-btn-blue py-0' onClick={handleSave}>
+                <button className='btn btn-sm new-btn-blue py-0' onClick={handleValidation}>
                     <i className="fa fa-save me-1"></i>
                     Save</button>
                 <button className='btn btn-sm new-btn-blue py-0' onClick={reset}>  <i className="fa fa-broom me-1"></i>Clear</button>

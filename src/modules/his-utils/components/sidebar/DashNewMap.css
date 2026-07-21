@@ -1,0 +1,492 @@
+.dashboard-wrapper {
+
+    background: #f6f8fb;
+
+    border-radius: 20px;
+
+    padding: 24px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+
+}
+
+/* HEADER */
+
+.dashboard-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 5px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    padding-bottom: 10px;
+
+}
+
+.dashboard-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+}
+
+.dashboard-title h2 {
+
+    margin: 0;
+
+    font-size: 30px;
+
+    font-weight: 700;
+
+    color: #1f2937;
+
+}
+
+.dashboard-subtitle {
+
+    margin-top: 8px;
+
+}
+
+.query-badge {
+
+    background: #DCFCE7;
+
+    color: #15803D;
+
+    padding: 5px 5px;
+
+    border-radius: 20px;
+
+    font-weight: 600;
+
+    font-size: 13px;
+
+}
+
+.dashboard-actions {
+
+    display: flex;
+
+    gap: 12px;
+
+}
+
+/* BUTTON */
+
+.circle-btn {
+
+    width: 45px;
+
+    height: 45px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    transition: .3s;
+
+}
+
+.circle-btn:hover {
+
+    transform: translateY(-4px);
+
+    background: #22c55e;
+
+    color: white;
+
+}
+
+
+@media(max-width:576px) {
+
+    .dashboard-header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+
+    }
+
+}
+
+
+/*=========================================
+MAIN CONTENT
+=========================================*/
+
+.dashboard-content {
+
+    display: grid;
+
+    grid-template-columns: 1.5fr 1fr;
+
+    gap: 15px;
+
+    margin-top: 10px;
+
+}
+
+
+/*=========================================
+COMMON CARD
+=========================================*/
+
+.map-card,
+.table-card {
+
+    background: #fff;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .08);
+
+    border: 2px solid #e8ebf5;
+
+    /* transition: .35s; */
+
+}
+
+/* .map-card:hover,
+.table-card:hover {
+
+    transform: translateY(-5px);
+
+    box-shadow: 0 20px 45px rgba(0, 0, 0, .12);
+
+} */
+
+
+/*=========================================
+CARD HEADER
+=========================================*/
+
+.card-header-custom {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 8px 8px;
+
+    background: linear-gradient(135deg, #2563EB, #22C55E);
+
+    color: white;
+
+}
+
+.card-header-custom h4 {
+
+    margin: 0;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+}
+
+.card-header-custom span {
+
+    opacity: .9;
+
+    font-size: 13px;
+
+}
+
+
+/*=========================================
+BODY
+=========================================*/
+
+.map-body {
+
+    padding: 0px;
+
+    background: #bed9f6;
+
+}
+
+.table-body {
+
+    padding: 0px;
+
+}
+
+
+/*=========================================
+MAP TOOLBAR
+=========================================*/
+
+.map-actions {
+
+    display: flex;
+
+    gap: 5px;
+
+}
+
+.toolbar-btn {
+
+    width: 30px;
+
+    height: 30px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: white;
+
+    color: #2563EB;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition: .3s;
+
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .15);
+
+}
+
+.toolbar-btn:hover {
+
+    background: #16A34A;
+
+    color: white;
+
+    transform: scale(1.08);
+
+}
+
+
+/*=========================================
+TABLE STATUS
+=========================================*/
+
+.table-status {
+
+    background: rgba(255, 255, 255, .2);
+
+    padding: 6px 14px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+}
+
+
+/*=========================================
+MAP LOADER
+=========================================*/
+
+.map-loader {
+
+    height: 500px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-size: 22px;
+
+    font-weight: 600;
+
+    color: #888;
+
+}
+
+
+/*=========================================
+HIGHCHART
+=========================================*/
+
+.highcharts-container {
+
+    border-radius: 15px !important;
+
+}
+
+
+/*=========================================
+RESPONSIVE
+=========================================*/
+
+@media(max-width:1200px) {
+
+    .dashboard-content {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+.table-toolbar-right {
+
+    display: flex;
+
+    gap: 12px;
+
+}
+
+.table-search {
+
+    /* width: 240px; */
+
+    height: 30px;
+
+    border: 1px solid #E5E7EB;
+
+    border-radius: 8px;
+
+    padding: 0 15px;
+
+    outline: none;
+
+    transition: .3s;
+
+    background: #F9FAFB;
+    color: #038d35;
+    font-weight: 500;
+
+}
+
+.table-search:focus {
+
+    border-color: #183ff0;
+
+    background: white;
+
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, .15);
+
+}
+
+.export-btn {
+
+    border: none;
+
+    border-radius: 25px;
+
+    background: #2563EB;
+
+    color: white;
+
+    padding: 0 20px;
+
+    height: 42px;
+
+    transition: .3s;
+
+    font-weight: 600;
+
+}
+
+
+.export-btn:hover {
+
+    background: #1D4ED8;
+
+    transform: translateY(-2px);
+
+}
+
+
+@media(max-width:768px) {
+
+    .table-toolbar-right {
+
+        width: 100%;
+
+    }
+
+    .table-search {
+
+        width: 100%;
+
+    }
+
+    .export-btn {
+
+        flex: 1;
+
+    }
+
+}
+
+.drilldown-btn {
+    background: #048b04;
+    color: white;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 2px solid #0690db;
+}
+
+
+/* BREADCRUMB */
+
+.map-breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0px 10px;
+    font-weight: 500;
+}
+
+.breadcrumb-item {
+    color: #2563eb;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-item:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: #374151;
+    font-weight: 600;
+    cursor: default;
+    text-decoration: none;
+}
+
+.breadcrumb-separator {
+    color: #677a94;
+    user-select: none;
+}

@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import DataTable from 'react-data-table-component';
 import InputField from './InputField';
 import { LoginContext } from '../context/LoginContext';
+import { ToastAlert } from '../utils/CommonFunction';
 
 
 const GlobalTable = (props) => {
@@ -17,6 +18,14 @@ const GlobalTable = (props) => {
                 // outline: '1px solid #FFFFFF',
             },
         },
+    }
+
+    const onClickReport = () => {
+        if (data?.length > 0) {
+            setIsShowReport(true);
+        } else {
+            ToastAlert('Data not found!','warning')
+        }
     }
 
     return (
@@ -68,7 +77,7 @@ const GlobalTable = (props) => {
                                             Run Job</button>}
                                 </>)}
                                 {isReport &&
-                                    <button className='btn btn-sm datatable-btns py-0' onClick={() => setIsShowReport(true)}>
+                                    <button className='btn btn-sm datatable-btns py-0' onClick={onClickReport}>
                                         <i className="fa fa-file me-1 fs-13 text-warning"></i>Report</button>}
                             </>
                         }

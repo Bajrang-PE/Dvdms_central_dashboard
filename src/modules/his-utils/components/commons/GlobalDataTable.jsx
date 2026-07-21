@@ -5,7 +5,6 @@ import { Modal, Button } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import InputField from './InputField';
 import { HISContext } from '../../contextApi/HISContext';
-import InputSelect from './InputSelect';
 
 
 const GlobalDataTable = (props) => {
@@ -42,16 +41,17 @@ const GlobalDataTable = (props) => {
                         }
                     </div>
                     <div className="col-6 d-flex justify-content-end align-items-center p-0">
-                        <label className="col-form-label me-2 d-none d-lg-block">{dt('Search')} :</label>
+                        <label className="col-form-label me-2">{dt('Search')} :</label>
                         <div className=''>
                             <InputField
                                 type="search"
                                 id="customMsgForNoData"
                                 name="customMsgForNoData"
-                                placeholder="Search..."
+                                placeholder="Enter"
                                 className="backcolorinput"
                                 onChange={(e) => { setSearchInput(e?.target?.value); }}
-                            // value={values?.customMsgForNoData}
+                                // value={values?.customMsgForNoData}
+                                isSpecialChrs={true}
                             />
                         </div>
                     </div>
@@ -73,7 +73,6 @@ const GlobalDataTable = (props) => {
                         pagination
                         // pointerOnHover
                         customStyles={tableCustomStyles}
-                        
                     />
                 </Modal.Body>
             </Modal>

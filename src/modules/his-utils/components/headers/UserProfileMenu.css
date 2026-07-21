@@ -1,0 +1,133 @@
+/* //////////////////////////////////////USER PROFILE MENU/////////////////////////////// */
+
+.profile-container {
+    position: relative;
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.profile-btn {
+    display: flex;
+    align-items: center;
+    /* gap: 11px; */
+    border: none;
+    padding: 5px 5px;
+    background: #ffffff;
+    border-radius: 50px;
+    color: rgb(0, 0, 0);
+    transition: .3s;
+}
+
+.profile-btn:hover {
+    background:
+        rgba(255, 255, 255, .20);
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    width: 260px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: rgba(12, 25, 55, .95);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .25);
+    animation: profileFade .25s ease;
+    z-index: 10;
+}
+
+.profile-dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+}
+
+.profile-avatar-large {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.profile-user-info {
+    flex: 1;
+}
+
+.profile-name {
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.profile-role {
+    color: rgba(255, 255, 255, .7);
+    font-size: 13px;
+}
+
+.profile-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, .12);
+}
+
+.profile-menu-item {
+    width: 100%;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #fff;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.profile-menu-item i {
+    width: 18px;
+    text-align: center;
+}
+
+.profile-menu-item:hover {
+    background: rgba(255, 255, 255, .08);
+    padding-left: 28px;
+}
+
+.logout-btn {
+    color: #ffb3b3;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 80, 80, .12);
+}
+
+@keyframes profileFade {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media(max-width:992px) {
+    .profile-details {
+        display: none;
+    }
+
+}

@@ -4,7 +4,7 @@ import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction
 import InputSelect from '../../InputSelect';
 import GlobalTable from '../../GlobalTable';
 import GenericDrugMasterForm from '../forms/admin/GenericDrugMasterForm';
-import { fetchDeleteData } from '../../../../../utils/ApiHooks';
+import { fetchPostData } from '../../../../../utils/ApiHooks';
 import ViewPage from '../ViewPage';
 import { categoryOptions } from '../../../localData/HomeData';
 import MasterReport from '../../MasterReport';
@@ -34,6 +34,7 @@ const GenericDrugMaster = () => {
         getGroupDrpData()
     }, [])
 
+
     useEffect(() => {
         if (!searchInput) {
             setFilterData(genericDrugListData);
@@ -41,7 +42,7 @@ const GenericDrugMaster = () => {
             const lowercasedText = searchInput.toLowerCase();
             const newFilteredData = genericDrugListData.filter(row => {
 
-                const drugName = row?.drugName?.toLowerCase() || "";
+                const drugName = row?.cwhstrCentraldrugName?.toLowerCase() || "";
                 const drugType = row?.drugTypeName?.toString() || "";
                 const drugCat = row?.drugCatCode?.toString() || "";
 
@@ -61,7 +62,7 @@ const GenericDrugMaster = () => {
     };
 
     const deleteRecord = () => {
-        fetchDeleteData(`api/v1/drugs/${selectedOption[0]?.cwhnumCentralDrugId}`).then(data => {
+        fetchPostData(`/api/v1/DeleteDrug/${selectedOption[0]?.cwhnumCentralDrugId}`).then(data => {
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getGenericDrugListData(groupId, subGroupId, recordStatus);
@@ -216,12 +217,15 @@ const GenericDrugMaster = () => {
                 </>)}
 
                 {(openPage === "add" || openPage === 'modify') && !isShowReport && (<>
-                    <GenericDrugMasterForm subGrpData={subGroupDrpData} groupData={groupDrpData} groupId={groupId} setSearchInput={setSearchInput} />
+                    <GenericDrugMasterForm subGrpData={subGroupDrpData} groupData={groupDrpData} groupId={groupId} setSearchInput={setSearchInput} subGroupId={subGroupId}/>
                 </>)}
 
                 {isShowReport &&
-                    <MasterReport title={"Generic Drug Master"} column={column} data={genericDrugListData} />
-
+                    <MasterReport title={"Generic Drug Master"} column={column} data={genericDrugListData} filters={[
+                    { value: groupDrpData?.find(dt=>dt?.value == groupId)?.label, label: "Group" },
+                    { value:  subGroupDrpData?.find(dt=>dt?.value == subGroupId)?.label, label: "SubGroup" },
+                    { value: recordStatus == 1 ? "Active" : "InActive", label: "Record Status" },
+                ]}/>
                 }
             </div>
         </>

@@ -1,12 +1,14 @@
 import React, { createContext, useState } from 'react'
 import { DrpDataValLab, ToastAlert } from '../utils/commonFunction';
-import { fetchData, fetchDeleteData, fetchPostData } from '../../../utils/HisApiHooks';
+import { fetchData, fetchPostData } from '../../../utils/HisApiHooks';
 import axios from 'axios';
+import { useSearchParams } from 'react-router-dom';
 
 export const HISContext = createContext();
 
 const HISContextData = ({ children }) => {
   //GLOBALS
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showDataTable, setShowDataTable] = useState(false);
   const [selectedOption, setSelectedOption] = useState([]);
   const [actionMode, setActionMode] = useState('home');
@@ -38,6 +40,13 @@ const HISContextData = ({ children }) => {
   const [presentTabsDash, setPresentTabsDash] = useState([]);
 
 
+  const [tabParams, setTabParams] = useState([]);
+
+  const [syncPkValues, setsyncPkValues] = useState({});
+  const [selectedPk, setSelectedPk] = useState({});
+  const [allDrpDtParams, setAllDrpDtParams] = useState([]);
+
+
   // ALL DATA
   const [parameterData, setParameterData] = useState([]);
   const [allWidgetData, setAllWidgetData] = useState([]);
@@ -55,22 +64,32 @@ const HISContextData = ({ children }) => {
   const [dataServiceDrpData, setDataServiceDrpData] = useState([]);
   const [serviceCategoryDrpData, setServiceCategoryDrpData] = useState([]);
   const [jndiServerDrpData, setJndiServerDrpData] = useState([]);
+    const [dbConnectionDrpData, setDbConnectionDrpData] = useState([]);
 
 
   //language provider
-
   const [extractedTexts, setExtractedTexts] = useState([]);
   const [showTranslateModal, setShowTranslateModal] = useState(false);
   const [language, setLanguage] = useState('english');
   const [translations, setTranslations] = useState([]);
 
+  const [token, setToken] = useState('');
+  const [isViewLoadedData, setIsViewLoadedData] = useState(false);
+   const [pkColumn, setPkColumn] = useState('');
+
+     const [widgetGraphPreviewData, setWidgetGraphPreviewData] = useState({
+    "chartColorsPreview": {},
+    "chartTypesPreview": {},
+    "selectedXAxisPreview": [],
+    "selectedYAxisPreview": [],
+  })
 
   const fetchTranslations = async (lang) => {
     try {
-      const response = await axios.get(`/usm/translations/getAllTranslatedData`);
-      const data = await response?.data?.data;
+      // const response = await axios.get(`/usm/translations/getAllTranslatedData`);
+      // const data = await response?.data?.data;
       // setTranslations(prev => ({ ...prev, [lang]: data }));
-      setTranslations(data);
+      setTranslations([]);
     } catch (error) {
       console.error('Error fetching translations:', error);
     }
@@ -161,7 +180,13 @@ const HISContextData = ({ children }) => {
     fetchData("/hisutils/TabDetails", { 'masterName': dashFor }).then((data) => {
       if (data?.status === 1) {
         setAllTabsData(data?.data);
-        setTabDrpData(DrpDataValLab(data?.data, 'dashboardId', 'dashboardName', true))
+
+        const drpData = DrpDataValLab(data?.data, 'dashboardId', 'dashboardName', true);
+
+        const sortedDrpData = [...drpData].sort((a, b) =>
+          a.label.localeCompare(b.label)
+        );
+        setTabDrpData(sortedDrpData);
       } else {
         setAllTabsData([]);
         setTabDrpData([]);
@@ -174,7 +199,13 @@ const HISContextData = ({ children }) => {
       if (data?.status === 1) {
         const fdt = data?.data?.filter(dt => dt?.rptId !== undefined && dt?.rptId !== null && dt?.rptId !== '');
         setAllWidgetData(fdt);
-        setWidgetDrpData(DrpDataValLab(fdt, 'rptId', 'rptName', false))
+        const drpData = DrpDataValLab(fdt, 'rptId', 'rptName', false);
+
+        const sortedDrpData = [...drpData].sort((a, b) =>
+          a.label.localeCompare(b.label)
+        );
+        setWidgetDrpData(sortedDrpData)
+
       } else {
         setAllWidgetData([]);
         setWidgetDrpData([]);
@@ -194,10 +225,29 @@ const HISContextData = ({ children }) => {
     })
   }
 
-  const getDashConfigData = () => {
-    fetchData("/hisutils/dashboard-configurations").then((data) => {
+   const getDashConfigData = async () => {
+    try {
+      // const isToken = localStorage.getItem('accessToken');
+      const auth = searchParams.get("auth") || '';
+      if (auth) {
+        sessionStorage.setItem("accessToken", auth);
+      }
+      const isToken = sessionStorage.getItem('accessToken') || auth;
+
+      let userName = "";
+      const isGlobal = searchParams.get("isGlobal") || 0;
+
+      // Extract params from URL
+      if (searchParams.get("userName")) {
+        userName = searchParams.get("userName");
+      }
+
+      const data = await fetchData(`/hisutils/dashboard-configurations?isGlobal=${isGlobal || 0}`,
+        !isToken && isGlobal != 1 ? { 'userName': userName } : null
+      );
+
       if (data?.status === 1) {
-        setSingleConfigData(data?.data)
+        setSingleConfigData(data?.data);
 
         const config = data?.data?.databaseConfigVO;
         const jndiKeys = [
@@ -211,18 +261,39 @@ const HISContextData = ({ children }) => {
           .map(({ key, label }) => {
             const value = config?.[key];
             return value && value.trim() !== ""
-              ? { value, label: `${label} - ${value}` }
+              ? { value, label: `${label} - ${value} (JNDI)` }
               : null;
           })
           .filter(Boolean);
 
-        setJndiServerDrpData(jndiServerOptions)
+        const dbConnections = Array.isArray(config?.softDbConnections) && config?.softDbConnections?.map((dt, index) => (
+          { value: index === 0 ? 'softDbPrimary' : `softDbSecondary${index}`, label: `${dt?.serviceName}-${dt?.hostname} (DB)` }
+        ))
 
+        setJndiServerDrpData(jndiServerOptions);
+
+        setDbConnectionDrpData(dbConnections);
       } else {
-        setSingleConfigData(null)
+        setSingleConfigData(null);
       }
-    })
-  }
+
+      if (data?.headers) {
+        const token = data?.headers?.authorization;
+        setToken(token);
+        if (token) {
+          // localStorage.setItem("accessToken", token);
+          sessionStorage.setItem("accessToken", token);
+        }
+        return token;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error("Error in getDashConfigData:", error);
+      return null;
+    }
+  };
+
 
   const clearAllCache = () => {
     fetchPostData('/hisutils/clearCache').then((data) => {
@@ -278,7 +349,7 @@ const HISContextData = ({ children }) => {
       //dashboard submenu
       dashboardSubmenuData, getDashboardSubmenuData,
 
-      presentWidgets, setPresentWidgets,presentTabsDash, setPresentTabsDash,
+      presentWidgets, setPresentWidgets, presentTabsDash, setPresentTabsDash,
 
       //language provider
       language,
@@ -287,7 +358,15 @@ const HISContextData = ({ children }) => {
       fetchTranslations,
       setLanguage,
       showTranslateModal, setShowTranslateModal,
-      extractedTexts, setExtractedTexts
+      extractedTexts, setExtractedTexts, token, setToken, setTabParams, tabParams,
+
+      syncPkValues, setsyncPkValues,
+      selectedPk, setSelectedPk, allDrpDtParams, setAllDrpDtParams,
+
+      isViewLoadedData, setIsViewLoadedData,pkColumn, setPkColumn,
+
+            widgetGraphPreviewData, setWidgetGraphPreviewData,
+              dbConnectionDrpData, setDbConnectionDrpData,
     }}>
       {children}
     </HISContext.Provider>

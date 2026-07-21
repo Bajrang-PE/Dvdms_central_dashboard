@@ -1,14 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../../context/LoginContext';
-import { fetchDeleteData } from '../../../../../utils/ApiHooks';
+import {  fetchPostData } from '../../../../../utils/ApiHooks';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import InputSelect from '../../InputSelect';
 import GlobalTable from '../../GlobalTable';
 import ViewPage from '../ViewPage';
 import GroupMasterForm from '../forms/admin/GroupMasterForm';
+import MasterReport from '../../MasterReport';
 
 const GroupMaster = () => {
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, getGroupListData,groupListData } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, getGroupListData,groupListData,isShowReport } = useContext(LoginContext);
     const [searchInput, setSearchInput] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active')
     const [filterData, setFilterData] = useState(groupListData);
@@ -32,7 +33,7 @@ const GroupMaster = () => {
         } else {
             const lowercasedText = searchInput.toLowerCase();
             const newFilteredData = groupListData.filter(row => {
-                const paramName = row?.groupName?.toLowerCase() || "";
+                const paramName = row?.cwhstrGroupName?.toLowerCase() || "";
 
                 return paramName.includes(lowercasedText);
             });
@@ -41,7 +42,7 @@ const GroupMaster = () => {
     }, [searchInput, groupListData]);
 
     const deleteRecord = () => {
-        fetchDeleteData(`api/v1/Group/${selectedOption[0]?.cwhnumGroupId}`).then(data => {
+        fetchPostData(`/api/v1/deleteGroup/${selectedOption[0]?.cwhnumGroupId}`).then(data => {
             if (data.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 getGroupListData();
@@ -106,6 +107,8 @@ const GroupMaster = () => {
     return (
         <>
             <div className='masters mx-3 my-2'>
+                 {!isShowReport &&
+                    <>
                 <div className='masters-header row'>
                     <span className='col-6'><b>{`Group Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
                     {openPage === "home" && <span className='col-6 text-end'>Total Records : {filterData?.length}</span>}
@@ -142,6 +145,12 @@ const GroupMaster = () => {
                 {(openPage === "add" || openPage === 'modify') && (<>
                     <GroupMasterForm setSearchInput={setSearchInput}/>
                 </>)}
+                </>}
+                {isShowReport &&
+                    <MasterReport title={"Group Master"} column={column} data={groupListData}  filters={[
+                            { value: recordStatus, label: "Record Status" }
+                        ]}/>
+                }
             </div>
         </>
     )

@@ -39,12 +39,14 @@ const IphsGroupMasterForm = ({ setRecord, record, getListData, setSearchInput })
             "groupName":groupName,
             "gnumSeatid": getAuthUserData('userSeatId')
         }
-        fetchPostData('http://10.226.26.247:8025/api/v1/IphsGroupMaster/addNewGroup',val).then(data=>{
+        fetchPostData('/api/v1/IphsGroupMaster/addNewGroup',val).then(data=>{
+
             if(data.status == 1){
                 ToastAlert("Data saved successfully", "success");
                 refresh();    
             }else{
                 ToastAlert("Error", "error");
+                  setConfirmSave(false);
             }
         })
     }
@@ -55,13 +57,16 @@ const IphsGroupMasterForm = ({ setRecord, record, getListData, setSearchInput })
             "isValid":recordStatus,
             "gnumSeatid": getAuthUserData('userSeatId') 
         }
-        fetchPatchData(`http://10.226.26.247:8025/api/v1/IphsGroupMaster/modifyGroupStatus?groupID=${selectedOption[0].cwhnumIphsGroupID}`,val).then(data=>{
+        console.log('val', val)
+        fetchPostData(`/api/v1/IphsGroupMaster/modifyGroupStatus?groupID=${selectedOption[0].cwhnumIphsGroupID}`,val).then(data=>{
+            console.log('data', data)
             if(data.status == 1){
                 ToastAlert("Data updated successfully", "success");  
                 setSelectedOption([]);
                 refresh();             
             }else{
-                ToastAlert("Error", "error");
+                ToastAlert(data?.message, "error");
+                  setConfirmSave(false);
             }
         })
     }

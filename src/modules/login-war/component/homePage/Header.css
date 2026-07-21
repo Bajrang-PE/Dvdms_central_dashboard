@@ -1,0 +1,546 @@
+.dynamic-reveal-header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99999;
+    background-color: #ffffff !important;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-in-out;
+}
+
+.top-header-link {
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center;
+    position: relative;
+}
+
+.high-attention-motion-link {
+    background: linear-gradient(to right, #0056b3 0%, #ff4d4d 25%, #0d9488 50%, #ff4d4d 75%, #0056b3 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800 !important;
+    animation: textBounceShift 3s ease-in-out infinite, shineWave 4s linear infinite;
+}
+
+.live-dot-indicator {
+    width: 6px;
+    height: 6px;
+    background-color: #ff3b30;
+    border-radius: 50%;
+    margin-right: 5px;
+    display: inline-block;
+    -webkit-text-fill-color: initial;
+    animation: liveDotBlink 1s ease-in-out infinite;
+}
+
+@keyframes liveDotBlink {
+    0% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+        box-shadow: 0 0 8px #ff3b30;
+    }
+    100% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+}
+
+@keyframes textBounceShift {
+    0% { transform: translateX(0px); }
+    25% { transform: translateX(8px); }
+    50% { transform: translateX(0px); }
+    75% { transform: translateX(4px); }
+    100% { transform: translateX(0px); }
+}
+
+@keyframes shineWave {
+    to { background-position: 200% center; }
+}
+
+.stylish-gradient-title {
+    background: linear-gradient(135deg, #004085 0%, #0d9488 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.navbar-nav .nav-link {
+    background-color: #f8f9fa !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 4px !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffffff !important;
+    background-color: #002147 !important;
+    border-color: #002147 !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.custom-header-btn {
+    transition: all 0.2s ease-in-out !important;
+}
+
+.custom-header-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12) !important;
+}
+
+.portal-page-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    background-color: #f4f6f9;
+}
+
+.blurred-bg-image-layer {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: calc(100% + 10px);
+    height: calc(100% + 10px);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    transition: background-image 0.8s ease-in-out;
+}
+
+.color-tint-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3) !important;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.main-portal-body {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* FLOATING CONTAINER STYLES */
+.floating-top-actions {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1050;
+}
+
+.action-pill-btn {
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.action-pill-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.parichay-blue {
+    background: #ffffff;
+    color: #0056b3;
+    border-color: #0056b3;
+}
+
+.dvdms-teal {
+    background: #ffffff;
+    color: #0d9488;
+    border-color: #0d9488;
+}
+
+.login-navy {
+    background: #0056b3;
+    color: #ffffff;
+    border-color: #004085;
+}
+
+.btn-label-text {
+    display: inline-block;
+}
+
+.menu-hamburger {
+    position: relative;
+    width: 30px;
+    height: 20px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.menu-hamburger .bar {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #ffffff;
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.menu-hamburger .bar:nth-child(1) { top: 0; }
+.menu-hamburger .bar:nth-child(2) { top: 8.5px; }
+.menu-hamburger .bar:nth-child(3) { top: 17px; }
+
+.menu-hamburger.open .bar:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
+.menu-hamburger.open .bar:nth-child(2) { opacity: 0; }
+.menu-hamburger.open .bar:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
+
+.custom-side-drawer {
+    position: absolute;
+    top: 65px;
+    right: 40px;
+    width: 250px;
+    max-height: 0;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    z-index: 1060;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 33, 71, 0.1);
+    transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, transform 0.2s ease, padding 0.2s ease;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+}
+
+.custom-side-drawer.drawer-active {
+    max-height: 400px;
+    opacity: 1;
+    transform: translateY(0);
+    padding: 10px;
+    pointer-events: auto;
+}
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+    padding: 10px 8px 8px 12px;
+    margin-bottom: 8px;
+}
+
+.drawer-header h5 {
+    margin: 0;
+    font-weight: 700;
+    color: #002147;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+}
+
+.close-drawer-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #a0aec0;
+    transition: color 0.2s;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+}
+
+.close-drawer-btn:hover { color: #e53e3e; }
+
+.drawer-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.drawer-nav-item {
+    text-decoration: none !important;
+    color: #002147 !important;
+    background: transparent;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawer-nav-item:hover {
+    background: rgba(0, 33, 71, 0.05);
+    color: #0056b3 !important;
+    transform: translateX(4px);
+    border: 1px solid rgba(0, 86, 179, 0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* BRANDING CONTAINER REPLACED FOR CLEAN BACKGROUND LOOK WITH NO WIDGET WRAPPER BOX */
+.image-hero-container {
+    position: relative;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    text-align: center;
+    max-width: 800px;
+    width: 100%;
+    margin-bottom: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: none !important;
+}
+
+.header-bg-overlay-states-ribbon {
+    position: absolute;
+    bottom: 35px;
+    left: 0;
+    width: 100%;
+    z-index: 20;
+    padding: 0 15px;
+}
+
+/* Inactive hidden layouts matching edited-image requirements */
+.top-embedded-strip,
+.premium-banner-img,
+.tip-alert {
+    display: none !important;
+}
+
+
+
+/* ----------------------------------------------------------- */
+/* =========================================================
+   HEADER RESPONSIVE FIX - NO SIZE SHRINK
+   Sirf line-break issue solve karega
+   ========================================================= */
+
+/* header ki original full width ko touch mat karo */
+.dynamic-reveal-header .row {
+    flex-wrap: nowrap !important;
+}
+
+/* center area (nav + buttons) ko ek line me rakho */
+.dynamic-reveal-header .col-md-7.d-flex {
+    flex-wrap: nowrap !important;
+    gap: 8px;
+    min-width: 0;
+}
+
+/* nav aur buttons dono same line me रहें */
+.dynamic-reveal-header .navbar-header,
+.dynamic-reveal-header .buttons {
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.dynamic-reveal-header .navbar-nav {
+    flex-wrap: nowrap !important;
+}
+
+.dynamic-reveal-header .nav-link,
+.dynamic-reveal-header .custom-header-btn {
+    white-space: nowrap !important;
+}
+
+/* thoda compact sirf jab width tight ho */
+@media (max-width: 1700px) {
+    .dynamic-reveal-header .nav-link {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .dynamic-reveal-header .custom-header-btn {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+}
+
+@media (max-width: 1550px) {
+    .dynamic-reveal-header .nav-link {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        font-size: 10.5px !important;
+    }
+
+    .dynamic-reveal-header .custom-header-btn {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        font-size: 11px !important;
+    }
+
+    .dynamic-reveal-header .buttons {
+        gap: 6px;
+    }
+}
+
+
+
+
+/* -------------------------------------------------------------------------- */
+
+/* =========================================================
+   1200 se niche:
+   nav links hide, BUT navbar toggler/menu visible
+   ========================================================= */
+   /* -------------------------------------------------------------------------- */
+/* =========================================================
+   FINAL HEADER RESPONSIVE FIX
+   1200 se niche kuch hide nahi hoga
+   nav + buttons + title sab one line me rahenge
+   sirf compact honge
+   ========================================================= */
+
+/* =========================================================
+   FINAL HEADER RESPONSIVE FIX (FORCE SINGLE LINE & COMPACT BUTTONS)
+   1200px se niche buttons aur links ka size compress hokar absolute single line banayega
+   ========================================================= */
+
+/* =========================================================
+   ULTIMATE HARD-LOCKED ONE-LINE HEADER (750PX COVERS EVERYTHING)
+   ========================================================= */
+
+@media (max-width: 1250px) and (min-width: 750px) {
+    /* 1. Main header row को एक कड़क फ्लेक्स कंटेनर बनाएं */
+    .dynamic-reveal-header .row {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+    }
+
+    /* 2. Left side branding (Logo + Name) को सुकड़ें */
+    .dynamic-reveal-header .col-md-4 {
+        display: flex !important;
+        align-items: center !important;
+        flex: 0 0 20% !important; /* इसको सिर्फ 20% स्पेस देंगे */
+        max-width: 20% !important;
+        min-width: 0 !important;
+    }
+
+    /* 3. CENTER AREA (Nav Links + Buttons COMBINED) को पूरा स्पेस दें */
+    .dynamic-reveal-header .col-md-7.d-flex {
+        display: flex !important;
+        flex-direction: row !important; /* ज़बरदस्ती एक हॉरिजॉन्टल लाइन */
+        flex-wrap: nowrap !important;   /* टूटना मना है */
+        align-items: center !important;
+        justify-content: flex-end !important; /* राइट साइड में सटा कर रखेगा */
+        flex: 0 0 75% !important; /* इसको बड़ा करके 75% स्पेस दिया */
+        max-width: 75% !important;
+        min-width: 0 !important;
+        gap: calc(2px + 0.3vw) !important;
+    }
+
+    /* Right side corner logo */
+    .dynamic-reveal-header .col-md-1 {
+        flex: 0 0 5% !important;
+        max-width: 5% !important;
+    }
+
+    /* 4. Bootstrap Nav की डिफ़ॉल्ट सेटिंग को ओवरराइड करें (सबसे ज़रूरी) */
+    .dynamic-reveal-header .navbar-header {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+    }
+
+    .dynamic-reveal-header .navbar-header .navbar-collapse {
+        display: flex !important; /* block की जगह flex ताकि एक लाइन में रहे */
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .dynamic-reveal-header .navbar-header .navbar-nav {
+        display: flex !important;
+        flex-direction: row !important; /* Links को एक लाइन में लाएगा */
+        flex-wrap: nowrap !important;
+        gap: calc(2px + 0.1vw) !important;
+        margin: 0 !important;
+    }
+
+    /* 5. Fluid Fonts & Padding (स्क्रीन छोटी होते ही अपने आप छोटे होंगे) */
+    .dynamic-reveal-header .navbar-header .nav-link {
+        font-size: calc(6px + 0.15vw) !important; 
+        padding: 3px calc(3px + 0.15vw) !important;
+        white-space: nowrap !important;
+    }
+
+    /* Buttons Container (CMS Login, Parichay...) */
+    .dynamic-reveal-header .buttons {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: calc(2px + 0.15vw) !important;
+        margin-left: 4px !important;
+    }
+
+    /* Buttons (CMS Login etc.) */
+    .dynamic-reveal-header .buttons .btn,
+    .dynamic-reveal-header .custom-header-btn {
+        font-size: calc(6px + 0.15vw) !important;
+        padding: 4px calc(3px + 0.15vw) !important;
+        white-space: nowrap !important;
+        min-height: auto !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+
+    /* Hide the hamburger button entirely */
+    .dynamic-reveal-header .navbar-toggler {
+        display: none !important;
+    }
+
+    /* Left Side Logos & text shrinking */
+    .dynamic-reveal-header .logo-image,
+    .dynamic-reveal-header .col-md-1 img {
+        height: calc(22px + 0.5vw) !important;
+    }
+    .dynamic-reveal-header .top-header-link { font-size: calc(5px + 0.15vw) !important; }
+    .dynamic-reveal-header .stylish-gradient-title { font-size: calc(7px + 0.2vw) !important; }
+}

@@ -4,19 +4,17 @@ import { LoginContext } from '../../../../context/LoginContext';
 import InputSelect from '../../../InputSelect';
 import GlobalButtons from '../../GlobalButtons';
 import { ToastAlert } from '../../../../utils/CommonFunction';
-import axios from 'axios';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
+import { fetchPostData } from '../../../../../../utils/ApiHooks';
 
-const DistrictMasterForm = ({ setValues, values }) => {
+const DistrictMasterForm = ({ setValues, values, getListData, setSearchInput }) => {
 
     const { openPage, setOpenPage, selectedOption, setSelectedOption, getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext)
     const [stateId, setStateId] = useState("");
     const [distId, setDistId] = useState("");
     const [distName, setDistName] = useState("");
-    const [stateName, setStateName] = useState("");
     const [recordStatus, setRecordStatus] = useState("");
 
-    const [distIdErr, setDistIdErr] = useState("");
     const [stateIdErr, setStateIdErr] = useState("");
     const [distNameErr, setDistNameErr] = useState("");
 
@@ -26,9 +24,15 @@ const DistrictMasterForm = ({ setValues, values }) => {
         }
     }, [])
 
-    const validate = () => {
+    useEffect(() => {
+        if (openPage === "add" && values?.stateId) {
+            setStateId(values?.stateId || "");
+        }
+    }, [values])
 
-        //alert("cliclkinng on save in")
+    console.log('values', values)
+
+    const validate = () => {
         let isValid = true;
         if (!stateId?.toString()?.trim()) {
             setStateIdErr("Plese select state name")
@@ -52,11 +56,7 @@ const DistrictMasterForm = ({ setValues, values }) => {
     }, [confirmSave])
 
     const handleSave = async () => {
-
-
-
         if (openPage === "add") {
-
             const data = {
                 "gnumSeatid": getAuthUserData('userSeatId'),
                 "cwhstrDistName": distName,
@@ -65,11 +65,19 @@ const DistrictMasterForm = ({ setValues, values }) => {
                 "cwhstrUsername": "deo",
                 "cwhnumLgdCode": 999
             }
-            const response = await axios.post("http://10.226.17.6:8025/api/v1/districts", data)
-            ToastAlert('District Added Successfully', 'success');
-        }
-        else if (openPage === "modify") {
 
+            fetchPostData("/api/v1/districts/createDistrict", data).then((data) => {
+                if (data?.status === 1) {
+                    ToastAlert("Record added successfully", 'success');
+                    getListData(recordStatus || '1', stateId);
+                } else {
+                    ToastAlert(data?.message, 'error');
+                    setConfirmSave(false);
+                }
+            })
+        }
+
+        else if (openPage === "modify") {
             const data = {
                 "gnumIsvalid": recordStatus,
                 "gnumSeatid": getAuthUserData('userSeatId'),
@@ -77,41 +85,47 @@ const DistrictMasterForm = ({ setValues, values }) => {
                 "cwhnumStateId": stateId,
                 "cwhstrDistShortName": distName,
                 "cwhstrUsername": "deo",
-                "cwhnumLgdCode": 999,
+                "cwhnumLgdCode": 0,
+                "cwhnumDistId": distId
 
             }
 
-
-            const response = await axios.put("http://10.226.17.6:8025/api/v1/districts", data)
-            console.log("===after mod======", response)
-            ToastAlert('District Updated Successfully', 'success');
-            setSelectedOption([])
+            fetchPostData("/api/v1/districts/updateDistrict", data).then((data) => {
+                if (data?.status === 1) {
+                    ToastAlert("Record Updated successfully", 'success');
+                    setSelectedOption([])
+                    getListData(recordStatus || '1', stateId);
+                } else {
+                    ToastAlert(data?.message, 'error');
+                    setConfirmSave(false);
+                }
+            })
         }
         reset();
         setOpenPage('home');
         setConfirmSave(false);
     }
 
+
     useEffect(() => {
         if (selectedOption?.length > 0 && openPage === 'modify') {
             setDistId(selectedOption[0]?.cwhnumDistId);
             setRecordStatus(String(selectedOption[0]?.gnumIsvalid));
             setDistName(selectedOption[0]?.cwhstrDistName);
-            setStateId(selectedOption[0]?.cwhnumStateId)
-
+            setStateId(selectedOption[0]?.cwhnumStateId);
         }
 
     }, [selectedOption, openPage])
 
 
     const reset = () => {
-        setValues({ ...values, "recordStatus": "1" })
+        setValues({ ...values, "recordStatus": "1", "stateId": stateId })
     }
 
     return (
         <>
-    
-            <GlobalButtons onSave={validate} onClear={reset} />
+
+            <GlobalButtons onSave={validate} onClear={reset} setSearchInput={setSearchInput} />
             <hr className='my-2' />
             <div className="row mt-2">
                 {openPage === "add" &&
@@ -157,8 +171,6 @@ const DistrictMasterForm = ({ setValues, values }) => {
                         </div>
                     </>
                 }
-
-
 
                 {openPage === 'modify' &&
                     <>

@@ -10,10 +10,12 @@ const PopUpWidget = (props) => {
 
     const [widgetData, setWidgetData] = useState([]);
     const [searchParams] = useSearchParams();
-    const dashboardFor = atob(searchParams.get("dashboardFor"));
+    const groupId = atob(searchParams.get("groupId"));
+    const dashboardFor = "CENTRAL DASHBOARD";
+     const isGlobal = searchParams.get("isGlobal") || 0;
 
     const getWidgetData = (widid) => {
-        fetchData(`/hisutils/getWdgtSnglData?id=${widid}&dashboardFor=${dashboardFor}&masterName=DashboardWidgetMst`).then(data => {
+        fetchData(`/hisutils/getWdgtSnglData?id=${widid}&dashboardFor=${dashboardFor}&masterName=DashboardWidgetMst&isGlobal=${isGlobal || 0}`).then(data => {
             if (data?.status === 1) {
                 setWidgetData(data?.data);
             } else {
@@ -23,19 +25,18 @@ const PopUpWidget = (props) => {
     }
 
     useEffect(() => {
-        if (popupConfig && popupConfig?.widgetId) {
+        if (popupConfig && popupConfig?.widgetId && dashboardFor) {
             getWidgetData(popupConfig?.widgetId)
         }
-    }, [popupConfig])
+    }, [popupConfig, dashboardFor])
 
 
     return (
         <>
             <Modal show={showPopUpWidget} onHide={closePopup} size='xl'>
                 <Modal.Header closeButton className='p-2'></Modal.Header>
-                {/* <b><h4  className='datatable-header mx-3 py-1 mt-1 px-1'>{"this is modal view"}</h4></b> */}
-                <Modal.Body className='px-3 py-0'>
-                    <WidgetDash widgetDetail={widgetData?.jsonData} pk={popupConfig?.pkValue || ''} />
+                <Modal.Body className='px-2 py-0'>
+                    <WidgetDash widgetDetail={widgetData?.jsonData} pk={popupConfig || ''} isPopup={true}/>
                 </Modal.Body>
             </Modal>
         </>

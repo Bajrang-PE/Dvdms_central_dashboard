@@ -15,7 +15,7 @@ const ZoneMasterForm = ({setSearchInput}) => {
     })
 
     const getSingleData = (id) => {
-        fetchData(`api/v1/zones/${id}`).then(data => {
+        fetchData(`/api/v1/zones/${id}`).then(data => {
             if (data?.status ===1 ) {
                 setSingleData([data?.data]);
             } else {
@@ -37,7 +37,7 @@ const ZoneMasterForm = ({setSearchInput}) => {
             "cwhstrZoneName": zoneName,
             "status": "Active"
         }
-        fetchPostData(`api/v1/zones`, val).then(data => {
+        fetchPostData(`/api/v1/zones`, val).then(data => {
             if (data?.status ===1) {
                 ToastAlert('Record added successfully', 'success');
                 getZoneListData();
@@ -60,7 +60,8 @@ const ZoneMasterForm = ({setSearchInput}) => {
             "cwhstrZoneShortName": "",
             "cwhnumFlagForNhm": 0,
         }
-        fetchUpdateData(`api/v1/zones/${selectedOption[0]?.cwhnumZoneId}`, val).then(data => {
+
+        fetchPostData(`/api/v1/updateZone/${selectedOption[0]?.cwhnumZoneId}`, val).then(data => {
             if (data?.status ===1) {
                 ToastAlert('Record Updated Successfully', 'success');
                 getZoneListData();
@@ -113,7 +114,7 @@ const ZoneMasterForm = ({setSearchInput}) => {
     }
     return (
         <div>
-            <GlobalButtons onSave={handleValidation} onClear={reset}/>
+            <GlobalButtons onSave={handleValidation} onClear={reset} setSearchInput={setSearchInput}/>
             <hr className='my-2' />
             <div className='row pt-2'>
                 <div className='col-sm-6'>

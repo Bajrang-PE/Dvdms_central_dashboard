@@ -1,0 +1,105 @@
+/* --- LEFT PANEL HEADINGS & FOOTER --- */
+.panel-mainn-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
+    color: #ffffff;
+}
+
+.panel-title-line {
+    width: 60px;
+    height: 3px;
+    background: #ffffff;
+    margin-top: 8px;
+}
+
+.panel-action-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding-top: 15px;
+}
+
+.info-tag-text {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.view-all-btn-custom {
+    font-weight: 600;
+    color: #00183f;
+    border-radius: 20px;
+    padding: 4px 15px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.view-all-btn-custom:hover {
+    background-color: #f8f9fa;
+}
+
+/* --- LEFT SIDE: MINI SQUARE KPI CARDS --- */
+.mini-square-kpi-card {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 14px;
+    padding: 22px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    height: 100%;
+}
+
+/* Premium Dynamic Gradients Application */
+.kpi-gradient-orange { background: linear-gradient(135deg, #FF9F43 0%, #FF5252 100%); }
+.kpi-gradient-purple { background: linear-gradient(135deg, #EA5455 0%, #7367F0 100%); }
+.kpi-gradient-lavender { background: linear-gradient(135deg, #E0C3FC 0%, #8EC5FC 100%); }
+.kpi-gradient-blue { background: linear-gradient(135deg, #00CDAC 0%, #0288D1 100%); }
+
+.mini-square-kpi-card:hover {
+    background: #ffffff !important; /* Force content shift to crisp white layout on hover */
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Hover active state to flip text and icon colors instantly */
+.mini-square-kpi-card:hover .mini-card-count,
+.mini-square-kpi-card:hover .mini-card-title,
+.mini-square-kpi-card:hover .mini-card-icon i {
+    color: #00183f !important;
+}
+
+.mini-card-icon {
+    font-size: 20px;
+    margin-bottom: 6px;
+    color: rgba(255, 255, 255, 0.85);
+    transition: color 0.2s ease;
+}
+
+.mini-card-count {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 4px 0;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: color 0.2s ease;
+}
+
+.mini-card-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.2s ease;
+}

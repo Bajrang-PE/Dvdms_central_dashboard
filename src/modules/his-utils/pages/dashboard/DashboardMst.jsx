@@ -1,95 +1,118 @@
-import React, { useContext, useEffect, useState, useMemo, useCallback, Suspense, lazy } from "react";
+import React, { useContext, useEffect, useState, useCallback, Suspense, lazy } from "react";
 import { HISContext } from "../../contextApi/HISContext";
 import { useSearchParams } from "react-router-dom";
 import { fetchData, fetchPostData } from "../../../../utils/HisApiHooks";
 import Parameters from "../../components/sidebar/Parameters";
+import './../../HisUtils.css'
 
 const DashSidebar = lazy(() => import("../../components/sidebar/Sidebar"));
 const TopBar = lazy(() => import("../../components/sidebar/TopBar"));
 const TabDash = lazy(() => import("../../components/sidebar/TabDash"));
 
-const DashboardMst = () => {
-    const { activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, singleConfigData, getDashConfigData, setParamsValues, setPrevKpiTab, dt, setPresentTabsDash } = useContext(HISContext);
+const DashboardMst = ({ groupId, dashboardFor, isGlobal }) => {
+    const { activeTab, setActiveTab, theme, setTheme, mainDashData, setMainDashData, setLoading, loading, getDashConfigData, setParamsValues, setPrevKpiTab, dt, setPresentTabsDash, setAllDrpDtParams } = useContext(HISContext);
 
     const [searchParams] = useSearchParams();
-    const groupId = atob(searchParams.get("groupId"));
-    const dashboardFor = atob(searchParams.get("dashboardFor"));
     const [presentTabs, setPresentTabs] = useState([]);
+    const [allTabIds, setAllTabIds] = useState([]);
+
+    // const groupId = atob(searchParams.get("groupId"));
+    // const dashboardFor = atob(searchParams.get("dashboardFor"));
+    // const isGlobal = searchParams.get("isGlobal") || 0;
 
 
     useEffect(() => {
-        if (!singleConfigData) {
-            getDashConfigData();
+        const initializeDashboard = async () => {
+            setLoading(true);
+            try {
+                await getDashConfigData();
+
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                if (dashboardFor && groupId) {
+                    await getDashboardData(groupId, dashboardFor);
+                }
+
+            } catch (error) {
+                console.error("Initialization error:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        initializeDashboard();
+    }, [dashboardFor, groupId]);
+
+    const getDashboardData = async (groupId, dashFor) => {
+        try {
+
+            const data = await fetchData(
+                `/hisutils/singleDashboard/${groupId}/${dashFor}/DashboardGroupingMst?isGlobal=${isGlobal || 0}`
+            );
+            // fetchData(`/hisutils/singleDashboard/${groupId}/${dashFor}/DashboardGroupingMst?isGlobal=${isGlobal || 0}`).then((data) => {
+            if (data?.status === 1) {
+                setMainDashData(data?.data);
+
+                if (data?.data) {
+                    const ids = data.data.jsonData.dashboardIds.split(',').map(Number) || [];
+                    const themes = data.data?.jsonData?.dashboardTheme || 'Default';
+                    if (ids?.length > 0) {
+                        setAllTabIds(ids);
+                    } else {
+                        setAllTabIds([]);
+                    }
+                    setTheme(themes);
+                }
+
+            }
+            // })
+
+        } catch (error) {
+            console.error("Error fetching dashboard data", error);
         }
-    }, [])
+    };
 
-    const getDashboardData = useCallback((groupId, dashFor) => {
-        fetchData(`/hisutils/singleDashboard/${groupId}/${dashFor}/DashboardGroupingMst`)
-            .then((data) => {
-                if (data?.status === 1) setMainDashData(data?.data);
-            });
-    }, []);
 
-    const getAllAvailableTabs = useCallback(async (idArr, dashFor) => {
+    const getAllAvailableTabs = (idArr, dashFor) => {
         try {
             const val = {
-                ids: idArr || [],
-                dashboardFor: dashFor || 'CENTRAL DASHBOARD',
-                masterName: "DashboardMst"
+                "ids": idArr || [],
+                "dashboardFor": dashFor,
+                "masterName": "DashboardMst"
             };
-            const data = await fetchPostData("/hisutils/gettabsMultipleData", val);
-            if (data?.status === 1) {
-                setPresentTabs(data.data);
-                setPresentTabsDash(data.data);
-            } else {
-                setPresentTabs([]);
-                setPresentTabsDash([]);
-            }
+            fetchPostData(`/hisutils/gettabsMultipleData?isGlobal=${isGlobal || 0}`, val).then((data) => {
+                if (data?.status === 1) {
+                    setPresentTabs(data?.data);
+                    setPresentTabsDash(data?.data);
+                    setLoading(false);
+                } else {
+                    setPresentTabs([]);
+                    setPresentTabsDash([]);
+                    setLoading(false);
+                };
+            })
         } catch (error) {
             console.error("Error fetching tabs data", error);
         }
-    }, []);
-
-
-    useEffect(() => {
-        if (dashboardFor && groupId) {
-            setLoading(true);
-            getDashboardData(groupId, dashboardFor);
-            // getAllWidgetData(dashboardFor);
-        }
-    }, [searchParams]);
-
+    };
 
     useEffect(() => {
-        if (mainDashData) {
-            const ids = mainDashData.jsonData.dashboardIds.split(',').map(Number) || [];
-            const themes = mainDashData?.jsonData?.dashboardTheme || 'Default'
-            setTheme(themes);
-            getAllAvailableTabs(ids, dashboardFor).finally(() => setLoading(false));
-        } else {
-            setLoading(false)
+        if (allTabIds?.length > 0) {
+            getAllAvailableTabs(allTabIds, dashboardFor);
         }
-    }, [mainDashData]);
+    }, [allTabIds]);
 
     const isTopBarLayout = mainDashData?.jsonData?.tabDisplayStyle === 'TOP';
     const parameters = mainDashData?.jsonData?.allSelectedParaList || '';
-
 
     const handleSetParamsValues = useCallback((values) => {
         setParamsValues(values);
     }, []);
 
-    useEffect(() => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-        }, 1000);
-    }, [])
-
 
     return (
         <>
-            {loading ? null : (
+            {loading ? <h1 className="text-center">Loading...</h1> : (
                 <div className={`${theme === 'Dark' ? 'dark-theme' : ''}`} style={{
                     display: isTopBarLayout ? "block" : 'flex',
                     backgroundColor: "#f4f4f4",
@@ -110,6 +133,7 @@ const DashboardMst = () => {
                                 dashboardData={mainDashData}
                                 setPrevKpiTab={setPrevKpiTab}
                                 dt={dt}
+                                setAllDrpDtParams={setAllDrpDtParams}
                             />
                         ) : (
                             <DashSidebar
@@ -119,11 +143,12 @@ const DashboardMst = () => {
                                 dashboardData={mainDashData}
                                 setPrevKpiTab={setPrevKpiTab}
                                 dt={dt}
+                                setAllDrpDtParams={setAllDrpDtParams}
                             />
                         )}
                     </Suspense>
 
-                    <main style={{ padding: "10px 20px", flex: 1, width: isTopBarLayout ? "" : "80%" }} >
+                    <main style={{ flex: 1, width: isTopBarLayout ? "" : "80%" }} >
                         {parameters &&
                             <div className='parameter-box'>
                                 <Suspense
@@ -148,9 +173,6 @@ const DashboardMst = () => {
                             >
                                 <TabDash />
                             </Suspense>
-                            // : <>
-                            //     <h2 className="text-danger">Internal Error!!!! </h2>
-                            // </>
                         }
                     </main>
                 </div>

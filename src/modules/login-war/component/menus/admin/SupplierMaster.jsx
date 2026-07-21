@@ -5,14 +5,15 @@ import GlobalTable from '../../GlobalTable';
 import SupplierMasterForm from '../forms/admin/SupplierMasterForm';
 import { Modal } from 'react-bootstrap';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
-import { fetchUpdateData, fetchData } from '../../../../../utils/ApiHooks';
+import { fetchUpdateData, fetchData, fetchUpdatePostData } from '../../../../../utils/ApiHooks';
+import MasterReport from '../../MasterReport';
 
 
 const SupplierMaster = () => {
 
     const [recordStatus, setRecordStatus] = useState("1");
     const [suppliers, setSuppliers] = useState([]);
-    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, openPage, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, isShowReport } = useContext(LoginContext);
     const [selectAll, setSelectAll] = useState(false);
     const [searchInput, setSearchInput] = useState('');
     const [filterData, setFilterData] = useState(suppliers);
@@ -47,7 +48,7 @@ const SupplierMaster = () => {
     };
 
     const getListData = (isActive) => {
-        fetchData(`http://10.226.27.173:8025/api/v1/suppliers?isActive=${isActive}`).then((data) => {
+        fetchData(`/api/v1/suppliers/getSupplierList?isActive=${isActive}`).then((data) => {
             if (data && data.status === 1) {
                 setSuppliers(data.data);
             } else {
@@ -74,7 +75,8 @@ const SupplierMaster = () => {
 
     const handleDelete = () => {
         const suppId = String(selectedOption[0]?.cwhnumSupplierId)
-        fetchUpdateData(`http://10.226.27.173:8025/api/v1/suppliers/del/${suppId}`).then(data => {
+        fetchUpdatePostData(`/api/v1/suppliers/deleteSupplier/${suppId}`).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
                 ToastAlert("Record Deleted Successfully", "success")
                 setSelectedOption([]);
@@ -83,8 +85,9 @@ const SupplierMaster = () => {
                 setRecordStatus(1)
                 getListData(recordStatus);
             } else {
-                ToastAlert('Error while deleting record!', 'error')
+                ToastAlert(data?.message, 'error')
                 setOpenPage("home")
+                setConfirmSave(false);
             }
         })
     }
@@ -147,18 +150,18 @@ const SupplierMaster = () => {
             sortable: true,
         },
     ];
-    console.log(selectedOption, 'selectedOption')
-    console.log(suppliers, 'suppliers')
+
     return (
         <div className="masters mx-3 my-2">
 
+            {!isShowReport &&
+                <div className='masters-header row'>
+                    <span className='col-6'><b>{`Supplier Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {suppliers?.length}</span>}
+                </div>
+            }
 
-            <div className='masters-header row'>
-                <span className='col-6'><b>{`Supplier Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                {openPage === "home" && <span className='col-6 text-end'>Total Records : {suppliers?.length}</span>}
-            </div>
-
-            {(openPage === "home" || openPage === "view" || openPage === "delete") && (<>
+            {(openPage === "home" || openPage === "view" || openPage === "delete") && !isShowReport && (<>
 
                 <div className="row mt-3">
                     <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
@@ -191,7 +194,7 @@ const SupplierMaster = () => {
                         </Modal.Header>
                         <Modal.Body className='px-2 py-1'>
 
-                            <div className='text-left'>
+                            <div className='text-center'>
                                 <label><b>Supplier Type : </b></label>&nbsp;{selectedOption[0]?.cwhnumSupplierType}<br />
                                 <label><b>Address : </b></label>&nbsp;{selectedOption[0]?.cwhstrAddress}<br />
                                 <label><b>Email Id : </b></label>&nbsp;{selectedOption[0]?.cwhstrEmailId}<br />
@@ -216,8 +219,16 @@ const SupplierMaster = () => {
             </>)
             }
 
-            {(openPage === "add" || openPage === "modify") &&
+            {(openPage === "add" || openPage === "modify") && !isShowReport &&
                 <SupplierMasterForm getListData={getListData} recStatus={recordStatus} setRecStatus={setRecordStatus} setSearchInput={setSearchInput} />
+            }
+
+            {isShowReport &&
+                <MasterReport title={"Supplier Master"} column={columns} data={filterData}
+                    filters={[
+                        { value: recordStatus == 1 ? "Active" : "InActive", label: "Record Status" }
+                    ]}
+                />
             }
 
         </div>

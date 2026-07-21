@@ -6,7 +6,7 @@ import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
-const FacilityTypeMasterForm = () => {
+const FacilityTypeMasterForm = ({setSearchInput}) => {
     const { openPage, selectedOption, setOpenPage, setSelectedOption, getFacilityTypeListData, setShowConfirmSave, confirmSave,setConfirmSave } = useContext(LoginContext);
     const [facilityName, setFacilityName] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active');
@@ -20,7 +20,7 @@ const FacilityTypeMasterForm = () => {
             "cwhstrFacilityTypeName": facilityName,
             "status": "Active"
         }
-        fetchPostData(`api/v1/Facility/create`, val).then(data => {
+        fetchPostData(`/api/v1/Facility/create`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
                 getFacilityTypeListData();
@@ -40,11 +40,11 @@ const FacilityTypeMasterForm = () => {
             "cwhstrFacilityTypeName": facilityName,
             "status": recordStatus,
             "cwhnumFacilityTypeId": selectedOption[0]?.cwhnumFacilityTypeId,
-            "cwhstrFacilityTypeShortName": "",
+            "cwhstrFacilityTypeShortName": "null",
             "cwhnumNinFacilityTypeId": 0,
             "cwhnumOrder": 0,
         }
-        fetchUpdateData(`api/v1/Facility/${selectedOption[0]?.cwhnumFacilityTypeId}`, val).then(data => {
+        fetchPostData(`/api/v1/updateFacility/${selectedOption[0]?.cwhnumFacilityTypeId}`, val).then(data => {
             if (data?.status === 1) {
                 ToastAlert('Record Updated Successfully', 'success');
                 getFacilityTypeListData();
@@ -92,6 +92,7 @@ const FacilityTypeMasterForm = () => {
         setFacilityName('');
         setRecordStatus('Active')
         setConfirmSave(false);
+        setSearchInput('');
     }
 
     return (

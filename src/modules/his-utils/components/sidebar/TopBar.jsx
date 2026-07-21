@@ -3,8 +3,23 @@ import '../headers/NavbarHeader.css';
 import * as SolidIcons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DropdownPortal from '../commons/DropdownPortal';
+import useImageWithFallback from '../../hooks/useImageWithFallback';
+import * as FaIcons from "react-icons/fa";
 
-const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab,dt }) => {
+const DynamicImage = React.memo(({ iconName }) => {
+    const imageSrc = useImageWithFallback(iconName);
+
+    return (
+        <img
+            src={imageSrc}
+            alt="menu-icon"
+            className="me-1 menu-icon-image"
+            style={{ width: '16px', height: '16px' }}
+        />
+    );
+});
+
+const TopBar = ({ data, setActiveTab, dashboardData, setPrevKpiTab, dt, setAllDrpDtParams }) => {
     const [openSubMenu, setOpenSubMenu] = useState(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
@@ -12,10 +27,28 @@ const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab,dt }) => {
     const scrollRef = useRef(null);
     const tabRefs = useRef({});
 
-
     // Memoize root tabs to avoid recalculation on every render
+    // const rootTabs = useMemo(() => {
+    //     return data?.filter(dt => dt?.jsonData?.isTabUsedForDrillDown === "No")?.filter(tab => !tab.jsonData.parentTabId || tab.jsonData.parentTabId === "0") || [];
+    // }, [data]);
+
     const rootTabs = useMemo(() => {
-        return data?.filter(tab => !tab.jsonData.parentTabId || tab.jsonData.parentTabId === "0") || [];
+        if (!data?.length) return [];
+
+        const allTabIds = new Set(
+            data.map(tab => String(tab?.id))
+        );
+        return data.filter(tab => {
+            const json = tab.jsonData;
+            if (json.isTabUsedForDrillDown !== "No") {
+                return false;
+            }
+            const parentId = String(json.parentTabId || "0");
+            if (parentId === "0") {
+                return true;
+            }
+            return !allTabIds.has(parentId);
+        });
     }, [data]);
 
     // Memoize child tab lookup
@@ -23,30 +56,43 @@ const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab,dt }) => {
         return data?.filter(tab => tab.jsonData.parentTabId == parentId) || [];
     }, [data]);
 
-    // Memoize icon lookup
-    const iconCache = useMemo(() => {
-        const cache = {};
-        (data || []).forEach(tab => {
-            const iconName = tab?.jsonData?.iconName;
-            if (iconName && !cache[iconName]) {
-                let formattedIconName = "fa" + iconName.replace(/-o$/, "")
-                    .replace("fa-", "")
-                    .replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
-                let iconKey = Object.keys(SolidIcons).find(key => key.toLowerCase() === formattedIconName.toLowerCase())
-                    || Object.keys(SolidIcons).find(key => key.toLowerCase().includes(formattedIconName.toLowerCase().replace(/[^a-zA-Z]/g, "")));
-                cache[iconName] = iconKey ? SolidIcons[iconKey] : SolidIcons.faBarChart;
-            }
-        });
-        return cache;
-    }, [data]);
+    const getDynamicIcon = (iconName) => {
+        if (!iconName) return <FontAwesomeIcon className="me-2 dropdown-gear-icon" icon={SolidIcons.faBarChart} />;
 
-    const getDynamicIcon = (iconName) => iconCache[iconName] || SolidIcons.faBarChart;
+        if (iconName?.includes("_") || iconName?.includes("-")) {
+            const formattedIconName =
+                "fa" +
+                iconName
+                    .replace(/-o$/, "")
+                    .replace(/^fa-/, "")
+                    .replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+
+            const iconKey = Object.keys(SolidIcons).find(
+                (key) =>
+                    key.toLowerCase() === formattedIconName.toLowerCase() ||
+                    key
+                        .toLowerCase()
+                        .includes(
+                            formattedIconName.replace(/[^a-zA-Z]/g, "").toLowerCase()
+                        )
+            );
+
+            const IconDef = iconKey ? SolidIcons[iconKey] : SolidIcons.faBarChart;
+            return <FontAwesomeIcon className="me-2 dropdown-gear-icon" icon={IconDef} />;
+        }
+
+        const Cmp = FaIcons[iconName] || FaBars;
+        return <Cmp className="me-2 dropdown-gear-icon" />;
+    };
 
     // Initial active tab setup — run only when `data` changes significantly
     useEffect(() => {
         if (rootTabs.length > 0) {
             setActiveTab(rootTabs[0]);
             setOpenSubMenu(null);
+        } else {
+            setActiveTab(data[0]);
+            setOpenSubMenu(data[0]?.id);
         }
         if (scrollRef.current) {
             scrollRef.current.scrollLeft = 0;
@@ -74,6 +120,16 @@ const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab,dt }) => {
     const scrollRight = () => scrollBy(200);
 
     return (
+
+           <>
+            <LoginContext.Provider value={{ 
+                setSelectedOption: () => {}, 
+                setOpenPage: () => {}, 
+                setIsShowReport: () => {} 
+            }}>
+                <ModernDashHeader />
+            </LoginContext.Provider>
+
         <nav className="navbar navbar-expand-lg navbar-dark navbar-header-his">
             <div className="container-fluid">
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
@@ -88,7 +144,7 @@ const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab,dt }) => {
 
                 <div className="collapse navbar-collapse scrollable-navbar-container " id="navbarNavDropdown">
                     <ul className="navbar-nav scrollable-navbar" ref={scrollRef} onScroll={checkScroll}>
-                        {rootTabs.map((tab, index) => {
+                        {(rootTabs?.length > 0 ? rootTabs : data).map((tab, index) => {
                             const childTabs = getChildTabs(tab.id);
                             return (
                                 <React.Fragment key={tab.id}>
@@ -102,10 +158,19 @@ const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab,dt }) => {
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 setActiveTab(tab);
+                                                setPrevKpiTab([]);
                                                 setOpenSubMenu(openSubMenu === tab.id ? null : tab.id);
+                                                setAllDrpDtParams([]);
                                             }}
                                         >
-                                            <FontAwesomeIcon icon={getDynamicIcon(tab?.jsonData?.iconName)} className="me-2 dropdown-gear-icon" />
+                                            {tab?.jsonData?.isCSSTabIconRequired === "No" ?
+
+                                                <DynamicImage iconName={tab?.jsonData?.iconImageName} />
+                                                :
+                                                getDynamicIcon(tab?.jsonData?.iconName)
+                                            }
+
+
                                             {dt(tab?.jsonData?.dashboardName)}
                                         </a>
 
@@ -121,9 +186,17 @@ const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab,dt }) => {
                                                                     e.preventDefault();
                                                                     setActiveTab(child);
                                                                     setOpenSubMenu(null);
+                                                                    setPrevKpiTab([]);
+                                                                    setAllDrpDtParams([]);
                                                                 }}
                                                             >
-                                                                <FontAwesomeIcon icon={getDynamicIcon(child?.jsonData?.iconName)} className="me-2 dropdown-gear-icon" />
+                                                                {child?.jsonData?.isCSSTabIconRequired === "No" ?
+
+                                                                    <DynamicImage iconName={child?.jsonData?.iconImageName} />
+                                                                    :
+                                                                    getDynamicIcon(child?.jsonData?.iconName)
+                                                                }
+
                                                                 {dt(child?.jsonData?.dashboardName)}
                                                             </a>
                                                         </li>
@@ -149,6 +222,7 @@ const TopBar = ({ data, setActiveTab, dashboardData,setPrevKpiTab,dt }) => {
                 )}
             </div>
         </nav>
+        </>
     );
 };
 

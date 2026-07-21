@@ -3,47 +3,47 @@ import { capitalizeFirstLetter, ToastAlert } from '../../../../utils/CommonFunct
 import { LoginContext } from '../../../../context/LoginContext';
 import InputSelect from '../../../InputSelect';
 import GlobalTable from '../../../GlobalTable';
-import { fetchData, fetchDeleteData } from '../../../../../../utils/ApiHooks';
+import { fetchData, fetchDeleteData, fetchPostData } from '../../../../../../utils/ApiHooks';
 import IphsMedicineMasterForm from '../../forms/admin/iphsAdmin/IphsMedicineMasterForm';
+import MasterReport from '../../../MasterReport';
 
 const IphsMedicineMaster = () => {
 
-    const { openPage, setOpenPage, iphsGroupDrpData, getIphsGroupDrpData, selectedOption, setSelectedOption, confirmSave,
-        setShowConfirmSave, setConfirmSave } = useContext(LoginContext);
+    const { openPage, setOpenPage, iphsGroupDrpData, getIphsGroupDrpData, selectedOption, setSelectedOption, confirmSave, setShowConfirmSave, setConfirmSave, isShowReport } = useContext(LoginContext);
     const [listData, setListData] = useState([]);
     const [record, setRecord] = useState("1");
     const [searchInput, setSearchInput] = useState('');
     const [filterData, setFilterData] = useState(listData);
 
-    useEffect(()=>{
+    useEffect(() => {
         getListData();
-    },[record])
+    }, [record])
 
-    const getListData=()=>{
-        fetchData(`http://10.226.26.247:8025/api/v1/IphsMoleculeMedicineMaster/getMoleculeMedicineNames?isActive=${record}`).then(data=>{
-            if(data.status == 1){
+    const getListData = () => {
+        fetchData(`/api/v1/IphsMoleculeMedicineMaster/getMoleculeMedicineNames?isActive=${record}`).then(data => {
+            if (data.status == 1) {
                 setListData(data.data);
-            }else{
+            } else {
                 setListData([])
             }
         })
     }
 
-      useEffect(() => {
-            if (!searchInput) {
-                setFilterData(listData);
-            } else {
-                const lowercasedText = searchInput.toLowerCase();
-                const newFilteredData = listData.filter(row => {
-                    const paramName = row?.moleculeName?.toLowerCase() || "";
-    
-                    return paramName.includes(lowercasedText);
-                });
-                setFilterData(newFilteredData);
-            }
-        }, [searchInput, listData]);
+    useEffect(() => {
+        if (!searchInput) {
+            setFilterData(listData);
+        } else {
+            const lowercasedText = searchInput.toLowerCase();
+            const newFilteredData = listData.filter(row => {
+                const paramName = row?.moleculeName?.toLowerCase() || "";
 
-    
+                return paramName.includes(lowercasedText);
+            });
+            setFilterData(newFilteredData);
+        }
+    }, [searchInput, listData]);
+
+
     const columns = [
         {
             name: (
@@ -73,81 +73,90 @@ const IphsMedicineMaster = () => {
         },
     ];
 
-       const handleDeleteRecord = () => {
-                if (selectedOption?.length > 0) {
-                    setOpenPage('delete');
-                    setShowConfirmSave(true);
-                } else {
-                    ToastAlert("Please select a record", "warning");
-                }
+    const handleDeleteRecord = () => {
+        if (selectedOption?.length > 0) {
+            setOpenPage('delete');
+            setShowConfirmSave(true);
+        } else {
+            ToastAlert("Please select a record", "warning");
+        }
+    }
+
+    useEffect(() => {
+        if (confirmSave && openPage === 'delete') {
+            handleDelete();
+        }
+    }, [confirmSave])
+
+    const handleDelete = () => {
+
+        fetchPostData(`/api/v1/IphsMoleculeMedicineMaster/deleteMoleculeMedicine?packID=${selectedOption[0].packID}&isActive=0`).then(data => {
+            if (data?.status === 1) {
+                ToastAlert("Data deleted successfully", "success")
+                setConfirmSave(false);
+                setSelectedOption([]);
+                setOpenPage("home");
+                setRecord("1")
+                getListData();
+            } else {
+                ToastAlert('Error while deleting record!', 'error')
+                setOpenPage("home")
             }
-        
-            useEffect(() => {
-                if (confirmSave && openPage === 'delete') {
-                    handleDelete();
-                }
-            }, [confirmSave])
-        
-            const handleDelete = () => {
-        
-                fetchDeleteData(`http://10.226.26.247:8025/api/v1/IphsMoleculeMedicineMaster/deleteMoleculeMedicine?packID=${selectedOption[0].packID}&isActive=0`).then(data => {
-                    if (data?.status === 1) {
-                        ToastAlert("Data deleted successfully", "success")
-                        setConfirmSave(false);
-                        setSelectedOption([]);
-                        setOpenPage("home");
-                        setRecord("1")
-                        getListData();
-                    } else {
-                        ToastAlert('Error while deleting record!', 'error')
-                        setOpenPage("home")
-                    }
-        
-                })
-        
-            }
+
+        })
+
+    }
+
 
     return (
         <>
             <div className='masters mx-3 my-2'>
-                <div className='masters-header row'>
-                    <span className='col-6'><b>{`Molecule Medicine Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
-                    {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
-                </div>
-
-
-                { (openPage === "home" || openPage === "delete") && 
-                <>
-                <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
-                    <label className="col-sm-4 col-form-label fixed-label required-label">Record Status</label>
-                    <div className="col-sm-8 align-content-center">
-                        <InputSelect
-                            id="record"
-                            name="record"
-                            options={[{ label: "Active", value: "1" },
-                            { label: "Inactive", value: "0" }]}
-                            onChange={(e) => setRecord(e.target.value)}
-                            value={record}
-                        />
-
+                {!isShowReport &&
+                    <div className='masters-header row'>
+                        <span className='col-6'><b>{`Molecule Medicine Master >>${capitalizeFirstLetter(openPage)}`}</b></span>
+                        {openPage === "home" && <span className='col-6 text-end'>Total Records : {listData?.length}</span>}
                     </div>
+                }
 
-                </div>
+                {(openPage === "home" || openPage === "delete") && !isShowReport &&
+                    <>
+                        <div className="form-group col-sm-6 row" style={{ paddingBottom: "1px" }}>
+                            <label className="col-sm-4 col-form-label fixed-label required-label">Record Status</label>
+                            <div className="col-sm-8 align-content-center">
+                                <InputSelect
+                                    id="record"
+                                    name="record"
+                                    options={[{ label: "Active", value: "1" },
+                                    { label: "Inactive", value: "0" }]}
+                                    onChange={(e) => setRecord(e.target.value)}
+                                    value={record}
+                                />
 
-                <hr className='my-2' />
+                            </div>
 
-                <div>
-                    <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
-                        onReport={null} setSearchInput={setSearchInput} searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={false} isReport={true} setOpenPage={setOpenPage} onValidate={null} />
-                </div>
+                        </div>
 
-                </>
-               }
+                        <hr className='my-2' />
 
-               {(openPage === "add" || openPage === "modify") &&
-                  <IphsMedicineMasterForm setRecord={setRecord} getListData={getListData} setSearchInput={setSearchInput }/>
-               }
+                        <div>
+                            <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
+                                onReport={null} setSearchInput={setSearchInput} searchInput={searchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={false} isReport={true} setOpenPage={setOpenPage} onValidate={null} />
+                        </div>
 
+                    </>
+                }
+
+                {(openPage === "add" || openPage === "modify") && !isShowReport &&
+                    <IphsMedicineMasterForm setRecord={setRecord} getListData={getListData} setSearchInput={setSearchInput} />
+                }
+
+                {isShowReport &&
+                    <MasterReport title={"IPHS Medicine Master"} column={columns} data={filterData}
+                        filters={[
+                            { value: record == 1 ? "Active" : "InActive", label: "Record Status" },
+                        ]}
+                    />
+                }
 
 
 

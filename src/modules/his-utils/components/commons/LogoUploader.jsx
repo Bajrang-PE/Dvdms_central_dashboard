@@ -28,7 +28,7 @@ const LogoUploader = ({ name, value, onChange }) => {
     return (
         <div className="d-flex align-items-center">
             <img
-                src={value || "/default-upload-icon.png"}
+                src={value || "/default-icon.png"}
                 alt="logo"
                 style={{
                     width: "50px",
