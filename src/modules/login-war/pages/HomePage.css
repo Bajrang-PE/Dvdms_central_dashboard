@@ -497,3 +497,136 @@ font.goog-text-highlight {
     left: -9999px !important;
     top: -9999px !important;
 }
+
+
+
+/* ==========================================
+   FLOATING THEME SHORTCUT STYLES (UPDATED)
+   ========================================== */
+
+.theme-shortcut-wrapper {
+    position: fixed;
+    top: 332px;  /* Calendar (220px) + Translate (276px) के ठीक नीचे (332px) */
+    right: -8px; /* Language और Calendar बटन के alignment में */
+    z-index: 99999;
+}
+
+.theme-shortcut {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: #8a7d7da8;
+    border: 1px solid #f0f0f091;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.theme-shortcut:hover {
+    background: #f8fafc;
+    transform: translateY(-2px);
+}
+
+.theme-shortcut i {
+    font-size: 22px;
+    color: #00183f !important;
+    line-height: 1;
+}
+
+/* थीम पॉपअप मेनू का डिज़ाइन */
+.theme-color-menu {
+    position: absolute;
+    top: 0;
+    right: 55px; /* Icon के बाईं ओर खुलेगा */
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+    border: 1px solid #dbe4f0;
+    min-width: 140px;
+}
+
+.theme-menu-title {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+    color: #00183f;
+}
+
+.theme-options {
+    display: flex;
+    justify-content: space-around;
+    gap: 6px;
+}
+
+.theme-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    outline: 1px solid #ccc;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.theme-btn:hover {
+    transform: scale(1.2);
+}
+
+/* Theme Swatches Colors */
+.blue-theme { 
+    background: linear-gradient(135deg, #00183f 0%, #002d80 50%, #00112c 100%) !important; 
+}
+.green-theme { background-color: #198754; }
+.red-theme { background-color: #dc3545; }
+.dark-theme { background-color: #212529; }
+
+
+
+/* --- THEME COLORS DEFINITION --- */
+:root {
+    --primary-color: linear-gradient(135deg, #00183f 0%, #002d80 50%, #00112c 100%);
+    --primary-dark: #00183f;
+}
+
+[data-theme="green"] {
+    --primary-color: #198754;
+    --primary-dark: #0f5132;
+}
+
+[data-theme="red"] {
+    --primary-color: #dc3545;
+    --primary-dark: #842029;
+}
+
+[data-theme="dark"] {
+    --primary-color: #343a40;
+    --primary-dark: #121416;
+}
+
+/* जहाँ-जहाँ रंग बदलना है, वहाँ CSS Variable उपयोग करें */
+.left-red-panel {
+    background: var(--primary-dark) !important;
+}
+
+.right-white-panel .heading-text::after,
+.right-white-panel h2::after {
+    background: var(--primary-color) !important;
+}
+
+.right-white-panel .carousel-control-prev:hover,
+.right-white-panel .carousel-control-next:hover,
+.right-white-panel .arrow-btn:hover {
+    background: var(--primary-color) !important;
+}
+
+/* Header Buttons / Login Modal Accent */
+.btn-primary, 
+.nav-arrow-btn:hover {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
