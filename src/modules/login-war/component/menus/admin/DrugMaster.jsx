@@ -224,6 +224,7 @@ const DrugMaster = () => {
 
     }
 
+
     return (
         <>
             <div className="masters mx-3 my-2">

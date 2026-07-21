@@ -890,88 +890,99 @@ const Features = () => {
                             <span className="news-time-stamp"></span>
                         </div>
 
-                    </div>
-
-                </div>
-
-                {/* --- RIGHT PANEL: HIGH-FINISH SPOTLIGHT CONTAINER --- */}
-                <div className="spotlight-right-panel">
-                    <h2 className="panel-main-title">Features</h2>
-
-                    <p className="panel-sub-tagline">
-                        Integrated Drug & Vaccine Distribution Dashboard | Ministry of Health & Family Welfare, Govt. of India
-                    </p>
-
-                    <div className="spotlight-box-wrapper">
-
-                        {/* LEFT INNER SUBFRAME: Image Asset + Rich Technical Description */}
-                        <div className="spotlight-left-subframe">
-                            <div className="spotlight-image-frame">
-                                <img src="/dvdms/supplychain.jpg" alt="Pharmaceutical Supply Chain Logistical Wireframe" />
+                        <div className="news-card">
+                            <div className="news-source-badge badge-dd">
+                                <span className="badge-icon-text">Diagnos</span>
+                                <span className="badge-sub-text"></span>
                             </div>
-
-                            <div className="spotlight-red-desc">
-                                <div className="spotlight-month-tag"></div>
-                                <h4 className="spotlight-main-heading">DVDMS Central Dashboard</h4>
-
-                                {/* Paragraph */}
-                                <p className="spotlight-body-desc">
-                                    The DVDMS Central Dashboard delivers an enterprise-grade analytical and monitoring framework for the Integrated Drug and Vaccine Distribution Management System. It enables real-time tracking of procurement lifecycles, inventory levels, stock thresholds, and distribution pipelines across multiple tiers of the public health supply chain. By transforming complex pharmaceutical and logistics data into actionable visual insights, the platform supports evidence-based decision-making, improves supply chain transparency, and helps optimize the availability of essential medicines and vaccines across state and district health networks.
-                                </p>
-
-                                {/* Paragraph ke niche second image */}
-                                <div className="spotlight-second-image-wrap mt-3 text-center">
-                                    <img
-                                        src="/dvdms/ChatGPTdata.jpg"
-                                        alt="Second Feature Asset"
-                                        style={{
-                                            maxWidth: '100%',
-                                            height: 'auto',
-                                            borderRadius: '4px',
-                                            objectFit: 'contain'
-                                        }}
-                                    />
-                                </div>
-
+                            <div className="news-content-area">
+                                <div className="news-meta-header">Notice</div>
+                                <h4 className="news-headline-text">D.O letter : Funding under NHM for Free Drugs Service</h4>
                             </div>
+                            <span className="news-time-stamp"></span>
                         </div>
 
-                        {/* RIGHT INNER SUBFRAME: Features Stack List */}
-                        <div className="features-side-list">
-                            {[
-                                { tag: "", icon: "far fa-chart-bar", label: "Real-time Statistics", rightImage: "/dvdms/real-time.jpg" },
-                                { tag: "", icon: "fas fa-user-tie", label: "Role Based User Access", rightImage: "/dvdms/role-main.png" },
-                                { tag: "", icon: "fas fa-filter", label: "Advanced Filter Engine", rightImage: "/dvdms/imagesfilter.jpg" },
-                                { tag: "", icon: "fas fa-level-down-alt", label: "Granular Drill Down Reports", rightImage: "/dvdms/imagesDrill.png" },
-                                { tag: "", icon: "fas fa-compress-alt", label: "Multi-Warehouse Comparison", rightImage: "/dvdms/images-multi.png" },
-                                { tag: "", icon: "fas fa-cogs", label: "Predictive Demand Planning", rightImage: "/dvdms/imagesdemand.jpg" }
-                            ].map((item, index) => (
-                                <div key={index} className="side-feature-row">
-                                    <div className="side-feature-left">
-                                        <div className="timeline-icon-wrap">
-                                            <i className={item.icon}></i>
-                                        </div>
-                                        <div className="timeline-feature-text">
-                                            <div className="feature-meta-tag">{item.tag}</div>
-                                            <h5>{item.label}</h5>
-                                        </div>
+                    </div>
+
+                    {/* --- RIGHT PANEL: HIGH-FINISH SPOTLIGHT CONTAINER --- */}
+                    <div className="spotlight-right-panel">
+                        <h2 className="panel-main-title">Features</h2>
+
+                        <p className="panel-sub-tagline">
+                            Integrated Drug & Vaccine Distribution Dashboard | Ministry of Health & Family Welfare, Govt. of India
+                        </p>
+
+                        <div className="spotlight-box-wrapper">
+
+                            {/* LEFT INNER SUBFRAME: Image Asset + Rich Technical Description */}
+                            <div className="spotlight-left-subframe">
+                                <div className="spotlight-image-frame">
+                                    <img src="/dvdms/supplychain.jpg" alt="Pharmaceutical Supply Chain Logistical Wireframe" />
+                                </div>
+
+                                <div className="spotlight-red-desc">
+                                    <div className="spotlight-month-tag"></div>
+                                    <h4 className="spotlight-main-heading">DVDMS Central Dashboard</h4>
+
+                                    {/* Paragraph */}
+                                    <p className="spotlight-body-desc">
+                                        The DVDMS Central Dashboard delivers an enterprise-grade analytical and monitoring framework for the Integrated Drug and Vaccine Distribution Management System. It enables real-time tracking of procurement lifecycles, inventory levels, stock thresholds, and distribution pipelines across multiple tiers of the public health supply chain. By transforming complex pharmaceutical and logistics data into actionable visual insights, the platform supports evidence-based decision-making, improves supply chain transparency, and helps optimize the availability of essential medicines and vaccines across state and district health networks.
+                                    </p>
+
+                                    {/* Paragraph ke niche second image */}
+                                    <div className="spotlight-second-image-wrap mt-3 text-center">
+                                        <img
+                                            src="/dvdms/ChatGPTdata.jpg"
+                                            alt="Second Feature Asset"
+                                            style={{
+                                                maxWidth: '100%',
+                                                height: 'auto',
+                                                borderRadius: '4px',
+                                                objectFit: 'contain'
+                                            }}
+                                        />
                                     </div>
 
-                                    {/* Right Side Image */}
-                                    {item.rightImage && (
-                                        <img
-                                            src={item.rightImage}
-                                            alt={item.label}
-                                            className="side-feature-right-img"
-                                        />
-                                    )}
                                 </div>
-                            ))}
+                            </div>
+
+                            {/* RIGHT INNER SUBFRAME: Features Stack List */}
+                            <div className="features-side-list">
+                                {[
+                                    { tag: "", icon: "far fa-chart-bar", label: "Real-time Statistics", rightImage: "/dvdms/real-time.jpg" },
+                                    { tag: "", icon: "fas fa-user-tie", label: "Role Based User Access", rightImage: "/dvdms/role-main.png" },
+                                    { tag: "", icon: "fas fa-filter", label: "Advanced Filter Engine", rightImage: "/dvdms/imagesfilter.jpg" },
+                                    { tag: "", icon: "fas fa-level-down-alt", label: "Granular Drill Down Reports", rightImage: "/dvdms/imagesDrill.png" },
+                                    { tag: "", icon: "fas fa-compress-alt", label: "Multi-Warehouse Comparison", rightImage: "/dvdms/images-multi.png" },
+                                    { tag: "", icon: "fas fa-cogs", label: "Predictive Demand Planning", rightImage: "/dvdms/imagesdemand.jpg" }
+                                ].map((item, index) => (
+                                    <div key={index} className="side-feature-row">
+                                        <div className="side-feature-left">
+                                            <div className="timeline-icon-wrap">
+                                                <i className={item.icon}></i>
+                                            </div>
+                                            <div className="timeline-feature-text">
+                                                <div className="feature-meta-tag">{item.tag}</div>
+                                                <h5>{item.label}</h5>
+                                            </div>
+                                        </div>
+
+                                        {/* Right Side Image */}
+                                        {item.rightImage && (
+                                            <img
+                                                src={item.rightImage}
+                                                alt={item.label}
+                                                className="side-feature-right-img"
+                                            />
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
                         </div>
-
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
     );

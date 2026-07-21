@@ -82,7 +82,6 @@ const HmisFacilityMasterForm = (props) => {
         })
     }
 
-    console.log('selectedOption', selectedOption)
     const updateHmisFacilityData = () => {
         const val = {
 

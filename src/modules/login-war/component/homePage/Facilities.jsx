@@ -181,6 +181,7 @@ const Facilities = () => {
                     widgetData={singleWidget}
                 />
             }
+
             {showAllGraphs &&
                 <AllGraphsModal
                     show={showAllGraphs}

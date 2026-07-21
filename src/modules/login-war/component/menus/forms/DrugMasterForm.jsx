@@ -23,8 +23,6 @@ const DrugMasterForm = (props) => {
     const { setShowConfirmSave, confirmSave, setConfirmSave, openPage, setOpenPage, selectedOption, setSelectedOption, drugTypeDrpData, getDrugTypeDrpData, getGenericDrugDrpData, genericDrugDrpData
     } = useContext(LoginContext)
 
-
-
     const [values, setValues] = useState({
         "genericDrugId": "", "drugTypeId": "", "drugName": "", "strength": "", "snomedNameId": "1"
     })

@@ -42,20 +42,12 @@
 .header-right {
     display: flex;
     align-items: center;
-<<<<<<< HEAD
     gap: 10px;
-=======
-    gap: 14px;
->>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
 }
 
 .header-btn {
     height: 44px;
-<<<<<<< HEAD
     padding: 0 15px;
-=======
-    padding: 0 18px;
->>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
     border: none;
     border-radius: 14px;
     background:
@@ -77,15 +69,9 @@
 .profile-btn {
     display: flex;
     align-items: center;
-<<<<<<< HEAD
     gap: 10px;
     border: none;
     padding: 6px 10px;
-=======
-    gap: 11px;
-    border: none;
-    padding: 8px 10px;
->>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
     background:
         rgba(255, 255, 255, .12);
     border-radius: 50px;

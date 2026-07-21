@@ -242,11 +242,7 @@
 .menu-active-link::before {
     content: "";
     position: absolute;
-<<<<<<< HEAD
     left: -5px;
-=======
-    left: 0;
->>>>>>> a0ccc2589b2a38a8d68afca32404412f466012ac
     top: 14px;
     bottom: 14px;
     width: 7px;
