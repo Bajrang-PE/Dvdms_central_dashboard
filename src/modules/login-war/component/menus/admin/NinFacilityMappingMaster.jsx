@@ -14,7 +14,7 @@ const NinFacilityMappingMaster = () => {
     const { getSteteNameDrpData, stateNameDrpDt, getDistrictNameDrpData, districtNameDrpDt } = useContext(LoginContext);
 
     useEffect(() => {
-        if (stateNameDrpDt?.length === 0) { getSteteNameDrpData() };
+        getSteteNameDrpData();
         getFacilityTypeDrpData();
     }, [])
 

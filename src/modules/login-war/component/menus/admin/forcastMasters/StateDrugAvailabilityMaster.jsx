@@ -44,7 +44,7 @@ const StateDrugAvailabilityMaster = () => {
     ]
 
     useEffect(() => {
-        if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
+        getSteteNameDrpData();
     }, []);
 
     useEffect(() => {

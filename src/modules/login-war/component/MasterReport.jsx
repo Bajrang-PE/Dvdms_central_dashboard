@@ -20,11 +20,22 @@ const MasterReport = (props) => {
 
     const reportColumns = useReportColumns(column);
 
-    const printReport = useReactToPrint({
-        contentRef: reportRef,
-        documentTitle: title,
-        onAfterPrint: () => { console.log('Report Printed!') }
-    })
+    // const printReport = useReactToPrint({
+    //     contentRef: reportRef,
+    //     documentTitle: title,
+    //     onAfterPrint: () => { console.log('Report Printed!') }
+    // })
+
+    const printReport = () => {
+    printHtmlReport({
+        title,
+        columns: reportColumns,
+        data,
+        filters,
+        logo: "/dvdms/reportheader.png",
+        orientation: "landscape"
+    });
+};
 
     //FUNCTION TO DOWNLOAD CSV FILE
     // const downloadCSV = () => {
@@ -53,7 +64,6 @@ const MasterReport = (props) => {
     //         ToastAlert('Data not available to download report', 'warning')
     //     }
     // };
-
 
     const downloadCSV = () => {
         if (!data?.length) {
@@ -90,6 +100,179 @@ const MasterReport = (props) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+
+     const printHtmlReport = ({
+        title,
+        columns,
+        data,
+        filters = [],
+        logo = "/dvdms/reportheader.png",
+        orientation = "landscape"
+    }) => {
+
+        const printWindow = window.open("", "_blank", "width=1200,height=800");
+
+        const header = columns.map(col =>
+            `<th>${col.name || col.header || ""}</th>`
+        ).join("");
+
+        const body = data.map((row, index) => {
+
+            const cells = columns.map(col => {
+
+                let value = "";
+
+                if (typeof col.selector === "function") {
+                    value = col.selector(row, index);
+                } else if (typeof col.selector === "string") {
+                    value = row[col.selector];
+                } else if (col.cell) {
+                    value = col.cell(row, index);
+                }
+
+                return `<td>${value ?? ""}</td>`;
+            }).join("");
+
+            return `<tr>${cells}</tr>`;
+        }).join("");
+
+        const filterHtml = filters.map(f =>
+            `<div><b>${f.label} :</b> ${f.value}</div>`
+        ).join("");
+
+        printWindow.document.write(`
+<!DOCTYPE html>
+<html>
+<head>
+<title>${title}</title>
+
+<style>
+
+@page{
+    size:A4 ${orientation};
+    margin:10mm;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    margin:0;
+    padding:0;
+    color:#000;
+}
+
+.report{
+    padding:8px;
+}
+
+.header{
+    text-align:center;
+}
+
+.header img{
+    max-height:90px;
+}
+
+h3,h5{
+    margin:3px;
+}
+
+.info{
+    display:flex;
+    justify-content:space-between;
+    margin:8px 0;
+    font-size:12px;
+}
+
+.filters{
+    font-size:12px;
+    margin-bottom:8px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+}
+
+thead{
+    display:table-header-group;
+}
+
+tfoot{
+    display:table-footer-group;
+}
+
+tr{
+    page-break-inside:avoid;
+}
+
+th,td{
+    border:1px solid #000;
+    padding:5px;
+}
+
+th{
+    background:#d9e7ea;
+    text-align:center;
+    font-weight:bold;
+}
+
+td{
+    vertical-align:top;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="report">
+
+<div class="header">
+    <img src="${window.location.origin}${logo}" />
+    <h3>${title} Report</h3>
+    <h5>CENTRAL DASHBOARD-DVDMS</h5>
+</div>
+
+<div class="filters">
+${filterHtml}
+</div>
+
+<div class="info">
+<div><b>Record Status :</b> Active</div>
+<div><b>Date Of Report :</b> ${new Date().toDateString()}</div>
+</div>
+
+<table>
+
+<thead>
+<tr>
+${header}
+</tr>
+</thead>
+
+<tbody>
+${body}
+</tbody>
+
+</table>
+
+</div>
+
+</body>
+
+</html>
+`);
+
+        printWindow.document.close();
+
+        printWindow.onload = () => {
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        };
     };
 
 

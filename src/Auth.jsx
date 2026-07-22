@@ -9,7 +9,7 @@ const Auth = ({ comp: Component }) => {
     const userData = sessionData ? decryptData(sessionData) : null;
 
     const timerRef = useRef(null);
-    const timeout = 60000 * 20; // 20 mins
+    const timeout = 60000 * 60; // 60 mins
 
     const logout = () => {
         localStorage.clear();

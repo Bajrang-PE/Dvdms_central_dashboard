@@ -19,9 +19,9 @@ const DistrictMasterForm = ({ setValues, values, getListData, setSearchInput }) 
     const [distNameErr, setDistNameErr] = useState("");
 
     useEffect(() => {
-        if (stateNameDrpDt.length === 0) {
-            getSteteNameDrpData();
-        }
+      
+          getSteteNameDrpData();
+        
     }, [])
 
     useEffect(() => {
@@ -30,7 +30,6 @@ const DistrictMasterForm = ({ setValues, values, getListData, setSearchInput }) 
         }
     }, [values])
 
-    console.log('values', values)
 
     const validate = () => {
         let isValid = true;
@@ -69,7 +68,7 @@ const DistrictMasterForm = ({ setValues, values, getListData, setSearchInput }) 
             fetchPostData("/api/v1/districts/createDistrict", data).then((data) => {
                 if (data?.status === 1) {
                     ToastAlert("Record added successfully", 'success');
-                    getListData(recordStatus || '1', stateId);
+                    getListData(values?.recordStatus || '1', stateId);
                 } else {
                     ToastAlert(data?.message, 'error');
                     setConfirmSave(false);
@@ -94,7 +93,7 @@ const DistrictMasterForm = ({ setValues, values, getListData, setSearchInput }) 
                 if (data?.status === 1) {
                     ToastAlert("Record Updated successfully", 'success');
                     setSelectedOption([])
-                    getListData(recordStatus || '1', stateId);
+                    getListData(values?.recordStatus || '1', stateId);
                 } else {
                     ToastAlert(data?.message, 'error');
                     setConfirmSave(false);
@@ -119,12 +118,11 @@ const DistrictMasterForm = ({ setValues, values, getListData, setSearchInput }) 
 
 
     const reset = () => {
-        setValues({ ...values, "recordStatus": "1", "stateId": stateId })
+        setValues({ ...values, "stateId": stateId })
     }
 
     return (
         <>
-
             <GlobalButtons onSave={validate} onClear={reset} setSearchInput={setSearchInput} />
             <hr className='my-2' />
             <div className="row mt-2">

@@ -90,7 +90,7 @@ const GlobalTable = (props) => {
                                 type="search"
                                 id="customMsgForNoData"
                                 name="customMsgForNoData"
-                                placeholder="Enter"
+                                placeholder="Search from list..."
                                 className="aliceblue-bg border-dark-subtle"
                                 onChange={(e) => { setSearchInput(e?.target?.value); }}
                                 value={searchInput}

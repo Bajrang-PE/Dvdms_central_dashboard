@@ -6,6 +6,7 @@ import { LoginContext } from '../../../context/LoginContext';
 import { fetchData, fetchPostData, fetchUpdateData } from '../../../../../utils/ApiHooks';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import InputField from '../../InputField';
+import { isValidServiceUrl } from '../../../../../utils/CommonFunction';
 
 const StateConfigCwh = () => {
     const { getSteteNameDrpData, stateNameDrpDt, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext)
@@ -30,9 +31,9 @@ const StateConfigCwh = () => {
 
 
     useEffect(() => {
-        if (stateNameDrpDt?.length === 0) {
-            getSteteNameDrpData();
-        }
+
+        getSteteNameDrpData();
+
     }, [])
 
 
@@ -117,35 +118,53 @@ const StateConfigCwh = () => {
         let isValid = true;
 
         if (!values?.stateServiceUrl.trim()) {
-            setErrors(prev => ({ ...prev, stateServiceUrlErr: "Please enter state service url " }));
+            setErrors(prev => ({
+                ...prev,
+                stateServiceUrlErr: "Please enter state service URL"
+            }));
+            isValid = false;
+        } else if (!isValidServiceUrl(values.stateServiceUrl)) {
+            setErrors(prev => ({
+                ...prev,
+                stateServiceUrlErr: "Please enter a valid URL/IP address"
+            }));
             isValid = false;
         }
 
         if (!values?.centServiceUrl.trim()) {
-            setErrors(prev => ({ ...prev, centServiceUrlErr: "Please enter central service url " }));
+            setErrors(prev => ({
+                ...prev,
+                centServiceUrlErr: "Please enter central service URL"
+            }));
+            isValid = false;
+        } else if (!isValidServiceUrl(values.centServiceUrl)) {
+            setErrors(prev => ({
+                ...prev,
+                centServiceUrlErr: "Please enter a valid URL/IP address"
+            }));
             isValid = false;
         }
 
         if (!String(values?.serviceConnTimeout).trim()) {
-            setErrors(prev => ({ ...prev, serviceConnTimeoutErr: "Please enter service connect timeout  " }));
+            setErrors(prev => ({ ...prev, serviceConnTimeoutErr: "Please enter service connect timeout" }));
             isValid = false;
         }
 
         if (!String(values?.dataFetchSize).trim()) {
-            setErrors(prev => ({ ...prev, dataFetchSizeErr: "Please enter data fetch size " }));
+            setErrors(prev => ({ ...prev, dataFetchSizeErr: "Please enter data fetch size" }));
             isValid = false;
         }
 
         if (values?.insertMethodOnCentralServer == "3") {
             if (!values?.jobForTesting.trim()) {
-                setErrors(prev => ({ ...prev, jobForTestingErr: "Please select job for testing " }));
+                setErrors(prev => ({ ...prev, jobForTestingErr: "Please select job for testing" }));
                 isValid = false;
             }
         }
 
         if (values?.insertMethodOnCentralServer != "3") {
             if (!values?.stateDatabase || values?.stateDatabase == "0") {
-                setErrors(prev => ({ ...prev, stateDatabaseErr: "Please select state database " }));
+                setErrors(prev => ({ ...prev, stateDatabaseErr: "Please select state database" }));
                 isValid = false;
             }
         }
@@ -535,8 +554,8 @@ const StateConfigCwh = () => {
                             <button className='btn btn-sm new-btn-blue py-0' onClick={reset}>
                                 <i className="fa fa-broom me-1"></i>Clear</button>
 
-                            {/* <button className='btn btn-sm new-btn-blue py-0' onClick={reset}>
-                                <i className="fa fa-broom me-1"></i>Test Url</button> */}
+                            <button className='btn btn-sm new-btn-blue py-0' onClick={null}>
+                                <i className="fa fa-broom me-1"></i>Test Url</button>
                         </>
 
                     </div>

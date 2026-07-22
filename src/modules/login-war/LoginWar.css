@@ -643,3 +643,53 @@ label {
   }
 }
 
+
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #080a0c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+  padding-bottom: 20%;
+  opacity: 0.5;
+}
+
+.custom-loader {
+  text-align: center;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.custom-loader p {
+  margin-top: 10px;
+  animation: bounce 1.5s infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}

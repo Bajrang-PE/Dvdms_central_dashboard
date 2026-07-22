@@ -36,7 +36,7 @@ const DrugMappingMaster = () => {
     })
 
     useEffect(() => {
-        if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
+        getSteteNameDrpData();
         setOpenPage("add");
     }, []);
 
@@ -71,6 +71,7 @@ const DrugMappingMaster = () => {
             default:
                 setItemNameList([]);
                 setItemName(null);
+                setLoading(false);
                 return;
         }
 

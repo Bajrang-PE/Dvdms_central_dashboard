@@ -19,9 +19,9 @@ const TestMappingMaster = () => {
     const [initialMappedOptions, setInitialMappedOptions] = useState([]);
 
     useEffect(() => {
-        if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
+        getSteteNameDrpData();
 
-        if (facilityTypeDrpDt?.length === 0) getFacilityTypeDrpData();
+         getFacilityTypeDrpData();
         setOpenPage("add");
         // getFacilityTypeDrpData();
     }, []);

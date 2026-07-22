@@ -6,8 +6,8 @@ import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
-const FacilityTypeMasterForm = ({setSearchInput}) => {
-    const { openPage, selectedOption, setOpenPage, setSelectedOption, getFacilityTypeListData, setShowConfirmSave, confirmSave,setConfirmSave } = useContext(LoginContext);
+const FacilityTypeMasterForm = ({ setSearchInput }) => {
+    const { openPage, selectedOption, setOpenPage, setSelectedOption, getFacilityTypeListData, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [facilityName, setFacilityName] = useState('');
     const [recordStatus, setRecordStatus] = useState('Active');
     const [errors, setErrors] = useState({
@@ -82,9 +82,9 @@ const FacilityTypeMasterForm = ({setSearchInput}) => {
     }, [confirmSave])
 
     useEffect(() => {
-        if (selectedOption?.length > 0) {
+        if (selectedOption?.length > 0 && openPage === 'modify') {
             setFacilityName(selectedOption[0]?.cwhstrFacilityTypeName)
-            setRecordStatus(selectedOption[0]?.status)
+            setRecordStatus(selectedOption[0]?.status || "Active")
         }
     }, [selectedOption])
 

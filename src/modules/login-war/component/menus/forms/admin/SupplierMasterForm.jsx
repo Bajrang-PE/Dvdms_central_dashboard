@@ -20,7 +20,6 @@ const SupplierMasterForm = (props) => {
         "panNo": "", "showPan": "", "suppId": "",
     })
 
-    console.log('values', values)
 
     const [errors, setErrors] = useState({
         "suppNameErr": "", "suppTypeErr": "", "contactNoErr": "", "emailIdErr": "", "addressErr": "",
@@ -47,7 +46,7 @@ const SupplierMasterForm = (props) => {
         if (stateNameDrpDt?.length === 0) {
             getSteteNameDrpData();
         }
-    }, [values?.stateId,])
+    }, [values?.stateId])
 
     useEffect(() => {
         if (selectedOption?.length > 0 && openPage === 'modify') {
@@ -75,7 +74,6 @@ const SupplierMasterForm = (props) => {
         }
     }, [selectedOption, openPage]);
 
-    console.log('selectedOption', selectedOption)
 
 
     const handleValidation = () => {
@@ -307,6 +305,7 @@ const SupplierMasterForm = (props) => {
                             value={values?.emailId}
                             errorMessage={errors?.emailIdErr}
                             isSpecialChrs
+                            autoComplete="off"
                         />
                     </div>
                 </div>
@@ -444,6 +443,7 @@ const SupplierMasterForm = (props) => {
                             onChange={handleValueChange}
                             value={values?.panNo}
                             errorMessage={errors?.panNoErr}
+                             autoComplete="off"
                         />
                     </div>
                 </div>

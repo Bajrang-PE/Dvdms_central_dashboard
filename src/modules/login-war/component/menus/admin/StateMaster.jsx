@@ -113,8 +113,6 @@ const StateMaster = () => {
         setSelectedOption([]);
     }
 
-    console.log('filterData', filterData)
-
 
     return (
         <>
@@ -164,7 +162,7 @@ const StateMaster = () => {
                                 </div>
                             </div>
                             <hr className='my-2' />
-                            <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                            <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput}/>
 
                         </>)}
 

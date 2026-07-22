@@ -6,7 +6,7 @@ import { ToastAlert } from '../../../../utils/CommonFunction';
 import { fetchData, fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks';
 import { getAuthUserData } from '../../../../../../utils/CommonFunction';
 
-const ProgrammeMasterForm = ({getProgrammeListData}) => {
+const ProgrammeMasterForm = ({ getProgrammeListData }) => {
     const { openPage, selectedOption, setOpenPage, setSelectedOption, setShowConfirmSave, confirmSave, setConfirmSave } = useContext(LoginContext);
     const [programmeName, setProgrammeName] = useState('');
     const [recordStatus, setRecordStatus] = useState('1');
@@ -35,7 +35,7 @@ const ProgrammeMasterForm = ({getProgrammeListData}) => {
                 reset();
                 //  setConfirmSave(false);
                 ToastAlert("Data saved successfully", "success")
-           
+
             } else {
                 ToastAlert(data?.message, "error")
                 setConfirmSave(false);
@@ -44,22 +44,16 @@ const ProgrammeMasterForm = ({getProgrammeListData}) => {
     }
 
     const updateProgrammeData = () => {
-        // alert("111111");
         const val = {
             "gnumSeatId": getAuthUserData('userSeatId'),
-            //  "gnumSeatid": getAuthUserData('userSeatId'),
             "cwhstrProgrammeName": programmeName,
             "gnumIsValid": recordStatus,
             "cwhnumProgrammeId": selectedOption[0]?.cwhnumProgrammeId,
-            //  "centralDrugId": selectedOption[0]?.centralDrugId,
-            // "cwhstrProgrammeShortName": "",
-            //"cwhnumFlagForNhm": 0,
-
-
         }
+        console.log('val', val)
         fetchPostData(`/api/v1/programmes/updateProgramme`, val).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
-
                 ToastAlert('Record Updated Successfully', 'success');
                 getProgrammeListData(1);
                 setOpenPage('home');

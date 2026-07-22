@@ -17,7 +17,7 @@ const StateJobDetailsService = () => {
     const [stateId, setStateId] = useState('');
 
     useEffect(() => {
-        if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
+       getSteteNameDrpData();
     }, []);
 
     useEffect(() => {

@@ -81,7 +81,7 @@ const GroupMasterForm = ({ setSearchInput }) => {
 
 
     useEffect(() => {
-        if (selectedOption?.length > 0) {
+        if (selectedOption?.length > 0 && openPage === 'modify') {
             setGroupName(selectedOption[0]?.cwhstrGroupName)
             setRecordStatus(selectedOption[0]?.status)
         }

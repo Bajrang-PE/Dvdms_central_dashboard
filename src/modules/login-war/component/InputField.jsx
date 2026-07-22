@@ -19,7 +19,8 @@ const InputField = ({
     type,
     onClick,
     acceptType,
-    isSpecialChrs = false
+    isSpecialChrs = false,
+    autoComplete = "off"
 
 }) => {
 
@@ -190,7 +191,7 @@ const InputField = ({
                 readOnly={readOnly}
                 className={`form-control form-control-sm ${className}`}
                 style={style}
-                autoComplete='off'
+                autoComplete={autoComplete || "off"}
                 onClick={onClick}
             />
             {errorMessage &&
