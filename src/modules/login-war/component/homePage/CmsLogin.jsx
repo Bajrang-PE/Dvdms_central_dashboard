@@ -138,7 +138,7 @@ const CmsLogin = ({ isShow, onClose, setShowForgotPass }) => {
 
     return (
         <>
-            <Modal show={isShow} onHide={onClose} size='sm' style={{ paddingTop: "12rem" }}>
+            <Modal show={isShow} onHide={onClose} size='sm' style={{ paddingTop: "4rem" }}>
                 <Modal.Header closeButton className='p-2 datatable-header cms-login'>
                     <b><h5 className='mx-2 mt-1 px-1'>DVDMS Dashboard Login</h5></b>
                 </Modal.Header>

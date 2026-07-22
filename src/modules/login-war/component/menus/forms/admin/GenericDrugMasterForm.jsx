@@ -12,8 +12,8 @@ const GenericDrugMasterForm = (props) => {
 
     const { subGrpData, groupData, groupId, setSearchInput, subGroupId } = props;
     const { openPage, selectedOption, setOpenPage, setSelectedOption, setShowConfirmSave, confirmSave, setConfirmSave, getGenericDrugListData, drugTypeDrpData, getDrugTypeDrpData } = useContext(LoginContext);
-    const [recordStatus, setRecordStatus] = useState('1');
 
+    const [recordStatus, setRecordStatus] = useState('1');
     const [values, setValues] = useState({
         "groupName": "", "subGroupName": "", "drugtype": "", "VEDType": "", "categoryName": "10", "drugname": ""
     })
@@ -26,10 +26,9 @@ const GenericDrugMasterForm = (props) => {
     }, [])
 
     useEffect(() => {
-        setValues({ ...values, "groupName": groupId, "subGroupName": subGroupId });
+        setValues({ ...values, "groupName": groupId, "subGroupName": subGroupId || "" });
     }, [groupId, subGroupId])
 
-    console.log('groupId', groupId)
 
     const handleInputChange = (e) => {
         const { name, value } = e?.target;
@@ -44,7 +43,7 @@ const GenericDrugMasterForm = (props) => {
         const val = {
             "gnumSeatId": getAuthUserData('userSeatId'),
             "cwhstrCentraldrugName": values?.drugname,
-            "cwhnumGroupId":values?.groupName ||  groupId,
+            "cwhnumGroupId": values?.groupName || groupId,
             "cwhnumSubgroupId": values?.subGroupName,
             "cwhnumDrugTypeId": values?.drugtype,
             "cwhstrDrugCatCode": values?.categoryName,
@@ -73,7 +72,7 @@ const GenericDrugMasterForm = (props) => {
             "cwhnumCentralDrugId": selectedOption[0]?.cwhnumCentralDrugId,
             "gnumSeatId": getAuthUserData('userSeatId'),
             "cwhstrCentraldrugName": values?.drugname,
-            "cwhnumGroupId":values?.groupName|| groupId,
+            "cwhnumGroupId": values?.groupName || groupId,
             "cwhnumSubgroupId": values?.subGroupName,
             "cwhnumDrugTypeId": values?.drugtype,
             "cwhstrDrugCatCode": values?.categoryName,
@@ -98,7 +97,7 @@ const GenericDrugMasterForm = (props) => {
 
     const handleValidation = () => {
         let isValid = true;
-        if (!values?.groupName?.trim()) {
+        if (!values?.groupName?.toString()?.trim()) {
             setErrors(prev => ({ ...prev, "groupNameErr": "Group name is required" }));
             isValid = false;
         }
@@ -151,10 +150,9 @@ const GenericDrugMasterForm = (props) => {
         setSearchInput('')
     }
 
-
     return (
         <div>
-            <GlobalButtons onSave={handleValidation} onClear={reset} />
+            <GlobalButtons onSave={handleValidation} onClear={reset} setSearchInput={setSearchInput}/>
             <hr className='my-2' />
             <div className='row pt-2'>
                 <div className='col-sm-6'>

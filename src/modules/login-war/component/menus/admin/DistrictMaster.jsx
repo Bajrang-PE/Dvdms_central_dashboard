@@ -97,15 +97,13 @@ const DistrictMaster = () => {
         }
     };
     useEffect(() => {
-        if (stateNameDrpDt?.length === 0) {
             getSteteNameDrpData();
-        }
     }, [])
 
     useEffect(() => {
         if (values?.recordStatus && values?.stateId) {
             getListData(values?.recordStatus, values?.stateId);
-        }else{
+        } else {
             setListData([]);
         }
 
@@ -201,7 +199,7 @@ const DistrictMaster = () => {
             options.map(item => [item[key], item])
         ).values());
     };
-
+console.log('stateNameDrpDt', stateNameDrpDt)
 
     return (
         <div className="masters mx-3 my-2">
@@ -279,7 +277,7 @@ const DistrictMaster = () => {
 
                         <div>
                             <GlobalTable column={columns} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} View={null}
-                                onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                                onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} />
                         </div>
 
                         {openPage === 'view' &&

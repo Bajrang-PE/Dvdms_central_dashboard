@@ -10,6 +10,7 @@ import { fetchData, fetchDeleteData } from '../../../../../utils/ApiHooks';
 import ViewPage from '../ViewPage';
 import HmisFacilityMasterForm from '../forms/admin/HmisFacilityMasterForm';
 import { formatDateHmis, getAuthUserData, parseBackendDate } from '../../../../../utils/CommonFunction';
+import MasterReport from '../../MasterReport';
 
 const HmisFacilityMaster = () => {
 
@@ -25,7 +26,7 @@ const HmisFacilityMaster = () => {
 
 
     useEffect(() => {
-        if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
+        getSteteNameDrpData();
         setOpenPage("home");
     }, []);
 
@@ -103,7 +104,6 @@ const HmisFacilityMaster = () => {
 
     const getListData = (stateId, recordStatus) => {
         fetchData(`/api/v1/main-page?stateId=${stateId}&isValid=${recordStatus}`).then((data) => {
-            console.log('data', data)
             if (data?.status === 1 && Array.isArray(data.data)) {
                 setListData(data.data)
             } else {
@@ -229,7 +229,7 @@ const HmisFacilityMaster = () => {
                             </div>
                         </div>
                         <hr className='my-2' />
-                        <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} />
+                        <GlobalTable column={column} data={filterData} onAdd={null} onModify={null} onDelete={handleDeleteRecord} onView={null} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} />
 
                     </>)}
 
@@ -262,13 +262,16 @@ const HmisFacilityMaster = () => {
                     }
 
                     {(openPage === "add" || openPage === 'modify') && (<>
-                        <HmisFacilityMasterForm selectedStateName={selectedStateName} getListData={getListData} convertToDateInputFormat={convertToDateInputFormat}/>
+                        <HmisFacilityMasterForm selectedStateName={selectedStateName} getListData={getListData} convertToDateInputFormat={convertToDateInputFormat} />
                     </>)}
                 </>}
 
 
                 {isShowReport &&
-                    <MasterReport title={"HMIS Facility Master"} column={column} data={listData} />
+                    <MasterReport title={"HMIS Facility Master"} column={column} data={listData} filters={[
+                        { value: recordStatus == 1 ? "Active" : "InActive", label: "Record Status" },
+                        { value: stateNameDrpDt?.find(dt => dt?.value == stateId)?.label, label: "State" }
+                    ]} />
                 }
             </div>
         </>

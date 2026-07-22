@@ -27,8 +27,8 @@ const SupplierMappingMaster = () => {
     const [rightSearch, setRightSearch] = useState("");
 
     useEffect(() => {
-        if (supplierNameDrpDt?.length === 0) getSupplierNameDrpData();
-        if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
+        getSupplierNameDrpData();
+        getSteteNameDrpData();
         setOpenPage("add");
     }, []);
 
@@ -303,8 +303,8 @@ const SupplierMappingMaster = () => {
 
                         {availableOptions
                             ?.filter(opt => opt.label?.toLowerCase()?.includes(leftSearch?.toLowerCase()))
-                            ?.map((opt,index) => (
-                                <option key={index+"bg"+opt?.value?.toString()} value={opt.value}>
+                            ?.map((opt, index) => (
+                                <option key={index + "bg" + opt?.value?.toString()} value={opt.value}>
                                     {opt.label}
                                 </option>
                             ))
@@ -362,8 +362,8 @@ const SupplierMappingMaster = () => {
                         ))} */}
                         {selectedOptions
                             ?.filter(opt => opt?.label?.toLowerCase()?.includes(rightSearch?.toLowerCase()))
-                            ?.map((opt,index) => (
-                                <option key={index+"bg"+opt?.value?.toString()} value={opt.value}>
+                            ?.map((opt, index) => (
+                                <option key={index + "bg" + opt?.value?.toString()} value={opt.value}>
                                     {opt.label}
                                 </option>
                             ))

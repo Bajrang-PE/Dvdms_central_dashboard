@@ -25,8 +25,8 @@ const ProgrammeMappingMaster = () => {
 
 
     useEffect(() => {
-        if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
-        if (programmeNameList?.length === 0) getProgrammeNameList();
+         getSteteNameDrpData();
+       getProgrammeNameList();
         setOpenPage("add");
     }, []);
 

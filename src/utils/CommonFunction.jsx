@@ -128,7 +128,13 @@ export const validateInput = (input) => {
 };
 
 export const isValidEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email?.trim());
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email?.trim());
 };
 
+export const isValidServiceUrl = (value) => {
+  const regex =
+    /^(https?:\/\/)?((([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))(:\d{1,5})?(\/.*)?$/;
+
+  return regex.test(value.trim());
+};
 

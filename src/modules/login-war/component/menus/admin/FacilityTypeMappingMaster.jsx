@@ -28,7 +28,7 @@ const FacilityTypeMappingMaster = () => {
     })
 
     useEffect(() => {
-        if (stateNameDrpDt?.length === 0) getSteteNameDrpData();
+        getSteteNameDrpData();
         setOpenPage("add");
         getFacilityTypeDrpData();
     }, []);

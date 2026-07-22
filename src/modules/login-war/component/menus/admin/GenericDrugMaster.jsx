@@ -6,7 +6,7 @@ import GlobalTable from '../../GlobalTable';
 import GenericDrugMasterForm from '../forms/admin/GenericDrugMasterForm';
 import { fetchPostData } from '../../../../../utils/ApiHooks';
 import ViewPage from '../ViewPage';
-import { categoryOptions } from '../../../localData/HomeData';
+import { categoryOptions, vedOptions } from '../../../localData/HomeData';
 import MasterReport from '../../MasterReport';
 
 const GenericDrugMaster = () => {
@@ -23,7 +23,7 @@ const GenericDrugMaster = () => {
     })
 
     useEffect(() => {
-        getGenericDrugListData(groupId, subGroupId, recordStatus,categoryOptions)
+        getGenericDrugListData(groupId, subGroupId, recordStatus, categoryOptions)
     }, [recordStatus, groupId, subGroupId])
 
     useEffect(() => {
@@ -146,6 +146,7 @@ const GenericDrugMaster = () => {
         }
     ]
 
+
     return (
         <>
             <div className='masters mx-3 my-2'>
@@ -211,21 +212,27 @@ const GenericDrugMaster = () => {
                     <GlobalTable column={column} data={filterData} onDelete={handleDeleteRecord} onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} searchInput={searchInput} onValidate={validate} />
 
                     {(openPage === 'view' && !isShowReport) &&
-                        <ViewPage data={[{ value: selectedOption[0]?.cwhstrCentraldrugName, label: "Drug Name" }, { value: selectedOption[0]?.drugTypeName, label: "Drug Type" },
-                        { value: categoryOptions?.filter(dt => dt?.value == selectedOption[0]?.cwhstrDrugCatCode)[0]?.label, label: "Category Name" }]} onClose={onClose} title={"Generic Drug Master"} />
+                        <ViewPage data={[
+                            { value: groupDrpData?.filter(dt => dt?.value == selectedOption[0]?.cwhnumGroupId)[0]?.label, label: "Group Name" },
+                            { value: subGroupDrpData?.filter(dt => dt?.value == selectedOption[0]?.cwhnumSubgroupId)[0]?.label, label: "SubGroup Name" },
+                            { value: selectedOption[0]?.cwhstrCentraldrugName, label: "Drug Name" },
+                            { value: selectedOption[0]?.drugTypeName, label: "Drug Type" },
+                            { value: categoryOptions?.filter(dt => dt?.value == selectedOption[0]?.cwhstrDrugCatCode)[0]?.label, label: "Category Name" },
+                            { value: vedOptions?.filter(dt => dt?.value == selectedOption[0]?.cwhnumDrugVedCode)[0]?.label, label: "VED Type" },
+                        ]} onClose={onClose} title={"Generic Drug Master"} />
                     }
                 </>)}
 
                 {(openPage === "add" || openPage === 'modify') && !isShowReport && (<>
-                    <GenericDrugMasterForm subGrpData={subGroupDrpData} groupData={groupDrpData} groupId={groupId} setSearchInput={setSearchInput} subGroupId={subGroupId}/>
+                    <GenericDrugMasterForm subGrpData={subGroupDrpData} groupData={groupDrpData} groupId={groupId} setSearchInput={setSearchInput} subGroupId={subGroupId} />
                 </>)}
 
                 {isShowReport &&
                     <MasterReport title={"Generic Drug Master"} column={column} data={genericDrugListData} filters={[
-                    { value: groupDrpData?.find(dt=>dt?.value == groupId)?.label, label: "Group" },
-                    { value:  subGroupDrpData?.find(dt=>dt?.value == subGroupId)?.label, label: "SubGroup" },
-                    { value: recordStatus == 1 ? "Active" : "InActive", label: "Record Status" },
-                ]}/>
+                        { value: groupDrpData?.find(dt => dt?.value == groupId)?.label, label: "Group" },
+                        { value: subGroupDrpData?.find(dt => dt?.value == subGroupId)?.label, label: "SubGroup" },
+                        { value: recordStatus == 1 ? "Active" : "InActive", label: "Record Status" },
+                    ]} />
                 }
             </div>
         </>
