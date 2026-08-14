@@ -3,7 +3,7 @@ import { Spinner } from "react-bootstrap";
 
 const SpinLoader = () => {
   return (
-    <div className="loader-overlay">
+    <div className="">
       <div className="custom-loader text-center">
         <Spinner animation="border" variant="primary" size="md"/>
         <p>Loading...</p>

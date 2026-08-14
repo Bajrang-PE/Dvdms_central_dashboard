@@ -18,12 +18,7 @@ export default defineConfig({
         target: 'http://10.226.28.223:8024',
         changeOrigin: true,
         secure: false,
-      },
-      // '/db/': {
-      //   target: 'http://cms.cdac.in/',
-      //   changeOrigin: true,
-      //   secure: false,
-      // }
+      }
     }
   },
   worker: {

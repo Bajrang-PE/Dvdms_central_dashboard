@@ -1,103 +1,4 @@
-// import React, { useState } from "react";
-// import { Link } from "react-router-dom";
-// const TreeNode = ({ node, onTabChange, delay = 0,level = 0, }) => {
-//     const [expanded, setExpanded] = useState(false);
-//     const hasChildren =
-//         (node?.subMenuTypes && node.subMenuTypes.length > 0) ||
-//         (node?.items && node.items.length > 0);
-//     const renderLink = (item) => {
-//         const isHIS =
-//             item?.link?.startsWith("/HIS_dashboard") ||
-//             item?.link?.includes("/HIS_dashboard/");
-//         if (isHIS) {
-//             return (
-//                 <a
-//                     href={item?.link}
-//                     className="tree-link"
-//                     target="_self"
-//                 >
-//                     <div className="tree-link-content">
-//                         <i className={`fa ${item?.icon}`}></i>
-//                         <span>
-//                             {item?.menuName}
-//                         </span>
-//                     </div>
-//                 </a>
-//             );
-//         }
-//         return (
-//             <Link
-//                 to={item?.link || "#"}
-//                 className="tree-link"
-//                 onClick={onTabChange}
-//             >
-//                 <div className="tree-link-content">
-//                     <i className={`fa ${item?.icon}`}></i>
-//                     <span>
-//                         {item?.menuName}
-//                     </span>
-//                 </div>
-//             </Link>
-//         );
-//     };
-//     return (
-//         <div
-//             className="tree-node"
-//             style={{
-//                 animationDelay: `${delay * 60}ms`
-//             }}
-//         >
-//             <div
-//                 className={`tree-header ${expanded ? "active" : ""}`}
-//                 onClick={() => setExpanded(!expanded)}
-//             >
-//                 <div className="tree-title">
-//                     <i className="fa fa-folder tree-folder"></i>
-//                     <span>
-//                         {node?.title}
-//                     </span>
-//                 </div>
-//                 {
-//                     hasChildren &&
-//                     <i
-//                         className={`fa fa-chevron-right tree-arrow ${expanded ? "rotate" : ""}`}
-//                     />
-//                 }
-//             </div>
 
-//             {
-//                 expanded &&
-//                 <div className="tree-children">
-//                     {
-//                         node?.items?.map((item, index) => (
-//                             <div
-//                                 className="tree-item"
-//                                 key={index}
-//                             >
-//                                 {renderLink(item)}
-//                             </div>
-//                         ))
-//                     }
-//                     {
-//                         node?.subMenuTypes?.map((subMenu, index) => (
-//                             <div
-//                                 className="tree-submenu"
-//                                 key={index}
-//                             >
-//                                 <TreeNode
-//                                     node={subMenu}
-//                                     onTabChange={onTabChange}
-//                                     delay={index}
-//                                 />
-//                             </div>
-//                         ))
-//                     }
-//                 </div>
-//             }
-//         </div>
-//     );
-// };
-// export default TreeNode;
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -133,15 +34,6 @@ const TreeNode = ({
             return (
                 <a
                     href={node?.link}
-                    target={isExternal ? "_self" : "_self"}
-                    rel="noopener noreferrer"
-                    className="tree-link"
-                    
-                    onClick={(e) => {
-                        if (onTabChange) {
-                            onTabChange();
-                        }
-                    }}
                     target={isExternal ? "_self" : "_self"}
                     rel="noopener noreferrer"
                     className="tree-link"

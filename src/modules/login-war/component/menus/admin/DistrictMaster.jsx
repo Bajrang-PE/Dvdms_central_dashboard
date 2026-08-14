@@ -199,8 +199,8 @@ const DistrictMaster = () => {
             options.map(item => [item[key], item])
         ).values());
     };
-console.log('stateNameDrpDt', stateNameDrpDt)
 
+    
     return (
         <div className="masters mx-3 my-2">
 

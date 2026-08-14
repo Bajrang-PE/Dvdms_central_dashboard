@@ -46,10 +46,14 @@ const JobOrderMaster = () => {
         } else if (!id || id == "" || id === null) {
             ToastAlert("No job selected", 'warning')
         } else {
-            fetchPostData(`/api/v1/${stateId}/resetJobRunId?encryptedCurrentJobRunId=${id}`).then(data => {
+            const val = {
+                "stateId": stateId,
+                "jobId": id
+            }
+            fetchPostData(`/api/v1/resetJobRunId`,val).then(data => {
                 console.log('data', data)
                 if (data.status === 1) {
-                    ToastAlert(data?.message,'success')
+                    ToastAlert(data?.message, 'success')
                 } else {
                     ToastAlert(data?.message, 'error')
                 }

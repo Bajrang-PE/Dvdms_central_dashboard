@@ -7,10 +7,11 @@ import { fetchPostData, fetchUpdateData } from '../../../../../../utils/ApiHooks
 import { ToastAlert } from '../../../../utils/CommonFunction';
 import { formatDateForBackend, getAuthUserData, parseBackendDate } from '../../../../../../utils/CommonFunction';
 import DatePicker from 'react-datepicker';
+import { durationOptions } from '../../../../localData/HomeData';
 
 const StateJobdetailsForm = (props) => {
 
-    const { stateData, setSearchInput, setStatus } = props;
+    const { stateData, setSearchInput, setStatus, setLoading } = props;
     const { openPage, selectedOption, setSelectedOption, setOpenPage, setShowConfirmSave, confirmSave, setConfirmSave, getStateJobDetailsListData } = useContext(LoginContext);
 
     const [recordStatus, setRecordStatus] = useState('1');
@@ -38,11 +39,12 @@ const StateJobdetailsForm = (props) => {
             "insertQuery": values?.insertQuery,
             "jobName": values?.jobName,
             "jobStart": formatDateForBackend(values?.jobStartTime),
-            "nextRunTime": formatDateForBackend(values?.jobStartTime),
-            "lastRunTime": formatDateForBackend(values?.jobStartTime),
+            "nextRunTime": "",
+            "lastRunTime": "",
             "lastStateTime": formatDateForBackend(values?.lastStateTime),
             // "jobID": 0,
-            "jobDuration": values?.duration?.toString(),
+            "jobDuration": parseInt(values?.duration) || 0,
+            "jobDurationDispName": durationOptions?.find(dt => dt?.value == values?.duration)?.label || "",
             "stateID": stateData[0]?.value,
             "preProcedureName": values?.preProcedureName,
             "preProcedureMode": parseInt(values?.preProcedureMode),
@@ -50,10 +52,12 @@ const StateJobdetailsForm = (props) => {
             "postProcedureMode": parseInt(values?.procedureMode),
             "isActive": 1
         }
+        console.log('val', val)
         fetchPostData(`/api/v1/stateJobDetails/createNewJob`, val).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
                 ToastAlert('Record created successfully', 'success');
-                getStateJobDetailsListData(stateData[0]?.value, recordStatus);
+                getStateJobDetailsListData(stateData[0]?.value, recordStatus, setLoading);
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
@@ -79,6 +83,7 @@ const StateJobdetailsForm = (props) => {
             "lastStateTime": formatDateForBackend(values?.lastStateTime),
             // "jobID": selectedOption[0]?.jobID,
             "jobDuration": parseInt(values?.duration) || 0,
+            "jobDurationDispName": durationOptions?.find(dt => dt?.value == values?.duration)?.label || "",
             "stateID": stateData[0]?.value,
             "preProcedureName": values?.preProcedureName,
             "preProcedureMode": parseInt(values?.preProcedureMode),
@@ -86,10 +91,12 @@ const StateJobdetailsForm = (props) => {
             "postProcedureMode": parseInt(values?.procedureMode),
             "isActive": parseInt(recordStatus) || 0
         }
-        fetchUpdateData(`/api/v1/stateJobDetails/updateJob?jobID=${selectedOption[0]?.jobID}&jobName=${selectedOption[0]?.jobName}`, val).then(data => {
+        console.log('val', val)
+        fetchPostData(`/api/v1/stateJobDetails/updateJob?jobID=${selectedOption[0]?.jobID}&jobName=${selectedOption[0]?.jobName}`, val).then(data => {
+            console.log('data', data)
             if (data?.status === 1) {
                 ToastAlert('Record updated successfully', 'success');
-                getStateJobDetailsListData(stateData[0]?.value, recordStatus);
+                getStateJobDetailsListData(stateData[0]?.value, recordStatus, setLoading);
                 setOpenPage('home');
                 reset();
                 setConfirmSave(false);
@@ -110,6 +117,7 @@ const StateJobdetailsForm = (props) => {
             setErrors(prev => ({ ...prev, "jobNameErr": "Job name is required" }));
             isValid = false;
         }
+
         if (!values?.stateFetchQuery?.trim()) {
             setErrors(prev => ({ ...prev, "stateFetchQueryErr": "Fetch query is required" }));
             isValid = false;
@@ -121,7 +129,7 @@ const StateJobdetailsForm = (props) => {
         }
 
         if (isValid) {
-            setShowConfirmSave(true)
+            setShowConfirmSave(true);
         }
     }
 
@@ -136,7 +144,7 @@ const StateJobdetailsForm = (props) => {
     }, [confirmSave])
 
     useEffect(() => {
-        if (selectedOption?.length > 0) {
+        if (selectedOption?.length > 0 && openPage === 'modify') {
             setValues({
                 ...values,
                 "jobName": selectedOption[0]?.jobName,
@@ -147,15 +155,15 @@ const StateJobdetailsForm = (props) => {
                 "postProcedureName": selectedOption[0]?.postProcedureName,
                 "procedureMode": parseInt(selectedOption[0]?.postProcedureMode || null),
                 "jobStartTime": parseBackendDate(selectedOption[0]?.jobStart),
-                "duration": selectedOption[0]?.jobDuration,
-                "lastStateTime": parseBackendDate(selectedOption[0]?.lastStateTime)
-            })
-            setRecordStatus(selectedOption[0]?.isActive == "1" ? '1' : '0')
+                "lastStateTime": parseBackendDate(selectedOption[0]?.lastStateTime),
+                "duration": selectedOption[0]?.jobDuration
+            });
+            setRecordStatus(selectedOption[0]?.isActive == "1" ? '1' : '0');
         }
     }, [selectedOption])
 
     const reset = () => {
-        setRecordStatus('1')
+        setRecordStatus('1');
         setConfirmSave(false);
         setValues({ "stateName": "", "stateDatabase": "", "jobName": "", "stateFetchQuery": "", "insertQuery": "", "preProcedureName": "", "preProcedureMode": "", "postProcedureName": "", "procedureMode": "", "jobStartTime": new Date(), "duration": "", "lastStateTime": new Date() });
         setErrors({ "jobNameErr": "", "stateFetchQueryErr": "", "preProcedureModeErr": "" });
@@ -268,6 +276,8 @@ const StateJobdetailsForm = (props) => {
                                 value={values?.preProcedureMode}
                                 onChange={handleInputChange}
                                 errorMessage={errors?.preProcedureModeErr}
+                                acceptType="number"
+                                maxLength={2}
                             />
                         </div>
                     </div>
@@ -303,7 +313,9 @@ const StateJobdetailsForm = (props) => {
                                 className="aliceblue-bg border-dark-subtle"
                                 value={values?.procedureMode}
                                 onChange={handleInputChange}
-                            // errorMessage={errors?.drugnameErr}
+                                // errorMessage={errors?.drugnameErr}
+                                acceptType="number"
+                                maxLength={2}
                             />
                         </div>
                     </div>
@@ -336,8 +348,7 @@ const StateJobdetailsForm = (props) => {
                             // readOnly={openPageName === 'view'}
                             // minDate={effDate}
                             />
-                            <span className='position-absolute top-50 end-0 translate-middle-y me-3 pointer'>
-                                📅</span>
+                            <span className='position-absolute top-50 end-0 translate-middle-y me-3 pointer'>📅</span>
                         </div>
                     </div>
                     <div className="form-group row">
@@ -365,8 +376,7 @@ const StateJobdetailsForm = (props) => {
                             // readOnly={openPageName === 'view'}
                             // minDate={effDate}
                             />
-                            <span className='position-absolute top-50 end-0 translate-middle-y me-3 pointer'>
-                                📅</span>
+                            <span className='position-absolute top-50 end-0 translate-middle-y me-3 pointer'>📅</span>
                         </div>
                     </div>
 
@@ -380,7 +390,7 @@ const StateJobdetailsForm = (props) => {
                                 name="duration"
                                 placeholder={"Select Value"}
                                 className={"aliceblue-bg border-dark-subtle"}
-                                options={[{ value: 24, label: "24 Hours" }]}
+                                options={durationOptions}
                                 onChange={handleInputChange}
                                 value={values?.duration}
                             // errorMessage={errors?.drugTypeIdErr}

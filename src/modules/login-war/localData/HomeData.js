@@ -272,3 +272,24 @@ const menuData = [
         ],
     },
 ];
+
+
+export const durationOptions = [
+  { value: "1", label: "1 Hour" },
+  { value: "2", label: "2 Hour" },
+  { value: "3", label: "3 Hour" },
+  { value: "4", label: "4 Hour" },
+  { value: "5", label: "5 Hour" },
+  { value: "6", label: "6 Hour" },
+  { value: "8", label: "8 Hour" },
+  { value: "12", label: "12 Hours" },
+  { value: "24", label: "24 Hours" },
+  { value: "48", label: "every 2 days" },
+  { value: "168", label: "every 7 days" },
+  { value: "360", label: "every 15 days" },
+  { value: "720", label: "1 month" },
+  { value: "1440", label: "2 month" },
+  { value: "2160", label: "3 month" },
+  { value: "4320", label: "6 month" },
+  { value: "8640", label: "1 year" }
+];

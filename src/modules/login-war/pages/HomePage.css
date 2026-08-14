@@ -625,8 +625,8 @@ font.goog-text-highlight {
 }
 
 /* Header Buttons / Login Modal Accent */
-.btn-primary, 
+/* .btn-primary, 
 .nav-arrow-btn:hover {
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
-}
+} */

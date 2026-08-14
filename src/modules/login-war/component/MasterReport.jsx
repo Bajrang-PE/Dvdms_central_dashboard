@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Dropdown } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import Papa from 'papaparse';
@@ -11,63 +11,454 @@ import { faFileCsv, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import useReportColumns from '../hooks/useReportColumns';
 import { ToastAlert } from '../utils/CommonFunction';
 
-const MasterReport = (props) => {
+// const MasterReport = (props) => {
 
-    const { title, column, data, filters } = props;
-    const { setIsShowReport, setSelectedOption } = useContext(LoginContext);
+//     const { title, column, data, filters } = props;
+//     const { setIsShowReport, setSelectedOption } = useContext(LoginContext);
+//     const reportRef = useRef();
+//     const reportColumns = useReportColumns(column);
 
-    const reportRef = useRef()
+//     const printReport = () => {
+//     printHtmlReport({
+//         title,
+//         columns: reportColumns,
+//         data,
+//         filters,
+//         logo: "/dvdms/reportheader.png",
+//         orientation: "landscape"
+//     });
+// };
 
-    const reportColumns = useReportColumns(column);
+//     const downloadCSV = () => {
+//         if (!data?.length) {
+//             ToastAlert('Data not available to download report', 'warning');
+//             return;
+//         }
 
-    // const printReport = useReactToPrint({
-    //     contentRef: reportRef,
-    //     documentTitle: title,
-    //     onAfterPrint: () => { console.log('Report Printed!') }
-    // })
+//         const filterRows = filters
+//             .filter(f => f?.value)
+//             .map(f => [`${f.label} : ${f.value}`]);
 
-    const printReport = () => {
-    printHtmlReport({
+//         const columnHeaders = reportColumns.map(col => col.name);
+
+//         const tableRows = data.map((row, index) =>
+//             reportColumns.map(col =>
+//                 col.name === 'S.No' ? index + 1 : col.selector(row)
+//             )
+//         );
+
+//         const csvData = [
+//             [title],
+//             ...filterRows,
+//             [],
+//             columnHeaders,
+//             ...tableRows
+//         ];
+
+//         const csv = Papa.unparse(csvData);
+//         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+//         const link = document.createElement('a');
+//         link.href = URL.createObjectURL(blob);
+//         link.setAttribute('download', `${title.trim()}.csv`);
+//         document.body.appendChild(link);
+//         link.click();
+//         document.body.removeChild(link);
+//     };
+
+//      const printHtmlReport = ({
+//         title,
+//         columns,
+//         data,
+//         filters = [],
+//         logo = "/dvdms/reportheader.png",
+//         orientation = "landscape"
+//     }) => {
+
+//         const printWindow = window.open("", "_blank", "width=1200,height=800");
+
+//         const header = columns.map(col =>
+//             `<th>${col.name || col.header || ""}</th>`
+//         ).join("");
+
+//         const body = data.map((row, index) => {
+
+//             const cells = columns.map(col => {
+
+//                 let value = "";
+
+//                 if (typeof col.selector === "function") {
+//                     value = col.selector(row, index);
+//                 } else if (typeof col.selector === "string") {
+//                     value = row[col.selector];
+//                 } else if (col.cell) {
+//                     value = col.cell(row, index);
+//                 }
+
+//                 return `<td>${value ?? ""}</td>`;
+//             }).join("");
+
+//             return `<tr>${cells}</tr>`;
+//         }).join("");
+
+//         const filterHtml = filters.map(f =>
+//             `<div><b>${f.label} :</b> ${f.value}</div>`
+//         ).join("");
+
+//         printWindow.document.write(`
+// <!DOCTYPE html>
+// <html>
+// <head>
+// <title>${title}</title>
+
+// <style>
+
+// @page{
+//     size:A4 ${orientation};
+//     margin:10mm;
+// }
+
+// body{
+//     font-family:Arial,Helvetica,sans-serif;
+//     margin:0;
+//     padding:0;
+//     color:#000;
+// }
+
+// .report{
+//     padding:8px;
+// }
+
+// .header{
+//     text-align:center;
+// }
+
+// .header img{
+//     max-height:90px;
+// }
+
+// h3,h5{
+//     margin:3px;
+// }
+
+// .info{
+//     display:flex;
+//     justify-content:space-between;
+//     margin:8px 0;
+//     font-size:12px;
+// }
+
+// .filters{
+//     font-size:12px;
+//     margin-bottom:8px;
+// }
+
+// table{
+//     width:100%;
+//     border-collapse:collapse;
+//     font-size:12px;
+// }
+
+// thead{
+//     display:table-header-group;
+// }
+
+// tfoot{
+//     display:table-footer-group;
+// }
+
+// tr{
+//     page-break-inside:avoid;
+// }
+
+// th,td{
+//     border:1px solid #000;
+//     padding:5px;
+// }
+
+// th{
+//     background:#d9e7ea;
+//     text-align:center;
+//     font-weight:bold;
+// }
+
+// td{
+//     vertical-align:top;
+// }
+
+// </style>
+
+// </head>
+
+// <body>
+
+// <div class="report">
+
+// <div class="header">
+//     <img src="${window.location.origin}${logo}" />
+//     <h3>${title} Report</h3>
+//     <h5>CENTRAL DASHBOARD-DVDMS</h5>
+// </div>
+
+// <div class="filters">
+// ${filterHtml}
+// </div>
+
+// <div class="info">
+// <div><b>Record Status :</b> Active</div>
+// <div><b>Date Of Report :</b> ${new Date().toDateString()}</div>
+// </div>
+
+// <table>
+
+// <thead>
+// <tr>
+// ${header}
+// </tr>
+// </thead>
+
+// <tbody>
+// ${body}
+// </tbody>
+
+// </table>
+
+// </div>
+
+// </body>
+
+// </html>
+// `);
+
+//         printWindow.document.close();
+
+//         printWindow.onload = () => {
+//             printWindow.focus();
+//             printWindow.print();
+//             printWindow.close();
+//         };
+//     };
+
+//     const loadImage = (src) =>
+//         new Promise((resolve) => {
+//             const img = new Image();
+//             img.src = src;
+//             img.onload = () => resolve(img);
+//         });
+
+
+//     const downloadPDF = async () => {
+
+//         if (!data?.length) {
+//             ToastAlert('Data not available to download report', 'warning');
+//             return;
+//         }
+
+//         const doc = new jsPDF('p', 'mm', 'a4');
+//         const pageWidth = doc.internal.pageSize.getWidth();
+
+//         //  Header base positions
+//         const titleY = 15;
+//         const dateY = 25;
+//         const filterStartY = 20;
+//         const filterLineHeight = 5;
+
+//         const validFilters = filters.filter(f => f?.value);
+
+//         //  Dynamic table Y (ONLY based on filters)
+//         const tableStartY =
+//             validFilters.length > 0
+//                 ? filterStartY + (validFilters.length * filterLineHeight) + 4
+//                 : filterStartY + 6;
+
+//         const columns = reportColumns?.map(col => col.name);
+//         const rows = data?.map((row, index) =>
+//             reportColumns?.map(col =>
+//                 col?.name === 'S.No' ? index + 1 : col?.selector(row)
+//             )
+//         );
+
+//         const logo = await loadImage('/dvdms/reportheader.png');
+
+//         doc.autoTable({
+//             head: [columns],
+//             body: rows,
+//             startY: tableStartY + 30,
+//             theme: 'grid',
+//             margin: { top: 10 },
+//             headStyles: {
+//                 fillColor: [0, 32, 96],
+//                 textColor: [255, 255, 255],
+//                 fontSize: 8
+//             },
+//             bodyStyles: { fontSize: 8 },
+//             styles: { cellPadding: 2 },
+
+//             didDrawPage: (data) => {
+//                 if (data.pageNumber === 1) {
+
+//                     const imgWidth = 60;
+//                     const imgHeight = 35;
+//                     const imgX = (pageWidth - imgWidth) / 2;
+//                     const imgY = 5;
+
+//                     doc.addImage(logo, 'PNG', imgX, imgY, imgWidth, imgHeight);
+
+//                     doc.setFontSize(12);
+//                     const titleWidth = doc.getTextWidth(title);
+//                     doc.text(title, pageWidth / 2, imgY + imgHeight + 5, { align: 'center' });
+
+//                     doc.setFontSize(10);
+//                     doc.text("CENTRAL DASHBOARD-DVDMS", pageWidth / 2, imgY + imgHeight + 10, { align: 'center' });
+
+//                     doc.setFontSize(9);
+//                     const dateText = `Date: ${new Date().toDateString()}`;
+//                     const dateWidth = doc.getTextWidth(dateText);
+//                     doc.text(dateText, pageWidth - dateWidth - 14, tableStartY + 28);
+
+//                     let y = filterStartY;
+//                     validFilters.forEach(f => {
+//                         doc.text(`${f.label}: ${f.value}`, 14, y + 35);
+//                         y += filterLineHeight;
+//                     });
+//                 }
+//             }
+
+//         });
+
+//         doc.save(`${title.trim()}.pdf`);
+//     };
+
+
+//     const tableCustomStyles = {
+//         headRow: {
+//             style: {
+//                 color: '#000000',
+//                 backgroundColor: '#C0D6D6 ',
+//                 outline: '1px solid #000000',
+//                 fontSize: '12px',
+//                 fontWeight: 'bold',
+//                 textAlign: 'center',
+//             },
+//         }
+//     };
+
+//     console.log("bggbgbg")
+
+//     return (
+//         <>
+//             <div className='masterreport px-2 pt-2 d-flex justify-content-end'>
+//                 <button className='btn btn-primary me-2' onClick={() => { setIsShowReport(false); setSelectedOption([]); }}>
+//                     <i className="fa fa-close me-1" style={{ color: "red", fontSize: "large" }}></i> Cancel</button>
+//                 <Dropdown>
+//                     <Dropdown.Toggle className='ps-2' variant="primary" id="dropdown-basic">
+//                         Download Report
+//                     </Dropdown.Toggle>
+//                     <Dropdown.Menu>
+//                         <Dropdown.Item className='fix-label' href="#" onClick={() => downloadPDF()}>
+//                             <FontAwesomeIcon icon={faFilePdf} className="me-1" />  Download PDF
+//                         </Dropdown.Item>
+
+//                         <Dropdown.Item className='fix-label' href="#" onClick={() => downloadCSV()}>
+//                             <FontAwesomeIcon icon={faFileCsv} className="me-1" />  Download CSV
+//                         </Dropdown.Item>
+//                         <Dropdown.Item className='fix-label' href="#" onClick={printReport}><i className="fa fa-print me-1"></i> Print Report</Dropdown.Item>
+//                     </Dropdown.Menu>
+//                 </Dropdown>
+//             </div>
+
+//             <div className='datatable-report' ref={reportRef} >
+//                 <div className='mt-2'></div>
+//                 <div className='text-center'>
+//                     <img className='text-center' src="/dvdms/reportheader.png" alt="img" />
+//                 </div>
+//                 <h6 className='text-center mb-1'><u>{title} Report</u></h6>
+//                 <h6 className='text-center pt-0'>CENTRAL DASHBOARD-DVDMS</h6>
+
+//                 <div className='text-start me-3' style={{ fontSize: "smaller" }} >
+//                     {filters?.map((dt, index) => (
+//                         <React.Fragment key={index}>
+//                             <span><b>{dt?.label} : </b> {dt?.value}</span><br />
+//                         </React.Fragment>
+//                     ))}
+//                 </div>
+//                 <div className='text-end me-3' style={{ fontSize: "smaller" }} >
+//                     <span><b>Date Of Report : </b>{new Date().toDateString()}</span>
+//                 </div>
+//                 <div className='m-1'>
+//                     <DataTable
+//                         dense
+//                         // fixedHeader
+//                         persistTableHead={true}
+//                         customStyles={tableCustomStyles}
+//                         columns={reportColumns}
+//                         data={data}
+//                         responsive
+//                         noDataComponent={'There are no data to display'}
+
+//                     />
+//                 </div>
+//             </div>
+//         </>
+//     )
+// }
+
+const MasterReport = React.memo((props) => {
+
+    const {
         title,
-        columns: reportColumns,
-        data,
-        filters,
-        logo: "/dvdms/reportheader.png",
-        orientation: "landscape"
-    });
-};
+        column,
+        data = [],
+        filters = []
+    } = props;
 
-    //FUNCTION TO DOWNLOAD CSV FILE
-    // const downloadCSV = () => {
-    //     if (data?.length > 0) {
-    //         const filteredData = data.map((row, index) => {
-    //             let filteredRow = {};
-    //             reportColumns.forEach(col => {
-    //                 if (col.name === 'S.No') {
-    //                     filteredRow['S.No'] = index + 1;
-    //                 } else {
-    //                     filteredRow[col.name] = col.selector(row);
-    //                 }
-    //             });
-    //             return filteredRow;
-    //         });
+    const {
+        setIsShowReport,
+        setSelectedOption
+    } = useContext(LoginContext);
 
-    //         const csv = Papa.unparse(filteredData);
-    //         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    //         const link = document.createElement('a');
-    //         link.href = URL.createObjectURL(blob);
-    //         link.setAttribute('download', `${title?.trim()}.csv`);
-    //         document.body.appendChild(link);
-    //         link.click();
-    //         document.body.removeChild(link);
-    //     } else {
-    //         ToastAlert('Data not available to download report', 'warning')
-    //     }
-    // };
+    const reportRef = useRef(null);
+    const reportColumns = useReportColumns(column);
+    const [showTable, setShowTable] = useState(false);
 
-    const downloadCSV = () => {
+    useEffect(() => {
+
+        setShowTable(false);
+
+        const timer = setTimeout(() => {
+            setShowTable(true);
+        }, 0);
+
+        return () => clearTimeout(timer);
+
+    }, [data]);
+
+    const tableCustomStyles = useMemo(() => ({
+        headRow: {
+            style: {
+                color: '#000000',
+                backgroundColor: '#C0D6D6',
+                outline: '1px solid #000000',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                textAlign: 'center'
+            }
+        },
+
+        rows: {
+            style: {
+                minHeight: '35px'
+            }
+        }
+    }), []);
+
+    const downloadCSV = useCallback(() => {
+
         if (!data?.length) {
-            ToastAlert('Data not available to download report', 'warning');
+            ToastAlert(
+                'Data not available to download report',
+                'warning'
+            );
             return;
         }
 
@@ -75,11 +466,17 @@ const MasterReport = (props) => {
             .filter(f => f?.value)
             .map(f => [`${f.label} : ${f.value}`]);
 
-        const columnHeaders = reportColumns.map(col => col.name);
+        const columnHeaders = reportColumns.map(
+            col => col.name
+        );
 
         const tableRows = data.map((row, index) =>
             reportColumns.map(col =>
-                col.name === 'S.No' ? index + 1 : col.selector(row)
+                col.name === 'S.No'
+                    ? index + 1
+                    : typeof col.selector === 'function'
+                        ? col.selector(row)
+                        : row[col.selector]
             )
         );
 
@@ -92,17 +489,175 @@ const MasterReport = (props) => {
         ];
 
         const csv = Papa.unparse(csvData);
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+        const blob = new Blob(
+            [csv],
+            {
+                type: 'text/csv;charset=utf-8;'
+            }
+        );
+
+        const url = URL.createObjectURL(blob);
 
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute('download', `${title.trim()}.csv`);
+
+        link.href = url;
+        link.setAttribute(
+            'download',
+            `${title.trim()}.csv`
+        );
+
         document.body.appendChild(link);
+
         link.click();
+
         document.body.removeChild(link);
+
+        URL.revokeObjectURL(url);
+
+    }, [
+        data,
+        filters,
+        reportColumns,
+        title
+    ]);
+
+    const loadImage = (src) =>
+        new Promise((resolve) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => resolve(img);
+        });
+
+    const downloadPDF = async () => {
+        if (!data?.length) {
+            ToastAlert('Data not available to download report', 'warning');
+            return;
+        }
+
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        const titleY = 15;
+        const dateY = 25;
+        const filterStartY = 20;
+        const filterLineHeight = 5;
+
+        const validFilters = filters.filter(f => f?.value);
+
+        const tableStartY =
+            validFilters.length > 0
+                ? filterStartY + (validFilters.length * filterLineHeight) + 4
+                : filterStartY + 6;
+
+        const columns = reportColumns?.map(col => col.name);
+
+        const rows = data?.map((row, index) =>
+            reportColumns?.map(col =>
+                col?.name === 'S.No'
+                    ? index + 1
+                    : col?.selector(row)
+            )
+        );
+
+        const logo = await loadImage('/dvdms/reportheader.png');
+
+        doc.autoTable({
+            head: [columns],
+            body: rows,
+            startY: tableStartY + 30,
+            theme: 'grid',
+            margin: { top: 10, left: 8, right: 8, bottom: 10 },
+            headStyles: {
+                fillColor: [0, 32, 96],
+                textColor: [255, 255, 255],
+                fontSize: 8
+            },
+            bodyStyles: {
+                fontSize: 8
+            },
+            styles: {
+                cellPadding: 2
+            },
+            didDrawPage: (data) => {
+                if (data.pageNumber === 1) {
+                    const imgWidth = 60;
+                    const imgHeight = 35;
+                    const imgX = (pageWidth - imgWidth) / 2;
+                    const imgY = 5;
+
+                    doc.addImage(
+                        logo,
+                        'PNG',
+                        imgX,
+                        imgY,
+                        imgWidth,
+                        imgHeight
+                    );
+
+                    doc.setFontSize(12);
+                    doc.text(
+                        title,
+                        pageWidth / 2,
+                        imgY + imgHeight + 5,
+                        { align: 'center' }
+                    );
+
+                    doc.setFontSize(10);
+                    doc.text(
+                        'CENTRAL DASHBOARD-DVDMS',
+                        pageWidth / 2,
+                        imgY + imgHeight + 10,
+                        { align: 'center' }
+                    );
+
+                    doc.setFontSize(9);
+                    const dateText = `Date: ${new Date().toDateString()}`;
+                    const dateWidth = doc.getTextWidth(dateText);
+
+                    doc.text(
+                        dateText,
+                        pageWidth - dateWidth - 14,
+                        tableStartY + 28
+                    );
+
+                    let y = filterStartY;
+
+                    validFilters.forEach(f => {
+                        doc.text(
+                            `${f.label}: ${f.value}`,
+                            14,
+                            y + 35
+                        );
+                        y += filterLineHeight;
+                    });
+                }
+            }
+        });
+
+        doc.save(`${title.trim()}.pdf`);
     };
 
-     const printHtmlReport = ({
+
+    const printReport = useCallback(() => {
+
+        printHtmlReport({
+            title,
+            columns: reportColumns,
+            data,
+            filters,
+            logo: "/dvdms/reportheader.png",
+            orientation: "landscape"
+        });
+
+    }, [
+        title,
+        reportColumns,
+        data,
+        filters
+    ]);
+
+    const printHtmlReport = ({
         title,
         columns,
         data,
@@ -275,238 +830,176 @@ ${body}
         };
     };
 
-
-    //FUNCTION TO DOWNLOAD PDF FILE
-
-    // const downloadPDF = () => {
-    //     if (data?.length > 0) {
-    //         const doc = new jsPDF('p', 'mm', 'a4');
-    //         const columns = reportColumns.map(col => col.name);
-    //         const rows = data.map((row, index) => {
-    //             return reportColumns.map(col => {
-    //                 if (col.name === 'S.No') {
-    //                     return index + 1;
-    //                 }
-    //                 return col.selector(row);
-    //             });
-    //         });
-
-    //         doc.autoTable({
-    //             head: [columns],
-    //             body: rows,
-    //             startY: 20,
-    //             theme: 'grid',
-    //             headStyles: {
-    //                 fillColor: [0, 32, 96],
-    //                 textColor: [255, 255, 255],
-    //                 fontSize: 8
-    //             },
-    //             bodyStyles: {
-    //                 fontSize: 8,
-    //             },
-    //             styles: {
-    //                 cellPadding: 2,
-    //                 halign: 'left',
-    //             },
-    //             margin: { top: 30 },
-    //             didDrawPage: () => {
-    //                 const pageWidth = doc.internal.pageSize.getWidth();
-    //                 doc.setFontSize(14);
-    //                 const titleWidth = doc.getTextWidth(title);
-    //                 const titleX = (pageWidth - titleWidth) / 2;
-    //                 doc.text(title, titleX, 15);
-
-    //                 doc.setFontSize(8);
-    //                 const dateText = `Date: ${new Date().toDateString()}`;
-    //                 const dateWidth = doc.getTextWidth(dateText);
-    //                 doc.text(dateText, pageWidth - dateWidth - 14, 18);
-
-    //                 if (filters.length > 0) {
-    //                     let startY = 18;
-    //                     const startX = 14;
-
-    //                     filters.forEach(filter => {
-    //                         if (filter?.value !== undefined && filter?.value !== '') {
-    //                             doc.text(
-    //                                 `${filter.label}: ${filter.value}`,
-    //                                 startX,
-    //                                 startY
-    //                             );
-    //                             startY += 5; // next line
-    //                         }
-    //                     });
-    //                 }
-    //             },
-
-    //         });
-
-    //         doc.save(`${title?.trim()}.pdf`);
-    //     } else {
-    //         ToastAlert('Data not available to download report', 'warning')
-    //     }
-    // };
-
-
-    const loadImage = (src) =>
-        new Promise((resolve) => {
-            const img = new Image();
-            img.src = src;
-            img.onload = () => resolve(img);
-        });
-
-
-    const downloadPDF = async () => {
-
-        if (!data?.length) {
-            ToastAlert('Data not available to download report', 'warning');
-            return;
-        }
-
-        const doc = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = doc.internal.pageSize.getWidth();
-
-        //  Header base positions
-        const titleY = 15;
-        const dateY = 25;
-        const filterStartY = 20;
-        const filterLineHeight = 5;
-
-        const validFilters = filters.filter(f => f?.value);
-
-        //  Dynamic table Y (ONLY based on filters)
-        const tableStartY =
-            validFilters.length > 0
-                ? filterStartY + (validFilters.length * filterLineHeight) + 4
-                : filterStartY + 6;
-
-        const columns = reportColumns?.map(col => col.name);
-        const rows = data?.map((row, index) =>
-            reportColumns?.map(col =>
-                col?.name === 'S.No' ? index + 1 : col?.selector(row)
-            )
-        );
-
-        const logo = await loadImage('/dvdms/reportheader.png');
-
-        doc.autoTable({
-            head: [columns],
-            body: rows,
-            startY: tableStartY + 30,
-            theme: 'grid',
-            margin: { top: 10 },
-            headStyles: {
-                fillColor: [0, 32, 96],
-                textColor: [255, 255, 255],
-                fontSize: 8
-            },
-            bodyStyles: { fontSize: 8 },
-            styles: { cellPadding: 2 },
-
-            didDrawPage: (data) => {
-                if (data.pageNumber === 1) {
-
-                    const imgWidth = 60;
-                    const imgHeight = 35;
-                    const imgX = (pageWidth - imgWidth) / 2;
-                    const imgY = 5;
-
-                    doc.addImage(logo, 'PNG', imgX, imgY, imgWidth, imgHeight);
-
-                    doc.setFontSize(12);
-                    const titleWidth = doc.getTextWidth(title);
-                    doc.text(title, pageWidth / 2, imgY + imgHeight + 5, { align: 'center' });
-
-                    doc.setFontSize(10);
-                    doc.text("CENTRAL DASHBOARD-DVDMS", pageWidth / 2, imgY + imgHeight + 10, { align: 'center' });
-
-                    doc.setFontSize(9);
-                    const dateText = `Date: ${new Date().toDateString()}`;
-                    const dateWidth = doc.getTextWidth(dateText);
-                    doc.text(dateText, pageWidth - dateWidth - 14, tableStartY + 28);
-
-                    let y = filterStartY;
-                    validFilters.forEach(f => {
-                        doc.text(`${f.label}: ${f.value}`, 14, y + 35);
-                        y += filterLineHeight;
-                    });
-                }
-            }
-
-        });
-
-        doc.save(`${title.trim()}.pdf`);
-    };
-
-
-    const tableCustomStyles = {
-        headRow: {
-            style: {
-                color: '#000000',
-                backgroundColor: '#C0D6D6 ',
-                outline: '1px solid #000000',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                textAlign: 'center',
-            },
-        }
-    };
-
-
     return (
         <>
-            <div className='masterreport px-2 pt-2 d-flex justify-content-end'>
-                <button className='btn btn-primary me-2' onClick={() => { setIsShowReport(false); setSelectedOption([]); }}><i className="fa fa-close me-1" style={{ color: "red", fontSize: "large" }}></i> Cancel</button>
+            <div
+                className="masterreport px-2 pt-2 d-flex justify-content-end"
+            >
+                <button
+                    className="btn btn-primary me-2"
+                    onClick={() => {
+                        setIsShowReport(false);
+                        setSelectedOption([]);
+                    }}
+                >
+                    <i
+                        className="fa fa-close me-1"
+                        style={{
+                            color: "red",
+                            fontSize: "large"
+                        }}
+                    />
+
+                    Cancel
+                </button>
                 <Dropdown>
-                    <Dropdown.Toggle className='ps-2' variant="primary" id="dropdown-basic">
+                    <Dropdown.Toggle
+                        className="ps-2"
+                        variant="primary"
+                        id="dropdown-basic"
+                    >
                         Download Report
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                        <Dropdown.Item className='fix-label' href="#" onClick={() => downloadPDF()}>
-                            <FontAwesomeIcon icon={faFilePdf} className="me-1" />  Download PDF
+                        <Dropdown.Item
+                            className="fix-label"
+                            href="#"
+                            onClick={downloadPDF}
+                        >
+                            <FontAwesomeIcon
+                                icon={faFilePdf}
+                                className="me-1"
+                            />
+                            Download PDF
                         </Dropdown.Item>
-
-                        <Dropdown.Item className='fix-label' href="#" onClick={() => downloadCSV()}>
-                            <FontAwesomeIcon icon={faFileCsv} className="me-1" />  Download CSV
+                        <Dropdown.Item
+                            className="fix-label"
+                            href="#"
+                            onClick={downloadCSV}
+                        >
+                            <FontAwesomeIcon
+                                icon={faFileCsv}
+                                className="me-1"
+                            />
+                            Download CSV
                         </Dropdown.Item>
-                        <Dropdown.Item className='fix-label' href="#" onClick={printReport}><i className="fa fa-print me-1"></i> Print Report</Dropdown.Item>
+                        <Dropdown.Item
+                            className="fix-label"
+                            href="#"
+                            onClick={printReport}
+                        >
+                            <i className="fa fa-print me-1" />
+                            Print Report
+                        </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
+            <div
+                className="datatable-report"
+                ref={reportRef}
+            >
 
-            <div className='datatable-report' ref={reportRef} >
-                <div className='mt-2'></div>
-                <div className='text-center'>
-                    <img className='text-center' src="/dvdms/reportheader.png" alt="img" />
+                <div className="mt-2" />
+                <div className="text-center">
+                    <img
+                        className="text-center"
+                        src="/dvdms/reportheader.png"
+                        alt="img"
+                    />
                 </div>
-                <h6 className='text-center mb-1'><u>{title} Report</u></h6>
-                <h6 className='text-center pt-0'>CENTRAL DASHBOARD-DVDMS</h6>
 
-                <div className='text-start me-3' style={{ fontSize: "smaller" }} >
+                <h6 className="text-center mb-1">
+                    <u>
+                        {title} Report
+                    </u>
+                </h6>
+
+                <h6 className="text-center pt-0">
+                    CENTRAL DASHBOARD-DVDMS
+                </h6>
+                <div
+                    className="text-start me-3"
+                    style={{
+                        fontSize: "smaller"
+                    }}
+                >
                     {filters?.map((dt, index) => (
                         <React.Fragment key={index}>
-                            <span><b>{dt?.label} : </b> {dt?.value}</span><br />
+                            <span>
+                                <b>
+                                    {dt?.label} :
+                                </b>
+                                {" "}
+                                {dt?.value}
+                            </span>
+                            <br />
                         </React.Fragment>
                     ))}
                 </div>
-                <div className='text-end me-3' style={{ fontSize: "smaller" }} >
-                    <span><b>Date Of Report : </b>{new Date().toDateString()}</span>
+                <div
+                    className="text-end me-3"
+                    style={{
+                        fontSize: "smaller"
+                    }}
+                >
+                    <span>
+                        <b>
+                            Date Of Report :
+                        </b>
+                        {new Date().toDateString()}
+                    </span>
                 </div>
-                <div className='m-1'>
-                    <DataTable
-                        dense
-                        // fixedHeader
-                        persistTableHead={true}
-                        customStyles={tableCustomStyles}
-                        columns={reportColumns}
-                        data={data}
-                        responsive
-                        noDataComponent={'There are no data to display'}
+                <div className="m-1">
+                    {!showTable ? (
 
-                    />
+                        <div
+                            className="text-center p-4"
+                        >
+                            <div
+                                className="spinner-border text-primary"
+                                role="status"
+                            />
+                            <div className="mt-2">
+                                Preparing report...
+                            </div>
+                        </div>
+                    ) : (
+                        <DataTable
+                            dense
+                            persistTableHead
+                            customStyles={
+                                tableCustomStyles
+                            }
+                            columns={reportColumns}
+                            data={data}
+                            pagination
+                            paginationPerPage={50}
+                            paginationRowsPerPageOptions={[
+                                25,
+                                50,
+                                100,
+                                250
+                            ]}
+                            paginationComponentOptions={{
+                                rowsPerPageText:
+                                    'Rows per page:',
+                                rangeSeparatorText:
+                                    'of',
+                                noRowsPerPage:
+                                    false,
+                                selectAllRowsItem:
+                                    false
+                            }}
+                            highlightOnHover
+                            noDataComponent={
+                                'There are no data to display'
+                            }
+                        />
+                    )}
                 </div>
             </div>
         </>
-    )
-}
+    );
+});
 
 export default MasterReport

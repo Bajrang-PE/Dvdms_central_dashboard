@@ -14,6 +14,7 @@ const LoginContextApi = ({ children }) => {
     const [selectedOption, setSelectedOption] = useState([]);
     const [openPage, setOpenPage] = useState('home')
     const [isShowReport, setIsShowReport] = useState(false)
+    const [isExpired, setIsExpired] = useState(false);
 
     //API Data
     const [widgetData, setWidgetData] = useState([]);
@@ -45,6 +46,8 @@ const LoginContextApi = ({ children }) => {
     const [iphsSubGroupDrpData, setIphsSubGroupDrpData] = useState([]);
     const [iphsMedicineDrpData, setIphsMedicineDrpData] = useState([]);
     const [iphsDrugDrpData, setIphsDrugDrpData] = useState([]);
+    const [diseaseCatDrpData, setDiseaseCatDrpDt] = useState([]);
+    const [allDrugDrpData, setAllDrugDrpDt] = useState([]);
 
     // for qr code
     const [stateNameDrpDtQr, setStateNameDrpDtQr] = useState([]);
@@ -55,6 +58,7 @@ const LoginContextApi = ({ children }) => {
     const [confirmSave, setConfirmSave] = useState(false);
     const [showConfirmSave, setShowConfirmSave] = useState(false);
 
+    const [homeItemCounts, setHomeItemCounts] = useState([]);
 
     const getWidgetData = async (ids) => {
         const val = {
@@ -128,11 +132,15 @@ const LoginContextApi = ({ children }) => {
         })
     }
 
-    const getStateJobDetailsListData = (stateId, status) => {
+    const getStateJobDetailsListData = (stateId, status, setLoading) => {
+        setLoading(true);
         fetchData(`/api/v1/stateJobDetails/getJobDetailsByStateID?stateID=${stateId ? stateId : '0'}&isActive=${status ? status : "1"}`).then((data) => {
+           console.log('data', data)
             if (data?.status === 1) {
+                setLoading(false);
                 setStateJobListData(data?.data)
             } else {
+                  setLoading(false);
                 setStateJobListData([])
             }
         })
@@ -441,7 +449,6 @@ const LoginContextApi = ({ children }) => {
 
     const getIphsDrugDrpData = () => {
         fetchData(`/api/v1/IphsDrugMappingMst/getDrugnames`).then((data) => {
-            console.log('data', data)
             if (data?.status === 1) {
                 const drpData = data?.data?.map((dt) => {
                     const val = {
@@ -488,7 +495,6 @@ const LoginContextApi = ({ children }) => {
 
     const getStoreNameDrpDataQr = (stateId, facilityId) => {
         fetchData(`/api/v1/store-combo?stateId=${stateId}&facilityTypeId=${facilityId}`).then((data) => {
-            console.log('data', data)
             if (data?.status === 1) {
 
                 const drpData = data?.data?.map((dt) => {
@@ -518,6 +524,41 @@ const LoginContextApi = ({ children }) => {
                 setFacilityTypeDrpDtQr(drpData);
             } else {
                 setFacilityTypeDrpDtQr([]);
+            }
+        })
+    }
+
+
+    const getDiseaseCategoryDrpData = () => {
+        fetchData(`/api/v1/disease-category/dropdown`).then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.diseaseCategoryId,
+                        label: dt?.diseaseCategoryName
+                    }
+                    return val;
+                })
+                setDiseaseCatDrpDt(drpData);
+            } else {
+                setDiseaseCatDrpDt([]);
+            }
+        })
+    }
+
+    const getAllDrugDrpData = () => {
+        fetchData(`/api/v1/drug-mst/dropdown`).then((data) => {
+            if (data?.status === 1) {
+                const drpData = data?.data?.map((dt) => {
+                    const val = {
+                        value: dt?.drugId,
+                        label: dt?.drugName
+                    }
+                    return val;
+                })
+                setAllDrugDrpDt(drpData);
+            } else {
+                setAllDrugDrpDt([]);
             }
         })
     }
@@ -561,7 +602,11 @@ const LoginContextApi = ({ children }) => {
             getStateListData, stateListData,
             getGroupListData, groupListData,
             getStateJobDetailsListData, stateJobListData,
-            getProgrammeListData, programmeListData
+            getProgrammeListData, programmeListData,
+            homeItemCounts, setHomeItemCounts,
+            getDiseaseCategoryDrpData, diseaseCatDrpData,
+            getAllDrugDrpData, allDrugDrpData,
+            isExpired, setIsExpired
         }}>
             {children}
         </LoginContext.Provider>

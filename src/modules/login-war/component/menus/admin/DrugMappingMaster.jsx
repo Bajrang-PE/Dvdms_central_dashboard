@@ -165,7 +165,8 @@ const DrugMappingMaster = () => {
             "cwhnumDrugIdTxt": "",
             "cwhstrDrugName": dt?.label,
             "cwhnumClassCode": 0,
-            "cwhnumStateId": parseInt(dt?.value),
+            "cwhnumStateId": parseInt(stateId),
+            "stateDrugId": parseInt(dt?.value),
             "cwhnumDrugId": parseInt(itemName?.value),
             "iphsName": "",
             "iphsCode": 0,
@@ -254,7 +255,6 @@ const DrugMappingMaster = () => {
         setItemName(null);
         setStateId('');
         setItemType('');
-        setInitialMappedOptions([]);
         setConfirmSave(false);
         setInitialMappedOptions([]);
         setSelectedOptions([]);
@@ -475,7 +475,7 @@ const DrugMappingMaster = () => {
                             {availableOptions?.length > 0 && availableOptions
                                 ?.filter(opt => opt.label?.toLowerCase()?.includes(leftSearch?.toLowerCase()))
                                 ?.map((opt, index) => (
-                                    <option key={index + "bg" + opt?.value?.toString()} value={opt.value}>
+                                    <option key={index + "bg" + opt?.value?.toString()} value={opt.value} title={opt?.label}>
                                         {opt.label}
                                     </option>
                                 ))
@@ -532,13 +532,12 @@ const DrugMappingMaster = () => {
                             {selectedOptions?.length > 0 && selectedOptions
                                 ?.filter(opt => opt?.label?.toLowerCase()?.includes(rightSearch?.toLowerCase()))
                                 ?.map((opt, index) => (
-                                    <option key={index + "bg" + opt?.value?.toString()} value={opt.value}>
+                                    <option key={index + "bg" + opt?.value?.toString()} value={opt.value} title={opt?.label}>
                                         {opt.label}
                                     </option>
                                 ))
                             }
                         </select>
-
                     </div>
                 </div>
 

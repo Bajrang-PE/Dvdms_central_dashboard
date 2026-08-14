@@ -19,9 +19,7 @@ const DistrictMasterForm = ({ setValues, values, getListData, setSearchInput }) 
     const [distNameErr, setDistNameErr] = useState("");
 
     useEffect(() => {
-      
           getSteteNameDrpData();
-        
     }, [])
 
     useEffect(() => {

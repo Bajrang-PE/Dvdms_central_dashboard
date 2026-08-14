@@ -8,11 +8,11 @@ import { Modal } from 'react-bootstrap';
 import DrugMasterForm from '../forms/DrugMasterForm';
 import MasterReport from '../../MasterReport';
 import InputDrpSelect from '../../InputDrpSelect';
+import SpinLoader from '../../Spinner';
 
 const DrugMaster = () => {
 
-    const { selectedOption, setSelectedOption, groupDrpData, getGroupDrpData, subGroupDrpData, getSubGroupDrpData, openPage, setOpenPage, setConfirmSave, confirmSave, setShowConfirmSave, isShowReport
-    } = useContext(LoginContext);
+    const { selectedOption, setSelectedOption, groupDrpData, getGroupDrpData, subGroupDrpData, getSubGroupDrpData, openPage, setOpenPage, setConfirmSave, confirmSave, setShowConfirmSave, isShowReport } = useContext(LoginContext);
 
     const [values, setValues] = useState({
         "groupId": "0", "subGroupId": "0", "recordStatus": "1"
@@ -30,6 +30,7 @@ const DrugMaster = () => {
     const [selectedSubGroupId, setSelectedSubGroupId] = useState("")
     const [searchInput, setSearchInput] = useState('');
     const [filterData, setFilterData] = useState(listData);
+    const [pending, setPending] = useState(false);
 
 
     useEffect(() => {
@@ -106,12 +107,14 @@ const DrugMaster = () => {
 
 
     const getListData = (grpId, sbGrpId, recStatus) => {
-
+        setPending(true);
         fetchData(`/api/v1/drug-mst/getAlldrugList?groupId=${grpId}&subGroupId=${sbGrpId}&isActive=${recStatus}`).then((data) => {
             if (data?.status === 1 && Array.isArray(data.data)) {
                 //alert("Data avl")
+                setPending(false);
                 setListData(data.data)
             } else {
+                 setPending(false);
                 //alert("Data not avl")
                 setListData([])
             }
@@ -330,6 +333,10 @@ const DrugMaster = () => {
                             <div>
                                 <GlobalTable column={columns} data={filterData} onDelete={handleDeleteRecord}
                                     onReport={null} setSearchInput={setSearchInput} isShowBtn={true} isAdd={true} isModify={true} isDelete={true} isView={true} isReport={true} setOpenPage={setOpenPage} onValidate={validate} searchInput={searchInput} />
+
+                                {pending &&
+                                    <SpinLoader />
+                                }
                             </div>
 
 

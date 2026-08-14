@@ -27,12 +27,6 @@ const getCsrfToken = () => {
     return Cookies.get('csrfToken');
 };
 
-const logout = () => {
-    sessionStorage.clear();
-    // Cookies.remove('csrfToken');
-    window.location.href = "/dvdms/session-expired";
-};
-
 // Set the Authorization header globally using an interceptor
 apiHis.interceptors.request.use(
     (config) => {
@@ -58,7 +52,7 @@ apiHis.interceptors.response.use(
     async (response) => {
         if (response?.data?.status && response?.data?.status === 401) {
             ToastAlert("Network Exception!!!", 'error');
-            sessionStorage.clear();
+            // sessionStorage.clear();
         } else {
             return response;
         }
@@ -68,7 +62,7 @@ apiHis.interceptors.response.use(
             const { status, data } = error.response;
             if (status === 401) {
                 ToastAlert("Network Exception!!!", 'error');
-                sessionStorage.clear();
+                // sessionStorage.clear();
             }
         }
         return Promise.reject(error);

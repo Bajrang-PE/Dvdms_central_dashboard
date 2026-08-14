@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { decryptAesOrRsa, encryptAesData } from './SecurityConfig';
 import { ToastAlert } from '../modules/login-war/utils/CommonFunction';
+import { encryptData } from '../modules/login-war/utils/SecurityConfig';
 
 // const BaseUrl = import.meta.env.VITE_API_BASE_URL
 const BaseUrl = 'http://10.226.28.223:8025'
@@ -50,7 +51,8 @@ apiLogin.interceptors.response.use(
                 "error"
             );
             logout();
-            window.location.href = "/dvdms/session-expired";
+            // window.location.href = "/dvdms/session-expired";
+            localStorage.setItem('data', encryptData(JSON.stringify({ 'isExpired': "Yes" })));
             return Promise.reject(response);
         } else {
             return response;
@@ -156,6 +158,8 @@ export const fetchPostData = async (url, data) => {
                 },
             }
         );
+
+        console.log('response', response)
         const decryptedData = decryptAesOrRsa(response?.data);
         return JSON.parse(decryptedData);
     } catch (error) {
@@ -252,3 +256,25 @@ export const fetchDataUnEnc = async (url, params) => {
     }
 };
 
+export const postApiWithFetch = async (url, data) => {
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        return result;
+    } catch (error) {
+        console.error("POST API Error:", error);
+        throw error;
+    }
+};

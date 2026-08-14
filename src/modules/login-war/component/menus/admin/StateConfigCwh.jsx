@@ -3,7 +3,7 @@ import DashHeader from '../../dashboard/DashHeader'
 import InputSelect from "../../InputSelect";
 import axios from 'axios';
 import { LoginContext } from '../../../context/LoginContext';
-import { fetchData, fetchPostData, fetchUpdateData } from '../../../../../utils/ApiHooks';
+import { fetchData, fetchPostData, fetchUpdateData, postApiWithFetch } from '../../../../../utils/ApiHooks';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
 import InputField from '../../InputField';
 import { isValidServiceUrl } from '../../../../../utils/CommonFunction';
@@ -31,9 +31,7 @@ const StateConfigCwh = () => {
 
 
     useEffect(() => {
-
         getSteteNameDrpData();
-
     }, [])
 
 
@@ -59,7 +57,6 @@ const StateConfigCwh = () => {
         }
     }
 
-
     const fetchDataByState = async (stateId) => {
         try {
             fetchData(`/api/v1/state/getStateConfig/${stateId}`).then((data) => {
@@ -80,7 +77,10 @@ const StateConfigCwh = () => {
                         dbPass: data.data?.cwhstrDatabasepassword ?? "",
                         stateDatabase: data.data?.cwhstrDatabaseName ?? "",
                         isDbCredAvl: data.data?.cwhnumIsdbcedentialavailable ?? "0",
-                        insertMethodOnCentralServer: data.data?.numIsDataInsertByEtlWar ?? ""
+                        insertMethodOnCentralServer: data.data?.numIsDataInsertByEtlWar ?? "",
+                        poolSize: data?.data?.cwhnumThreadpoolSize || '',
+                        stateName: data?.data?.stateName || '',
+                        stateCode: data?.data?.stateCode || '',
                     });
                 } else {
                     reset();
@@ -112,8 +112,7 @@ const StateConfigCwh = () => {
         })
     }
 
-
-    const validate = () => {
+    const validate = (action) => {
 
         let isValid = true;
 
@@ -190,7 +189,11 @@ const StateConfigCwh = () => {
         }
 
         if (isValid) {
-            setShowConfirmSave(true)
+            if (action === "test") {
+                testStateServiceUrl();
+            } else {
+                setShowConfirmSave(true);
+            }
         }
     }
 
@@ -233,6 +236,34 @@ const StateConfigCwh = () => {
 
     }
 
+    const testStateServiceUrl = () => {
+        try {
+            const val = {
+                "stateCode": values?.stateCode || "",
+                "stateName": values?.stateName || "",
+                "stateUrl": values?.stateServiceUrl || "",
+                "threadPoolSize": values?.poolSize || 10,
+                "isDataInsertByETLWar": values?.insertMethodOnCentralServer || 1,
+                "serviceConnectTimeout": values?.serviceConnTimeout || "45",
+                "batchSize": values?.dataFetchSize || "500",
+                "centralServerUrl": values?.centServiceUrl || "",
+                "stateServiceUserName": values?.stateServiceUserName || "",
+                "stateServicePassword": values?.stateServicePass || "",
+                "isdbCedentialAvailable": values?.isDbCredAvl || "1",
+                "databaseDriverClassName": values?.dbDrivClass || "",
+                "databaseUrl": values?.dbUrl || "",
+                "databaseUsername": values?.dbUserName || "",
+                "databasePassword": values?.dbPass || ""
+            }
+
+            postApiWithFetch(`http://${values?.centServiceUrl}/CwhCDB/rest/ETLService/TestService/Test`, val)?.then((res) => {
+                console.log('res', res)
+            })
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     const reset = () => {
         setValues({
@@ -243,6 +274,8 @@ const StateConfigCwh = () => {
         });
         setConfirmSave(false);
     }
+
+    console.log('values', values)
 
     return (
         <div className="masters mx-3 my-2">
@@ -548,14 +581,14 @@ const StateConfigCwh = () => {
 
                         <>
                             <button className='btn btn-sm new-btn-blue py-0' onClick={validate}>
-                                <i className="fa fa-save me-1"></i>
+                                <i className="fa fa-save me-1 text-success"></i>
                                 Save</button>
 
                             <button className='btn btn-sm new-btn-blue py-0' onClick={reset}>
-                                <i className="fa fa-broom me-1"></i>Clear</button>
+                                <i className="fa fa-broom me-1 text-warning"></i>Clear</button>
 
-                            <button className='btn btn-sm new-btn-blue py-0' onClick={null}>
-                                <i className="fa fa-broom me-1"></i>Test Url</button>
+                            <button className='btn btn-sm new-btn-blue py-0' onClick={() => { validate("test"); }}>
+                                <i className="fa fa-link me-1 text-info"></i>Test Url</button>
                         </>
 
                     </div>

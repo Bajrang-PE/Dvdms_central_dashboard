@@ -5,11 +5,62 @@ import { capitalizeFirstLetter, ToastAlert } from "../../../../utils/CommonFunct
 import "./StateDrugAvailabilityMaster.css";
 import GlobalTableModal from "../../TableModal";
 import { LoginContext } from "../../../../context/LoginContext";
-import { fetchData, fetchDataUnEnc } from "../../../../../../utils/ApiHooks";
+import { fetchData, fetchDataUnEnc, fetchPatchData, fetchPostData } from "../../../../../../utils/ApiHooks";
 import MasterReport from "../../../MasterReport";
 import SpinLoader from "../../../Spinner";
 import DatePicker from "react-datepicker";
 import InputDrpSelect from "../../../InputDrpSelect";
+import TableWithAccoidion from "./TableWithAccoidion";
+
+const createDynamicColumns = (data = [], firstColumns = []) => {
+    if (!Array.isArray(data) || !data.length) {
+        return [];
+    }
+
+    const keys = [
+        ...new Set(
+            data.flatMap(item => Object.keys(item))
+        )
+    ];
+
+    // Keep requested columns first
+    const orderedKeys = [
+        ...firstColumns.filter(key => keys.includes(key)),
+        ...keys.filter(key => !firstColumns.includes(key))
+    ];
+
+    return orderedKeys.map(key => ({
+        // name: (<span
+        //     style={{
+        //         whiteSpace: "normal",
+        //         wordBreak: "break-word",
+        //         overflowWrap: "anywhere",
+        //         lineHeight: "1.2",
+        //         margin:"5px 0px"
+        //     }}
+        // >
+        //     {key}
+        // </span>)
+        // ,
+        name: key,
+        selector: row => {
+            const value = row?.[key];
+
+            if (value === null || value === undefined || value === "") {
+                return "-";
+            }
+
+            if (typeof value === "boolean") {
+                return value ? "true" : "false";
+            }
+
+            return value;
+        },
+
+        sortable: true,
+        wrap: true
+    }));
+};
 
 const StateDrugAvailabilityMaster = () => {
 
@@ -106,7 +157,7 @@ const StateDrugAvailabilityMaster = () => {
 
     const getYearSummary = (stateId, startY = "2020", endY = "2026") => {
         setLoading(true);
-        fetchData(`http://10.226.28.223:8025/py/analytics/itembrand-complete-year-counts?state_id=${parseInt(stateId)}&start_year=${startY}&end_year=${endY}&include_itembrand_ids=true`)?.then((res) => {
+        fetchData(`/api/v1/py/analytics/itembrand-complete-year-counts?state_id=${parseInt(stateId)}&start_year=${startY}&end_year=${endY}&include_itembrand_ids=true`)?.then((res) => {
             console.log('res', res)
             if (res?.status === 1) {
                 setYearSummary(res?.data);
@@ -138,11 +189,21 @@ const StateDrugAvailabilityMaster = () => {
 
     const getFacilityAvailability = (stateId, drugId, startY = "2020", endY = "2026") => {
         setFacilityLoading(true);
-        fetchData(`http://10.226.28.223:8025/py/analytics/facility-complete-years-by-itembrand?state_id=${stateId}&itembrand_id=${drugId}&start_year=${startY}&end_year=${endY}`)?.then((res) => {
+        // fetchData(`/api/v1/analytics/facility-complete-years-by-itembrand?state_id=${stateId}&itembrand_id=${drugId}&start_year=${startY}&end_year=${endY}`)?.then((res) => {
+
+        const val = {
+            "state_id": stateId,
+            "itembrand_id": drugId,
+            "start_year": startY,
+            "end_year": endY,
+            "min_months_for_imputation": 12
+        }
+
+        fetchPostData(`/api/v1/py/availability`, val)?.then((res) => {
             console.log('resfac', res)
             if (res?.status === 1) {
-                setFacilityList(res?.data?.facilities);
-                setFilterData(res?.data?.facilities);
+                setFacilityList(res?.data);
+                setFilterData(res?.data?.matrix);
                 setFacilityLoading(false);
             } else {
                 setFacilityList([]);
@@ -153,21 +214,135 @@ const StateDrugAvailabilityMaster = () => {
         })
     };
 
+    const drugListcolumn = [
+        {
+            name: "Item Name",
+            selector: (row) => row.cwhstr_drugname,
+            sortable: true,
+        },
+    ];
 
-    useEffect(() => {
-        if (!searchInput) {
-            setFilterData(facilityList);
-        } else {
-            const lowercasedText = searchInput.toLowerCase();
-            const newFilteredData = facilityList.filter(row => {
-                const paramName = row?.cwhstr_facility_name?.toLowerCase() || "";
-                return paramName.includes(lowercasedText);
-            });
-            setFilterData(newFilteredData);
-        }
-    }, [searchInput, facilityList]);
 
-    const columns = useMemo(() => [
+    // useEffect(() => {
+    //     if (!searchInput) {
+    //         setFilterData(facilityList?.matrix);
+    //     } else {
+    //         const lowercasedText = searchInput.toLowerCase();
+    //         const newFilteredData = facilityList?.matrix?.filter(row => {
+    //             const paramName = row?.cwhstr_facility_name?.toLowerCase() || "";
+    //             return paramName.includes(lowercasedText);
+    //         });
+    //         setFilterData(newFilteredData);
+    //     }
+    // }, [searchInput, facilityList?.matrix]);
+
+
+    const matrixColumns = useMemo(() => {
+        if (!facilityList?.matrix?.length) return [];
+
+        const keys = [
+            ...new Set(
+                facilityList?.matrix.flatMap(item => Object.keys(item))
+            )
+        ].filter(key => key !== "facility_id");
+
+        return [
+            {
+                name: "Facility ID",
+                selector: row => row.facility_id,
+                sortable: true,
+                width: "120px",
+            },
+
+            ...keys.map(key => ({
+                name: key,
+                selector: row => row[key] ?? "-",
+                sortable: true,
+                wrap: true,
+            })),
+        ];
+    }, [facilityList?.matrix]);
+
+    // const columns = useMemo(() => [
+    //     {
+    //         name: "Facility Type",
+    //         selector: row => row?.cwhstr_facility_name,
+    //         sortable: true,
+    //         grow: 3
+    //     },
+    //     {
+    //         name: "1 Year",
+    //         center: true,
+    //         selector: row => row?.has_1_complete_years,
+    //         cell: row => (
+    //             row?.has_1_complete_years
+    //                 ? <span className="status-icon success">✔</span>
+    //                 : <span className="status-icon danger">✖</span>
+    //         )
+    //     },
+    //     {
+    //         name: "2 Year",
+    //         center: true,
+    //         selector: row => row?.has_2_complete_years,
+    //         cell: row => (
+    //             row?.has_2_complete_years
+    //                 ? <span className="status-icon success">✔</span>
+    //                 : <span className="status-icon danger">✖</span>
+    //         )
+    //     },
+    //     {
+    //         name: "3 Year",
+    //         center: true,
+    //         selector: row => row?.has_3_complete_years,
+    //         cell: row => (
+    //             row.has_3_complete_years
+    //                 ? <span className="status-icon success">✔</span>
+    //                 : <span className="status-icon danger">✖</span>
+    //         )
+    //     },
+    //     {
+    //         name: "4 Year",
+    //         center: true,
+    //         selector: row => row?.has_4_complete_years,
+    //         cell: row => (
+    //             row?.has_4_complete_years
+    //                 ? <span className="status-icon success">✔</span>
+    //                 : <span className="status-icon danger">✖</span>
+    //         )
+    //     },
+    //     {
+    //         name: "5 Year",
+    //         center: true,
+    //         selector: row => row?.has_5_complete_years,
+    //         cell: row => (
+    //             row?.has_5_complete_years
+    //                 ? <span className="status-icon success">✔</span>
+    //                 : <span className="status-icon danger">✖</span>
+    //         )
+    //     },
+    //     {
+    //         name: "6 Year",
+    //         center: true,
+    //         selector: row => row?.has_6_complete_years,
+    //         cell: row => (
+    //             row?.has_6_complete_years
+    //                 ? <span className="status-icon success">✔</span>
+    //                 : <span className="status-icon danger">✖</span>
+    //         )
+    //     },
+    //     {
+    //         name: "7 Year",
+    //         center: true,
+    //         selector: row => row?.has_7_complete_years,
+    //         cell: row => (
+    //             row?.has_7_complete_years
+    //                 ? <span className="status-icon success">✔</span>
+    //                 : <span className="status-icon danger">✖</span>
+    //         )
+    //     }
+    // ], []);
+
+    const eligibilityColumns = useMemo(() => [
         {
             name: "Facility Type",
             selector: row => row?.cwhstr_facility_name,
@@ -175,7 +350,7 @@ const StateDrugAvailabilityMaster = () => {
             grow: 3
         },
         {
-            name: "Year 1",
+            name: "1 Year",
             center: true,
             selector: row => row?.has_1_complete_years,
             cell: row => (
@@ -185,7 +360,7 @@ const StateDrugAvailabilityMaster = () => {
             )
         },
         {
-            name: "Year 2",
+            name: "2 Year",
             center: true,
             selector: row => row?.has_2_complete_years,
             cell: row => (
@@ -195,7 +370,7 @@ const StateDrugAvailabilityMaster = () => {
             )
         },
         {
-            name: "Year 3",
+            name: "3 Year",
             center: true,
             selector: row => row?.has_3_complete_years,
             cell: row => (
@@ -205,7 +380,7 @@ const StateDrugAvailabilityMaster = () => {
             )
         },
         {
-            name: "Year 4",
+            name: "4 Year",
             center: true,
             selector: row => row?.has_4_complete_years,
             cell: row => (
@@ -215,7 +390,7 @@ const StateDrugAvailabilityMaster = () => {
             )
         },
         {
-            name: "Year 5",
+            name: "5 Year",
             center: true,
             selector: row => row?.has_5_complete_years,
             cell: row => (
@@ -225,7 +400,7 @@ const StateDrugAvailabilityMaster = () => {
             )
         },
         {
-            name: "Year 6",
+            name: "6 Year",
             center: true,
             selector: row => row?.has_6_complete_years,
             cell: row => (
@@ -235,7 +410,7 @@ const StateDrugAvailabilityMaster = () => {
             )
         },
         {
-            name: "Year 7",
+            name: "7 Year",
             center: true,
             selector: row => row?.has_7_complete_years,
             cell: row => (
@@ -246,13 +421,7 @@ const StateDrugAvailabilityMaster = () => {
         }
     ], []);
 
-    const drugListcolumn = [
-        {
-            name: "Item Name",
-            selector: (row) => row.cwhstr_drugname,
-            sortable: true,
-        },
-    ];
+
 
     return (
         <>
@@ -260,7 +429,7 @@ const StateDrugAvailabilityMaster = () => {
                 <div className='masters mx-3 my-2'>
                     <div className='masters-header row'>
                         <span className='col-6'>
-                            <b>{`State Drug Availability Master >> ${capitalizeFirstLetter(openPage)}`}</b>
+                            <b>{`Forecasting Through AI Modal`}</b>
                         </span>
                         <span className='col-6 text-end'>
                             <i className="fa-solid fa-list-check me-1"></i>
@@ -269,7 +438,7 @@ const StateDrugAvailabilityMaster = () => {
                     </div>
 
                     <div className='row pt-2'>
-                        <div className='col-md-4'>
+                        <div className='col-md-6'>
                             <div className='form-group row'>
                                 <label className='col-sm-4 col-form-label fix-label required-label fw-bold'>
                                     <i className="fa-solid fa-location-dot me-1 ms-0 text-info"></i>
@@ -288,48 +457,31 @@ const StateDrugAvailabilityMaster = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className='col-md-4'>
+                    </div>
+
+                    <div className='row pt-2'>
+                        <div className='col-md-6'>
                             <div className='form-group row'>
                                 <label className="col-sm-4 col-form-label fix-label fw-bold">
-                                    Start Year :
+                                    Date Range for Forecasting :
                                 </label>
 
                                 <div className="col-sm-8">
                                     <DatePicker
-                                        selected={startYear}
-                                        onChange={(date) => {
-                                            console.log('date', date)
-                                            setStartYear(date);
-
-                                            if (endYear && date > endYear) {
-                                                setEndYear(null);
-                                            }
+                                        selectsRange
+                                        showYearPicker
+                                        dateFormat="yyyy"
+                                        startDate={startYear}
+                                        endDate={endYear}
+                                        onChange={(update) => {
+                                            const [startYear, endYear] = update;
+                                            setStartYear(startYear)
+                                            setEndYear(endYear)
                                         }}
-                                        showYearPicker
-                                        dateFormat="yyyy"
-                                        placeholderText="Start Year"
-                                        minDate={new Date(2020, 0, 1)}
-                                        maxDate={new Date(currentYear, 11, 31)}
-                                        className="form-control aliceblue-bg border-dark-subtle"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-4">
-                            <div className="form-group row">
-                                <label className="col-sm-4 col-form-label fix-label fw-bold">
-                                    End Year :
-                                </label>
-
-                                <div className="col-sm-8">
-                                    <DatePicker
-                                        selected={endYear}
-                                        onChange={setEndYear}
-                                        showYearPicker
-                                        dateFormat="yyyy"
-                                        placeholderText="End Year"
-                                        minDate={startYear || new Date(2020, 0, 1)}
-                                        maxDate={new Date(currentYear, 11, 31)}
+                                        isClearable
+                                        placeholderText="Select Year Range"
+                                        minDate={new Date(2000, 0, 1)}
+                                        maxDate={new Date()}
                                         className="form-control aliceblue-bg border-dark-subtle"
                                     />
                                 </div>
@@ -346,7 +498,8 @@ const StateDrugAvailabilityMaster = () => {
                                 <div className="d-flex justify-content-between align-items-center flex-wrap">
                                     <div className="year-summary-title">
                                         <i className="fa-solid fa-chart-column me-2"></i>
-                                        Drug Summary
+                                        {/* Drug Summary */}
+                                        Year-wise Continuous Availability of Drugs
                                         <div>
                                             <span className="badge bg-info-subtle text-dark border required-label fs-13 fw-medium">
                                                 <i> Click on item count to view list of available items.</i>
@@ -451,15 +604,6 @@ const StateDrugAvailabilityMaster = () => {
                                             Drug :
                                         </label>
                                         <div className='col-sm-8'>
-                                            {/* <InputSelect
-                                                id="drug"
-                                                name="drug"
-                                                placeholder="Select Drug"
-                                                value={selectedDrug}
-                                                options={drugList}
-                                                className="aliceblue-bg border-dark-subtle"
-                                                onChange={(e) => setSelectedDrug(e?.target?.value)}
-                                            /> */}
                                             <InputDrpSelect
                                                 className="aliceblue-bg form-control form-control-sm border-dark-subtle"
                                                 id="drug"
@@ -476,8 +620,6 @@ const StateDrugAvailabilityMaster = () => {
                                                 }}
                                             />
                                         </div>
-
-
                                     </div>
                                 </div>
                             </div>
@@ -490,43 +632,17 @@ const StateDrugAvailabilityMaster = () => {
                             {(selectedDrug || yearCount) && (
                                 <>
                                     <hr className='my-3' />
-                                    <div className="d-flex justify-content-between align-items-center flex-wrap">
-                                        <div className="year-summary-title">
-                                            <i className="fa-solid fa-chart-column me-2"></i>
-                                            Facility Complete Years By Item
-                                            <div>
-                                                <span className="badge bg-info-subtle text-dark border required-label fs-13 fw-medium">
-                                                    <i> For each facility, it reports whether that facility has exactly 7, 6, 5, 4, 3, 2, 1, or 0 complete years. Complete year means data exists for all 12 months of that year.</i>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        {/* <div className="summary-info">
-                                            <span className="badge bg-success-subtle text-success border me-2 mb-1">
-                                                <i className="fa-solid fa-calendar-plus me-1"></i>
-                                                Drug name: {drugList?.find(dt => dt?.value == selectedDrug)?.label || "NA"}
-                                            </span>
-                                        </div> */}
-                                    </div>
 
-                                    <GlobalTable
-                                        column={columns}
-                                        data={filterData}
-                                        setSearchInput={setSearchInput}
-                                        isShowBtn={true}
-                                        isAdd={false}
-                                        isModify={false}
-                                        isDelete={false}
-                                        isView={false}
-                                        isReport={true}
-                                        onAdd={null}
-                                        onModify={null}
-                                        onDelete={null}
-                                        onView={null}
-                                        onReport={null}
-                                        setOpenPage={() => { }}
-                                    />
+                                    <TableWithAccoidion data={facilityList?.matrix} column={matrixColumns} id={"collapseMatrix"} heading={"Facility-Year Matrix"} subHeading={"For each facility, it reports whether that facility has exactly 7, 6, 5, 4, 3, 2, 1, or 0 complete years. Complete year means data exists for all 12 months of that year."} defaultOpen={true} />
+
+                                    <TableWithAccoidion data={facilityList?.eligibility} column={createDynamicColumns(facilityList?.eligibility)} id={"collapseFacility"} heading={"Model Eligibility by Facility"} subHeading={"If a facility has both complete/imputed years and sparse years, it is marked mixed: 8 strong methods run for complete/imputed years and fallback methods run for sparse years."} />
+
+                                    <TableWithAccoidion data={facilityList?.year_method_plan} column={createDynamicColumns(facilityList?.year_method_plan)} id={"collapsyear_method_plan"} heading={"Year-wise Method Plan"} subHeading={"No year with data is left unused: complete/imputed years use the 8 strong methods; sparse years use sparse_fallback_methods; only no-data years are left out."} />
+
+                                    <TableWithAccoidion data={facilityList?.detail} column={createDynamicColumns(facilityList?.detail)} id={"collapsDetailsYearWise"} heading={"Detailed Year-Wise Data"} subHeading={""} />
                                 </>
                             )}
+
                         </>
                     )}
 
@@ -541,6 +657,7 @@ const StateDrugAvailabilityMaster = () => {
                     }
                 </div>
             }
+
             {isShowReport &&
                 <MasterReport title={"State Drug Availability Master"} column={columns} data={filterData}
                     filters={[

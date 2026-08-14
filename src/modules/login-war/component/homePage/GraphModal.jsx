@@ -15,7 +15,7 @@ const GraphModal = ({ data, onClose, widgetData }) => {
     ];
 
     const [chartType, setChartType] = useState('column');
-    const chartTypes = ['bar', 'line', 'pie', 'area', 'column', 'donut'];
+    const chartTypes = ['bar', 'line', 'pie', 'area', 'column',];
 
 
     const options = {

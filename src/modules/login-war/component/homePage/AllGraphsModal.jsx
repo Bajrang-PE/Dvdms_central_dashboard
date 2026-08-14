@@ -11,7 +11,7 @@ const AllGraphsModal = ({ show, onClose, graphs }) => {
             onHide={onClose}
             size="xl"
             centered
-            style={{paddingTop:"4rem"}}
+            style={{ paddingTop: "4rem" }}
         >
             {/* HEADER WITH GRADIENT */}
             <Modal.Header
@@ -38,24 +38,35 @@ const AllGraphsModal = ({ show, onClose, graphs }) => {
 
                 <div className="row">
 
-                    {graphs.map((graph, index) => {
+                    {graphs?.map((graph, index) => {
 
-                        const categories = graph.data.map(x => x.name);
-                        const seriesData = graph.data.map(x => x.y);
+                        const categories = graph.graphData.map(x => x.name);
+                        const seriesData = graph.graphData.map(x => x.y);
 
                         const options = {
                             chart: {
                                 type: "column",
-                                height: 300
+                                height: 400
                             },
                             title: {
                                 text: graph.widgetData?.rptDisplayName
                             },
                             xAxis: {
-                                categories
+                                categories,
+                                title: {
+                                    text: graph?.widgetData?.xAxisLabel
+                                },
+                                labels: {
+                                    step: 1,
+                                    autoRotation: [-45],
+                                    reserveSpace: true,
+                                },
                             },
                             yAxis: {
-                                min: 0
+                                min: 0,
+                                title: {
+                                    text: graph?.widgetData?.yAxisLabel
+                                }
                             },
                             series: [
                                 {
@@ -65,7 +76,12 @@ const AllGraphsModal = ({ show, onClose, graphs }) => {
                             ],
                             credits: {
                                 enabled: false
-                            }
+                            },
+                            legend: {
+                                enabled: false,
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            },
                         };
 
                         return (
@@ -74,6 +90,7 @@ const AllGraphsModal = ({ show, onClose, graphs }) => {
                                     highcharts={Highcharts}
                                     options={options}
                                 />
+                                <hr className='my-2' />
                             </div>
                         );
                     })}

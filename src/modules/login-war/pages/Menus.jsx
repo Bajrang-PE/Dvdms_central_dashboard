@@ -35,9 +35,11 @@ const NotFoundPage = lazy(() => import('./NotFound'));
 const QrGenerateMaster = lazy(() => import('../component/menus/admin/QrGenerateMaster'));
 const DrugMappingAssistantMaster = lazy(() => import('../component/menus/admin/DrugMapingAssistantMaster'));
 const StateDrugAvailabilityMaster = lazy(() => import('../component/menus/admin/forcastMasters/StateDrugAvailabilityMaster'));
+const DiseaseMaster = lazy(() => import('../component/menus/admin/DiseaseMaster'));
 
-import ModernDashHeader from '../component/dashboard/ModernDashHeader'
-import Loader from '../component/Loader'
+import ModernDashHeader from '../component/dashboard/ModernDashHeader';
+import Loader from '../component/Loader';
+import DiseaseDrugMapMaster from '../component/menus/admin/DiseaseDrugMapMaster';
 
 const Menus = () => {
     return (
@@ -67,8 +69,9 @@ const Menus = () => {
                     <Route path="facility-type-master" element={<FacilityTypeMaster />} />
                     <Route path="facility-type-mapping-master" element={<FacilityTypeMappingMaster />} />
                     <Route path="job-order-status-master" element={<JobOrderMaster />} />
-                    <Route path="state-drug-availability-master" element={<StateDrugAvailabilityMaster />} />
-
+                    <Route path="forecasting-through-AI-master" element={<StateDrugAvailabilityMaster />} />
+                    <Route path="disease-master" element={<DiseaseMaster />} />
+                    <Route path="disease-drug-map-master" element={<DiseaseDrugMapMaster />} />
 
                     {/* removed */}
                     {/* <Route path="state-cdb-sync-master" element={<StateCdbSyncMaster />} /> */}

@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import useScrollVisibility from '../../hooks/useScrollAnimation';
 import { fetchQueryData, ToastAlert } from '../../utils/CommonFunction';
 import GraphModal from './GraphModal';
 import Loader from '../Loader';
 import "./Facilities.css";
 import AllGraphsModal from './AllGraphsModal';
-import { fetchData } from '../../../../utils/ApiHooks';
+import { fetchPostData } from '../../../../utils/HisApiHooks';
+import { LoginContext } from '../../context/LoginContext';
 
 const Facilities = () => {
+
+    const { setHomeItemCounts } = useContext(LoginContext);
 
     const isVisible = useScrollVisibility('facilities');
 
@@ -46,67 +49,63 @@ const Facilities = () => {
     }, []);
 
     const loadFacilities = async () => {
-
-        setIsLoading(true);
-
-        // try {
-
-        //     const response = await Promise.all(
-
-        //         facilities.map(async (item) => {
-        //             const kpiRes = await fetchData(`/hisutils/DataService/${item.kpiId}/execute?isGlobal=1`);
-        //             let graphRes = null;
-        //             if (item.graphId) {
-        //                 graphRes = await fetchData(`/hisutils/DataService/${item.graphId}/execute?isGlobal=1`);
-        //             }
-
-        //             return {
-        //                 ...item,
-        //                 kpiResponse: kpiRes,
-        //                 graphResponse: graphRes
-        //             };
-        //         })
-
-        //     );
-
-        //     setKpiWidgets(response);
-        //     const graphMap = {};
-        //     response.forEach(item => {
-        //         if (item.graphId) {
-        //             graphMap[item.graphId] = item.graphResponse;
-        //         }
-        //     });
-        //     setGraphWidgets(graphMap);
-        // } catch (e) {
-        //     console.error(e);
-        // }
-        setIsLoading(false);
-
-    };
-
-    const fetchGraphDataQry = async (graphWidget) => {
-
-        if (!graphWidget) {
-            ToastAlert("Graph not available", "warning");
-            return;
-        }
-        if (!graphWidget?.queryVO) return;
         setIsLoading(true);
         try {
 
-            const data = await fetchQueryData(graphWidget.queryVO);
+            const response = await Promise.all(
 
-            if (data?.status === 1) {
+                facilities.map(async (item) => {
+                    const kpiRes = await fetchPostData(`/hisutils/DataService/${item.kpiId}/execute?isGlobal=1`);
 
-                const keys = Object.keys(data.data[0]);
+                    let kpidt = {};
+                    if (kpiRes?.status === 1) {
+                        kpidt = {
+                            name: kpiRes?.data?.dataHeading[0],
+                            count: kpiRes?.data?.dataValue[0]
+                        }
+                    }
 
-                const graph = data.data.map(item => ({
-                    name: item[keys[0]],
-                    y: Number(item[keys[1]]) || 0
-                }));
+                    return {
+                        ...item,
+                        kpiResponse: kpidt,
+                        graphResponse: null
+                    };
+                })
+            );
 
+            setKpiWidgets(response);
+            setHomeItemCounts(response)
+        } catch (e) {
+            console.error(e);
+        }
+        setIsLoading(false);
+    };
+
+
+    const fetchGraphDataQry = async (graphId, rptname) => {
+
+        if (!graphId) {
+            ToastAlert("Graph not available", "warning");
+            return;
+        }
+        setIsLoading(true);
+        try {
+
+            const graphRes = await fetchPostData(`/hisutils/DataService/${graphId}/execute?isGlobal=1`);
+            if (graphRes?.status === 1) {
+                const keys = graphRes?.data?.dataHeading;
+                const graph = graphRes?.data.dataValue
+                    ?.map(item => ({
+                        name: item[0],
+                        y: Number(item[1]) || 0
+                    }));
                 setGraphData(graph);
-                setSingleWidget(graphWidget);
+                setSingleWidget({
+                    rptDisplayName: `${rptname} availability Graph view`,
+                    rptName: `${rptname} availability`,
+                    xAxisLabel: `${keys[0]}`,
+                    yAxisLabel: `${keys[1]} counts`
+                });
                 setShowGraph(true);
             }
 
@@ -116,16 +115,65 @@ const Facilities = () => {
 
     };
 
-    const fetchAllGraphs = () => {
-        setAllGraphsData();
-        setShowAllGraphs(true);
+    const fetchAllGraphs = async () => {
+        setIsLoading(true);
+
+        try {
+            const response = await Promise.all(
+                kpiWidgets?.filter((facility) => facility?.graphId && facility?.kpiResponse?.name)?.map(async (facility) => {
+                    try {
+                        const graphRes = await fetchPostData(
+                            `/hisutils/DataService/${facility?.graphId}/execute?isGlobal=1`
+                        );
+                        let graphData = [];
+                        let widgetData = {};
+
+                        if (graphRes?.status === 1) {
+                            const keys = graphRes?.data?.dataHeading;
+                            graphData = graphRes?.data?.dataValue?.map((row) => ({
+                                name: row[0],
+                                y: Number(row[1]) || 0,
+                            })) || [];
+                            widgetData = {
+                                rptDisplayName: `${facility?.kpiResponse?.name} availability Graph view`,
+                                rptName: `${facility?.kpiResponse?.name} availability`,
+                                xAxisLabel: `${keys[0]}`,
+                                yAxisLabel: `counts`
+                            }
+                        }
+
+
+                        return {
+                            ...facility,
+                            graphData,
+                            widgetData
+                        };
+                    } catch (err) {
+                        console.error(`Error fetching graph ${facility?.graphId}`, err);
+
+                        return {
+                            ...facility,
+                            graphData: [],
+                        };
+                    }
+                })
+            );
+
+            setAllGraphsData(response);
+            setShowAllGraphs(true);
+        } catch (error) {
+            console.error("Error fetching all graphs:", error);
+        } finally {
+            setIsLoading(false);
+        }
     };
+
 
     const onClose = () => {
         setGraphData([]);
         setShowGraph(false);
-
     };
+
 
     return (
 
@@ -138,20 +186,20 @@ const Facilities = () => {
 
             <div className="row mt-4 px-2 justify-content-start">
                 {kpiWidgets.length > 0 ?
-                    kpiWidgets.map((item, index) => (
+                    kpiWidgets?.filter(dt => dt?.kpiResponse?.name)?.map((item, index) => (
                         <div className="col-6 mb-3" key={item.kpiId}>
                             <div
                                 className={`mini-square-kpi-card ${gradientClasses[index % gradientClasses.length]}`}
-                                onClick={() => fetchGraphDataQry(item.graphResponse)}
+                                onClick={() => fetchGraphDataQry(item?.graphId, item?.kpiResponse?.name)}
                             >
                                 <div className="mini-card-icon">
                                     <i className="fas fa-hospital-alt"></i>
                                 </div>
                                 <h3 className="mini-card-count">
-                                    {item?.kpiResponse?.data?.COUNT ?? 0}
+                                    {item?.kpiResponse?.count ?? 0}
                                 </h3>
                                 <p className="mini-card-title">
-                                    {item?.kpiResponse?.data?.NAME}
+                                    {item?.kpiResponse?.name || "NA"}
                                 </p>
                             </div>
                         </div>

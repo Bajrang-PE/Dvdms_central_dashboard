@@ -55,3 +55,20 @@ export const formatDate1 = (isoDate) => {
   const year = dateObject.getUTCFullYear();
   return `${day}-${month}-${year.toString().slice(-2)}`;
 }
+
+
+
+export const createDynamicColumnsWithFields = (data = [], selectedColumns = []) => {
+  if (!Array.isArray(data) || !data.length) {
+    return [];
+  }
+
+  return selectedColumns
+    .filter(key => Object.prototype.hasOwnProperty.call(data[0], key))
+    .map(key => ({
+      name: key,
+      selector: row => row?.[key] ?? "-",
+      sortable: true,
+      wrap: true,
+    }));
+};
