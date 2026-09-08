@@ -82,7 +82,15 @@ const StateJobDetailsService = () => {
             return;
         }
         try {
-            fetchData(`/api/v1/stateJobDetails/runjob/${stateId}/${selectedOption[0]?.jobID}`)?.then((res) => {
+            const sessionId = [
+                stateId,
+                selectedOption[0]?.stateName || "",
+                selectedOption[0]?.jobID,
+                selectedOption[0]?.jobName,
+                selectedOption[0]?.numJobRunPriority || "0"
+            ].join("#");
+
+            fetchData(`http://10.226.28.223:8081/CwhCDB/rest/ETLService/runjob/${stateId}/${selectedOption[0]?.jobID}/${encodeURIComponent(sessionId)}`)?.then((res) => {
                 console.log('res', res);
             })
         } catch (error) {

@@ -51,7 +51,7 @@ export const formatDate1 = (isoDate) => {
   // dateObject.setUTCHours(dateObject.getUTCHours() + dateObject.getTimezoneOffset() / 60);
 
   const day = dateObject.getUTCDate().toString().padStart(2, '0');
-  const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][dateObject.getUTCMonth()];
+  const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'][dateObject.getUTCMonth()];
   const year = dateObject.getUTCFullYear();
   return `${day}-${month}-${year.toString().slice(-2)}`;
 }

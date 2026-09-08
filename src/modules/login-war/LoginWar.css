@@ -750,3 +750,14 @@ label {
 .wizard-step-tab.completed:not(:last-child)::after {
   background: #198754;
 }
+
+.rdt_TableCol_Sortable,
+.rdt_TableCol_Sortable > div,
+.rdt_TableCol_Sortable > span {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    line-height: 1.2 !important;
+}

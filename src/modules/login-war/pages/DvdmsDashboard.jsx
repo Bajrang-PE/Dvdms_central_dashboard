@@ -12,6 +12,7 @@ const DvdmsDashboard = () => {
         <>
             <div >
                 <ModernDashHeader />
+                   {/* <iframe src="https://cms-v2.uat.dcservices.in/db/" title="NOTTO Dashboard" class="w-full h-full border-0"></iframe> */}
                   <DashboardMst
                         groupId={11600113}
                         dashboardFor={"CENTRAL DASHBOARD"}
@@ -36,6 +37,8 @@ const DvdmsDashboard = () => {
                             display: "block"
                         }}
                     /> */}
+
+                 
                 </div>
             </div>
         </>

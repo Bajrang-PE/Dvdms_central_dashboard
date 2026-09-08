@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
-import GlobalButtons from '../GlobalButtons'
-import InputSelect from '../../InputSelect'
-import InputField from '../../InputField'
-import { LoginContext } from '../../../context/LoginContext'
-import { ToastAlert } from '../../../utils/CommonFunction'
-import { fetchData, fetchPostData, fetchUpdateData, fetchUpdatePostData } from '../../../../../utils/ApiHooks'
-import { getAuthUserData } from '../../../../../utils/CommonFunction'
-import InputDrpSelect from '../../InputDrpSelect'
-import MapDiseaseForDrug from '../MapDiseaseForDrug'
+import GlobalButtons from '../GlobalButtons';
+import InputSelect from '../../InputSelect';
+import InputField from '../../InputField';
+import { LoginContext } from '../../../context/LoginContext';
+import { ToastAlert } from '../../../utils/CommonFunction';
+import { fetchData, fetchPostData, fetchUpdateData, fetchUpdatePostData } from '../../../../../utils/ApiHooks';
+import { getAuthUserData } from '../../../../../utils/CommonFunction';
+import InputDrpSelect from '../../InputDrpSelect';
+import MapDiseaseForDrug from '../MapDiseaseForDrug';
 
 const DrugMasterForm = (props) => {
 
@@ -21,7 +21,7 @@ const DrugMasterForm = (props) => {
         selectedStatus,
     } = props;
 
-    const { setShowConfirmSave, confirmSave, setConfirmSave, openPage, setOpenPage, selectedOption, setSelectedOption, drugTypeDrpData, getDrugTypeDrpData, getGenericDrugDrpData, genericDrugDrpData, getDiseaseCategoryDrpData, diseaseCatDrpData } = useContext(LoginContext)
+    const { setShowConfirmSave, confirmSave, setConfirmSave, openPage, setOpenPage, selectedOption, setSelectedOption, drugTypeDrpData, getDrugTypeDrpData, getGenericDrugDrpData, genericDrugDrpData, getDiseaseCategoryDrpData, diseaseCatDrpData } = useContext(LoginContext);
 
     const [values, setValues] = useState({
         "genericDrugId": "",
@@ -113,6 +113,8 @@ const DrugMasterForm = (props) => {
         }
         if (isValid) {
             setShowConfirmSave(true)
+        }else{
+            setCurrentStep(1);
         }
 
     }

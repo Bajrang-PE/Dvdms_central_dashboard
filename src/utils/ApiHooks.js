@@ -131,14 +131,14 @@ export const fetchData = async (url, params) => {
         if (params) {
             const response = await apiLogin.get(url, { params: params ? params : '' });
             const decryptedData = decryptAesOrRsa(response?.data)
-            // console.log(JSON.parse(decryptedData),url,'bajrang');
+            console.log(url, JSON.parse(decryptedData));
             return JSON.parse(decryptedData);
             // return response?.data
         } else {
             const response = await apiLogin.get(url);
             // return response?.data
             const decryptedData = decryptAesOrRsa(response?.data);
-            // console.log('response', decryptedData);
+            console.log(url, JSON.parse(decryptedData));
             return JSON.parse(decryptedData);
         }
     } catch (error) {
@@ -159,8 +159,9 @@ export const fetchPostData = async (url, data) => {
             }
         );
 
-        console.log('response', response)
+        
         const decryptedData = decryptAesOrRsa(response?.data);
+        console.log(url, JSON.parse(decryptedData));
         return JSON.parse(decryptedData);
     } catch (error) {
         console.log('API Error:', error);
@@ -174,6 +175,7 @@ export const fetchUpdateData = async (url, data) => {
         // const response = await apiLogin.put(url, data);
         // return response.data;
         const decryptedData = decryptAesOrRsa(response?.data);
+        console.log(url, JSON.parse(decryptedData));
         return JSON.parse(decryptedData);
 
     } catch (error) {
@@ -191,6 +193,7 @@ export const fetchUpdatePostData = async (url, data) => {
             },
         });
         const decryptedData = decryptAesOrRsa(response?.data);
+        console.log(url, JSON.parse(decryptedData));
         return JSON.parse(decryptedData);
         // return response.data;
     } catch (error) {
@@ -204,6 +207,7 @@ export const fetchDeleteData = async (url, payload) => {
         const response = await apiLogin.delete(url, { data: payload });
         // return response.data;
         const decryptedData = decryptAesOrRsa(response?.data);
+        console.log(url, JSON.parse(decryptedData));
         return JSON.parse(decryptedData);
     } catch (error) {
         console.log('API Error:', error);
@@ -216,6 +220,7 @@ export const fetchPatchData = async (url, payload) => {
         const response = await axios.patch(url, encodeURIComponent(encryptAesData(JSON?.stringify(payload))));
         // return response.data;
         const decryptedData = decryptAesOrRsa(response?.data);
+        console.log(url, JSON.parse(decryptedData));
         return JSON.parse(decryptedData);
     } catch (error) {
         console.log('API Error:', error);

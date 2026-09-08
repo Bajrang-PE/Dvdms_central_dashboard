@@ -183,7 +183,7 @@ const DiseaseDrugMapMaster = () => {
         setErrors({ "diseaseCategoryErr": "", "drugNameErr": "" })
     }
 
-    
+
     const [multiValue, setMultiValue] = useState([]);
     console.log('multiValue', multiValue)
 
@@ -218,7 +218,7 @@ const DiseaseDrugMapMaster = () => {
                             <ComboBox
                                 options={allDrugDrpData}
                                 value={drugName}
-                               onChange={(e) => {
+                                onChange={(e) => {
                                     setDrugName(e);
                                     const itemObj = allDrugDrpData?.find(dt => dt?.value == e?.value);
                                     setRightSearch('');
@@ -226,8 +226,8 @@ const DiseaseDrugMapMaster = () => {
                                 }}
                                 isMulti={false}
                                 placeholder="Select multiple items..."
-                                isSearchable={false}
-                                 className="aliceblue-bg border-dark-subtle react-select-login"
+                                isSearchable
+                                className="aliceblue-bg border-dark-subtle react-select-login"
                             />
                             {errors?.drugNameErr && (
                                 <div className="required-input">

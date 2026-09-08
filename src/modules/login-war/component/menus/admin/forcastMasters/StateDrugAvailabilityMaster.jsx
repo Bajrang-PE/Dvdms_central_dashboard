@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import InputSelect from "../../../InputSelect";
 import GlobalTable from "../../../GlobalTable";
-import { capitalizeFirstLetter, ToastAlert } from "../../../../utils/CommonFunction";
+import { capitalizeFirstLetter, formatDate1, ToastAlert } from "../../../../utils/CommonFunction";
 import "./StateDrugAvailabilityMaster.css";
 import GlobalTableModal from "../../TableModal";
 import { LoginContext } from "../../../../context/LoginContext";
@@ -11,6 +11,8 @@ import SpinLoader from "../../../Spinner";
 import DatePicker from "react-datepicker";
 import InputDrpSelect from "../../../InputDrpSelect";
 import TableWithAccoidion from "./TableWithAccoidion";
+import InputField from "../../../InputField";
+import { formatDateHmis, formatDateHmisForecast } from "../../../../../../utils/CommonFunction";
 
 const createDynamicColumns = (data = [], firstColumns = []) => {
     if (!Array.isArray(data) || !data.length) {
@@ -30,33 +32,17 @@ const createDynamicColumns = (data = [], firstColumns = []) => {
     ];
 
     return orderedKeys.map(key => ({
-        // name: (<span
-        //     style={{
-        //         whiteSpace: "normal",
-        //         wordBreak: "break-word",
-        //         overflowWrap: "anywhere",
-        //         lineHeight: "1.2",
-        //         margin:"5px 0px"
-        //     }}
-        // >
-        //     {key}
-        // </span>)
-        // ,
         name: key,
         selector: row => {
             const value = row?.[key];
-
             if (value === null || value === undefined || value === "") {
                 return "-";
             }
-
             if (typeof value === "boolean") {
                 return value ? "true" : "false";
             }
-
             return value;
         },
-
         sortable: true,
         wrap: true
     }));
@@ -66,9 +52,7 @@ const StateDrugAvailabilityMaster = () => {
 
     const { getSteteNameDrpData, stateNameDrpDt, openPage, setOpenPage, isShowReport } = useContext(LoginContext);
 
-    const [searchInput, setSearchInput] = useState("");
     const [selectedState, setSelectedState] = useState("");
-    const [selectedYear, setSelectedYear] = useState("");
     const [startYear, setStartYear] = useState(new Date(2020, 0, 1));
     const [endYear, setEndYear] = useState(new Date());
     const [yearCount, setYearCount] = useState("");
@@ -76,12 +60,26 @@ const StateDrugAvailabilityMaster = () => {
     const [yearSummary, setYearSummary] = useState([]);
     const [drugList, setDrugList] = useState([]);
     const [facilityList, setFacilityList] = useState([]);
-    const [filterData, setFilterData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [facilityLoading, setFacilityLoading] = useState(false);
+    const [impMonths, setImpMonths] = useState("10");
+
+    // FOR FORECAST
+    const [facilityTypesDrpDt, setFacilityTypesDrpDt] = useState([]);
+    const [facilityTypeId, setFacilityTypeId] = useState('');
+    const [forecastMonth, setForecastMonth] = useState(new Date());
+    const [nextMonthsHorizon, setNextMonthsHorizon] = useState(12);
+    const [trainStartDate, setTrainStartDate] = useState(new Date());
+    const [forecastLoading, setForecastLoading] = useState(false);
+    const [forecastData, setForecastData] = useState();
+
 
     const [viewDrugList, setViewDrugList] = useState(false);
     const [drugCountData, setDrugCountData] = useState([]);
+
+    const [rptClm, setRptClm] = useState([]);
+    const [rptData, setRptData] = useState([]);
+
     const currentYear = new Date().getFullYear();
 
     const yearCountList = [
@@ -105,16 +103,12 @@ const StateDrugAvailabilityMaster = () => {
             getYearSummary(selectedState, stY, enY)
             setDrugList([]);
             setFacilityList([]);
-            setFilterData([]);
             setSelectedDrug("");
-            // setYearCount("");
         } else {
             setYearSummary([]);
             setDrugList([]);
             setFacilityList([]);
-            setFilterData([]);
             setSelectedDrug("");
-            // setYearCount("");
         }
 
     }, [selectedState, startYear, endYear])
@@ -129,18 +123,17 @@ const StateDrugAvailabilityMaster = () => {
             })) : [];
             setDrugList(itemList);
             setFacilityList([]);
-            setFilterData([]);
             setSelectedDrug("");
         } else {
             setDrugList([]);
             setFacilityList([]);
-            setFilterData([]);
             setSelectedDrug("");
         }
     }, [yearCount, yearSummary])
 
     useEffect(() => {
         if (selectedState && selectedDrug) {
+            getFacilityTypeDrpDt(selectedState);
             const stY = startYear?.getFullYear();
             const enY = endYear?.getFullYear();
             getFacilityAvailability(
@@ -150,7 +143,6 @@ const StateDrugAvailabilityMaster = () => {
             );
         } else {
             setFacilityList([]);
-            setFilterData([]);
         }
 
     }, [selectedDrug])
@@ -178,39 +170,32 @@ const StateDrugAvailabilityMaster = () => {
             setDrugCountData(item?.itembrands || [])
             setViewDrugList(true);
         }
-
     };
 
     const onClose = () => {
-        // setOpenPage('home');
         setViewDrugList(false);
         setDrugCountData([]);
     }
 
     const getFacilityAvailability = (stateId, drugId, startY = "2020", endY = "2026") => {
         setFacilityLoading(true);
-        // fetchData(`/api/v1/analytics/facility-complete-years-by-itembrand?state_id=${stateId}&itembrand_id=${drugId}&start_year=${startY}&end_year=${endY}`)?.then((res) => {
-
         const val = {
             "state_id": stateId,
             "itembrand_id": drugId,
             "start_year": startY,
             "end_year": endY,
-            "min_months_for_imputation": 12
+            "min_months_for_imputation": parseInt(impMonths)
         }
 
         fetchPostData(`/api/v1/py/availability`, val)?.then((res) => {
             console.log('resfac', res)
             if (res?.status === 1) {
                 setFacilityList(res?.data);
-                setFilterData(res?.data?.matrix);
                 setFacilityLoading(false);
             } else {
                 setFacilityList([]);
-                setFilterData([]);
                 setFacilityLoading(false);
             }
-
         })
     };
 
@@ -222,204 +207,81 @@ const StateDrugAvailabilityMaster = () => {
         },
     ];
 
+    const onClickReport = (dt, arr = []) => {
+        const clms = createDynamicColumns(dt, arr);
+        setRptClm(clms);
+        setRptData(dt);
+    }
 
-    // useEffect(() => {
-    //     if (!searchInput) {
-    //         setFilterData(facilityList?.matrix);
-    //     } else {
-    //         const lowercasedText = searchInput.toLowerCase();
-    //         const newFilteredData = facilityList?.matrix?.filter(row => {
-    //             const paramName = row?.cwhstr_facility_name?.toLowerCase() || "";
-    //             return paramName.includes(lowercasedText);
-    //         });
-    //         setFilterData(newFilteredData);
-    //     }
-    // }, [searchInput, facilityList?.matrix]);
+    const getFacilityTypeDrpDt = (stateId) => {
+        fetchData(`/api/v1/py/options/facilities?state_id=${stateId}`)?.then((res) => {
+            console.log('facilitys', res)
+            if (res?.status === 1) {
+                setFacilityTypesDrpDt(res?.data?.facilities);
+            } else {
+                setFacilityTypesDrpDt([]);
+            }
+        })
+    };
 
+    const fetchForecastData = () => {
 
-    const matrixColumns = useMemo(() => {
-        if (!facilityList?.matrix?.length) return [];
+        const stY = startYear?.getFullYear();
+        const enY = endYear?.getFullYear();
 
-        const keys = [
-            ...new Set(
-                facilityList?.matrix.flatMap(item => Object.keys(item))
-            )
-        ].filter(key => key !== "facility_id");
+        const errors = [];
 
-        return [
-            {
-                name: "Facility ID",
-                selector: row => row.facility_id,
-                sortable: true,
-                width: "120px",
-            },
-
-            ...keys.map(key => ({
-                name: key,
-                selector: row => row[key] ?? "-",
-                sortable: true,
-                wrap: true,
-            })),
-        ];
-    }, [facilityList?.matrix]);
-
-    // const columns = useMemo(() => [
-    //     {
-    //         name: "Facility Type",
-    //         selector: row => row?.cwhstr_facility_name,
-    //         sortable: true,
-    //         grow: 3
-    //     },
-    //     {
-    //         name: "1 Year",
-    //         center: true,
-    //         selector: row => row?.has_1_complete_years,
-    //         cell: row => (
-    //             row?.has_1_complete_years
-    //                 ? <span className="status-icon success">✔</span>
-    //                 : <span className="status-icon danger">✖</span>
-    //         )
-    //     },
-    //     {
-    //         name: "2 Year",
-    //         center: true,
-    //         selector: row => row?.has_2_complete_years,
-    //         cell: row => (
-    //             row?.has_2_complete_years
-    //                 ? <span className="status-icon success">✔</span>
-    //                 : <span className="status-icon danger">✖</span>
-    //         )
-    //     },
-    //     {
-    //         name: "3 Year",
-    //         center: true,
-    //         selector: row => row?.has_3_complete_years,
-    //         cell: row => (
-    //             row.has_3_complete_years
-    //                 ? <span className="status-icon success">✔</span>
-    //                 : <span className="status-icon danger">✖</span>
-    //         )
-    //     },
-    //     {
-    //         name: "4 Year",
-    //         center: true,
-    //         selector: row => row?.has_4_complete_years,
-    //         cell: row => (
-    //             row?.has_4_complete_years
-    //                 ? <span className="status-icon success">✔</span>
-    //                 : <span className="status-icon danger">✖</span>
-    //         )
-    //     },
-    //     {
-    //         name: "5 Year",
-    //         center: true,
-    //         selector: row => row?.has_5_complete_years,
-    //         cell: row => (
-    //             row?.has_5_complete_years
-    //                 ? <span className="status-icon success">✔</span>
-    //                 : <span className="status-icon danger">✖</span>
-    //         )
-    //     },
-    //     {
-    //         name: "6 Year",
-    //         center: true,
-    //         selector: row => row?.has_6_complete_years,
-    //         cell: row => (
-    //             row?.has_6_complete_years
-    //                 ? <span className="status-icon success">✔</span>
-    //                 : <span className="status-icon danger">✖</span>
-    //         )
-    //     },
-    //     {
-    //         name: "7 Year",
-    //         center: true,
-    //         selector: row => row?.has_7_complete_years,
-    //         cell: row => (
-    //             row?.has_7_complete_years
-    //                 ? <span className="status-icon success">✔</span>
-    //                 : <span className="status-icon danger">✖</span>
-    //         )
-    //     }
-    // ], []);
-
-    const eligibilityColumns = useMemo(() => [
-        {
-            name: "Facility Type",
-            selector: row => row?.cwhstr_facility_name,
-            sortable: true,
-            grow: 3
-        },
-        {
-            name: "1 Year",
-            center: true,
-            selector: row => row?.has_1_complete_years,
-            cell: row => (
-                row?.has_1_complete_years
-                    ? <span className="status-icon success">✔</span>
-                    : <span className="status-icon danger">✖</span>
-            )
-        },
-        {
-            name: "2 Year",
-            center: true,
-            selector: row => row?.has_2_complete_years,
-            cell: row => (
-                row?.has_2_complete_years
-                    ? <span className="status-icon success">✔</span>
-                    : <span className="status-icon danger">✖</span>
-            )
-        },
-        {
-            name: "3 Year",
-            center: true,
-            selector: row => row?.has_3_complete_years,
-            cell: row => (
-                row.has_3_complete_years
-                    ? <span className="status-icon success">✔</span>
-                    : <span className="status-icon danger">✖</span>
-            )
-        },
-        {
-            name: "4 Year",
-            center: true,
-            selector: row => row?.has_4_complete_years,
-            cell: row => (
-                row?.has_4_complete_years
-                    ? <span className="status-icon success">✔</span>
-                    : <span className="status-icon danger">✖</span>
-            )
-        },
-        {
-            name: "5 Year",
-            center: true,
-            selector: row => row?.has_5_complete_years,
-            cell: row => (
-                row?.has_5_complete_years
-                    ? <span className="status-icon success">✔</span>
-                    : <span className="status-icon danger">✖</span>
-            )
-        },
-        {
-            name: "6 Year",
-            center: true,
-            selector: row => row?.has_6_complete_years,
-            cell: row => (
-                row?.has_6_complete_years
-                    ? <span className="status-icon success">✔</span>
-                    : <span className="status-icon danger">✖</span>
-            )
-        },
-        {
-            name: "7 Year",
-            center: true,
-            selector: row => row?.has_7_complete_years,
-            cell: row => (
-                row?.has_7_complete_years
-                    ? <span className="status-icon success">✔</span>
-                    : <span className="status-icon danger">✖</span>
-            )
+        if (!facilityTypeId) {
+            errors.push("Forecast Facility ID");
         }
-    ], []);
+
+        if (!forecastMonth) {
+            errors.push("Forecast Month");
+        }
+
+        if (!trainStartDate) {
+            errors.push("Train Start Date");
+        }
+
+        if (!nextMonthsHorizon) {
+            errors.push("Forecast Horizon");
+        }
+
+        if (errors.length > 0) {
+            ToastAlert(`Please select the following fields:\n\n${errors.join("\n")}`, "warning");
+            return;
+        }
+
+        setForecastLoading(true);
+        const val = {
+            "state_id": selectedState,
+            "itembrand_id": selectedDrug,
+            "start_year": stY,
+            "end_year": enY,
+            "min_months_for_imputation": parseInt(impMonths),
+            "facility_id": parseInt(facilityTypeId),
+            "forecast_month": formatDateHmisForecast(forecastMonth) || "",
+            "train_start_date": formatDateHmisForecast(trainStartDate) || "",
+            "ignore_forecast_year_data": false,
+            "future_horizon_mode": "after_latest_available_data",
+            "months_ahead": parseInt(nextMonthsHorizon),
+            "use_old_logic": false,
+            "include_availability_outputs": false
+        }
+        console.log('val', val)
+
+        fetchPostData(`/api/v1/py/forecast`, val)?.then((res) => {
+            console.log('forecast', res)
+            if (res?.status === 1) {
+                setForecastData(res?.data);
+                setForecastLoading(false);
+            } else {
+                setForecastData([]);
+                setForecastLoading(false);
+                ToastAlert(res?.message, "error");
+            }
+        })
+    };
 
 
 
@@ -430,10 +292,6 @@ const StateDrugAvailabilityMaster = () => {
                     <div className='masters-header row'>
                         <span className='col-6'>
                             <b>{`Forecasting Through AI Modal`}</b>
-                        </span>
-                        <span className='col-6 text-end'>
-                            <i className="fa-solid fa-list-check me-1"></i>
-                            Total Records : {filterData?.length || 0}
                         </span>
                     </div>
 
@@ -463,7 +321,7 @@ const StateDrugAvailabilityMaster = () => {
                         <div className='col-md-6'>
                             <div className='form-group row'>
                                 <label className="col-sm-4 col-form-label fix-label fw-bold">
-                                    Date Range for Forecasting :
+                                    Year Range for Forecasting :
                                 </label>
 
                                 <div className="col-sm-8">
@@ -483,6 +341,27 @@ const StateDrugAvailabilityMaster = () => {
                                         minDate={new Date(2000, 0, 1)}
                                         maxDate={new Date()}
                                         className="form-control aliceblue-bg border-dark-subtle"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='col-md-6'>
+                            <div className='form-group row'>
+                                <label className='col-sm-4 col-form-label fix-label required-label fw-bold'>
+                                    Min Months For Repair :
+                                </label>
+                                <div className='col-sm-8'>
+                                    <InputField
+                                        id="months"
+                                        name="months"
+                                        type="text"
+                                        placeholder="Enter months"
+                                        value={impMonths}
+                                        className="aliceblue-bg border-dark-subtle"
+                                        onChange={(e) => setImpMonths(e?.target?.value)}
+                                        acceptType={"number"}
+                                        maxLength={2}
                                     />
                                 </div>
                             </div>
@@ -629,22 +508,238 @@ const StateDrugAvailabilityMaster = () => {
                             }
 
 
-                            {(selectedDrug || yearCount) && (
+                            {selectedDrug && (
                                 <>
                                     <hr className='my-3' />
 
-                                    <TableWithAccoidion data={facilityList?.matrix} column={matrixColumns} id={"collapseMatrix"} heading={"Facility-Year Matrix"} subHeading={"For each facility, it reports whether that facility has exactly 7, 6, 5, 4, 3, 2, 1, or 0 complete years. Complete year means data exists for all 12 months of that year."} defaultOpen={true} />
+                                    <TableWithAccoidion data={facilityList?.matrix} column={createDynamicColumns(facilityList?.matrix, ['facility_id'])} id={"collapseMatrix"} heading={"Facility-Year Matrix"} subHeading={`For each facility, it reports whether that facility has exactly 7, 6, 5, 4, 3, 2, 1, or 0 complete years. Complete year means data exists for all ${impMonths} months of that year.`} defaultOpen={true} filters={[
+                                        { value: stateNameDrpDt?.find(dt => dt?.value == selectedState)?.label, label: "State" }, { value: drugList?.find(dt => dt?.value == selectedDrug)?.label, label: "Item Name" }
+                                    ]}
+                                        onClickRpt={() => onClickReport(facilityList?.matrix, ['facility_id'])}
+                                    />
 
-                                    <TableWithAccoidion data={facilityList?.eligibility} column={createDynamicColumns(facilityList?.eligibility)} id={"collapseFacility"} heading={"Model Eligibility by Facility"} subHeading={"If a facility has both complete/imputed years and sparse years, it is marked mixed: 8 strong methods run for complete/imputed years and fallback methods run for sparse years."} />
+                                    <TableWithAccoidion data={facilityList?.eligibility} column={createDynamicColumns(facilityList?.eligibility)} id={"collapseFacility"} heading={"Model Eligibility by Facility"} subHeading={"If a facility has both complete/imputed years and sparse years, it is marked mixed: 8 strong methods run for complete/imputed years and fallback methods run for sparse years."} filters={[
+                                        { value: stateNameDrpDt?.find(dt => dt?.value == selectedState)?.label, label: "State" }, { value: drugList?.find(dt => dt?.value == selectedDrug)?.label, label: "Item Name" }
+                                    ]} onClickRpt={() => onClickReport(facilityList?.eligibility)} />
 
-                                    <TableWithAccoidion data={facilityList?.year_method_plan} column={createDynamicColumns(facilityList?.year_method_plan)} id={"collapsyear_method_plan"} heading={"Year-wise Method Plan"} subHeading={"No year with data is left unused: complete/imputed years use the 8 strong methods; sparse years use sparse_fallback_methods; only no-data years are left out."} />
+                                    <TableWithAccoidion data={facilityList?.year_method_plan} column={createDynamicColumns(facilityList?.year_method_plan)} id={"collapsyear_method_plan"} heading={"Year-wise Method Plan"} subHeading={"No year with data is left unused: complete/imputed years use the 8 strong methods; sparse years use sparse_fallback_methods; only no-data years are left out."} filters={[
+                                        { value: stateNameDrpDt?.find(dt => dt?.value == selectedState)?.label, label: "State" }, { value: drugList?.find(dt => dt?.value == selectedDrug)?.label, label: "Item Name" }
+                                    ]} onClickRpt={() => onClickReport(facilityList?.year_method_plan)} />
 
-                                    <TableWithAccoidion data={facilityList?.detail} column={createDynamicColumns(facilityList?.detail)} id={"collapsDetailsYearWise"} heading={"Detailed Year-Wise Data"} subHeading={""} />
+                                    {/* <TableWithAccoidion data={facilityList?.detail} column={createDynamicColumns(facilityList?.detail)} id={"collapsDetailsYearWise"} heading={"Detailed Year-Wise Data"} subHeading={""} filters={[
+                                        { value: stateNameDrpDt?.find(dt => dt?.value == selectedState)?.label, label: "State" }, { value: drugList?.find(dt => dt?.value == selectedDrug)?.label, label: "Item Name" }
+                                    ]} onClickRpt={() => onClickReport(facilityList?.detail)} /> */}
                                 </>
                             )}
 
                         </>
                     )}
+
+                    <hr className='my-2' />
+                    {(selectedDrug && !facilityLoading) &&
+                        <div className="forecast-node">
+
+                            {/* Header */}
+                            <div className="year-summary-title">
+                                <h4 className="mb-0 fw-bold">
+                                    Forecast Using Stockout Adjusted Real Issue Qty
+                                </h4>
+                            </div>
+
+                            {/* Form */}
+                            <div className="row pt-3 g-3">
+
+                                {/* Forecast Facility ID */}
+                                <div className="col-12 col-md-6 col-xl-4">
+                                    <div className="row align-items-center">
+
+                                        <label className="col-12 col-sm-5 col-form-label fix-label required-label fw-bold">
+                                            Forecast Facility ID :
+                                        </label>
+
+                                        <div className="col-12 col-sm-7">
+                                            <InputSelect
+                                                id="facilityTypeId"
+                                                name="facilityTypeId"
+                                                placeholder="Select Facility"
+                                                options={facilityTypesDrpDt}
+                                                value={facilityTypeId}
+                                                className="aliceblue-bg border-dark-subtle w-100"
+                                                onChange={(e) =>
+                                                    setFacilityTypeId(parseInt(e?.target?.value))
+                                                }
+                                            />
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                                {/* Forecast Month */}
+                                <div className="col-12 col-md-6 col-xl-4">
+                                    <div className="row align-items-center">
+
+                                        <label className="col-12 col-sm-4 col-form-label fix-label required-label fw-bold">
+                                            Forecast Month :
+                                        </label>
+
+                                        <div className="col-12 col-sm-8">
+                                            <DatePicker
+                                                name="forecastMonth"
+                                                dateFormat="dd-MMM-yyyy"
+                                                selected={forecastMonth}
+                                                onChange={(update) => setForecastMonth(update)}
+                                                isClearable
+                                                placeholderText="Select Forecast Month"
+                                                className="form-control aliceblue-bg border-dark-subtle w-100"
+                                                showYearDropdown
+                                                showMonthDropdown
+                                                dropdownMode="select"
+                                            />
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                                {/* Forecast Horizon */}
+                                <div className="col-12 col-md-6 col-xl-4">
+                                    <div className="row align-items-center">
+
+                                        <label className="col-12 col-sm-4 col-form-label fix-label required-label fw-bold">
+                                            Forecast Horizon :
+                                        </label>
+
+                                        <div className="col-12 col-sm-8">
+                                            <InputSelect
+                                                id="nextMonthsHorizon"
+                                                name="nextMonthsHorizon"
+                                                placeholder="Select Horizon"
+                                                options={[12, 24, 36, 48].map((dt) => ({
+                                                    value: dt,
+                                                    label: dt
+                                                }))}
+                                                value={nextMonthsHorizon}
+                                                className="aliceblue-bg border-dark-subtle w-100"
+                                                onChange={(e) =>
+                                                    setNextMonthsHorizon(parseInt(e?.target?.value))
+                                                }
+                                            />
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                                {/* Train Start Date */}
+                                <div className="col-12 col-md-6 col-xl-4">
+                                    <div className="row align-items-center">
+
+                                        <label className="col-12 col-sm-4 col-form-label fix-label required-label fw-bold">
+                                            Train Start Date :
+                                        </label>
+
+                                        <div className="col-12 col-sm-8">
+                                            <DatePicker
+                                                name="trainStartDate"
+                                                dateFormat="dd-MMM-yyyy"
+                                                selected={trainStartDate}
+                                                onChange={(update) => setTrainStartDate(update)}
+                                                isClearable
+                                                placeholderText="Select Start Date"
+                                                className="form-control aliceblue-bg border-dark-subtle w-100"
+                                                showYearDropdown
+                                                showMonthDropdown
+                                                dropdownMode="select"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            {/* Footer / Action */}
+                            <div className="border-top mt-2 pt-2">
+                                <div className="d-flex justify-content-center">
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm datatable-btns px-3 py-1"
+                                        onClick={fetchForecastData}
+                                    >
+                                        <i className="fa fa-line-chart me-2 fs-13 text-warning"></i>
+                                        Run Forecast
+                                    </button>
+
+                                </div>
+                            </div>
+                            <hr />
+
+                            {forecastLoading &&
+                                <SpinLoader />
+                            }
+                            {(!forecastLoading && facilityTypeId) &&
+                                <div className="forecast-result">
+                                    <>
+                                        <div className="row">
+                                            <div className="col-6 required-label">
+                                                <span> Adjusted Store Month Rows : </span>
+                                                <b>{forecastData?.stockout_adjustment?.total_adjusted_store_month_rows || "0"}</b>
+                                            </div>
+                                            <div className="col-6 required-label">
+                                                <span> Total Stockout Days Applied : </span>
+                                                <b>{forecastData?.stockout_adjustment?.total_stockout_days_applied || "0"}</b>
+                                            </div>
+                                        </div>
+
+                                        <TableWithAccoidion data={forecastData?.monthly_data_used} column={createDynamicColumns(forecastData?.monthly_data_used)} id={"collaps_monthly_data_used"} heading={"Monthly Data Used For Forecasting"} subHeading={"This table must match your terminal output before forecast values can match."} filters={[
+                                            { value: stateNameDrpDt?.find(dt => dt?.value == selectedState)?.label, label: "State" }, { value: drugList?.find(dt => dt?.value == selectedDrug)?.label, label: "Item Name" }
+                                        ]} onClickRpt={() => onClickReport(facilityList?.year_method_plan)} />
+
+
+                                        <hr />
+                                        <h4 className="text-primary fw-bold text-decoration-underline">Single Month Recommended Forcast</h4>
+                                        <div className="required-label">Recommended Method : <b>{forecastData?.single_month_forecast?.recommended_method || "NA"}</b></div>
+
+                                        <div className="required-label">Predicted Issue Quantity : <b>{forecastData?.single_month_forecast?.recommended_prediction || "NA"}</b></div>
+
+                                        <span>{forecastData?.single_month_forecast?.selection_logic || ""}</span>
+
+                                        <div className="d-flex justify-content-between align-items-center flex-wrap">
+                                            <div className="year-summary-title">
+                                                <div>
+                                                    <span className="badge bg-info-subtle text-dark border required-label fs-13 fw-medium">
+                                                        <i> {forecastData?.single_month_forecast?.restriction_note || ""}</i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <TableWithAccoidion data={forecastData?.single_month_forecast?.allowed_final_candidates} column={createDynamicColumns(forecastData?.single_month_forecast?.allowed_final_candidates)} id={"collapsallowed_final_candidates"} heading={"Allowed Final Candidate Predictions"} subHeading={''} filters={[
+                                            { value: stateNameDrpDt?.find(dt => dt?.value == selectedState)?.label, label: "State" }, { value: drugList?.find(dt => dt?.value == selectedDrug)?.label, label: "Item Name" }
+                                        ]} onClickRpt={() => onClickReport(facilityList?.year_method_plan)} />
+
+                                        <TableWithAccoidion data={forecastData?.single_month_forecast?.allowed_method_ranking} column={createDynamicColumns(forecastData?.single_month_forecast?.allowed_method_ranking)} id={"collapsallowed_method_ranking"} heading={"Allowed Method Ranking"} subHeading={''} filters={[
+                                            { value: stateNameDrpDt?.find(dt => dt?.value == selectedState)?.label, label: "State" }, { value: drugList?.find(dt => dt?.value == selectedDrug)?.label, label: "Item Name" }
+                                        ]} onClickRpt={() => onClickReport(facilityList?.year_method_plan)} />
+
+                                        <TableWithAccoidion data={forecastData?.future_horizon?.months} column={createDynamicColumns(forecastData?.future_horizon?.months)} id={"collapsFuture_Month_Wise_Predictions"} heading={"Future Month-Wise Predictions"} subHeading={forecastData?.future_horizon?.mode_note} filters={[
+                                            { value: stateNameDrpDt?.find(dt => dt?.value == selectedState)?.label, label: "State" }, { value: drugList?.find(dt => dt?.value == selectedDrug)?.label, label: "Item Name" }
+                                        ]} onClickRpt={() => onClickReport(facilityList?.year_method_plan)} />
+
+                                        <TableWithAccoidion data={forecastData?.future_horizon?.summary} column={createDynamicColumns(forecastData?.future_horizon?.summary)} id={"collapsFuture_Month_summary"} heading={"Consumption Forecast Summary"} subHeading={''} filters={[
+                                            { value: stateNameDrpDt?.find(dt => dt?.value == selectedState)?.label, label: "State" }, { value: drugList?.find(dt => dt?.value == selectedDrug)?.label, label: "Item Name" }
+                                        ]} onClickRpt={() => onClickReport(facilityList?.year_method_plan)} />
+
+                                        <TableWithAccoidion data={forecastData?.future_horizon?.method_frequency} column={createDynamicColumns(forecastData?.future_horizon?.method_frequency)} id={"collapsFuture_Month_method_frequency"} heading={"Method Frequency in Next 12 Months"} subHeading={''} filters={[
+                                            { value: stateNameDrpDt?.find(dt => dt?.value == selectedState)?.label, label: "State" }, { value: drugList?.find(dt => dt?.value == selectedDrug)?.label, label: "Item Name" }
+                                        ]} onClickRpt={() => onClickReport(facilityList?.year_method_plan)} />
+
+                                    </>
+                                </div>
+                            }
+                        </div>
+                    }
 
                     {viewDrugList &&
                         <GlobalTableModal
@@ -659,10 +754,11 @@ const StateDrugAvailabilityMaster = () => {
             }
 
             {isShowReport &&
-                <MasterReport title={"State Drug Availability Master"} column={columns} data={filterData}
+                <MasterReport title={"State Drug Availability Master"} column={rptClm} data={rptData}
                     filters={[
                         { value: stateNameDrpDt?.find(dt => dt?.value == selectedState)?.label, label: "State" }, { value: drugList?.find(dt => dt?.value == selectedDrug)?.label, label: "Item Name" }
                     ]}
+                    isSlNoReq={false}
                 />
             }
         </>

@@ -68,11 +68,11 @@ const MapDiseaseForDrug = (props) => {
 
     // Check/Uncheck All in current category list
     const handleSelectAll = () => {
-        const filteredIds = filteredDiseaseList.map((d) => d.diseaseId);
-        const allChecked = filteredIds.every((id) => tempCheckedIds.includes(id));
+        const filteredIds = filteredDiseaseList?.map((d) => d.diseaseId);
+        const allChecked = filteredIds?.every((id) => tempCheckedIds?.includes(id));
 
         if (allChecked) {
-            setTempCheckedIds((prev) => prev.filter((id) => !filteredIds.includes(id)));
+            setTempCheckedIds((prev) => prev?.filter((id) => !filteredIds?.includes(id)));
         } else {
             setTempCheckedIds((prev) => Array.from(new Set([...prev, ...filteredIds])));
         }
@@ -82,8 +82,8 @@ const MapDiseaseForDrug = (props) => {
     const handleAddDiseases = () => {
         if (!disCat || tempCheckedIds.length === 0) return;
 
-        const itemsToAdd = diseaseList.filter((d) =>
-            tempCheckedIds.includes(d.diseaseId)
+        const itemsToAdd = diseaseList?.filter((d) =>
+            tempCheckedIds?.includes(d.diseaseId)
         );
 
         setSelectedGrouped((prev) => {
@@ -93,10 +93,10 @@ const MapDiseaseForDrug = (props) => {
             };
 
             // Deduplicate items
-            const existingIds = new Set(existingCategory.diseases.map((d) => d.diseaseId));
+            const existingIds = new Set(existingCategory?.diseases?.map((d) => d.diseaseId));
             const newUniqueDiseases = [
                 ...existingCategory.diseases,
-                ...itemsToAdd.filter((item) => !existingIds.has(item.diseaseId)),
+                ...itemsToAdd?.filter((item) => !existingIds?.has(item.diseaseId)),
             ];
 
             return {
@@ -301,8 +301,8 @@ const MapDiseaseForDrug = (props) => {
                         <div className="p-2 border-bottom bg-white rounded-top-3 d-flex justify-content-between align-items-center">
                             <span className="fw-semibold text-dark">Mapped Diseases</span>
                             <span className="badge bg-primary rounded-pill">
-                                {Object.values(selectedGrouped).reduce(
-                                    (acc, cur) => acc + cur.diseases.length,
+                                {Object.values(selectedGrouped)?.reduce(
+                                    (acc, cur) => acc + cur?.diseases?.length,
                                     0
                                 )}{' '}
                                 Items
@@ -315,11 +315,11 @@ const MapDiseaseForDrug = (props) => {
                                     No diseases selected yet.
                                 </div>
                             ) : (
-                                Object.entries(selectedGrouped).map(([catId, group]) => (
+                                Object.entries(selectedGrouped)?.map(([catId, group]) => (
                                     <div key={catId} className="card border mb-3 shadow-sm">
                                         <div className="card-header bg-white d-flex justify-content-between align-items-center py-2">
                                             <span className="fw-bold text-primary fs-7">
-                                                {group.categoryName}
+                                                {group?.categoryName}
                                             </span>
                                             {openPage === "add" &&
                                                 <button
@@ -333,18 +333,18 @@ const MapDiseaseForDrug = (props) => {
                                         </div>
                                         <div className="card-body p-2 bg-white">
                                             <div className="d-flex flex-wrap gap-1">
-                                                {group.diseases.map((dis) => (
+                                                {group?.diseases?.map((dis) => (
                                                     <span
-                                                        key={dis.diseaseId}
+                                                        key={dis?.diseaseId}
                                                         className="badge bg-light text-dark border d-flex align-items-center gap-1 p-2"
                                                     >
-                                                        {dis.diseaseName}
+                                                        {dis?.diseaseName}
                                                         {openPage === "add" &&
                                                             <i
                                                                 className="fa fa-times text-danger ms-1 cursor-pointer"
                                                                 style={{ cursor: 'pointer' }}
                                                                 onClick={() =>
-                                                                    handleRemoveDisease(catId, dis.diseaseId)
+                                                                    handleRemoveDisease(catId, dis?.diseaseId)
                                                                 }
                                                             ></i>}
                                                     </span>

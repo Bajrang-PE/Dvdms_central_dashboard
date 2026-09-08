@@ -7,7 +7,7 @@ import 'jspdf-autotable';
 import { LoginContext } from '../context/LoginContext';
 import { useReactToPrint } from 'react-to-print';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileCsv, faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import { faFileCsv, faFilePdf, faL } from '@fortawesome/free-solid-svg-icons';
 import useReportColumns from '../hooks/useReportColumns';
 import { ToastAlert } from '../utils/CommonFunction';
 
@@ -409,7 +409,8 @@ const MasterReport = React.memo((props) => {
         title,
         column,
         data = [],
-        filters = []
+        filters = [],
+        isSlNoReq = true
     } = props;
 
     const {
@@ -418,7 +419,7 @@ const MasterReport = React.memo((props) => {
     } = useContext(LoginContext);
 
     const reportRef = useRef(null);
-    const reportColumns = useReportColumns(column);
+    const reportColumns = useReportColumns(column, isSlNoReq);
     const [showTable, setShowTable] = useState(false);
 
     useEffect(() => {

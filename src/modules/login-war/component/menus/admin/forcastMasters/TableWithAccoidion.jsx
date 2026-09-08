@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react'
 import GlobalTable from '../../../GlobalTable';
 
 const TableWithAccoidion = (props) => {
-    const { data, column, id, heading, subHeading, defaultOpen } = props;
+    const { data, column, id, heading, subHeading, defaultOpen, onClickRpt } = props;
     const [searchInput, setSearchInput] = useState("");
     const [filterData, setFilterData] = useState([]);
-    console.log('column', column)
 
     useEffect(() => {
         if (!searchInput) {
@@ -39,6 +38,7 @@ const TableWithAccoidion = (props) => {
                     >
                         <i className="fa-solid fa-chart-column me-2 text-primary"></i>
                         {heading}
+                        {data?.length === 0 && <span className='text-danger ms-2 fs-13'>{`(No Data)`}</span>}
                     </button>
                 </h2>
 
@@ -75,7 +75,7 @@ const TableWithAccoidion = (props) => {
                             onModify={null}
                             onDelete={null}
                             onView={null}
-                            onReport={null}
+                            onReport={onClickRpt}
                             setOpenPage={() => { }}
                         />
                     </div>

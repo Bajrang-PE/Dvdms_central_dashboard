@@ -95,7 +95,6 @@ const StateConfigCwh = () => {
         fetchData(`/api/v1/state/getjob/${stateId}`).then((data) => {
 
             if (data?.status === 1) {
-
                 const drpData = data?.data?.map((dt) => {
                     const val = {
                         value: dt?.cwhnumJobId,
@@ -103,9 +102,7 @@ const StateConfigCwh = () => {
                     }
                     return val;
                 })
-
                 setJobForTestingDrpDt(drpData)
-
             } else {
                 setJobForTestingDrpDt([])
             }

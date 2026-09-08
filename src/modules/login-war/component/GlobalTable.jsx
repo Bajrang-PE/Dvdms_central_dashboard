@@ -18,13 +18,35 @@ const GlobalTable = (props) => {
                 // outline: '1px solid #FFFFFF',
             },
         },
+        headCells: {
+            style: {
+                whiteSpace: "normal",
+                wordBreak: "break-word",
+                overflowWrap: "anywhere",
+                overflow: "visible",
+                textOverflow: "unset",
+                flexWrap: "wrap",
+                lineHeight: "1.2",
+                height: "auto",
+                minHeight: "40px",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+                fontWeight: "bold",
+                paddingLeft: "8px",
+                paddingRight: "8px"
+            },
+        },
     }
 
     const onClickReport = () => {
         if (data?.length > 0) {
+            if (onReport) {
+                onReport();
+            }
             setIsShowReport(true);
+
         } else {
-            ToastAlert('Data not found!','warning')
+            ToastAlert('Data not found!', 'warning')
         }
     }
 

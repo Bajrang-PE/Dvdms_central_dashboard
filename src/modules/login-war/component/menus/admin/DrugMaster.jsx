@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react'
-import InputSelect from '../../InputSelect'
-import { LoginContext } from '../../../context/LoginContext'
+import React, { useContext, useEffect, useState } from 'react';
+import InputSelect from '../../InputSelect';
+import { LoginContext } from '../../../context/LoginContext';
 import { fetchData, fetchDeleteData, fetchPostData } from '../../../../../utils/ApiHooks';
 import GlobalTable from '../../GlobalTable';
 import { capitalizeFirstLetter, ToastAlert } from '../../../utils/CommonFunction';
@@ -16,18 +16,18 @@ const DrugMaster = () => {
 
     const [values, setValues] = useState({
         "groupId": "0", "subGroupId": "0", "recordStatus": "1"
-    })
+    });
 
     const [errors, setErrors] = useState({
         groupIdErr: "", subGroupIdErr: ""
-    })
+    });
 
-    const [listData, setListData] = useState([])
+    const [listData, setListData] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
-    const [selectedGroupName, setSelectedGroupName] = useState("")
-    const [selectedSubGroupName, setSelectedSubGroupName] = useState("")
-    const [selectedGroupId, setSelectedGroupId] = useState("")
-    const [selectedSubGroupId, setSelectedSubGroupId] = useState("")
+    const [selectedGroupName, setSelectedGroupName] = useState("");
+    const [selectedSubGroupName, setSelectedSubGroupName] = useState("");
+    const [selectedGroupId, setSelectedGroupId] = useState("");
+    const [selectedSubGroupId, setSelectedSubGroupId] = useState("");
     const [searchInput, setSearchInput] = useState('');
     const [filterData, setFilterData] = useState(listData);
     const [pending, setPending] = useState(false);
@@ -52,18 +52,17 @@ const DrugMaster = () => {
         if (name === "groupId") {
             const selectOptionGrp = groupDrpData.find(opt => String(opt.value) === String(value));
             setSelectedGroupName(selectOptionGrp?.label || "");
-            setSelectedGroupId(selectOptionGrp?.value || "")
+            setSelectedGroupId(selectOptionGrp?.value || "");
         }
         if (name === "subGroupId") {
             const selectOptionSubGrp = subGroupDrpData.find(opt => String(opt.value) === String(value));
             setSelectedSubGroupName(selectOptionSubGrp?.label || "");
-            setSelectedSubGroupId(selectOptionSubGrp?.value || "")
+            setSelectedSubGroupId(selectOptionSubGrp?.value || "");
         }
         if (name) {
             setValues({ ...values, [name]: value });
             setErrors({ ...errors, [errName]: "" });
         }
-
     }
 
     useEffect(() => {
@@ -112,11 +111,11 @@ const DrugMaster = () => {
             if (data?.status === 1 && Array.isArray(data.data)) {
                 //alert("Data avl")
                 setPending(false);
-                setListData(data.data)
+                setListData(data.data);
             } else {
                  setPending(false);
                 //alert("Data not avl")
-                setListData([])
+                setListData([]);
             }
         })
     }
@@ -131,7 +130,7 @@ const DrugMaster = () => {
         }
         if (!values?.subGroupId.trim() || values?.subGroupId === "0") {
             setErrors(prev => ({ ...prev, subGroupIdErr: "Please select subgroup" }));
-            setOpenPage("home")
+            setOpenPage("home");
             isValid = false
         }
         return isValid;
@@ -212,14 +211,14 @@ const DrugMaster = () => {
 
         fetchPostData(`/api/v1/drug-mst/deletedrug?drugId=${selectedOption[0]?.cwhnumDrugId}`).then(data => {
             if (data?.status === 1) {
-                ToastAlert('Data deleted successfully', 'success')
+                ToastAlert('Data deleted successfully', 'success');
                 setConfirmSave(false);
                 setSelectedOption([]);
                 setOpenPage("home");
                 getListData(values?.groupId, values?.subGroupId, values?.recordStatus);
             } else {
-                ToastAlert('Error while deleting record!', 'error')
-                setOpenPage("home")
+                ToastAlert('Error while deleting record!', 'error');
+                setOpenPage("home");
                 setConfirmSave(false);
             }
 
